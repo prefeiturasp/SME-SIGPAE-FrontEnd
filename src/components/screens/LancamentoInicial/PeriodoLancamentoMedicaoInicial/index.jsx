@@ -1691,9 +1691,7 @@ export default () => {
           );
         setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
         setExibirTooltip(bloquearBotao || temErrosFormulario);
-      }
-
-      if (categoriasDeMedicao.length > 0) {
+      } else if (categoriasDeMedicao.length > 0) {
         const bloquearBotao = weekColumns.some((week) =>
           obrigarAdiocionarFeriadoProgramasProjetos(
             week,
@@ -1721,8 +1719,8 @@ export default () => {
         usuarioEhEscolaCIEJA(),
         location.state.periodo,
       );
-      setDisableBotaoSalvarLancamentos(bloquearBotao);
-      setExibirTooltip(bloquearBotao);
+      setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
+      setExibirTooltip(bloquearBotao || temErrosFormulario);
     }
   }, [
     formValuesAtualizados,

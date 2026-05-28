@@ -1307,9 +1307,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           );
         setDisableBotaoSalvarLancamentos(bloquearBotao || temErrosFormulario);
         setExibirTooltip(bloquearBotao);
-      }
-
-      if (categoriasDeMedicao.length > 0) {
+      } else if (categoriasDeMedicao.length > 0) {
         const bloquearBotao = weekColumns.some((week) =>
           obrigarAdiocionarFeriadoProgramasProjetos(
             week,
