@@ -6,7 +6,10 @@ import {
   FICHA_RECEBIMENTO,
   RELATORIO_DOCUMENTOS_RECEBIMENTO,
 } from "src/configs/constants";
-import { usuarioEhRecebimento } from "src/helpers/utilities";
+import {
+  usuarioEhCodaeDilog,
+  usuarioEhRecebimento,
+} from "src/helpers/utilities";
 
 const MenuRecebimento = ({ activeMenu, onSubmenuClick }) => {
   return (
@@ -19,17 +22,22 @@ const MenuRecebimento = ({ activeMenu, onSubmenuClick }) => {
       <LeafItem to={`/${RECEBIMENTO}/${FICHA_RECEBIMENTO}`}>
         Ficha de Recebimento
       </LeafItem>
-      <SubMenu
-        icon="fa-chevron-down"
-        onClick={onSubmenuClick}
-        title="Relatórios"
-        activeMenu={activeMenu}
-        dataTestId="relatorios-pr"
-      >
-        <LeafItem to={`/${RECEBIMENTO}/${RELATORIO_DOCUMENTOS_RECEBIMENTO}/`}>
-          Documentos de Recebimento
-        </LeafItem>
-      </SubMenu>
+      {usuarioEhRecebimento() ||
+        (usuarioEhCodaeDilog() && (
+          <SubMenu
+            icon="fa-chevron-down"
+            onClick={onSubmenuClick}
+            title="Relatórios"
+            activeMenu={activeMenu}
+            dataTestId="relatorios-recebimento"
+          >
+            <LeafItem
+              to={`/${RECEBIMENTO}/${RELATORIO_DOCUMENTOS_RECEBIMENTO}/`}
+            >
+              Documentos de Recebimento
+            </LeafItem>
+          </SubMenu>
+        ))}
     </Menu>
   );
 };
