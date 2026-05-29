@@ -686,6 +686,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
     ) ||
     (location.state.grupo === "Programas e Projetos" &&
       obrigarAdiocionarFeriadoProgramasProjetos(
+        feriadosNoMes,
         column,
         categoria,
         formValuesAtualizados,
@@ -2684,10 +2685,13 @@ export const verificaFeriadoProgramasProjetos = (
 };
 
 export const obrigarAdiocionarFeriadoProgramasProjetos = (
+  feriadosNoMes,
   column,
   categoria,
   formValuesAtualizados,
 ) => {
+  if (feriadosNoMes && !feriadosNoMes.includes(column.dia)) return false;
+
   const sufixoCampo = `__dia_${column.dia}__categoria_${categoria.id}`;
 
   return Object.entries(formValuesAtualizados).some(([key, value]) => {
