@@ -33,7 +33,11 @@ jest.mock("src/services/medicaoInicial/controleDeFrequencia.service", () => ({
 jest.mock(
   "src/components/Shareable/ModalSolicitacaoDownload",
   () => (props) =>
-    props.show ? <div data-testid="modal-download">Modal Download</div> : null,
+    props.show ? (
+      <div data-testid="modal-download">
+        <button onClick={() => props.setShow(false)}>Fechar</button>
+      </div>
+    ) : null,
 );
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
@@ -515,6 +519,83 @@ describe("Teste ControleDeFrequencia", () => {
         expect(toastError).toHaveBeenCalledWith(
           "Erro ao imprimir pdf. Tente novamente mais tarde.",
         );
+      });
+    });
+
+    it("Deve desabilitar botão imprimir durante request", async () => {
+      setupMocks();
+
+      let resolvePromise;
+
+      imprimirRelatorioControleFrequencia.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolvePromise = resolve;
+          }),
+      );
+
+      await renderComponent();
+
+      await preencherFiltros();
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      const btnImprimir = within(resultado).getByRole("button", {
+        name: /imprimir/i,
+      });
+
+      expect(btnImprimir).toBeInTheDocument();
+
+      fireEvent.click(btnImprimir);
+
+      await waitFor(() => {
+        expect(btnImprimir).toBeDisabled();
+      });
+
+      resolvePromise({});
+
+      await waitFor(() => {
+        expect(btnImprimir).not.toBeDisabled();
+      });
+    });
+
+    it("Deve fechar modal corretamente", async () => {
+      setupMocks();
+
+      await renderComponent();
+
+      await preencherFiltros();
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      const btnImprimir = within(resultado).getByRole("button", {
+        name: /imprimir/i,
+      });
+
+      expect(btnImprimir).toBeInTheDocument();
+
+      fireEvent.click(btnImprimir);
+
+      const modal = await screen.findByTestId("modal-download");
+
+      expect(modal).toBeInTheDocument();
+
+      const btnFechar = within(modal).getByRole("button", {
+        name: /fechar/i,
+      });
+
+      fireEvent.click(btnFechar);
+
+      await waitFor(() => {
+        expect(screen.queryByTestId("modal-download")).not.toBeInTheDocument();
       });
     });
   });
