@@ -23,8 +23,6 @@ import {
 
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
-import preview from "jest-preview";
-
 jest.mock("src/services/medicaoInicial/controleDeFrequencia.service", () => ({
   getMesesAnos: jest.fn(),
   getFiltros: jest.fn(),
@@ -105,6 +103,15 @@ const preencherFiltros = async ({
     );
   }
 };
+
+function getDataComZero() {
+  const hoje = new Date();
+  const dia = String(hoje.getDate()).padStart(2, "0");
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const ano = hoje.getFullYear();
+
+  return `${dia}/${mes}/${ano}`;
+}
 
 describe("Teste ControleDeFrequencia", () => {
   const mockMesesAnos = {
@@ -477,8 +484,6 @@ describe("Teste ControleDeFrequencia", () => {
         );
       });
       expect(screen.getByTestId("modal-download")).toBeInTheDocument();
-
-      preview.debug();
     });
 
     it("Deve exibir erro ao falhar impressão relatório", async () => {
@@ -510,6 +515,185 @@ describe("Teste ControleDeFrequencia", () => {
         expect(toastError).toHaveBeenCalledWith(
           "Erro ao imprimir pdf. Tente novamente mais tarde.",
         );
+      });
+    });
+  });
+
+  describe("Estados de tela", () => {
+    it("Deve renderizar total por período", async () => {
+      setupMocks();
+
+      await renderComponent();
+      preencherFiltros();
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      expect(resultado).toHaveTextContent(
+        "TOTAL DE MATRICULADOS NA UNIDADE ENTRE 01/04/2026 E 30/04/2026",
+      );
+      expect(resultado).toHaveTextContent("150");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO INTEGRAL");
+      expect(resultado).toHaveTextContent("100");
+
+      expect(resultado).toHaveTextContent("MATRICULADOS PERÍODO TARDE");
+      expect(resultado).toHaveTextContent("50");
+
+      expect(resultado).toHaveTextContent("Mês: ABRIL/2026");
+
+      expect(
+        within(resultado).getByRole("button", {
+          name: /imprimir/i,
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it("Deve renderizar título com mesma data", async () => {
+      setupMocks();
+      await renderComponent();
+
+      await preencherFiltros({
+        mesmaData: true,
+      });
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /filtrar/i,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId("resultado-controle-frequencia"),
+        ).toHaveTextContent("EM 01/04/2026");
+      });
+    });
+
+    it("Deve limpar os filtros corretamente", async () => {
+      setupMocks();
+
+      await renderComponent();
+
+      await preencherFiltros();
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      expect(resultado).toHaveTextContent("INTEGRAL");
+
+      const btnLimpar = screen.getByRole("button", {
+        name: /limpar filtros/i,
+      });
+
+      fireEvent.click(btnLimpar);
+
+      await waitFor(() => {
+        expect(resultado).not.toHaveTextContent("INTEGRAL");
+      });
+
+      expect(resultado).not.toHaveTextContent("100");
+
+      expect(
+        screen.queryByRole("button", {
+          name: /imprimir/i,
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("Deve renderizar título com data atual quando não houver datas", async () => {
+      setupMocks();
+
+      getTotalAlunosMatriculados.mockResolvedValue({
+        data: {
+          total_matriculados: 100,
+          periodos: {
+            INTEGRAL: 100,
+          },
+        },
+      });
+
+      await renderComponent();
+
+      const selects = screen.getAllByRole("combobox");
+
+      fireEvent.mouseDown(selects[0]);
+
+      const optionMes = await screen.findByText(/abril 2026/i);
+
+      fireEvent.click(optionMes);
+
+      await waitFor(() => {
+        expect(getFiltros).toHaveBeenCalled();
+      });
+
+      const btnFiltrar = screen.getByRole("button", {
+        name: /filtrar/i,
+      });
+
+      fireEvent.click(btnFiltrar);
+
+      const data = getDataComZero();
+      await waitFor(() => {
+        expect(
+          screen.getByTestId("resultado-controle-frequencia"),
+        ).toHaveTextContent(`EM ${data}`);
+      });
+    });
+
+    it("Não deve renderizar mensagem sem resultados quando não houver mês selecionado", async () => {
+      setupMocks();
+
+      getTotalAlunosMatriculados.mockResolvedValue({
+        data: {
+          total_matriculados: 0,
+          periodos: {},
+        },
+      });
+
+      await renderComponent();
+
+      expect(
+        screen.queryByText(/nenhum resultado encontrado/i),
+      ).not.toBeInTheDocument();
+    });
+
+    it("Deve remover botão imprimir ao limpar filtros", async () => {
+      setupMocks();
+
+      await renderComponent();
+
+      await preencherFiltros();
+
+      await waitFor(() => {
+        expect(getTotalAlunosMatriculados).toHaveBeenCalled();
+      });
+
+      const resultado = screen.getByTestId("resultado-controle-frequencia");
+
+      const btnImprimir = within(resultado).getByRole("button", {
+        name: /imprimir/i,
+      });
+
+      expect(btnImprimir).toBeInTheDocument();
+
+      const btnLimpar = screen.getByRole("button", {
+        name: /limpar filtros/i,
+      });
+
+      fireEvent.click(btnLimpar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByRole("button", {
+            name: /imprimir/i,
+          }),
+        ).not.toBeInTheDocument();
       });
     });
   });
