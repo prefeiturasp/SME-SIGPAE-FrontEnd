@@ -29,7 +29,6 @@ export default () => (
   <Page
     botaoVoltar
     temModalVoltar
-    textoModalVoltar="Existem informações não salvas na Ficha Técnica. Ao voltar à tela anterior, as informações inseridas serão perdidas."
     voltarPara={`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`}
     titulo={atual.titulo}
   >
