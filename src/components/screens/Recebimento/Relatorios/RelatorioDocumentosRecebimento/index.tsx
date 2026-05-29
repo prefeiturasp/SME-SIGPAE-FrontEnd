@@ -12,6 +12,7 @@ import Listagem from "./components/Listagem";
 import "./styles.scss";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
+import moment from "moment";
 
 export default () => {
   const [carregando, setCarregando] = useState<boolean>(false);
@@ -74,6 +75,10 @@ export default () => {
             <>
               {totalizadores && (
                 <div className="row mt-4">
+                  <div className="col-12 titulo-cards">
+                    TOTAL DE DOCUMENTOS DE RECEBIMENTO - ATÉ{" "}
+                    {moment(new Date()).format("DD/MM/YYYY")}
+                  </div>
                   {Object.keys(totalizadores).map((totalizador, key) => {
                     return (
                       <div key={key} className="col-4 mt-3">
