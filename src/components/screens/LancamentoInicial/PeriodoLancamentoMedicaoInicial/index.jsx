@@ -1694,9 +1694,10 @@ export default () => {
         setExibirTooltip(bloquear);
         if (bloquear) return;
       }
-      if (categoriasDeMedicao.length > 0) {
+      if (categoriasDeMedicao.length > 0 && feriadosNoMes?.length > 0) {
         const bloquearBotao = weekColumns.some((week) =>
           obrigarAdiocionarFeriadoProgramasProjetos(
+            feriadosNoMes,
             week,
             categoriasDeMedicao.find(
               (categoria) => categoria.nome === "ALIMENTAÇÃO",
@@ -1734,6 +1735,7 @@ export default () => {
     weekColumns,
     alunosTabSelecionada,
     categoriasDeMedicao,
+    feriadosNoMes,
   ]);
 
   useEffect(() => {
