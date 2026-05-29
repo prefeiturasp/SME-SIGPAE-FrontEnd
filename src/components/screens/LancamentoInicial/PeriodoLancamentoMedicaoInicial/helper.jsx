@@ -330,6 +330,7 @@ export const desabilitarField = (
   ehUltimoDiaLetivoDoAno,
 ) => {
   const grupoRecreio = ehGrupoRecreioNasFerias(grupoLocation);
+  const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
   const valorAtual = values[`${rowName}__dia_${dia}__categoria_${categoria}`];
 
   if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
@@ -427,10 +428,7 @@ export const desabilitarField = (
               alunosTabSelecionada,
         )
       ) {
-        if (
-          grupoLocation === "Programas e Projetos" &&
-          !valorFieldParaCorrecao
-        ) {
+        if (ehProgramasEProjetos && !valorFieldParaCorrecao) {
           return true;
         }
         return false;
@@ -560,10 +558,7 @@ export const desabilitarField = (
       );
     }
   }
-  if (
-    grupoLocation === "Programas e Projetos" ||
-    location.state?.periodoEspecifico
-  ) {
+  if (ehProgramasEProjetos || location.state?.periodoEspecifico) {
     return (
       validacaoSemana(dia) ||
       rowName === "numero_de_alunos" ||
@@ -591,10 +586,7 @@ export const desabilitarField = (
       )
     );
   }
-  if (
-    grupoLocation === "Programas e Projetos" &&
-    dadosValoresInclusoesAutorizadasState
-  ) {
+  if (ehProgramasEProjetos && dadosValoresInclusoesAutorizadasState) {
     if (feriadosNoMes.includes(dia)) {
       return true;
     }
@@ -716,8 +708,7 @@ export const desabilitarField = (
     return true;
   }
   if (
-    (location.state?.ehPeriodoEspecifico ||
-      grupoLocation === "Programas e Projetos") &&
+    (location.state?.ehPeriodoEspecifico || ehProgramasEProjetos) &&
     inclusoesAutorizadas?.length > 0 &&
     nomeCategoria.includes("DIETA ESPECIAL") &&
     !inclusoesAutorizadas.some((inclusao) => inclusao.dia === dia)

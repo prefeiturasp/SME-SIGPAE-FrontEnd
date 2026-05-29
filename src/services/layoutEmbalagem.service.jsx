@@ -1,3 +1,4 @@
+import { saveAs } from "file-saver";
 import { getMensagemDeErro } from "../helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
@@ -51,3 +52,20 @@ export const analiseCodaeLayoutEmbalagem = async (uuid, payload) => {
 
 export const atualizacaoLayoutEmbalagem = async (uuid, payload) =>
   await axios.patch(`/layouts-de-embalagem/${uuid}/`, payload);
+
+export const downloadImagemAssinada = async (
+  uuidLayout,
+  uuidImagem,
+  nomeArquivo,
+) => {
+  try {
+    const url = `/layouts-de-embalagem/${uuidLayout}/download/${uuidImagem}/`;
+    const { data } = await axios.get(url, { responseType: "blob" });
+
+    // O endpoint sempre retorna PDF com assinatura digital
+    const nomePdf = nomeArquivo.replace(/\.[^/.]+$/, ".pdf");
+    saveAs(data, nomePdf);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
