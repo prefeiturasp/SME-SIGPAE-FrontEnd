@@ -141,11 +141,21 @@ export const CalendarioCronogramaPontoPonto: React.FC<Props> = ({
   const handleTabMes = () => setView("month");
 
   const handleTabAgenda = () => {
-    const primeiroDiaUtil = moment([ano, mes - 1, 1]);
-    while (primeiroDiaUtil.isoWeekday() > 5) {
-      primeiroDiaUtil.add(1, "day");
+    const mesAtual = moment().month() + 1;
+    const anoAtual = moment().year();
+
+    if (mes === mesAtual && ano === anoAtual) {
+      // Mês corrente: começa da semana atual
+      const segunda = moment().startOf("isoWeek").toDate();
+      setDataAgenda(segunda);
+    } else {
+      // Outro mês: começa do primeiro dia útil do mês
+      const primeiroDiaUtil = moment([ano, mes - 1, 1]);
+      while (primeiroDiaUtil.isoWeekday() > 5) {
+        primeiroDiaUtil.add(1, "day");
+      }
+      setDataAgenda(primeiroDiaUtil.toDate());
     }
-    setDataAgenda(primeiroDiaUtil.toDate());
     setView("agenda");
   };
 

@@ -1310,9 +1310,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         setExibirTooltip(bloquear);
         if (bloquear) return;
       }
-      if (categoriasDeMedicao.length > 0) {
+      if (categoriasDeMedicao.length > 0 && feriadosNoMes?.length > 0) {
         const bloquearBotao = weekColumns.some((week) =>
           obrigarAdiocionarFeriadoProgramasProjetos(
+            feriadosNoMes,
             week,
             categoriasDeMedicao.find(
               (categoria) => categoria.nome === "ALIMENTAÇÃO",
@@ -1331,6 +1332,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     weekColumns,
     categoriasDeMedicao,
     formErrorsAtualizados,
+    feriadosNoMes,
   ]);
 
   const temDiaZeradoNaSemana =
@@ -3001,6 +3003,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               diasFrequenciaZerada,
                                                               location.state
                                                                 .periodo,
+                                                              feriadosNoMes,
                                                             )) ||
                                                           verificarDiaZerado(
                                                             column.dia,
@@ -3024,6 +3027,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                                 location,
                                                               ) ||
                                                               obrigarAdiocionarFeriadoProgramasProjetos(
+                                                                feriadosNoMes,
                                                                 column,
                                                                 categoria,
                                                                 formValuesAtualizados,
