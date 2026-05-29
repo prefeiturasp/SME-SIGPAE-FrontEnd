@@ -1896,8 +1896,22 @@ describe("Testes de feriado em Programas e Projetos", () => {
     const column = { dia: "05" };
     const categoria = { id: 1 };
 
+    it("deve retornar false quando dia não for feriado", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["01", "02"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
     it("deve retornar false quando form estiver vazio", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {},
@@ -1908,6 +1922,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar false quando todos os valores forem 0", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -1921,6 +1936,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve ignorar campos observacoes__", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -1933,6 +1949,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve ignorar campos numero_de_alunos__", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -1945,6 +1962,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve ignorar campos matriculados__", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -1957,6 +1975,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve ignorar campos frequencia__", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -1969,6 +1988,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar false quando campo for de outro dia", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -1981,6 +2001,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar false quando campo for de outra categoria", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -1993,6 +2014,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar true quando houver valor válido sem observação", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -2005,6 +2027,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar false quando houver observação preenchida", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -2018,6 +2041,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar true quando qualquer campo válido atender condição", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -2032,6 +2056,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar false quando valor for NaN", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -2044,6 +2069,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve funcionar com valores numéricos", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
@@ -2056,6 +2082,7 @@ describe("Testes de feriado em Programas e Projetos", () => {
 
     it("deve retornar true com múltiplos campos válidos", () => {
       const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
         column,
         categoria,
         {
