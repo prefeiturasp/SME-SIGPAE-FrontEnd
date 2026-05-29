@@ -3003,6 +3003,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               diasFrequenciaZerada,
                                                               location.state
                                                                 .periodo,
+                                                              feriadosNoMes,
                                                             )) ||
                                                           verificarDiaZerado(
                                                             column.dia,
