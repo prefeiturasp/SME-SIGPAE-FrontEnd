@@ -46,7 +46,6 @@ import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
 import { mockLogQuantidadeDietasAutorizadasRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockDietasEspeciais";
-import preview from "jest-preview";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -99,7 +98,7 @@ const todosDiasBloqueados = [
   ...finalDeSemana,
 ];
 
-describe("Teste Grupo Recreio Nas Férias DEZ/2025 - EMEF: Regra de liberação dos dias para apontamento", () => {
+describe("Teste Grupo Recreio Nas Férias DEZEMBRO/2025 - EMEF: Regra de liberação dos dias para apontamento", () => {
   beforeEach(async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-05T10:00:00"));
@@ -1558,7 +1557,7 @@ describe("Teste Grupo Recreio Nas Férias DEZ/2025 - EMEF: Todos os dias liberad
       await awaitServices();
       const semana1Element = screen.getByText("Semana 2");
       fireEvent.click(semana1Element);
-      preview.debug();
+
       const VALORES_ESPERADOS = {
         8: {
           participantes: "100",

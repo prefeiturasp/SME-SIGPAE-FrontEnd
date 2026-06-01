@@ -636,7 +636,10 @@ export const desabilitarField = (
     ) {
       return true;
     }
-    if (ehUltimoDiaLetivoDoAno(dia, mesConsiderado)) {
+    if (
+      ehUltimoDiaLetivoDoAno(dia, mesConsiderado) &&
+      mesConsiderado === mesAtual
+    ) {
       return !(Number(dia) === Number(format(mesAnoDefault, "dd")));
     }
     if (nomeCategoria === "ALIMENTAÇÃO" || nomeCategoria.includes("DIETA")) {
