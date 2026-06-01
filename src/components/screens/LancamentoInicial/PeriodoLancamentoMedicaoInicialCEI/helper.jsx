@@ -238,6 +238,16 @@ export const desabilitarField = (
     return true;
   }
 
+  if (ehRecreioNasFerias) {
+    if (
+      mesConsiderado === mesAtual &&
+      Number(dia) >= format(mesAnoDefault, "dd") &&
+      !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)
+    ) {
+      return true;
+    }
+  }
+
   if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
     const categoriaAlimentacao = categoriasDeMedicao.find(
       (cat) => cat.nome === "ALIMENTAÇÃO",
@@ -321,14 +331,6 @@ export const desabilitarField = (
       }
 
       if (ehRecreioNasFerias) {
-        if (
-          mesConsiderado === mesAtual &&
-          Number(dia) >= format(mesAnoDefault, "dd") &&
-          !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)
-        ) {
-          return true;
-        }
-
         const dataAtual = new Date(
           mesAnoConsiderado.getFullYear(),
           mesAnoConsiderado.getMonth(),
