@@ -2,37 +2,25 @@ import "@testing-library/jest-dom";
 import {
   act,
   cleanup,
-  fireEvent,
   render,
   screen,
   waitFor,
+  fireEvent,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-
+import { localStorageMock } from "src/mocks/localStorageMock";
 import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
+import { mockLocationStateGrupoCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockStateRecreio";
+import { getMeusDados } from "src/services/perfil.service";
+import { mockMeusDadosEscolaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEMEI";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
-import {
-  mockSalvaLancamentoSemana1,
-  mockSalvaLancamentoSemana1Colaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockSalvarLancamentos";
-import {
-  mockValoresMedicaoCEI,
-  mockValoresMedicaoCEIColaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockValoresMedicaoCEI";
-import {
-  mockDiasLetivosRecreio,
-  mockDiasLetivosColaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio.jsx";
-import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
-import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
+import { mockValoresMedicaoCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
+import { mockSalvaLancamentoSemana1CeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
+import { mockDietasEspeciasisCeiDaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockDietasEspeciais";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
-import {
-  mockLocationStateGrupoRecreioNasFerias,
-  mockLocationStateGrupoColaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockStateRecreio";
-import { mockDietasEspsciais } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockDietasEspeciais.jsx";
 import {
   getCategoriasDeMedicao,
   getDiasLetivosRecreio,
@@ -45,10 +33,9 @@ import {
   updateValoresPeriodosLancamentos,
   getLogDietasAutorizadasRecreioNasFeriasCEI,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getMeusDados } from "src/services/perfil.service";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import mock from "src/services/_mock";
-import { localStorageMock } from "src/mocks/localStorageMock";
-
+import preview from "jest-preview";
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
@@ -71,47 +58,20 @@ const awaitServices = async () => {
   });
 };
 
-const diasNaoContidosNoRecreio = [29, 30];
-const diasBloqueadosPelaRegra = [3]; // data atual do teste
-const finalDeSemana = [4, 5];
-const todosDiasBloqueados = [
-  ...diasNaoContidosNoRecreio,
-  ...diasBloqueadosPelaRegra,
-  ...finalDeSemana,
-];
-
-describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ｣o dos dias para apontamento", () => {
+describe("Teste Grupo Recreio nas Fﾃｩrias - de 0 a 3 anos e 11 meses JANEIRO/2026 - CEMEI: Regra de liberaﾃｧﾃ｣o dos dias para apontamento", () => {
   beforeEach(async () => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-10-03T10:00:00"));
+    jest.setSystemTime(new Date("2026-01-07T10:00:00"));
     getMeusDados.mockResolvedValue({
-      data: mockMeusDadosEscolaCEI,
+      data: mockMeusDadosEscolaCEMEI,
       status: 200,
     });
+    mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
+
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
+
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
       data: { results: [] },
-      status: 200,
-    });
-    getCategoriasDeMedicao.mockResolvedValue({
-      data: mockCategoriasMedicaoCEI,
-      status: 200,
-    });
-
-    getTiposDeAlimentacao.mockResolvedValue({
-      data: { data: { results: [] }, status: 200 },
-      status: 200,
-    });
-    getValoresPeriodosLancamentos.mockResolvedValue({
-      data: mockValoresMedicaoCEI,
-      status: 200,
-    });
-    getDiasParaCorrecao.mockResolvedValue({
-      data: [],
-      status: 200,
-    });
-    getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
-      data: { data: { results: [] }, status: 200 },
       status: 200,
     });
 
@@ -119,32 +79,58 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
       data: { results: [] },
       status: 200,
     });
+
+    getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
+      status: 200,
+    });
+
+    getCategoriasDeMedicao.mockResolvedValue({
+      data: mockCategoriasMedicaoCEI,
+      status: 200,
+    });
+
     getDiasLetivosRecreio.mockResolvedValue({
       data: mockDiasLetivosRecreio,
       status: 200,
     });
-    getFeriadosNoMes.mockResolvedValue({
-      data: { results: ["12"] },
-      status: 200,
-    });
-    updateValoresPeriodosLancamentos.mockResolvedValue({
-      data: mockSalvaLancamentoSemana1,
-      status: 200,
-    });
-    mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     getLogDietasAutorizadasRecreioNasFeriasCEI.mockResolvedValue({
-      data: mockDietasEspsciais,
+      data: mockDietasEspeciasisCeiDaCEMEI,
+      status: 200,
+    });
+
+    getValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockValoresMedicaoCeiDaCEMEI,
+      status: 200,
+    });
+
+    getDiasParaCorrecao.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+
+    getFeriadosNoMes.mockResolvedValue({
+      data: { results: ["01", "25"] },
+      status: 200,
+    });
+
+    updateValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockSalvaLancamentoSemana1CeiDaCEMEI,
+      status: 200,
+    });
+
+    getTiposDeAlimentacao.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
       status: 200,
     });
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem("eh_cemei", "false");
-
+    localStorage.setItem("eh_cemei", "true");
     await act(async () => {
       render(
         <MemoryRouter
           initialEntries={[
-            { pathname: "/", state: mockLocationStateGrupoRecreioNasFerias },
+            { pathname: "/", state: mockLocationStateGrupoCeiDaCEMEI },
           ]}
           future={{
             v7_startTransition: true,
@@ -157,37 +143,23 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
       );
     });
   });
+
   afterEach(() => {
     jest.useRealTimers();
     cleanup();
   });
 
   describe("Testa conteﾃｺdo bﾃ｡sico da tela", () => {
-    it("consulta os valores do recreio com o grupo simples de CEI", async () => {
-      await awaitServices();
-
-      expect(getValoresPeriodosLancamentos).toHaveBeenCalledWith(
-        expect.objectContaining({
-          nome_grupo: "Recreio nas Fﾃｩrias",
-        }),
-      );
-      expect(getDiasParaCorrecao).toHaveBeenCalledWith(
-        expect.objectContaining({
-          nome_grupo: "Recreio nas Fﾃｩrias",
-        }),
-      );
-    });
-
     it("renderiza label `Mﾃｪs do Lanﾃｧamento`", async () => {
       await awaitServices();
       expect(screen.getByText("Mﾃｪs do Lanﾃｧamento")).toBeInTheDocument();
     });
 
-    it("renderiza valor `Recreio nas Fﾃｩrias - DEZ 2025` Mﾃｪs do Lanﾃｧamento`", () => {
+    it("renderiza valor `Recreio nas Fﾃｩrias - JAN 2026` Mﾃｪs do Lanﾃｧamento`", () => {
       const inputElement = screen.getByTestId("input-mes-lancamento");
       expect(inputElement).toHaveAttribute(
         "value",
-        mockLocationStateGrupoRecreioNasFerias.solicitacaoMedicaoInicial
+        mockLocationStateGrupoCeiDaCEMEI.solicitacaoMedicaoInicial
           .recreio_nas_ferias.titulo,
       );
     });
@@ -200,7 +172,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
       const inputElement = screen.getByTestId("input-periodo-lancamento");
       expect(inputElement).toHaveAttribute(
         "value",
-        mockLocationStateGrupoRecreioNasFerias.periodo,
+        mockLocationStateGrupoCeiDaCEMEI.periodo,
       );
     });
 
@@ -232,23 +204,21 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
     });
 
     it("renderiza as labels `Semana 1` e `Semana 2` e `Semana 3`", async () => {
-      await awaitServices();
       expect(screen.getByText("Semana 1")).toBeInTheDocument();
       expect(screen.getByText("Semana 2")).toBeInTheDocument();
+      expect(screen.getByText("Semana 3")).toBeInTheDocument();
     });
 
     it("nﾃ｣o renderiza as labels  `Semana 4`, `Semana 5`", async () => {
-      await awaitServices();
+      expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
       expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
     });
 
     it("renderiza label `ALIMENTAﾃ�ﾃグ`", async () => {
-      await awaitServices();
       expect(screen.getByText("ALIMENTAﾃ�ﾃグ")).toBeInTheDocument();
     });
 
     it("renderiza label `Participantes` dentro da seﾃｧﾃ｣o `ALIMENTAﾃ�ﾃグ`", async () => {
-      await awaitServices();
       const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
       const myElement = screen.getByTestId(
         `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
@@ -261,7 +231,6 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
     });
 
     it("renderiza label `Seg.` dentro da seﾃｧﾃ｣o `ALIMENTAﾃ�ﾃグ`", async () => {
-      await awaitServices();
       const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
       const myElement = screen.getByTestId(
         `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
@@ -290,7 +259,6 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
       );
       expect(specificParticipantes).toBeInTheDocument();
     });
-
     it("renderiza label `Seg.` dentro da seﾃｧﾃ｣o `DIETA ESPECIAL - TIPO A`", async () => {
       await awaitServices();
       const categoriaDietaAUuid = "39cd2574-6d28-49bb-b628-ae538dc97791";
@@ -332,27 +300,45 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
   });
 
   describe("Testa a parte de ALIMENTAﾃ�ﾃグ", () => {
-    it("ao clicar na tab `Semana 1`, exibe, nos dias 29 setembro a 05 de outubro, e verifica os lanﾃｧamentos", async () => {
+    it("verificar se todas as faixas estﾃ｣o sendo renderizadas", async () => {
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
+      const myElement = screen.getByTestId(
+        `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
+      );
+
+      for (let faixa of mockFaixasEtarias.results) {
+        const allParticipantes = screen.getAllByText(faixa.__str__);
+        const specificParticipantes = allParticipantes.find((element) =>
+          myElement.contains(element),
+        );
+        expect(specificParticipantes).toBeInTheDocument();
+      }
+    });
+
+    it("ao clicar na tab `Semana 1`, exibe, nos dias 29 dezembro a 04 de janeiro, e verifica os lanﾃｧamentos", async () => {
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
       const VALORES_ESPERADOS = {
         1: {
-          participantes: "90",
+          participantes: "50",
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "14",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "14",
-            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "14",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
             "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
-            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "14",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
             "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
-            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "14",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
           },
         },
         2: {
-          participantes: "90",
+          participantes: "42",
           frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "42",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
             "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
             "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
@@ -362,18 +348,6 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
           },
         },
         3: {
-          participantes: "90",
-          frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
-            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
-            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
-            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
-            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
-            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
-          },
-        },
-        4: {
           participantes: "",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
@@ -385,7 +359,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
             "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
           },
         },
-        5: {
+        4: {
           participantes: "",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
@@ -421,11 +395,25 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
             "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "Mﾃｪs anterior",
           },
         },
+        31: {
+          participantes: "Mﾃｪs anterior",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "Mﾃｪs anterior",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "Mﾃｪs anterior",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "Mﾃｪs anterior",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "Mﾃｪs anterior",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "Mﾃｪs anterior",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "Mﾃｪs anterior",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "Mﾃｪs anterior",
+          },
+        },
       };
 
       await waitFor(() => {
         expect(true).toBe(true);
       });
+
+      const diasBloqueados = [29, 30, 31, 1, 3, 4];
 
       Object.keys(VALORES_ESPERADOS).forEach((dia) => {
         const valoresDia = VALORES_ESPERADOS[dia];
@@ -440,6 +428,16 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
         );
         expect(inputParticipantes.disabled).toBe(true);
 
+        const botaoAdicionarDivElement = screen.getByTestId(
+          `div-botao-add-obs-${diaFormatado}-1-observacoes`,
+        );
+        const botaoAdicionar = botaoAdicionarDivElement.querySelector("button");
+        if (diasBloqueados.includes(Number(dia))) {
+          expect(botaoAdicionar).not.toBeInTheDocument();
+        } else {
+          expect(botaoAdicionar).toHaveTextContent("Adicionar");
+        }
+
         mockFaixasEtarias.results.forEach((faixa) => {
           const inputFrequencia = screen.getByTestId(
             `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
@@ -449,7 +447,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
             valoresDia.frequencia[faixa.uuid],
           );
 
-          if (todosDiasBloqueados.includes(Number(dia))) {
+          if (diasBloqueados.includes(Number(dia))) {
             expect(inputFrequencia.disabled).toBe(true);
           } else {
             expect(inputFrequencia.disabled).toBe(false);
@@ -462,13 +460,27 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
         expect(botao).not.toBeDisabled();
       });
     });
-    it("ao clicar na tab `Semana 2`, exibe, nos dias 06 outubro a 12 de outubro, e verifica os lanﾃｧamentos", async () => {
+
+    it("ao clicar na tab `Semana 2`, exibe, nos dias 05 a 11 de janeiro, e verifica os lanﾃｧamentos", async () => {
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
+
       const VALORES_ESPERADOS = {
+        5: {
+          participantes: "42",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
         6: {
-          participantes: "90",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -480,7 +492,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
           },
         },
         7: {
-          participantes: "90",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -492,7 +504,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
           },
         },
         8: {
-          participantes: "90",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -504,7 +516,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
           },
         },
         9: {
-          participantes: "90",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -516,7 +528,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
           },
         },
         10: {
-          participantes: "90",
+          participantes: "",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -539,8 +551,55 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
             "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
           },
         },
+      };
+
+      await waitFor(() => {
+        expect(true).toBe(true);
+      });
+
+      const diasBloqueados = [7, 8, 9, 10, 11];
+      Object.keys(VALORES_ESPERADOS).forEach((dia) => {
+        const valoresDia = VALORES_ESPERADOS[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+        const inputParticipantes = screen.getByTestId(
+          `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
+        );
+        expect(inputParticipantes).toHaveAttribute(
+          "value",
+          valoresDia.participantes,
+        );
+        expect(inputParticipantes.disabled).toBe(true);
+        mockFaixasEtarias.results.forEach((faixa) => {
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
+          );
+          expect(inputFrequencia).toHaveAttribute(
+            "value",
+            valoresDia.frequencia[faixa.uuid],
+          );
+
+          if (diasBloqueados.includes(Number(dia))) {
+            expect(inputFrequencia.disabled).toBe(true);
+          } else {
+            expect(inputFrequencia.disabled).toBe(false);
+          }
+        });
+      });
+      const botao = screen.getByText("Salvar Lanﾃｧamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+
+    it("ao clicar na tab `Semana 3`, exibe, nos dias 12 a 18 de janeiro, e verifica os lanﾃｧamentos", async () => {
+      await awaitServices();
+      const semana3Element = screen.getByText("Semana 3");
+      fireEvent.click(semana3Element);
+      preview.debug();
+      const VALORES_ESPERADOS = {
         12: {
-          participantes: "",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -551,49 +610,8 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
             "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
           },
         },
-      };
-
-      await waitFor(() => {
-        expect(true).toBe(true);
-      });
-
-      Object.keys(VALORES_ESPERADOS).forEach((dia) => {
-        const valoresDia = VALORES_ESPERADOS[dia];
-        const diaFormatado = dia.toString().padStart(2, "0");
-        const inputParticipantes = screen.getByTestId(
-          `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
-        );
-
-        expect(inputParticipantes).toHaveAttribute(
-          "value",
-          valoresDia.participantes,
-        );
-        expect(inputParticipantes.disabled).toBe(true);
-
-        mockFaixasEtarias.results.forEach((faixa) => {
-          const inputFrequencia = screen.getByTestId(
-            `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
-          );
-          expect(inputFrequencia).toHaveAttribute(
-            "value",
-            valoresDia.frequencia[faixa.uuid],
-          );
-          expect(inputFrequencia.disabled).toBe(true);
-        });
-      });
-      const botao = screen.getByText("Salvar Lanﾃｧamentos").closest("button");
-      expect(botao).toBeInTheDocument();
-      await waitFor(() => {
-        expect(botao).not.toBeDisabled();
-      });
-    });
-    it("ao clicar na tab `Semana 3`, exibe, nos dias 13 outubro a 19 de outubro, e verifica os lanﾃｧamentos", async () => {
-      await awaitServices();
-      const semana3Element = screen.getByText("Semana 3");
-      fireEvent.click(semana3Element);
-      const VALORES_ESPERADOS = {
         13: {
-          participantes: "90",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -605,7 +623,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
           },
         },
         14: {
-          participantes: "90",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -617,7 +635,7 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
           },
         },
         15: {
-          participantes: "100",
+          participantes: "42",
           frequencia: {
             "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
             "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
@@ -664,23 +682,13 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
             "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
           },
         },
-        19: {
-          participantes: "",
-          frequencia: {
-            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
-            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
-            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
-            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
-            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
-            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
-            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
-          },
-        },
       };
 
       await waitFor(() => {
         expect(true).toBe(true);
       });
+
+      const diasBloqueados = [12, 13, 14, 15, 16, 17, 18];
 
       Object.keys(VALORES_ESPERADOS).forEach((dia) => {
         const valoresDia = VALORES_ESPERADOS[dia];
@@ -688,7 +696,6 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
         const inputParticipantes = screen.getByTestId(
           `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
         );
-
         expect(inputParticipantes).toHaveAttribute(
           "value",
           valoresDia.participantes,
@@ -703,7 +710,12 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
             "value",
             valoresDia.frequencia[faixa.uuid],
           );
-          expect(inputFrequencia.disabled).toBe(true);
+
+          if (diasBloqueados.includes(Number(dia))) {
+            expect(inputFrequencia.disabled).toBe(true);
+          } else {
+            expect(inputFrequencia.disabled).toBe(false);
+          }
         });
       });
       const botao = screen.getByText("Salvar Lanﾃｧamentos").closest("button");
@@ -716,20 +728,17 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
 
   describe("Testa a parte de DIETAS ESPECIAIS", () => {
     it("ao clicar na tab `Semana 1`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
-      const dias = [1, 2, 3, 4, 5, 29, 30].map((d) =>
+      const dias = [1, 2, 3, 4, 29, 30, 31].map((d) =>
         String(d).padStart(2, "0"),
       );
-      const diasDesabilitados = todosDiasBloqueados.map((d) =>
+      const diasDesabilitados = [29, 30, 31, 1, 3, 4].map((d) =>
         String(d).padStart(2, "0"),
       );
       await awaitServices();
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
-      const faixasRenderizadas = [
-        "1b77202d-fd0b-46b7-b4ec-04eb262efece",
-        "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
-      ];
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
 
       mockFaixasEtarias.results.forEach((faixa) => {
         dias.forEach((dia) => {
@@ -758,18 +767,14 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
         });
       });
     });
+
     it("ao clicar na tab `Semana 2`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
-      const dias = [6, 7, 8, 9, 10, 11, 12].map((d) =>
-        String(d).padStart(2, "0"),
-      );
+      const dias = [7, 8, 9, 10, 11].map((d) => String(d).padStart(2, "0"));
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
 
-      const faixasRenderizadas = [
-        "1b77202d-fd0b-46b7-b4ec-04eb262efece",
-        "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
-      ];
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
 
       mockFaixasEtarias.results.forEach((faixa) => {
         dias.forEach((dia) => {
@@ -793,18 +798,16 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
         });
       });
     });
+
     it("ao clicar na tab `Semana 3`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
-      const dias = [13, 14, 15, 16, 17, 18, 19].map((d) =>
+      const dias = [12, 13, 14, 15, 16, 17, 18].map((d) =>
         String(d).padStart(2, "0"),
       );
       await awaitServices();
       const semana3Element = screen.getByText("Semana 3");
       fireEvent.click(semana3Element);
 
-      const faixasRenderizadas = [
-        "1b77202d-fd0b-46b7-b4ec-04eb262efece",
-        "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
-      ];
+      const faixasRenderizadas = ["1b77202d-fd0b-46b7-b4ec-04eb262efece"];
 
       mockFaixasEtarias.results.forEach((faixa) => {
         dias.forEach((dia) => {
@@ -828,433 +831,5 @@ describe("Teste Grupo Recreio Nas Fﾃｩrias OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ
         });
       });
     });
-  });
-});
-
-describe("Teste Grupo Colaboradores OUTUBRO/2025 - CEI: Regra de liberaﾃｧﾃ｣o dos dias para apontamento", () => {
-  beforeEach(async () => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-10-03T10:00:00"));
-    getMeusDados.mockResolvedValue({
-      data: mockMeusDadosEscolaCEI,
-      status: 200,
-    });
-    getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
-    getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
-      data: { results: [] },
-      status: 200,
-    });
-    getCategoriasDeMedicao.mockResolvedValue({
-      data: mockCategoriasMedicaoCEI,
-      status: 200,
-    });
-
-    getTiposDeAlimentacao.mockResolvedValue({
-      data: { data: { results: [] }, status: 200 },
-      status: 200,
-    });
-    getValoresPeriodosLancamentos.mockResolvedValue({
-      data: mockValoresMedicaoCEIColaboradores,
-      status: 200,
-    });
-    getDiasParaCorrecao.mockResolvedValue({
-      data: [],
-      status: 200,
-    });
-    getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
-      data: { data: { results: [] }, status: 200 },
-      status: 200,
-    });
-
-    getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola.mockResolvedValue({
-      data: { results: [] },
-      status: 200,
-    });
-
-    getDiasLetivosRecreio.mockResolvedValue({
-      data: mockDiasLetivosColaboradores,
-      status: 200,
-    });
-    getFeriadosNoMes.mockResolvedValue({
-      data: { results: ["12"] },
-      status: 200,
-    });
-    updateValoresPeriodosLancamentos.mockResolvedValue({
-      data: mockSalvaLancamentoSemana1Colaboradores,
-      status: 200,
-    });
-    await act(async () => {
-      render(
-        <MemoryRouter
-          initialEntries={[
-            { pathname: "/", state: mockLocationStateGrupoColaboradores },
-          ]}
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
-        >
-          <PeriodoLancamentoMedicaoInicialCEI />
-          <ToastContainer />
-        </MemoryRouter>,
-      );
-    });
-  });
-  afterEach(() => {
-    jest.useRealTimers();
-    cleanup();
-  });
-  it("renderiza label `Mﾃｪs do Lanﾃｧamento`", async () => {
-    await awaitServices();
-
-    expect(screen.getByText("Mﾃｪs do Lanﾃｧamento")).toBeInTheDocument();
-  });
-
-  it("renderiza valor `Recreio nas Fﾃｩrias - OUT 2025` Mﾃｪs do Lanﾃｧamento`", () => {
-    const inputElement = screen.getByTestId("input-mes-lancamento");
-    expect(inputElement).toHaveAttribute(
-      "value",
-      mockLocationStateGrupoColaboradores.solicitacaoMedicaoInicial
-        .recreio_nas_ferias.titulo,
-    );
-  });
-
-  it("renderiza label `Tipo de Lanﾃｧamento`", () => {
-    expect(screen.getByText("Tipo de Lanﾃｧamento")).toBeInTheDocument();
-  });
-
-  it("renderiza valor `Colaboradores` no input `Tipo de Lanﾃｧamento`", () => {
-    const inputElement = screen.getByTestId("input-periodo-lancamento");
-    expect(inputElement).toHaveAttribute(
-      "value",
-      mockLocationStateGrupoColaboradores.grupo,
-    );
-  });
-
-  it("renderiza quadro de legendas", () => {
-    expect(screen.getByText("Legenda das Informaﾃｧﾃｵes:")).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Hﾃ｡ erros no lanﾃｧamento. Corrija para conseguir salvar.",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Hﾃ｡ divergﾃｪncias no lanﾃｧamento. Adicione uma observaﾃｧﾃ｣o.",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "Atenﾃｧﾃ｣o! Verifique se estﾃ｡ correto e prossiga os apontamentos.",
-      ),
-    ).toBeInTheDocument();
-  });
-
-  it("renderiza label `Semanas do Perﾃｭodo para Lanﾃｧamento da Mediﾃｧﾃ｣o Inicial`", () => {
-    expect(
-      screen.getByText("Semanas do Perﾃｭodo para Lanﾃｧamento da Mediﾃｧﾃ｣o Inicial"),
-    ).toBeInTheDocument();
-  });
-
-  it("renderiza as labels `Semana 1`, `Semana 2` e `Semana 3`", async () => {
-    await awaitServices();
-    expect(screen.getByText("Semana 1")).toBeInTheDocument();
-    expect(screen.getByText("Semana 2")).toBeInTheDocument();
-    expect(screen.queryByText("Semana 3")).toBeInTheDocument();
-  });
-
-  it("nﾃ｣o renderiza as labels  `Semana 4` 2 `Semana 5`", async () => {
-    await awaitServices();
-    expect(screen.queryByText("Semana 4")).not.toBeInTheDocument();
-    expect(screen.queryByText("Semana 5")).not.toBeInTheDocument();
-  });
-
-  it("renderiza label `ALIMENTAﾃ�ﾃグ`", async () => {
-    await awaitServices();
-    expect(screen.getByText("ALIMENTAﾃ�ﾃグ")).toBeInTheDocument();
-  });
-
-  it("renderiza label `Participantes` dentro da seﾃｧﾃ｣o `ALIMENTAﾃ�ﾃグ`", async () => {
-    await awaitServices();
-    const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
-    const myElement = screen.getByTestId(
-      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
-    );
-    const allParticipantes = screen.getAllByText("Participantes");
-    const specificParticipantes = allParticipantes.find((element) =>
-      myElement.contains(element),
-    );
-    expect(specificParticipantes).toBeInTheDocument();
-  });
-
-  it("renderiza label `Seg.` dentro da seﾃｧﾃ｣o `ALIMENTAﾃ�ﾃグ`", async () => {
-    await awaitServices();
-    const categoriaAlimentacaoUuid = "0e1f14ce-685a-4d4c-b0a7-96efe52b754f";
-    const myElement = screen.getByTestId(
-      `div-lancamentos-por-categoria-${categoriaAlimentacaoUuid}`,
-    );
-    const allParticipantes = screen.getAllByText("Seg.");
-    const specificParticipantes = allParticipantes.find((element) =>
-      myElement.contains(element),
-    );
-    expect(specificParticipantes).toBeInTheDocument();
-  });
-
-  it("ao clicar na tab `Semana 1`, exibe, nos dias 29 setembro a 05 de outubro, e verifica oa lanﾃｧamentos", async () => {
-    await awaitServices();
-    const semana1Element = screen.getByText("Semana 1");
-    fireEvent.click(semana1Element);
-
-    const VALORES_ESPERADOS = {
-      29: {
-        participantes: "Mﾃｪs anterior",
-        frequencia: "Mﾃｪs anterior",
-        lanche: "Mﾃｪs anterior",
-        lanche4h: "Mﾃｪs anterior",
-      },
-      30: {
-        participantes: "Mﾃｪs anterior",
-        frequencia: "Mﾃｪs anterior",
-        lanche: "Mﾃｪs anterior",
-        lanche4h: "Mﾃｪs anterior",
-      },
-      1: {
-        participantes: "15",
-        frequencia: "15",
-        lanche: "15",
-        lanche4h: "15",
-      },
-      2: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      3: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      4: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      5: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-    };
-
-    Object.keys(VALORES_ESPERADOS).forEach((dia) => {
-      const valoresDia = VALORES_ESPERADOS[dia];
-      const diaFormatado = dia.toString().padStart(2, "0");
-      const inputParticipantes = screen.getByTestId(
-        `participantes__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputFrequencia = screen.getByTestId(
-        `frequencia__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputLanche4h = screen.getByTestId(
-        `lanche_4h__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputLanche = screen.getByTestId(
-        `lanche__dia_${diaFormatado}__categoria_1`,
-      );
-
-      expect(inputParticipantes).toHaveAttribute(
-        "value",
-        valoresDia.participantes,
-      );
-      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
-      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
-      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
-      expect(inputParticipantes.disabled).toBe(true);
-      if (todosDiasBloqueados.includes(Number(dia))) {
-        expect(inputFrequencia.disabled).toBe(true);
-        expect(inputLanche4h.disabled).toBe(true);
-        expect(inputLanche.disabled).toBe(true);
-      } else {
-        expect(inputFrequencia.disabled).toBe(false);
-        expect(inputLanche4h.disabled).toBe(false);
-        expect(inputLanche.disabled).toBe(false);
-      }
-    });
-    const botao = screen.getByText("Salvar Lanﾃｧamentos").closest("button");
-    expect(botao).toBeInTheDocument();
-    expect(botao).not.toBeDisabled();
-  });
-  it("ao clicar na tab `Semana 2`, exibe, nos dias 06 a 12, e verifica oa lanﾃｧamentos", async () => {
-    await awaitServices();
-    const semana2Element = screen.getByText("Semana 2");
-    fireEvent.click(semana2Element);
-
-    const VALORES_ESPERADOS = {
-      6: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      7: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      8: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      9: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      10: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      11: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      12: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-    };
-
-    Object.keys(VALORES_ESPERADOS).forEach((dia) => {
-      const valoresDia = VALORES_ESPERADOS[dia];
-      const diaFormatado = dia.toString().padStart(2, "0");
-      const inputParticipantes = screen.getByTestId(
-        `participantes__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputFrequencia = screen.getByTestId(
-        `frequencia__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputLanche4h = screen.getByTestId(
-        `lanche_4h__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputLanche = screen.getByTestId(
-        `lanche__dia_${diaFormatado}__categoria_1`,
-      );
-
-      expect(inputParticipantes).toHaveAttribute(
-        "value",
-        valoresDia.participantes,
-      );
-      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
-      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
-      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
-
-      expect(inputParticipantes.disabled).toBe(true);
-
-      expect(inputFrequencia.disabled).toBe(true);
-      expect(inputLanche4h.disabled).toBe(true);
-      expect(inputLanche.disabled).toBe(true);
-    });
-    const botao = screen.getByText("Salvar Lanﾃｧamentos").closest("button");
-    expect(botao).toBeInTheDocument();
-    expect(botao).not.toBeDisabled();
-  });
-
-  it("ao clicar na tab `Semana 3`, exibe, nos dias  a 12 a 19, e verifica oa lanﾃｧamentos", async () => {
-    await awaitServices();
-    const semana3Element = screen.getByText("Semana 3");
-    fireEvent.click(semana3Element);
-
-    const VALORES_ESPERADOS = {
-      13: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      14: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      15: {
-        participantes: "15",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      16: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      17: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      18: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-      19: {
-        participantes: "",
-        frequencia: "",
-        lanche: "",
-        lanche4h: "",
-      },
-    };
-
-    Object.keys(VALORES_ESPERADOS).forEach((dia) => {
-      const valoresDia = VALORES_ESPERADOS[dia];
-      const diaFormatado = dia.toString().padStart(2, "0");
-      const inputParticipantes = screen.getByTestId(
-        `participantes__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputFrequencia = screen.getByTestId(
-        `frequencia__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputLanche4h = screen.getByTestId(
-        `lanche_4h__dia_${diaFormatado}__categoria_1`,
-      );
-      const inputLanche = screen.getByTestId(
-        `lanche__dia_${diaFormatado}__categoria_1`,
-      );
-
-      expect(inputParticipantes).toHaveAttribute(
-        "value",
-        valoresDia.participantes,
-      );
-      expect(inputFrequencia).toHaveAttribute("value", valoresDia.frequencia);
-      expect(inputLanche4h).toHaveAttribute("value", valoresDia.lanche4h);
-      expect(inputLanche).toHaveAttribute("value", valoresDia.lanche);
-
-      expect(inputParticipantes.disabled).toBe(true);
-
-      expect(inputFrequencia.disabled).toBe(true);
-      expect(inputLanche4h.disabled).toBe(true);
-      expect(inputLanche.disabled).toBe(true);
-    });
-    const botao = screen.getByText("Salvar Lanﾃｧamentos").closest("button");
-    expect(botao).toBeInTheDocument();
-    expect(botao).not.toBeDisabled();
   });
 });
