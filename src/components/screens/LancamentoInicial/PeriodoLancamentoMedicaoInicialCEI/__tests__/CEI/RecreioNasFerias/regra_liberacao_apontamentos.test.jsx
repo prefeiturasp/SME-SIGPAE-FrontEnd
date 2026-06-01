@@ -449,7 +449,6 @@ describe("Teste Grupo Recreio Nas Férias OUTUBRO/2025 - CEI: Regra de liberaç�
       await awaitServices();
       const semana2Element = screen.getByText("Semana 2");
       fireEvent.click(semana2Element);
-      preview.debug();
       const VALORES_ESPERADOS = {
         6: {
           participantes: "90",
@@ -569,6 +568,247 @@ describe("Teste Grupo Recreio Nas Férias OUTUBRO/2025 - CEI: Regra de liberaç�
       expect(botao).toBeInTheDocument();
       await waitFor(() => {
         expect(botao).not.toBeDisabled();
+      });
+    });
+    it("ao clicar na tab `Semana 3`, exibe, nos dias 13 outubro a 19 de outubro, e verifica os lançamentos", async () => {
+      await awaitServices();
+      const semana3Element = screen.getByText("Semana 3");
+      fireEvent.click(semana3Element);
+      const VALORES_ESPERADOS = {
+        13: {
+          participantes: "90",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        14: {
+          participantes: "90",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        15: {
+          participantes: "100",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        16: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        17: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        18: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+        19: {
+          participantes: "",
+          frequencia: {
+            "1b77202d-fd0b-46b7-b4ec-04eb262efece": "",
+            "381aecc2-e1b2-4d26-a156-1834eec7f1dd": "",
+            "4e60c819-4c0b-4d46-95c8-2e3b9674b40e": "",
+            "78e4f4a6-ae04-42a6-9cc3-8f9813e98e66": "",
+            "55f0af28-e1d5-43a0-a3f3-bbc453b784a5": "",
+            "e3030bd1-2e85-4676-87b3-96b4032370d4": "",
+            "2e14cd6e-33e6-4168-b1ce-449f686d1e7d": "",
+          },
+        },
+      };
+
+      await waitFor(() => {
+        expect(true).toBe(true);
+      });
+
+      Object.keys(VALORES_ESPERADOS).forEach((dia) => {
+        const valoresDia = VALORES_ESPERADOS[dia];
+        const diaFormatado = dia.toString().padStart(2, "0");
+        const inputParticipantes = screen.getByTestId(
+          `participantes__faixa_null__dia_${diaFormatado}__categoria_1`,
+        );
+
+        expect(inputParticipantes).toHaveAttribute(
+          "value",
+          valoresDia.participantes,
+        );
+        expect(inputParticipantes.disabled).toBe(true);
+
+        mockFaixasEtarias.results.forEach((faixa) => {
+          const inputFrequencia = screen.getByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${diaFormatado}__categoria_1`,
+          );
+          expect(inputFrequencia).toHaveAttribute(
+            "value",
+            valoresDia.frequencia[faixa.uuid],
+          );
+          expect(inputFrequencia.disabled).toBe(true);
+        });
+      });
+      const botao = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botao).toBeInTheDocument();
+      await waitFor(() => {
+        expect(botao).not.toBeDisabled();
+      });
+    });
+  });
+
+  describe("Testa a parte de DIETAS ESPECIAIS", () => {
+    it("ao clicar na tab `Semana 1`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
+      const dias = [1, 2, 3, 4, 5, 29, 30].map((d) =>
+        String(d).padStart(2, "0"),
+      );
+      const diasDesabilitados = todosDiasBloqueados.map((d) =>
+        String(d).padStart(2, "0"),
+      );
+      await awaitServices();
+      const semana1Element = screen.getByText("Semana 1");
+      fireEvent.click(semana1Element);
+
+      const faixasRenderizadas = [
+        "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+        "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+      ];
+
+      mockFaixasEtarias.results.forEach((faixa) => {
+        dias.forEach((dia) => {
+          const inputDietasAutorizadas = screen.queryByTestId(
+            `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+          const inputFrequencia = screen.queryByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+
+          const deveExistir = faixasRenderizadas.includes(faixa.uuid);
+          if (deveExistir) {
+            expect(inputDietasAutorizadas).toBeInTheDocument();
+            expect(inputDietasAutorizadas).toBeDisabled();
+            expect(inputFrequencia).toBeInTheDocument();
+
+            if (diasDesabilitados.includes(dia)) {
+              expect(inputFrequencia.disabled).toBe(true);
+            } else {
+              expect(inputFrequencia.disabled).toBe(false);
+            }
+          } else {
+            expect(inputDietasAutorizadas).not.toBeInTheDocument();
+            expect(inputFrequencia).not.toBeInTheDocument();
+          }
+        });
+      });
+    });
+    it("ao clicar na tab `Semana 2`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
+      const dias = [6, 7, 8, 9, 10, 11, 12].map((d) =>
+        String(d).padStart(2, "0"),
+      );
+      await awaitServices();
+      const semana2Element = screen.getByText("Semana 2");
+      fireEvent.click(semana2Element);
+
+      const faixasRenderizadas = [
+        "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+        "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+      ];
+
+      mockFaixasEtarias.results.forEach((faixa) => {
+        dias.forEach((dia) => {
+          const inputDietasAutorizadas = screen.queryByTestId(
+            `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+          const inputFrequencia = screen.queryByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+
+          const deveExistir = faixasRenderizadas.includes(faixa.uuid);
+          if (deveExistir) {
+            expect(inputDietasAutorizadas).toBeInTheDocument();
+            expect(inputDietasAutorizadas).toBeDisabled();
+            expect(inputFrequencia).toBeInTheDocument();
+            expect(inputFrequencia.disabled).toBe(true);
+          } else {
+            expect(inputDietasAutorizadas).not.toBeInTheDocument();
+            expect(inputFrequencia).not.toBeInTheDocument();
+          }
+        });
+      });
+    });
+    it("ao clicar na tab `Semana 3`, verifica as faixas existentes nas dietas especiais Tipo A", async () => {
+      const dias = [13, 14, 15, 16, 17, 18, 19].map((d) =>
+        String(d).padStart(2, "0"),
+      );
+      await awaitServices();
+      const semana3Element = screen.getByText("Semana 3");
+      fireEvent.click(semana3Element);
+      preview.debug();
+      const faixasRenderizadas = [
+        "1b77202d-fd0b-46b7-b4ec-04eb262efece",
+        "381aecc2-e1b2-4d26-a156-1834eec7f1dd",
+      ];
+
+      mockFaixasEtarias.results.forEach((faixa) => {
+        dias.forEach((dia) => {
+          const inputDietasAutorizadas = screen.queryByTestId(
+            `dietas_autorizadas__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+          const inputFrequencia = screen.queryByTestId(
+            `frequencia__faixa_${faixa.uuid}__dia_${dia}__categoria_2`,
+          );
+
+          const deveExistir = faixasRenderizadas.includes(faixa.uuid);
+          if (deveExistir) {
+            expect(inputDietasAutorizadas).toBeInTheDocument();
+            expect(inputDietasAutorizadas).toBeDisabled();
+            expect(inputFrequencia).toBeInTheDocument();
+            expect(inputFrequencia.disabled).toBe(true);
+          } else {
+            expect(inputDietasAutorizadas).not.toBeInTheDocument();
+            expect(inputFrequencia).not.toBeInTheDocument();
+          }
+        });
       });
     });
   });
