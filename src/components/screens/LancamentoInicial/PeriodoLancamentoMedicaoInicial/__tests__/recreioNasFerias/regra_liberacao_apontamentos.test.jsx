@@ -10,11 +10,20 @@ import {
 import { MemoryRouter } from "react-router-dom";
 
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockStateEMEFGrupoRecreio";
-import { mockValoresMedicaoEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/valoresMedicaoEMEF";
+import {
+  mockLocationStateGrupoRecreioNasFerias,
+  mockLocationStateGrupoColaboradores,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockStateEMEFGrupoRecreio";
+import {
+  mockValoresMedicaoEMEF,
+  mockValoresMedicaoColaboradoresEMEF,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/valoresMedicaoEMEF";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockDiasLetivos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/diasLetivosRecreio";
-import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockSalvaLancamentoEMEF";
+import {
+  mockSalvaLancamentoSemana1,
+  mockSalvaLancamentoColaboradoresSemana1,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockSalvaLancamentoEMEF";
 import {
   getCategoriasDeMedicao,
   getFeriadosNoMes,
@@ -878,5 +887,87 @@ describe("Teste Grupo Recreio Nas Férias - EMEF: Regra de liberação dos dias 
       expect(botao).toBeInTheDocument();
       expect(botao).not.toBeDisabled();
     });
+  });
+});
+
+describe("Teste Grupo Colaboradores - EMEF: Regra de liberação dos dias para apontamento", () => {
+  beforeEach(async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-05T10:00:00"));
+
+    getMeusDados.mockResolvedValue({
+      data: mockMeusDadosEscolaEMEFPericles,
+      status: 200,
+    });
+    getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
+    getVinculosTipoAlimentacaoPorEscola.mockResolvedValue({
+      data: mockVinculosTipoAlimentacaoEPeriodoEscolar,
+      status: 200,
+    });
+    getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
+      data: { results: [] },
+      status: 200,
+    });
+    getCategoriasDeMedicao.mockResolvedValue({
+      data: mockCategoriasMedicao,
+      status: 200,
+    });
+
+    getTiposDeAlimentacao.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
+      status: 200,
+    });
+    getValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockValoresMedicaoColaboradoresEMEF,
+      status: 200,
+    });
+    getDiasParaCorrecao.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue({
+      data: { data: { results: [] }, status: 200 },
+      status: 200,
+    });
+
+    getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola.mockResolvedValue({
+      data: { results: [] },
+      status: 200,
+    });
+
+    getDiasLetivosRecreio.mockResolvedValue({
+      data: mockDiasLetivos,
+      status: 200,
+    });
+    getFeriadosNoMes.mockResolvedValue({
+      data: { results: ["25"] },
+      status: 200,
+    });
+    updateValoresPeriodosLancamentos.mockResolvedValue({
+      data: mockSalvaLancamentoColaboradoresSemana1,
+      status: 200,
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={[
+            { pathname: "/", state: mockLocationStateGrupoColaboradores },
+          ]}
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <PeriodoLancamentoMedicaoInicial />
+          <ToastContainer />
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+    cleanup();
   });
 });
