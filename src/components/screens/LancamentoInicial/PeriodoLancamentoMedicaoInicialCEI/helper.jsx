@@ -221,6 +221,12 @@ export const desabilitarField = (
   ehRecreioNasFerias,
   categoriasDeMedicao,
 ) => {
+  const mesConsiderado = format(mesAnoConsiderado, "LLLL", {
+    locale: ptBR,
+  }).toString();
+  const mesAtual = format(mesAnoDefault, "LLLL", {
+    locale: ptBR,
+  }).toString();
   let alimentacoesLancamentosEspeciaisDia = [];
   const valorAtual =
     values[`${rowName}__dia_${dia}__categoria_${categoria}`] ??
@@ -315,6 +321,14 @@ export const desabilitarField = (
       }
 
       if (ehRecreioNasFerias) {
+        if (
+          mesConsiderado === mesAtual &&
+          Number(dia) >= format(mesAnoDefault, "dd") &&
+          !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)
+        ) {
+          return true;
+        }
+
         const dataAtual = new Date(
           mesAnoConsiderado.getFullYear(),
           mesAnoConsiderado.getMonth(),
@@ -522,13 +536,6 @@ export const desabilitarField = (
       return true;
     }
   }
-
-  const mesConsiderado = format(mesAnoConsiderado, "LLLL", {
-    locale: ptBR,
-  }).toString();
-  const mesAtual = format(mesAnoDefault, "LLLL", {
-    locale: ptBR,
-  }).toString();
 
   if (nomeCategoria.includes("SOLICITAÇÕES")) {
     if (
