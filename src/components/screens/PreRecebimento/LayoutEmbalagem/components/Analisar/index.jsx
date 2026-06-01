@@ -36,6 +36,7 @@ export default () => {
   const somenteLeitura = useSomenteLeitura([
     PERFIL.ADMINISTRADOR_CODAE_GABINETE,
     PERFIL.DILOG_DIRETORIA,
+    PERFIL.DILOG_ABASTECIMENTO,
   ]);
 
   const [carregando, setCarregando] = useState(true);

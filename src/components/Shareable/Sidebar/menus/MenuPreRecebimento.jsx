@@ -27,6 +27,7 @@ import {
   usuarioEhCronograma,
   usuarioEhDilogAbastecimento,
   usuarioEhDilogDiretoria,
+  usuarioEhDilogQualidade,
   usuarioEhEmpresaFornecedor,
   usuarioEhPreRecebimento,
 } from "src/helpers/utilities";
@@ -63,7 +64,8 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
       {(usuarioEhCronograma() ||
         usuarioEhDilogAbastecimento() ||
         usuarioEhCodaeDilog() ||
-        usuarioEhDilogDiretoria()) && (
+        usuarioEhDilogDiretoria() ||
+        usuarioEhDilogQualidade()) && (
         <LeafItem
           to={`/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`}
         >

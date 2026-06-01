@@ -96,6 +96,8 @@ import {
   exibirTooltipPeriodosZeradosNoProgramasProjetos,
   habitarBotaoAdicionar,
   boqueaSalvamentoPeriodosZeradosNoProgramasProjetos,
+  verificaFeriadoProgramasProjetos,
+  obrigarAdiocionarFeriadoProgramasProjetos,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
 import ModalErro from "./components/ModalErro";
 import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
@@ -249,6 +251,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [listaDiasZerados, setListaDiasZerados] = useState([]);
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [faixasAtivasPorTipo, setFaixasAtivasPorTipo] = useState({});
+  const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -1282,30 +1285,54 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   ]);
 
   useEffect(() => {
+    const temErrosFormulario =
+      Object.keys(formErrorsAtualizados || {}).length > 0;
+
     if (
       formValuesAtualizados &&
       formValuesAtualizados["periodo_escolar"] === "Programas e Projetos" &&
-      diasFrequenciaZerada &&
       weekColumns
     ) {
-      const bloquearBotao = boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
-        "frequencia",
-        categoriasDeMedicao,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        formValuesAtualizados["periodo_escolar"],
-        false,
-        null,
-        weekColumns,
-      );
-      setDisableBotaoSalvarLancamentos(bloquearBotao);
-      setExibirTooltip(bloquearBotao);
+      if (diasFrequenciaZerada) {
+        const bloquearBotao =
+          boqueaSalvamentoPeriodosZeradosNoProgramasProjetos(
+            "frequencia",
+            categoriasDeMedicao,
+            formValuesAtualizados,
+            diasFrequenciaZerada,
+            formValuesAtualizados["periodo_escolar"],
+            false,
+            null,
+            weekColumns,
+          );
+        const bloquear = bloquearBotao || temErrosFormulario;
+        setDisableBotaoSalvarLancamentos(bloquear);
+        setExibirTooltip(bloquear);
+        if (bloquear) return;
+      }
+      if (categoriasDeMedicao.length > 0 && feriadosNoMes?.length > 0) {
+        const bloquearBotao = weekColumns.some((week) =>
+          obrigarAdiocionarFeriadoProgramasProjetos(
+            feriadosNoMes,
+            week,
+            categoriasDeMedicao.find(
+              (categoria) => categoria.nome === "ALIMENTAÇÃO",
+            ),
+            formValuesAtualizados,
+          ),
+        );
+        const bloquear = bloquearBotao || temErrosFormulario;
+        setDisableBotaoSalvarLancamentos(bloquear);
+        setExibirTooltip(bloquear);
+      }
     }
   }, [
     formValuesAtualizados,
     diasFrequenciaZerada,
     weekColumns,
     categoriasDeMedicao,
+    formErrorsAtualizados,
+    feriadosNoMes,
   ]);
 
   const temDiaZeradoNaSemana =
@@ -2585,12 +2612,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             render={({ handleSubmit, form, errors }) => (
               <form onSubmit={handleSubmit}>
                 <FormSpy
-                  subscription={{ values: true, active: true }}
+                  subscription={{ values: true, active: true, errors: true }}
                   onChange={(changes) => {
                     setFormValuesAtualizados({
                       week: semanaSelecionada,
                       ...changes.values,
                     });
+                    setFormErrorsAtualizados(changes.errors || {});
                   }}
                 />
                 <div className="card mt-3">
@@ -2784,193 +2812,227 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                   </b>
                                                 )}
                                             </div>
-                                            {weekColumns.map((column) => (
-                                              <div
-                                                data-testid={`div-botao-add-obs-${column.dia}-${categoria.id}-${row.name}`}
-                                                key={column.dia}
-                                                className={`${
-                                                  colunaDesabilitada(column)
-                                                    ? "input-desabilitado"
-                                                    : row.name === "observacoes"
-                                                      ? "input-habilitado-observacoes"
-                                                      : "input-habilitado"
-                                                }`}
-                                              >
-                                                {row.name === "observacoes" ? (
-                                                  !colunaDesabilitada(column) &&
-                                                  exibeBotaoAdicionarObservacao(
-                                                    column.dia,
-                                                  ) && (
-                                                    <Botao
-                                                      texto={textoBotaoObservacao(
-                                                        formValuesAtualizados[
-                                                          `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-                                                        ],
-                                                        valoresObservacoes,
-                                                        column.dia,
-                                                        categoria.id,
-                                                      )}
-                                                      disabled={desabilitarBotaoColunaObservacoes(
-                                                        location,
-                                                        valoresPeriodosLancamentos,
-                                                        column,
-                                                        categoria,
-                                                        formValuesAtualizados,
-                                                        row,
-                                                        valoresObservacoes,
-                                                        column.dia,
-                                                        diasParaCorrecao,
-                                                      )}
-                                                      type={BUTTON_TYPE.BUTTON}
-                                                      style={
-                                                        (exibirTooltipAoSalvar &&
-                                                          inputsInclusaoComErro.some(
-                                                            (inputComErro) =>
-                                                              inputComErro.nome ===
-                                                              `${row.name}__dia_${column.dia}__categoria_${categoria.id}`,
-                                                          ) &&
-                                                          botaoAdicionarObrigatorioTabelaAlimentacao(
-                                                            column,
-                                                            categoria,
-                                                            inclusoesAutorizadas,
-                                                            formValuesAtualizados[
-                                                              `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-                                                            ],
-                                                            formValuesAtualizados,
-                                                          )) ||
-                                                        (ehPeriodoInfantilEmeiDaCemei() &&
-                                                          existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
-                                                            column.dia,
-                                                            categoria,
-                                                            formValuesAtualizados,
-                                                            alteracoesLancheEmergencialAutorizadas,
-                                                            permissoesLancamentosEspeciaisPorDia,
-                                                          )) ||
-                                                        alimentacoesFrequenciaZeroESemObservacaoCEI(
-                                                          formValuesAtualizados,
+                                            {weekColumns.map((column) => {
+                                              const campoDesabilitado =
+                                                desabilitarField(
+                                                  column.dia,
+                                                  row.name,
+                                                  categoria.id,
+                                                  categoria.nome,
+                                                  formValuesAtualizados,
+                                                  mesAnoConsiderado,
+                                                  mesAnoDefault,
+                                                  inclusoesAutorizadas,
+                                                  validacaoDiaLetivo,
+                                                  validacaoSemana,
+                                                  location,
+                                                  valoresPeriodosLancamentos,
+                                                  feriadosNoMes,
+                                                  null,
+                                                  diasParaCorrecao,
+                                                  ehEmeiDaCemeiLocation,
+                                                  ehSolicitacoesAlimentacaoLocation,
+                                                  permissoesLancamentosEspeciaisPorDia,
+                                                  alimentacoesLancamentosEspeciais,
+                                                  ehProgramasEProjetosLocation,
+                                                  dadosValoresInclusoesAutorizadasState,
+                                                  kitLanchesAutorizadas,
+                                                  alteracoesAlimentacaoAutorizadas,
+                                                  ehUltimoDiaLetivoDoAno,
+                                                  calendarioMesConsiderado,
+                                                  ehRecreioNasFerias(),
+                                                  categoriasDeMedicao,
+                                                );
+
+                                              return (
+                                                <div
+                                                  data-testid={`div-botao-add-obs-${column.dia}-${categoria.id}-${row.name}`}
+                                                  key={column.dia}
+                                                  className={`${
+                                                    colunaDesabilitada(column)
+                                                      ? "input-desabilitado"
+                                                      : row.name ===
+                                                          "observacoes"
+                                                        ? "input-habilitado-observacoes"
+                                                        : "input-habilitado"
+                                                  }`}
+                                                >
+                                                  {row.name ===
+                                                  "observacoes" ? (
+                                                    !colunaDesabilitada(
+                                                      column,
+                                                    ) &&
+                                                    exibeBotaoAdicionarObservacao(
+                                                      column.dia,
+                                                    ) && (
+                                                      <Botao
+                                                        texto={textoBotaoObservacao(
+                                                          formValuesAtualizados[
+                                                            `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+                                                          ],
+                                                          valoresObservacoes,
                                                           column.dia,
-                                                          categoria,
-                                                          categoriasDeMedicao,
-                                                          faixaEtaria,
-                                                          ehRecreioNasFerias(),
-                                                        ) ||
-                                                        campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
-                                                          inclusoesAutorizadas,
+                                                          categoria.id,
+                                                        )}
+                                                        disabled={desabilitarBotaoColunaObservacoes(
+                                                          location,
+                                                          valoresPeriodosLancamentos,
                                                           column,
                                                           categoria,
                                                           formValuesAtualizados,
-                                                        ) ||
-                                                        campoRefeicaoComRPLAutorizadaESemObservacao(
-                                                          formValuesAtualizados,
-                                                          column,
-                                                          categoria,
-                                                          alteracoesAlimentacaoAutorizadas,
-                                                        ) ||
-                                                        campoDietaComInclusaoAutorizadaSemObservacao(
-                                                          formValuesAtualizados,
-                                                          column,
-                                                          categoria,
-                                                          inclusoesAutorizadas,
-                                                          logQtdDietasAutorizadasCEI,
-                                                        ) ||
-                                                        campoComInclusaoAutorizadaValorZeroESemObservacao(
-                                                          formValuesAtualizados,
-                                                          column,
-                                                          categoria,
-                                                          inclusoesAutorizadas,
-                                                          ehProgramasEProjetosLocation,
-                                                          alteracoesAlimentacaoAutorizadas,
-                                                        ) ||
-                                                        campoLancheComLPRAutorizadaESemObservacao(
-                                                          formValuesAtualizados,
-                                                          column,
-                                                          categoria,
-                                                          alteracoesAlimentacaoAutorizadas,
-                                                        ) ||
-                                                        (!ehEmeiDaCemeiLocation &&
-                                                          frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao(
-                                                            formValuesAtualizados,
-                                                            column,
-                                                            categoria,
-                                                            suspensoesAutorizadas,
-                                                            categoriasDeMedicao,
-                                                          )) ||
-                                                        (ehEmeiDaCemeiLocation &&
-                                                          campoComSuspensaoAutorizadaESemObservacao(
-                                                            formValuesAtualizados,
-                                                            column,
-                                                            categoria,
-                                                            suspensoesAutorizadas,
-                                                          )) ||
-                                                        (ehEmeiDaCemeiLocation &&
-                                                          alimentacoesFrequenciaZeroESemObservacao(
+                                                          row,
+                                                          valoresObservacoes,
+                                                          column.dia,
+                                                          diasParaCorrecao,
+                                                        )}
+                                                        type={
+                                                          BUTTON_TYPE.BUTTON
+                                                        }
+                                                        style={
+                                                          (exibirTooltipAoSalvar &&
+                                                            inputsInclusaoComErro.some(
+                                                              (inputComErro) =>
+                                                                inputComErro.nome ===
+                                                                `${row.name}__dia_${column.dia}__categoria_${categoria.id}`,
+                                                            ) &&
+                                                            botaoAdicionarObrigatorioTabelaAlimentacao(
+                                                              column,
+                                                              categoria,
+                                                              inclusoesAutorizadas,
+                                                              formValuesAtualizados[
+                                                                `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+                                                              ],
+                                                              formValuesAtualizados,
+                                                            )) ||
+                                                          (ehPeriodoInfantilEmeiDaCemei() &&
+                                                            existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+                                                              column.dia,
+                                                              categoria,
+                                                              formValuesAtualizados,
+                                                              alteracoesLancheEmergencialAutorizadas,
+                                                              permissoesLancamentosEspeciaisPorDia,
+                                                            )) ||
+                                                          alimentacoesFrequenciaZeroESemObservacaoCEI(
                                                             formValuesAtualizados,
                                                             column.dia,
                                                             categoria,
                                                             categoriasDeMedicao,
-                                                          )) ||
-                                                        (ehSolicitacoesAlimentacaoLocation &&
-                                                          (campoLancheEmergencialComZeroOuSemObservacao(
+                                                            faixaEtaria,
+                                                            ehRecreioNasFerias(),
+                                                          ) ||
+                                                          campoAlimentacoesAutorizadasDiaNaoLetivoCEINaoPreenchidoESemObservacao(
+                                                            inclusoesAutorizadas,
+                                                            column,
+                                                            categoria,
+                                                            formValuesAtualizados,
+                                                          ) ||
+                                                          campoRefeicaoComRPLAutorizadaESemObservacao(
                                                             formValuesAtualizados,
                                                             column,
                                                             categoria,
                                                             alteracoesAlimentacaoAutorizadas,
                                                           ) ||
-                                                            campoLancheEmergencialSemAutorizacaoSemObservacao(
+                                                          campoDietaComInclusaoAutorizadaSemObservacao(
+                                                            formValuesAtualizados,
+                                                            column,
+                                                            categoria,
+                                                            inclusoesAutorizadas,
+                                                            logQtdDietasAutorizadasCEI,
+                                                          ) ||
+                                                          campoComInclusaoAutorizadaValorZeroESemObservacao(
+                                                            formValuesAtualizados,
+                                                            column,
+                                                            categoria,
+                                                            inclusoesAutorizadas,
+                                                            ehProgramasEProjetosLocation,
+                                                            alteracoesAlimentacaoAutorizadas,
+                                                          ) ||
+                                                          campoLancheComLPRAutorizadaESemObservacao(
+                                                            formValuesAtualizados,
+                                                            column,
+                                                            categoria,
+                                                            alteracoesAlimentacaoAutorizadas,
+                                                          ) ||
+                                                          (!ehEmeiDaCemeiLocation &&
+                                                            frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao(
+                                                              formValuesAtualizados,
+                                                              column,
+                                                              categoria,
+                                                              suspensoesAutorizadas,
+                                                              categoriasDeMedicao,
+                                                            )) ||
+                                                          (ehEmeiDaCemeiLocation &&
+                                                            campoComSuspensaoAutorizadaESemObservacao(
+                                                              formValuesAtualizados,
+                                                              column,
+                                                              categoria,
+                                                              suspensoesAutorizadas,
+                                                            )) ||
+                                                          (ehEmeiDaCemeiLocation &&
+                                                            alimentacoesFrequenciaZeroESemObservacao(
+                                                              formValuesAtualizados,
+                                                              column.dia,
+                                                              categoria,
+                                                              categoriasDeMedicao,
+                                                            )) ||
+                                                          (ehSolicitacoesAlimentacaoLocation &&
+                                                            (campoLancheEmergencialComZeroOuSemObservacao(
                                                               formValuesAtualizados,
                                                               column,
                                                               categoria,
                                                               alteracoesAlimentacaoAutorizadas,
                                                             ) ||
-                                                            camposKitLancheSolicitacoesAlimentacaoESemObservacao(
-                                                              formValuesAtualizados,
-                                                              column,
-                                                              categoria,
-                                                              kitLanchesAutorizadas,
-                                                            ))) ||
-                                                        ((ehEmeiDaCemeiLocation ||
-                                                          ehProgramasEProjetosLocation) &&
-                                                          campoFrequenciaValor0ESemObservacao(
-                                                            column.dia,
-                                                            categoria,
-                                                            formValuesAtualizados,
-                                                            diasFrequenciaZerada,
-                                                            location.state
-                                                              .periodo,
-                                                          )) ||
-                                                        (ehProgramasEProjetosLocation &&
-                                                          repeticaoSobremesaDoceComValorESemObservacao(
-                                                            formValuesAtualizados,
-                                                            column.dia,
-                                                            categoria,
-                                                            diasSobremesaDoce,
-                                                            location,
-                                                          )) ||
-                                                        verificarDiaZerado(
-                                                          column.dia,
-                                                          categoria,
-                                                        ) ||
-                                                        (ehProgramasEProjetosLocation &&
-                                                          habitarBotaoAdicionar(
-                                                            "frequencia",
-                                                            column.dia,
-                                                            categoria,
-                                                            formValuesAtualizados,
-                                                            diasFrequenciaZerada,
-                                                            location.state
-                                                              .periodo,
-                                                          ))
-                                                          ? textoBotaoObservacao(
-                                                              formValuesAtualizados[
-                                                                `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-                                                              ],
-                                                              valoresObservacoes,
+                                                              campoLancheEmergencialSemAutorizacaoSemObservacao(
+                                                                formValuesAtualizados,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesAlimentacaoAutorizadas,
+                                                              ) ||
+                                                              camposKitLancheSolicitacoesAlimentacaoESemObservacao(
+                                                                formValuesAtualizados,
+                                                                column,
+                                                                categoria,
+                                                                kitLanchesAutorizadas,
+                                                              ))) ||
+                                                          ((ehEmeiDaCemeiLocation ||
+                                                            ehProgramasEProjetosLocation) &&
+                                                            campoFrequenciaValor0ESemObservacao(
                                                               column.dia,
-                                                              categoria.id,
-                                                            ) === "Visualizar"
-                                                            ? BUTTON_STYLE.RED
-                                                            : BUTTON_STYLE.RED_OUTLINE
-                                                          : textoBotaoObservacao(
+                                                              categoria,
+                                                              formValuesAtualizados,
+                                                              diasFrequenciaZerada,
+                                                              location.state
+                                                                .periodo,
+                                                              feriadosNoMes,
+                                                            )) ||
+                                                          verificarDiaZerado(
+                                                            column.dia,
+                                                            categoria,
+                                                          ) ||
+                                                          (ehProgramasEProjetosLocation &&
+                                                            (habitarBotaoAdicionar(
+                                                              "frequencia",
+                                                              column.dia,
+                                                              categoria,
+                                                              formValuesAtualizados,
+                                                              diasFrequenciaZerada,
+                                                              location.state
+                                                                .periodo,
+                                                            ) ||
+                                                              repeticaoSobremesaDoceComValorESemObservacao(
+                                                                formValuesAtualizados,
+                                                                column.dia,
+                                                                categoria,
+                                                                diasSobremesaDoce,
+                                                                location,
+                                                              ) ||
+                                                              obrigarAdiocionarFeriadoProgramasProjetos(
+                                                                feriadosNoMes,
+                                                                column,
+                                                                categoria,
+                                                                formValuesAtualizados,
+                                                              )))
+                                                            ? textoBotaoObservacao(
                                                                 formValuesAtualizados[
                                                                   `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
                                                                 ],
@@ -2978,369 +3040,364 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                                 column.dia,
                                                                 categoria.id,
                                                               ) === "Visualizar"
-                                                            ? BUTTON_STYLE.GREEN
-                                                            : BUTTON_STYLE.GREEN_OUTLINE_WHITE
-                                                      }
-                                                      onClick={() =>
-                                                        onClickBotaoObservacao(
-                                                          column.dia,
-                                                          categoria.id,
-                                                        )
-                                                      }
-                                                    />
-                                                  )
-                                                ) : (
-                                                  <div className="field-values-input">
-                                                    {ehEmeiDaCemeiLocation ||
-                                                    ehSolicitacoesAlimentacaoLocation ||
-                                                    ehProgramasEProjetosLocation ||
-                                                    ehGrupoColaboradores() ? (
-                                                      <>
-                                                        <Field
-                                                          className={`m-2 ${classNameFieldTabelaAlimentacaoEMEI(
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                          )}`}
-                                                          component={
-                                                            InputValueMedicao
-                                                          }
-                                                          classNameToNextInput={getClassNameToNextInput(
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            index,
-                                                          )}
-                                                          classNameToPrevInput={getClassNameToPrevInput(
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            index,
-                                                          )}
-                                                          apenasNumeros
-                                                          name={`${row.name}__dia_${column.dia}__categoria_${categoria.id}`}
-                                                          disabled={desabilitarField(
+                                                              ? BUTTON_STYLE.RED
+                                                              : BUTTON_STYLE.RED_OUTLINE
+                                                            : textoBotaoObservacao(
+                                                                  formValuesAtualizados[
+                                                                    `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+                                                                  ],
+                                                                  valoresObservacoes,
+                                                                  column.dia,
+                                                                  categoria.id,
+                                                                ) ===
+                                                                "Visualizar"
+                                                              ? BUTTON_STYLE.GREEN
+                                                              : BUTTON_STYLE.GREEN_OUTLINE_WHITE
+                                                        }
+                                                        onClick={() =>
+                                                          onClickBotaoObservacao(
                                                             column.dia,
-                                                            row.name,
                                                             categoria.id,
-                                                            categoria.nome,
-                                                            formValuesAtualizados,
-                                                            mesAnoConsiderado,
-                                                            mesAnoDefault,
-                                                            inclusoesAutorizadas,
-                                                            validacaoDiaLetivo,
-                                                            validacaoSemana,
-                                                            location,
-                                                            valoresPeriodosLancamentos,
-                                                            feriadosNoMes,
-                                                            null,
-                                                            diasParaCorrecao,
-                                                            ehEmeiDaCemeiLocation,
-                                                            ehSolicitacoesAlimentacaoLocation,
-                                                            permissoesLancamentosEspeciaisPorDia,
-                                                            alimentacoesLancamentosEspeciais,
-                                                            ehProgramasEProjetosLocation,
-                                                            dadosValoresInclusoesAutorizadasState,
-                                                            kitLanchesAutorizadas,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                            ehUltimoDiaLetivoDoAno,
-                                                            calendarioMesConsiderado,
-                                                            ehRecreioNasFerias(),
-                                                            categoriasDeMedicao,
-                                                          )}
-                                                          defaultValue={defaultValue(
-                                                            column,
-                                                            row,
-                                                          )}
-                                                          numeroDeInclusoesAutorizadas={
-                                                            inclusoesAutorizadas.find(
-                                                              (inclusao) =>
-                                                                column.dia ===
-                                                                String(
-                                                                  inclusao.dia,
-                                                                ),
-                                                            )?.numero_alunos
-                                                          }
-                                                          exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            categoriasDeMedicao,
-                                                          )}
-                                                          exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            suspensoesAutorizadas,
-                                                          )}
-                                                          exibeTooltipInclusoesAutorizadasComZero={exibeTooltipInclusoesAutorizadasComZero(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            inclusoesAutorizadas,
-                                                            ehProgramasEProjetosLocation,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                          )}
-                                                          exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                          )}
-                                                          exibeTooltipLPRAutorizadas={exibirTooltipLPRAutorizadas(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                          )}
-                                                          exibeTooltipLancheEmergencialAutorizado={exibirTooltipLancheEmergencialAutorizado(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                          )}
-                                                          exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={
-                                                            ehPeriodoInfantilEmeiDaCemei() &&
-                                                            exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
+                                                          )
+                                                        }
+                                                      />
+                                                    )
+                                                  ) : (
+                                                    <div className="field-values-input">
+                                                      {ehEmeiDaCemeiLocation ||
+                                                      ehSolicitacoesAlimentacaoLocation ||
+                                                      ehProgramasEProjetosLocation ||
+                                                      ehGrupoColaboradores() ? (
+                                                        <>
+                                                          <Field
+                                                            className={`m-2 ${classNameFieldTabelaAlimentacaoEMEI(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                            )}`}
+                                                            component={
+                                                              InputValueMedicao
+                                                            }
+                                                            classNameToNextInput={getClassNameToNextInput(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              index,
+                                                            )}
+                                                            classNameToPrevInput={getClassNameToPrevInput(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              index,
+                                                            )}
+                                                            apenasNumeros
+                                                            name={`${row.name}__dia_${column.dia}__categoria_${categoria.id}`}
+                                                            disabled={
+                                                              campoDesabilitado
+                                                            }
+                                                            defaultValue={defaultValue(
+                                                              column,
+                                                              row,
+                                                            )}
+                                                            numeroDeInclusoesAutorizadas={
+                                                              inclusoesAutorizadas.find(
+                                                                (inclusao) =>
+                                                                  column.dia ===
+                                                                  String(
+                                                                    inclusao.dia,
+                                                                  ),
+                                                              )?.numero_alunos
+                                                            }
+                                                            exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacao(
                                                               formValuesAtualizados,
                                                               row,
                                                               column,
                                                               categoria,
-                                                              alteracoesLancheEmergencialAutorizadas,
+                                                              categoriasDeMedicao,
+                                                            )}
+                                                            exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              suspensoesAutorizadas,
+                                                            )}
+                                                            exibeTooltipInclusoesAutorizadasComZero={exibeTooltipInclusoesAutorizadasComZero(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              inclusoesAutorizadas,
+                                                              ehProgramasEProjetosLocation,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                            )}
+                                                            exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                            )}
+                                                            exibeTooltipLPRAutorizadas={exibirTooltipLPRAutorizadas(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                            )}
+                                                            exibeTooltipLancheEmergencialAutorizado={exibirTooltipLancheEmergencialAutorizado(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                            )}
+                                                            exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={
+                                                              ehPeriodoInfantilEmeiDaCemei() &&
+                                                              exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesLancheEmergencialAutorizadas,
+                                                                permissoesLancamentosEspeciaisPorDia,
+                                                              )
+                                                            }
+                                                            exibeTooltipLancheEmergencialNaoAutorizado={exibirTooltipLancheEmergencialNaoAutorizado(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                            )}
+                                                            exibeTooltipLancheEmergencialZeroAutorizadoJustificado={exibirTooltipLancheEmergencialZeroAutorizadoJustificado(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                              validacaoDiaLetivo,
+                                                            )}
+                                                            exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              kitLanchesAutorizadas,
+                                                            )}
+                                                            exibeTooltipKitLancheSolAlimentacoes={exibirTooltipKitLancheSolAlimentacoes(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              kitLanchesAutorizadas,
+                                                            )}
+                                                            exibeTooltipPadraoRepeticaoDiasSobremesaDoce={
+                                                              ehProgramasEProjetosLocation &&
+                                                              exibirTooltipPadraoRepeticaoDiasSobremesaDoce(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                diasSobremesaDoce,
+                                                                location,
+                                                              )
+                                                            }
+                                                            exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero={
+                                                              ehProgramasEProjetosLocation &&
+                                                              exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                diasSobremesaDoce,
+                                                                location,
+                                                              )
+                                                            }
+                                                            exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                                                              row.name,
+                                                              column.dia,
+                                                              categoria,
+                                                              formValuesAtualizados,
+                                                              diasFrequenciaZerada,
+                                                              location.state
+                                                                .periodo,
+                                                            )}
+                                                            exibirTooltipFeriado={verificaFeriadoProgramasProjetos(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              campoDesabilitado,
+                                                              ehProgramasEProjetosLocation,
+                                                              validacaoDiaLetivo,
+                                                              formValuesAtualizados,
+                                                            )}
+                                                            validate={fieldValidationsTabelasEmeidaCemei(
+                                                              row.name,
+                                                              column.dia,
+                                                              categoria.id,
+                                                              categoria.nome,
+                                                            )}
+                                                            inputOnChange={(
+                                                              e,
+                                                            ) => {
+                                                              const value =
+                                                                e.target.value;
+
+                                                              onChangeInput(
+                                                                value,
+                                                                previousValue,
+                                                                form.getState()
+                                                                  .errors,
+                                                                form.getState()
+                                                                  .values,
+                                                                column.dia,
+                                                                categoria,
+                                                                column,
+                                                                row,
+                                                                form,
+                                                              );
+
+                                                              setPreviousValue(
+                                                                value,
+                                                              );
+                                                            }}
+                                                          />
+                                                        </>
+                                                      ) : (
+                                                        <>
+                                                          <Field
+                                                            className={`m-2 ${classNameFieldTabelaAlimentacao(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                            )}`}
+                                                            component={
+                                                              InputValueMedicao
+                                                            }
+                                                            classNameToNextInput={getClassNameToNextInput(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              index,
+                                                            )}
+                                                            classNameToPrevInput={getClassNameToPrevInput(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              index,
+                                                            )}
+                                                            apenasNumeros
+                                                            name={`${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`}
+                                                            disabled={desabilitarField(
+                                                              column.dia,
+                                                              row.name,
+                                                              categoria.id,
+                                                              categoria.nome,
+                                                              formValuesAtualizados,
+                                                              mesAnoConsiderado,
+                                                              mesAnoDefault,
+                                                              inclusoesAutorizadas,
+                                                              validacaoDiaLetivo,
+                                                              validacaoSemana,
+                                                              location,
+                                                              valoresPeriodosLancamentos,
+                                                              feriadosNoMes,
+                                                              row.uuid,
+                                                              diasParaCorrecao,
+                                                              ehEmeiDaCemeiLocation,
+                                                              ehSolicitacoesAlimentacaoLocation,
                                                               permissoesLancamentosEspeciaisPorDia,
-                                                            )
-                                                          }
-                                                          exibeTooltipLancheEmergencialNaoAutorizado={exibirTooltipLancheEmergencialNaoAutorizado(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                          )}
-                                                          exibeTooltipLancheEmergencialZeroAutorizadoJustificado={exibirTooltipLancheEmergencialZeroAutorizadoJustificado(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                            validacaoDiaLetivo,
-                                                          )}
-                                                          exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            kitLanchesAutorizadas,
-                                                          )}
-                                                          exibeTooltipKitLancheSolAlimentacoes={exibirTooltipKitLancheSolAlimentacoes(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            kitLanchesAutorizadas,
-                                                          )}
-                                                          exibeTooltipPadraoRepeticaoDiasSobremesaDoce={
-                                                            ehProgramasEProjetosLocation &&
-                                                            exibirTooltipPadraoRepeticaoDiasSobremesaDoce(
+                                                              alimentacoesLancamentosEspeciais,
+                                                              ehProgramasEProjetosLocation,
+                                                              dadosValoresInclusoesAutorizadasState,
+                                                              kitLanchesAutorizadas,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                              ehUltimoDiaLetivoDoAno,
+                                                              calendarioMesConsiderado,
+                                                              ehRecreioNasFerias(),
+                                                              categoriasDeMedicao,
+                                                            )}
+                                                            defaultValue={defaultValue(
+                                                              column,
+                                                              row,
+                                                            )}
+                                                            exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(
                                                               formValuesAtualizados,
                                                               row,
                                                               column,
                                                               categoria,
-                                                              diasSobremesaDoce,
-                                                              location,
-                                                            )
-                                                          }
-                                                          exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero={
-                                                            ehProgramasEProjetosLocation &&
-                                                            exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero(
+                                                              categoriasDeMedicao,
+                                                              faixaEtaria,
+                                                              ehRecreioNasFerias(),
+                                                            )}
+                                                            exibeTooltipDietasInclusaoDiaNaoLetivoCEI={exibirTooltipDietasInclusaoDiaNaoLetivoCEI(
+                                                              inclusoesAutorizadas,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              formValuesAtualizados,
+                                                            )}
+                                                            exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
                                                               formValuesAtualizados,
                                                               row,
                                                               column,
                                                               categoria,
-                                                              diasSobremesaDoce,
-                                                              location,
-                                                            )
-                                                          }
-                                                          exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
-                                                            row.name,
-                                                            column.dia,
-                                                            categoria,
-                                                            formValuesAtualizados,
-                                                            diasFrequenciaZerada,
-                                                            location.state
-                                                              .periodo,
-                                                          )}
-                                                          validate={fieldValidationsTabelasEmeidaCemei(
-                                                            row.name,
-                                                            column.dia,
-                                                            categoria.id,
-                                                            categoria.nome,
-                                                          )}
-                                                          inputOnChange={(
-                                                            e,
-                                                          ) => {
-                                                            const value =
-                                                              e.target.value;
-
-                                                            onChangeInput(
-                                                              value,
-                                                              previousValue,
-                                                              form.getState()
-                                                                .errors,
-                                                              form.getState()
-                                                                .values,
+                                                              alteracoesAlimentacaoAutorizadas,
+                                                            )}
+                                                            exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI={exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI(
+                                                              inclusoesAutorizadas,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              formValuesAtualizados,
+                                                            )}
+                                                            exibeTooltipSuspensoesAutorizadasCEI={exibirTooltipSuspensoesAutorizadasCEI(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              suspensoesAutorizadas,
+                                                            )}
+                                                            validate={fieldValidationsTabelasCEI(
+                                                              row.name,
                                                               column.dia,
                                                               categoria,
-                                                              column,
-                                                              row,
-                                                              form,
-                                                            );
+                                                              categoria.nome,
+                                                              row.uuid,
+                                                            )}
+                                                            inputOnChange={(
+                                                              e,
+                                                            ) => {
+                                                              const value =
+                                                                e.target.value;
 
-                                                            setPreviousValue(
-                                                              value,
-                                                            );
-                                                          }}
-                                                        />
-                                                      </>
-                                                    ) : (
-                                                      <>
-                                                        <Field
-                                                          className={`m-2 ${classNameFieldTabelaAlimentacao(
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                          )}`}
-                                                          component={
-                                                            InputValueMedicao
-                                                          }
-                                                          classNameToNextInput={getClassNameToNextInput(
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            index,
-                                                          )}
-                                                          classNameToPrevInput={getClassNameToPrevInput(
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            index,
-                                                          )}
-                                                          apenasNumeros
-                                                          name={`${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`}
-                                                          disabled={desabilitarField(
-                                                            column.dia,
-                                                            row.name,
-                                                            categoria.id,
-                                                            categoria.nome,
-                                                            formValuesAtualizados,
-                                                            mesAnoConsiderado,
-                                                            mesAnoDefault,
-                                                            inclusoesAutorizadas,
-                                                            validacaoDiaLetivo,
-                                                            validacaoSemana,
-                                                            location,
-                                                            valoresPeriodosLancamentos,
-                                                            feriadosNoMes,
-                                                            row.uuid,
-                                                            diasParaCorrecao,
-                                                            ehEmeiDaCemeiLocation,
-                                                            ehSolicitacoesAlimentacaoLocation,
-                                                            permissoesLancamentosEspeciaisPorDia,
-                                                            alimentacoesLancamentosEspeciais,
-                                                            ehProgramasEProjetosLocation,
-                                                            dadosValoresInclusoesAutorizadasState,
-                                                            kitLanchesAutorizadas,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                            ehUltimoDiaLetivoDoAno,
-                                                            calendarioMesConsiderado,
-                                                            ehRecreioNasFerias(),
-                                                            categoriasDeMedicao,
-                                                          )}
-                                                          defaultValue={defaultValue(
-                                                            column,
-                                                            row,
-                                                          )}
-                                                          exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            categoriasDeMedicao,
-                                                            faixaEtaria,
-                                                            ehRecreioNasFerias(),
-                                                          )}
-                                                          exibeTooltipDietasInclusaoDiaNaoLetivoCEI={exibirTooltipDietasInclusaoDiaNaoLetivoCEI(
-                                                            inclusoesAutorizadas,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            formValuesAtualizados,
-                                                          )}
-                                                          exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            alteracoesAlimentacaoAutorizadas,
-                                                          )}
-                                                          exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI={exibirTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI(
-                                                            inclusoesAutorizadas,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            formValuesAtualizados,
-                                                          )}
-                                                          exibeTooltipSuspensoesAutorizadasCEI={exibirTooltipSuspensoesAutorizadasCEI(
-                                                            formValuesAtualizados,
-                                                            row,
-                                                            column,
-                                                            categoria,
-                                                            suspensoesAutorizadas,
-                                                          )}
-                                                          validate={fieldValidationsTabelasCEI(
-                                                            row.name,
-                                                            column.dia,
-                                                            categoria,
-                                                            categoria.nome,
-                                                            row.uuid,
-                                                          )}
-                                                          inputOnChange={(
-                                                            e,
-                                                          ) => {
-                                                            const value =
-                                                              e.target.value;
+                                                              onChangeInput(
+                                                                value,
+                                                                previousValue,
+                                                                form.getState()
+                                                                  .errors,
+                                                                form.getState()
+                                                                  .values,
+                                                                column.dia,
+                                                                categoria,
+                                                                column,
+                                                                row,
+                                                                form,
+                                                              );
 
-                                                            onChangeInput(
-                                                              value,
-                                                              previousValue,
-                                                              form.getState()
-                                                                .errors,
-                                                              form.getState()
-                                                                .values,
-                                                              column.dia,
-                                                              categoria,
-                                                              column,
-                                                              row,
-                                                              form,
-                                                            );
-
-                                                            setPreviousValue(
-                                                              value,
-                                                            );
-                                                          }}
-                                                        />
-                                                      </>
-                                                    )}
-                                                  </div>
-                                                )}
-                                              </div>
-                                            ))}
+                                                              setPreviousValue(
+                                                                value,
+                                                              );
+                                                            }}
+                                                          />
+                                                        </>
+                                                      )}
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              );
+                                            })}
                                           </div>
                                         </Fragment>
                                       );

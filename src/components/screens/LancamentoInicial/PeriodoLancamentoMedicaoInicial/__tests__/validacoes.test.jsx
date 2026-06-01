@@ -4,6 +4,8 @@ import {
   exibirTooltipRefeicaoSimultanea,
   bloquearSalvamentoRefeicaoSimultanea,
   refeicaoSimultaneaESemObservacao,
+  obrigarAdiocionarFeriadoProgramasProjetos,
+  verificaFeriadoProgramasProjetos,
 } from "../validacoes";
 
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -1694,6 +1696,400 @@ describe("Testes de Refeicao Simultanea em período noturno e unidades CEIJA", (
         categoria,
         false,
         "NOITE",
+      );
+
+      expect(result).toBe(true);
+    });
+  });
+});
+
+describe("Testes de feriado em Programas e Projetos", () => {
+  describe("verificaFeriadoProgramasProjetos", () => {
+    const categoria = { id: 1, nome: "ALIMENTAÇÃO" };
+    const column = { dia: "05" };
+
+    const validacaoDiaLetivoMock = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("deve retornar false quando row.name for frequencia", () => {
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "frequencia" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando valor não existir", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "lanche" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {},
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando valor for 0", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "lanche" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          lanche__dia_05__categoria_1: "0",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando houver observação", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "lanche" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          lanche__dia_05__categoria_1: "5",
+          observacoes__dia_05__categoria_1: "Justificativa",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando campo estiver desabilitado", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "lanche" },
+        column,
+        categoria,
+        true,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando não for Programas e Projetos", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "lanche" },
+        column,
+        categoria,
+        false,
+        false,
+        validacaoDiaLetivoMock,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando dia for letivo", () => {
+      validacaoDiaLetivoMock.mockReturnValue(true);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "lanche" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar true quando todas condições forem atendidas", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "lanche" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("deve retornar true com valor string numérica", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "refeicao" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          refeicao__dia_05__categoria_1: "10",
+        },
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("deve retornar false para valor negativo convertido em número", () => {
+      validacaoDiaLetivoMock.mockReturnValue(false);
+
+      const result = verificaFeriadoProgramasProjetos(
+        { name: "refeicao" },
+        column,
+        categoria,
+        false,
+        true,
+        validacaoDiaLetivoMock,
+        {
+          refeicao__dia_05__categoria_1: "-1",
+        },
+      );
+
+      expect(result).toBe(true);
+    });
+  });
+
+  describe("obrigarAdiocionarFeriadoProgramasProjetos", () => {
+    const column = { dia: "05" };
+    const categoria = { id: 1 };
+
+    it("deve retornar false quando dia não for feriado", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["01", "02"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando form estiver vazio", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {},
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando todos os valores forem 0", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: 0,
+          refeicao__dia_05__categoria_1: "0",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve ignorar campos observacoes__", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          observacoes__dia_05__categoria_1: "Teste",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve ignorar campos numero_de_alunos__", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          numero_de_alunos__dia_05__categoria_1: "10",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve ignorar campos matriculados__", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          matriculados__dia_05__categoria_1: "10",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve ignorar campos frequencia__", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          frequencia__dia_05__categoria_1: "10",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando campo for de outro dia", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_06__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar false quando campo for de outra categoria", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_2: "5",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar true quando houver valor válido sem observação", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: "5",
+        },
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("deve retornar false quando houver observação preenchida", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: "5",
+          observacoes__dia_05__categoria_1: "Justificado",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve retornar true quando qualquer campo válido atender condição", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: "0",
+          refeicao__dia_05__categoria_1: "7",
+          observacoes__dia_05__categoria_1: "",
+        },
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("deve retornar false quando valor for NaN", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: "abc",
+        },
+      );
+
+      expect(result).toBe(false);
+    });
+
+    it("deve funcionar com valores numéricos", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          refeicao__dia_05__categoria_1: 8,
+        },
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("deve retornar true com múltiplos campos válidos", () => {
+      const result = obrigarAdiocionarFeriadoProgramasProjetos(
+        ["05"],
+        column,
+        categoria,
+        {
+          lanche__dia_05__categoria_1: "2",
+          refeicao__dia_05__categoria_1: "3",
+          sobremesa__dia_05__categoria_1: "1",
+        },
       );
 
       expect(result).toBe(true);

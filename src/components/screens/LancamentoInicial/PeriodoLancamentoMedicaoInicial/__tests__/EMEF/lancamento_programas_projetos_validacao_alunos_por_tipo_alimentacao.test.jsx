@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -145,14 +151,68 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
       "120",
     );
 
-    let inputLancheDia01 = setInput("lanche__dia_01__categoria_1", "100");
-    expect(inputLancheDia01).not.toHaveClass("invalid-field");
-    inputLancheDia01 = setInput("lanche__dia_01__categoria_1", "101");
-    expect(inputLancheDia01).toHaveClass("invalid-field");
+    let inputLancheAlimentacao = setInput("lanche__dia_01__categoria_1", "100");
+    expect(inputLancheAlimentacao).not.toHaveClass("invalid-field");
+    inputLancheAlimentacao = setInput("lanche__dia_01__categoria_1", "101");
+    expect(inputLancheAlimentacao).toHaveClass("invalid-field");
+  });
 
-    let inputRefeicaoDia01 = setInput("refeicao__dia_01__categoria_1", "20");
-    expect(inputRefeicaoDia01).not.toHaveClass("invalid-field");
-    inputRefeicaoDia01 = setInput("refeicao__dia_01__categoria_1", "21");
-    expect(inputRefeicaoDia01).toHaveClass("invalid-field");
+  it("deve exibir validação de número máximo de alimentações excedido", async () => {
+    setInput("frequencia__dia_01__categoria_1", "120");
+    setInput("lanche__dia_01__categoria_1", "120");
+
+    setInput("frequencia__dia_01__categoria_3", "2");
+    setInput("lanche__dia_01__categoria_3", "0");
+
+    expect(screen.getByTestId("lanche__dia_01__categoria_3")).not.toHaveClass(
+      "invalid-field",
+    );
+
+    setInput("lanche__dia_01__categoria_3", "2");
+
+    await waitFor(() => {
+      expect(screen.getByTestId("lanche__dia_01__categoria_3")).toHaveClass(
+        "invalid-field",
+      );
+    });
+  });
+
+  it("deve exibir validação de apontamento em feriado", async () => {
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    setInput("frequencia__dia_12__categoria_1", "120");
+    setInput("lanche__dia_12__categoria_1", "120");
+
+    expect(screen.getByTestId("lanche__dia_12__categoria_1")).toHaveClass(
+      "invalid-field",
+    );
+
+    setInput("lanche__dia_12__categoria_1", "0");
+
+    expect(screen.getByTestId("lanche__dia_12__categoria_1")).not.toHaveClass(
+      "invalid-field",
+    );
+
+    setInput("lanche__dia_12__categoria_1", "120");
+
+    let botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+    expect(botaoSalvar).toBeDisabled();
+
+    const inputObservacao = screen.queryByTestId(
+      "observacao__dia_12__categoria_1",
+    );
+
+    if (inputObservacao) {
+      fireEvent.change(inputObservacao, {
+        target: { value: "Feriado com lanche" },
+      });
+
+      await act(async () => {
+        fireEvent.blur(inputObservacao);
+      });
+
+      botaoSalvar = screen.getByText("Salvar Lançamentos").closest("button");
+      expect(botaoSalvar).not.toBeDisabled();
+    }
   });
 });

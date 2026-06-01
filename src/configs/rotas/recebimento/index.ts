@@ -14,6 +14,7 @@ import AtribuirQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/Atrib
 import CopiarAtribuicaoQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/CopiarAtribuicaoQuestoesPage";
 import EditarAtribuicaoQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/EditarAtribuicaoQuestoesPage";
 import QuestoesPorProdutoPage from "src/pages/Recebimento/QuestoesPorProduto/QuestoesPorProdutoPage";
+import RelatorioDocumentosRecebimentoPage from "src/pages/Recebimento/Relatorios/RelatorioDocumentosRecebimentoPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
@@ -68,5 +69,10 @@ export const rotasRecebimento: Array<RotaInterface> = [
       usuarioEhDilogAbastecimento() ||
       usuarioEhCodaeDilog() ||
       usuarioEhDilogDiretoria(),
+  },
+  {
+    path: `/${constants.RECEBIMENTO}/${constants.RELATORIO_DOCUMENTOS_RECEBIMENTO}`,
+    component: RelatorioDocumentosRecebimentoPage,
+    tipoUsuario: usuarioEhRecebimento() || usuarioEhCodaeDilog(),
   },
 ];

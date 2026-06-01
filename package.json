@@ -84,7 +84,7 @@
     },
     "jest-watch-typeahead": "2.2.2",
     "minimatch": {
-      "brace-expansion": "5.0.5"
+      "brace-expansion": "5.0.6"
     }
   },
   "dependencies": {
@@ -114,7 +114,7 @@
     "html-to-react": "^1.7.0",
     "http-status-codes": "^2.3.0",
     "jquery.easing": "^1.4.1",
-    "js-cookie": "^3.0.5",
+    "js-cookie": "^3.0.7",
     "jwt-decode": "^4.0.0",
     "locutus": "^3.0.25",
     "moment": "^2.30.1",

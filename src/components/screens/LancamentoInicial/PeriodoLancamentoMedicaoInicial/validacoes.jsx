@@ -161,6 +161,7 @@ export const campoFrequenciaValor0ESemObservacao = (
   grupo,
   escolaEmebs = false,
   alunosTabSelecionada = null,
+  feriadosNoMes,
 ) => {
   let erro = false;
   if (
@@ -195,7 +196,8 @@ export const campoFrequenciaValor0ESemObservacao = (
     categoria.nome === "ALIMENTAÇÃO" &&
     values[`frequencia__dia_${dia}__categoria_${categoria.id}`] &&
     Number(values[`frequencia__dia_${dia}__categoria_${categoria.id}`]) === 0 &&
-    !values[`observacoes__dia_${dia}__categoria_${categoria.id}`]
+    !values[`observacoes__dia_${dia}__categoria_${categoria.id}`] &&
+    !feriadosNoMes?.includes(dia)
   ) {
     erro = true;
   }
@@ -602,93 +604,94 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   escolaEmebs,
   alunosTabSelecionada,
 ) => {
-  if (
-    location.state.grupo === "Programas e Projetos" &&
-    feriadosNoMes.includes(dia)
-  ) {
-    return false;
-  } else {
-    return (
-      repeticaoSobremesaDoceComValorESemObservacao(
-        formValuesAtualizados,
-        dia,
-        categoria,
-        diasSobremesaDoce,
-        location,
-      ) ||
-      campoFrequenciaValor0ESemObservacao(
-        dia,
-        categoria,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        location.state.grupo,
-        escolaEmebs,
-        alunosTabSelecionada,
-      ) ||
-      campoComSuspensaoAutorizadaESemObservacao(
-        formValuesAtualizados,
+  return (
+    repeticaoSobremesaDoceComValorESemObservacao(
+      formValuesAtualizados,
+      dia,
+      categoria,
+      diasSobremesaDoce,
+      location,
+    ) ||
+    campoFrequenciaValor0ESemObservacao(
+      dia,
+      categoria,
+      formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
+      feriadosNoMes,
+    ) ||
+    campoComSuspensaoAutorizadaESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      suspensoesAutorizadas,
+    ) ||
+    campoRefeicaoComRPLAutorizadaESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      alteracoesAlimentacaoAutorizadas,
+    ) ||
+    campoLancheComLPRAutorizadaESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      alteracoesAlimentacaoAutorizadas,
+    ) ||
+    camposKitLancheSolicitacoesAlimentacaoESemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      kitLanchesAutorizadas,
+    ) ||
+    camposLancheEmergTabelaEtec(
+      formValuesAtualizados,
+      column,
+      categoria,
+      inclusoesEtecAutorizadas,
+      ehGrupoETECUrlParam,
+    ) ||
+    campoLancheEmergencialComZeroOuSemObservacao(
+      formValuesAtualizados,
+      column,
+      categoria,
+      alteracoesAlimentacaoAutorizadas,
+    ) ||
+    existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
+      dia,
+      categoria,
+      formValuesAtualizados,
+      alteracoesLancheEmergencialAutorizadas,
+      permissoesLancamentosEspeciaisPorDia,
+    ) ||
+    habitarBotaoAdicionar(
+      "frequencia",
+      column.dia,
+      categoria,
+      formValuesAtualizados,
+      diasFrequenciaZerada,
+      location.state.grupo,
+      escolaEmebs,
+      alunosTabSelecionada,
+    ) ||
+    refeicaoSimultaneaESemObservacao(
+      formValuesAtualizados,
+      row,
+      column,
+      categoria,
+      usuarioEhEscolaCIEJA(),
+      location.state.periodo,
+    ) ||
+    (location.state.grupo === "Programas e Projetos" &&
+      obrigarAdiocionarFeriadoProgramasProjetos(
+        feriadosNoMes,
         column,
         categoria,
-        suspensoesAutorizadas,
-      ) ||
-      campoRefeicaoComRPLAutorizadaESemObservacao(
         formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
-      campoLancheComLPRAutorizadaESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
-      camposKitLancheSolicitacoesAlimentacaoESemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        kitLanchesAutorizadas,
-      ) ||
-      camposLancheEmergTabelaEtec(
-        formValuesAtualizados,
-        column,
-        categoria,
-        inclusoesEtecAutorizadas,
-        ehGrupoETECUrlParam,
-      ) ||
-      campoLancheEmergencialComZeroOuSemObservacao(
-        formValuesAtualizados,
-        column,
-        categoria,
-        alteracoesAlimentacaoAutorizadas,
-      ) ||
-      existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNoDiaSemObservacao(
-        dia,
-        categoria,
-        formValuesAtualizados,
-        alteracoesLancheEmergencialAutorizadas,
-        permissoesLancamentosEspeciaisPorDia,
-      ) ||
-      habitarBotaoAdicionar(
-        "frequencia",
-        column.dia,
-        categoria,
-        formValuesAtualizados,
-        diasFrequenciaZerada,
-        location.state.grupo,
-        escolaEmebs,
-        alunosTabSelecionada,
-      ) ||
-      refeicaoSimultaneaESemObservacao(
-        formValuesAtualizados,
-        row,
-        column,
-        categoria,
-        usuarioEhEscolaCIEJA(),
-        location.state.periodo,
-      )
-    );
-  }
+      ))
+  );
 };
 
 export const botaoAdicionarObrigatorio = (
@@ -1179,6 +1182,8 @@ export const validacoesTabelasDietas = (
       return total + (isNaN(valor) ? 0 : valor);
     }, 0);
 
+  const ehProgramasEProjetos = location.state.grupo === "Programas e Projetos";
+
   if (
     rowName === "frequencia" &&
     Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
@@ -1189,7 +1194,7 @@ export const validacoesTabelasDietas = (
   ) {
     if (
       !EH_INCLUSAO_SOMENTE_SOBREMESA &&
-      location.state.grupo !== "Programas e Projetos" &&
+      !ehProgramasEProjetos &&
       validacaoDiaLetivo(dia) &&
       ((maxDietasAutorizadas !== 0 && !value) ||
         (value && Number(value) !== 0)) &&
@@ -1234,7 +1239,8 @@ export const validacoesTabelasDietas = (
     value &&
     Number(value) !== 0 &&
     somaDosValoresPorCampo("lanche") >
-      maxFrequenciaAlimentacao + quantidadeLancheInclusaoAutorizadoNoDia &&
+      maxFrequenciaAlimentacao +
+        (ehProgramasEProjetos ? 0 : quantidadeLancheInclusaoAutorizadoNoDia) &&
     inputName.includes("lanche") &&
     !inputName.includes("_4h") &&
     (!alteracoesAlimentacaoAutorizadas ||
@@ -1249,7 +1255,10 @@ export const validacoesTabelasDietas = (
     value &&
     Number(value) !== 0 &&
     somaDosValoresPorCampo("lanche_4h") >
-      maxFrequenciaAlimentacao + quantidadeLanche4hInclusaoAutorizadoNoDia &&
+      maxFrequenciaAlimentacao +
+        (ehProgramasEProjetos
+          ? 0
+          : quantidadeLanche4hInclusaoAutorizadoNoDia) &&
     inputName.includes("lanche_4h") &&
     (!alteracoesAlimentacaoAutorizadas ||
       alteracoesAlimentacaoAutorizadas.length === 0 ||
@@ -2646,4 +2655,59 @@ export const refeicaoSimultaneaESemObservacao = (
 
   if (!temRefeicaoOuSobremesa || !temLanche4h || temObservacao) return false;
   return true;
+};
+
+export const verificaFeriadoProgramasProjetos = (
+  row,
+  column,
+  categoria,
+  campoDesabilitado,
+  ehProgramasEProjetos,
+  validacaoDiaLetivo,
+  formValuesAtualizados,
+) => {
+  if (row.name === "frequencia") return false;
+
+  const campoApontamento = `${row.name}__dia_${column.dia}__categoria_${categoria.id}`;
+  const campoObservacao = `observacoes__dia_${column.dia}__categoria_${categoria.id}`;
+
+  const valor = formValuesAtualizados[campoApontamento];
+  const observacao = formValuesAtualizados[campoObservacao];
+
+  if (!valor || parseInt(valor) === 0 || observacao) return false;
+
+  return (
+    !campoDesabilitado &&
+    ehProgramasEProjetos &&
+    !validacaoDiaLetivo(column.dia) &&
+    !observacao
+  );
+};
+
+export const obrigarAdiocionarFeriadoProgramasProjetos = (
+  feriadosNoMes,
+  column,
+  categoria,
+  formValuesAtualizados,
+) => {
+  if (feriadosNoMes && !feriadosNoMes.includes(column.dia)) return false;
+
+  const sufixoCampo = `__dia_${column.dia}__categoria_${categoria.id}`;
+
+  return Object.entries(formValuesAtualizados).some(([key, value]) => {
+    if (
+      key.startsWith("observacoes__") ||
+      key.startsWith("numero_de_alunos__") ||
+      key.startsWith("matriculados__") ||
+      key.startsWith("frequencia__")
+    )
+      return false;
+
+    if (!key.includes(sufixoCampo)) return false;
+
+    const numero = Number(value);
+    if (Number.isNaN(numero) || numero === 0) return false;
+
+    return !formValuesAtualizados[`observacoes${sufixoCampo}`];
+  });
 };
