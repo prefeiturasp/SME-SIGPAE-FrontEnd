@@ -179,8 +179,7 @@ export const CardLancamentoCEI = ({
           periodosInclusaoContinua: periodosInclusaoContinua,
           grupo,
           solicitacaoMedicaoInicial: solicitacaoMedicaoInicial,
-          recreioNasFerias:
-            solicitacaoMedicaoInicial.recreio_nas_ferias !== null,
+          recreioNasFerias: solicitacaoMedicaoInicial.recreio_nas_ferias?.uuid,
           ...location.state,
         },
       },

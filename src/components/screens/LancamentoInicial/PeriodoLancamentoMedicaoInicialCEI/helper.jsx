@@ -789,12 +789,14 @@ export const getSolicitacoesKitLanchesAutorizadasAsync = async (
   escolaUuuid,
   mes,
   ano,
+  recreioNasFerias = undefined,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
   params["tipo_solicitacao"] = "Kit Lanche";
   params["mes"] = mes;
   params["ano"] = ano;
+  params["recreio_nas_ferias"] = recreioNasFerias;
   const responseKitLanchesAutorizadas =
     await getSolicitacoesKitLanchesAutorizadasEscola(params);
   if (responseKitLanchesAutorizadas.status === HTTP_STATUS.OK) {
