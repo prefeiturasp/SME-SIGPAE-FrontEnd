@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -58,9 +58,11 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Mediçã
     mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
       periodos: null,
     });
-    mock
-      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
-      .reply(200, { results: [] });
+    mock.onGet("/escola-solicitacoes/kit-lanches-autorizadas/").reply(200, {
+      results: [
+        { dia: "17", numero_alunos: 80, kit_lanche_id_externo: "6CD6E" },
+      ],
+    });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
       .reply(200, { results: [] });
@@ -123,5 +125,13 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Mediçã
       screen.getByText("Recreio nas Férias - 4 a 14 anos"),
     ).toBeInTheDocument();
     expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+  });
+
+  it("Renderiza período Solicitações de Alimentação no recreio para EMEI da CEMEI quando há kit lanche autorizado", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitações de Alimentação - Infantil"),
+      ).toBeInTheDocument();
+    });
   });
 });
