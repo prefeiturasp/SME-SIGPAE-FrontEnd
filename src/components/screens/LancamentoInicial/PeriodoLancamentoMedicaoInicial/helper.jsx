@@ -626,8 +626,21 @@ export const desabilitarField = (
   }
 
   if (grupoRecreio) {
-    if (feriadosNoMes.includes(dia)) {
+    if (
+      feriadosNoMes.includes(dia) ||
+      validacaoSemana(dia) ||
+      !validacaoDiaLetivoCalendario(dia) ||
+      (mesConsiderado === mesAtual &&
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado))
+    ) {
       return true;
+    }
+    if (
+      ehUltimoDiaLetivoDoAno(dia, mesConsiderado) &&
+      mesConsiderado === mesAtual
+    ) {
+      return !(Number(dia) === Number(format(mesAnoDefault, "dd")));
     }
     if (nomeCategoria === "ALIMENTAÇÃO" || nomeCategoria.includes("DIETA")) {
       const categoriaAlimentacao = categoriasDeMedicao.find(
@@ -648,10 +661,6 @@ export const desabilitarField = (
         values[chaveDietasAutorizadasNoDia] !== null &&
         values[chaveDietasAutorizadasNoDia] !== "" &&
         values[chaveDietasAutorizadasNoDia] !== "0";
-
-      if (validacaoSemana(dia) || !validacaoDiaLetivoCalendario(dia)) {
-        return true;
-      }
 
       if (nomeCategoria === "ALIMENTAÇÃO") {
         return !(participantesNoDia > 0);
