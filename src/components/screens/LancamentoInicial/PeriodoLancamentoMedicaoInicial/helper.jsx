@@ -341,14 +341,19 @@ export const desabilitarField = (
     const categoriaAlimentacao = categoriasDeMedicao.find(
       (cat) => cat.nome === "ALIMENTAÇÃO",
     );
+
     const prefixo = grupoRecreio
       ? "participantes"
-      : ehPeriodoEscolarSimples
+      : ehPeriodoEscolarSimples &&
+          !escolaNaoPossuiAlunosRegulares(
+            location.state?.solicitacaoMedicaoInicial,
+          )
         ? "matriculados"
         : "numero_de_alunos";
 
     const alunosDoDia = `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}`;
     const valorAlimentacao = values[alunosDoDia];
+
     if (
       [undefined, null, ""].includes(valorAlimentacao) ||
       Number(valorAlimentacao) === 0
