@@ -70,7 +70,7 @@ export const tiposAlimentacaoRecreio = (
     );
   }
 
-  if (colaboradores) [...tipos.colaboradores].sort(ordenacao);
+  if (colaboradores) return [...tipos.colaboradores].sort(ordenacao);
 
   const tipoUnidade = recreioNasFeriasDaMedicaoEMEIdaCEMEI(
     solicitacaoMedicaoInicial,
