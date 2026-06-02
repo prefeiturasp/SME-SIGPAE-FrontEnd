@@ -32,8 +32,6 @@ import {
 import { getMeusDados } from "src/services/perfil.service";
 import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
 
-import preview from "jest-preview";
-
 const mockNavigate = jest.fn();
 
 jest.mock("react-router-dom", () => ({
@@ -145,7 +143,6 @@ describe("Ordenação alimentações para o Grupo Colaboradores - CEI", () => {
 
     fireEvent.click(screen.getByText("Semana 1"));
 
-    preview.debug();
     const categoria = mockCategoriasMedicaoCEI.find(
       (c) => c.nome === "ALIMENTAÇÃO",
     );
