@@ -4,6 +4,8 @@ import {
   recreioNasFeriasDaMedicaoEMEIdaCEMEI,
 } from "src/helpers/utilities";
 
+import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+
 export const ehEmeiDaCemei = (
   escolaInstituicao,
   periodosEscolaCemeiComAlunosEmei,
@@ -58,13 +60,17 @@ export const tiposAlimentacaoRecreio = (
 ) => {
   const recreio = recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial);
   const tipos = recreio.unidades_participantes[0].tipos_alimentacao;
-  const ordenacao = (a, b) => a.nome.localeCompare(b.nome);
+  const ordenacao = (a, b) =>
+    (ORDEM_ALIMENTACAO_RECREIO[a.nome] ?? 999) -
+    (ORDEM_ALIMENTACAO_RECREIO[b.nome] ?? 999);
 
   if (!ehEscolaTipoCEMEI(escolaInstituicao)) {
-    return colaboradores ? tipos.colaboradores : tipos.inscritos;
+    return [...(colaboradores ? tipos.colaboradores : tipos.inscritos)].sort(
+      ordenacao,
+    );
   }
 
-  if (colaboradores) return tipos.colaboradores.sort(ordenacao);
+  if (colaboradores) [...tipos.colaboradores].sort(ordenacao);
 
   const tipoUnidade = recreioNasFeriasDaMedicaoEMEIdaCEMEI(
     solicitacaoMedicaoInicial,
@@ -76,6 +82,6 @@ export const tiposAlimentacaoRecreio = (
   )?.tipos_alimentacao;
 
   return tipoUnidade === "CEI"
-    ? tipos_alimentacao.inscritos
-    : tipos_alimentacao.infantil.sort(ordenacao);
+    ? [...tipos_alimentacao.inscritos].sort(ordenacao)
+    : [...tipos_alimentacao.infantil].sort(ordenacao);
 };
