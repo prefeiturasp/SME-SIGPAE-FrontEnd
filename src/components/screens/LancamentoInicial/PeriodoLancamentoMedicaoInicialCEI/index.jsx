@@ -150,6 +150,8 @@ import {
   validacoesFaixasZeradasAlimentacao,
 } from "./validacoes";
 
+import { ORDEM_CAMPOS_DIETAS_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const initialStateWeekColumns = [
     { position: 0, dia: "29" },
@@ -624,6 +626,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               response_log_dietas_autorizadas_cei,
               periodoGrupo,
             );
+
+      if (ehRecreioNasFerias() && ehEmeiDaCemeiLocation) {
+        linhasTabelasDietasCEI.sort(
+          (a, b) =>
+            (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+            (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+        );
+      }
       setTabelaDietaCEIRows(linhasTabelasDietasCEI);
 
       let linhasTabelaDietaEnteral = [];
@@ -632,6 +642,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           tiposAlimentacaoBase,
           linhasTabelasDietasCEI,
         );
+
+        if (ehRecreioNasFerias()) {
+          linhasTabelaDietaEnteral.sort(
+            (a, b) =>
+              (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+              (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+          );
+        }
+
         setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
       }
 
