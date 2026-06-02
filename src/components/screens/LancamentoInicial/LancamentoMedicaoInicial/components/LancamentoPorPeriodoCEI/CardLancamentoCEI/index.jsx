@@ -76,7 +76,16 @@ export const CardLancamentoCEI = ({
   };
 
   const quantidadeAlimentacao = (nomeAlimentacao) => {
-    const alimentacao = nomeAlimentacao
+    const nomeFormatado =
+      typeof nomeAlimentacao === "string"
+        ? nomeAlimentacao
+        : nomeAlimentacao?.nome;
+
+    if (!nomeFormatado) {
+      return 0;
+    }
+
+    const alimentacao = nomeFormatado
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase()
@@ -104,7 +113,9 @@ export const CardLancamentoCEI = ({
       "Recreio nas Férias - 4 a 14 anos",
     ].includes(textoCabecalho)
   ) {
-    let copyTiposAlimentacao = deepCopy(tiposAlimentacao);
+    let copyTiposAlimentacao = deepCopy(tiposAlimentacao).map((alimentacao) =>
+      typeof alimentacao === "string" ? { nome: alimentacao } : alimentacao,
+    );
     if (periodoPermissoes) {
       copyTiposAlimentacao = copyTiposAlimentacao.concat(
         periodoPermissoes.alimentacoes.map((alimentacao) => ({

@@ -636,22 +636,21 @@ export const LancamentoPorPeriodo = ({
                   errosAoSalvar={errosAoSalvar}
                 />
               )}
-              {solicitacoesKitLanchesAutorizadas &&
-                solicitacoesKitLanchesAutorizadas.length > 0 && (
-                  <CardLancamento
-                    grupo="Solicitações de Alimentação"
-                    cor={CORES[5]}
-                    tipos_alimentacao={["Kit Lanche", "Lanche Emergencial"]}
-                    periodoSelecionado={periodoSelecionado}
-                    solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
-                    objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
-                    ehGrupoSolicitacoesDeAlimentacao={true}
-                    quantidadeAlimentacoesLancadas={
-                      quantidadeAlimentacoesLancadas
-                    }
-                    errosAoSalvar={errosAoSalvar}
-                  />
-                )}
+              {solicitacoesKitLanchesAutorizadas?.length > 0 && (
+                <CardLancamento
+                  grupo="Solicitações de Alimentação"
+                  cor={CORES[5]}
+                  tipos_alimentacao={["Kit Lanche", "Lanche Emergencial"]}
+                  periodoSelecionado={periodoSelecionado}
+                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                  objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  ehGrupoSolicitacoesDeAlimentacao={true}
+                  quantidadeAlimentacoesLancadas={
+                    quantidadeAlimentacoesLancadas
+                  }
+                  errosAoSalvar={errosAoSalvar}
+                />
+              )}
             </>
           )}
 
