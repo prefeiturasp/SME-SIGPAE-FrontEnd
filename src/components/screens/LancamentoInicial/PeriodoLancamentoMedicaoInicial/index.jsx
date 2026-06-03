@@ -66,7 +66,11 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
-import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS } from "../constants";
+import {
+  ALUNOS_EMEBS,
+  FUNDAMENTAL_EMEBS,
+  ORDEM_CAMPOS_DIETAS_RECREIO,
+} from "../constants";
 import ModalErro from "./components/ModalErro";
 import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
 import ModalSalvarCorrecoes from "./components/ModalSalvarCorrecoes";
@@ -763,7 +767,13 @@ export default () => {
         name: "observacoes",
         uuid: null,
       });
-
+      if (ehRecreioNasFerias()) {
+        rowsDietas.sort(
+          (a, b) =>
+            (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+            (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+        );
+      }
       setTabelaDietaRows(rowsDietas);
 
       const cloneRowsDietas = deepCopy(rowsDietas);
@@ -784,7 +794,13 @@ export default () => {
           uuid: cloneTiposAlimentacao[indexRefeicaoDieta].uuid,
         });
       }
-
+      if (ehRecreioNasFerias()) {
+        cloneRowsDietas.sort(
+          (a, b) =>
+            (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+            (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+        );
+      }
       setTabelaDietaEnteralRows(cloneRowsDietas);
 
       rowsSolicitacoesAlimentacao.push(

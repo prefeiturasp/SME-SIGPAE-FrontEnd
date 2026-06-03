@@ -50,6 +50,7 @@ import {
   verificaSeEnviarCorrecaoDisabled,
 } from "./helpers";
 
+import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
 export const LancamentoPorPeriodo = ({
   escolaInstituicao,
   periodosEscolaSimples,
@@ -436,6 +437,13 @@ export const LancamentoPorPeriodo = ({
     }
   };
 
+  const ordenarTiposAlimentacao = (tipos) =>
+    [...tipos].sort(
+      (a, b) =>
+        (ORDEM_ALIMENTACAO_RECREIO[a.nome] ?? 999) -
+        (ORDEM_ALIMENTACAO_RECREIO[b.nome] ?? 999),
+    );
+
   return (
     <div>
       {erroAPI && <div>{erroAPI}</div>}
@@ -609,10 +617,10 @@ export const LancamentoPorPeriodo = ({
               <CardLancamento
                 grupo="Recreio nas Férias"
                 cor={CORES[10]}
-                tipos_alimentacao={
+                tipos_alimentacao={ordenarTiposAlimentacao(
                   recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
-                    .unidades_participantes[0].tipos_alimentacao.inscritos
-                }
+                    .unidades_participantes[0].tipos_alimentacao.inscritos,
+                )}
                 periodoSelecionado={periodoSelecionado}
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                 objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
@@ -623,10 +631,11 @@ export const LancamentoPorPeriodo = ({
                 <CardLancamento
                   grupo="Colaboradores"
                   cor={CORES[11]}
-                  tipos_alimentacao={
+                  tipos_alimentacao={ordenarTiposAlimentacao(
                     recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
-                      .unidades_participantes[0].tipos_alimentacao.colaboradores
-                  }
+                      .unidades_participantes[0].tipos_alimentacao
+                      .colaboradores,
+                  )}
                   periodoSelecionado={periodoSelecionado}
                   solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                   objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}

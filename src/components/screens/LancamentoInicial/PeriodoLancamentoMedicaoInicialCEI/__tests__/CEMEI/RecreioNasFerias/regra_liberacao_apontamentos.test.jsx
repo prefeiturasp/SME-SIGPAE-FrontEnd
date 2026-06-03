@@ -52,7 +52,6 @@ import {
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import mock from "src/services/_mock";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
-import preview from "jest-preview";
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
@@ -1868,7 +1867,7 @@ describe("Teste Grupo Recreio nas Férias - de 4 a 14 anos JANEIRO/2026 - CEMEI:
     it("ao clicar na tab `Semana 3`, exibe, nos dias 12 dezembro a 18 janeiro, e verifica os lançamentos", async () => {
       const semana3Element = screen.getByText("Semana 3");
       fireEvent.click(semana3Element);
-      preview.debug();
+
       const VALORES_ESPERADOS = {
         12: {
           dietas: "2",
