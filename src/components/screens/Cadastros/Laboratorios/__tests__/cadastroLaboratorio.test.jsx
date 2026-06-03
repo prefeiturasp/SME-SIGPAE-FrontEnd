@@ -28,6 +28,56 @@ jest.mock("src/components/Shareable/Toast/dialogs", () => ({
 
 jest.mock("src/helpers/utilities");
 
+const preencherFormularioValido = () => {
+  fireEvent.change(
+    screen.getByPlaceholderText("Digite o Nome do Laboratório"),
+    { target: { value: "LAB TESTE" } },
+  );
+
+  fireEvent.change(
+    screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
+    { target: { value: "12.345.678/0001-99" } },
+  );
+
+  fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
+    target: { value: "20931-900" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
+    target: { value: "Rua da Central" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
+    target: { value: "123" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
+    target: { value: "Bairro da Central" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
+    target: { value: "Rio de Janeiro" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
+    target: { value: "Rio de Janeiro" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
+    target: { value: "João" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
+    target: { value: "(11) 99999-9999" },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText("Digite o E-mail do Contato"), {
+    target: { value: "joao@email.com" },
+  });
+
+  fireEvent.click(screen.getByText("SIM"));
+};
+
 describe("Testa o componente CadastroLaboratorio", () => {
   describe("Cadastro de laboratório", () => {
     beforeEach(async () => {
@@ -237,53 +287,7 @@ describe("Testa o componente CadastroLaboratorio", () => {
     });
 
     it("deve abrir modal de confirmação ao salvar", async () => {
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o Nome do Laboratório"),
-        { target: { value: "LAB TESTE" } },
-      );
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
-        { target: { value: "12.345.678/0001-99" } },
-      );
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
-        target: { value: "20931-900" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
-        target: { value: "Rua da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
-        target: { value: "123" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
-        target: { value: "Bairro da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
-        target: { value: "Rio de Janeiro" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
-        target: { value: "Rio de Janeiro" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
-        target: { value: "João" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
-        target: { value: "(11) 99999-9999" },
-      });
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o E-mail do Contato"),
-        { target: { value: "joao@email.com" } },
-      );
-
-      fireEvent.click(screen.getByText("SIM"));
+      preencherFormularioValido();
 
       fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
 
@@ -293,53 +297,7 @@ describe("Testa o componente CadastroLaboratorio", () => {
     });
 
     it("deve chamar cadastraLaboratorio ao confirmar", async () => {
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o Nome do Laboratório"),
-        { target: { value: "LAB TESTE" } },
-      );
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
-        { target: { value: "12.345.678/0001-99" } },
-      );
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
-        target: { value: "20931-900" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
-        target: { value: "Rua da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
-        target: { value: "123" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
-        target: { value: "Bairro da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
-        target: { value: "Rio de Janeiro" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
-        target: { value: "Rio de Janeiro" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
-        target: { value: "João" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
-        target: { value: "(11) 99999-9999" },
-      });
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o E-mail do Contato"),
-        { target: { value: "joao@email.com" } },
-      );
-
-      fireEvent.click(screen.getByText("SIM"));
+      preencherFormularioValido();
 
       fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
 
@@ -354,53 +312,7 @@ describe("Testa o componente CadastroLaboratorio", () => {
     });
 
     it("deve fechar modal de envio ao clicar em Não", async () => {
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o Nome do Laboratório"),
-        { target: { value: "LAB TESTE" } },
-      );
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
-        { target: { value: "12.345.678/0001-99" } },
-      );
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
-        target: { value: "20931-900" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
-        target: { value: "Rua da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
-        target: { value: "123" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
-        target: { value: "Bairro da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
-        target: { value: "Rio de Janeiro" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
-        target: { value: "Rio de Janeiro" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
-        target: { value: "João" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
-        target: { value: "(11) 99999-9999" },
-      });
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o E-mail do Contato"),
-        { target: { value: "joao@email.com" } },
-      );
-
-      fireEvent.click(screen.getByText("SIM"));
+      preencherFormularioValido();
 
       fireEvent.click(
         screen.getByRole("button", {
@@ -425,53 +337,8 @@ describe("Testa o componente CadastroLaboratorio", () => {
       cadastraLaboratorio.mockResolvedValueOnce({
         status: 500,
       });
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o Nome do Laboratório"),
-        { target: { value: "LAB TESTE" } },
-      );
 
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
-        { target: { value: "12.345.678/0001-99" } },
-      );
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
-        target: { value: "20931-900" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
-        target: { value: "Rua da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
-        target: { value: "123" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
-        target: { value: "Bairro da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
-        target: { value: "Rio de Janeiro" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
-        target: { value: "Rio de Janeiro" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
-        target: { value: "João" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
-        target: { value: "(11) 99999-9999" },
-      });
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o E-mail do Contato"),
-        { target: { value: "joao@email.com" } },
-      );
-
-      fireEvent.click(screen.getByText("SIM"));
+      preencherFormularioValido();
 
       fireEvent.click(
         screen.getByRole("button", {
@@ -494,53 +361,8 @@ describe("Testa o componente CadastroLaboratorio", () => {
 
     it("deve chamar cadastraLaboratorio ao confirmar retornando `exibirErro`", async () => {
       cadastraLaboratorio.mockRejectedValueOnce(new Error("erro"));
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o Nome do Laboratório"),
-        { target: { value: "LAB TESTE" } },
-      );
 
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
-        { target: { value: "12.345.678/0001-99" } },
-      );
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
-        target: { value: "20931-900" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
-        target: { value: "Rua da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
-        target: { value: "123" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
-        target: { value: "Bairro da Central" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
-        target: { value: "Rio de Janeiro" },
-      });
-      fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
-        target: { value: "Rio de Janeiro" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
-        target: { value: "João" },
-      });
-
-      fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
-        target: { value: "(11) 99999-9999" },
-      });
-
-      fireEvent.change(
-        screen.getByPlaceholderText("Digite o E-mail do Contato"),
-        { target: { value: "joao@email.com" } },
-      );
-
-      fireEvent.click(screen.getByText("SIM"));
+      preencherFormularioValido();
 
       fireEvent.click(
         screen.getByRole("button", {
