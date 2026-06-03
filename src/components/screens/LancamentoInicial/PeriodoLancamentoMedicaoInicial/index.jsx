@@ -566,7 +566,18 @@ export default () => {
 
       const tiposAlimentacaoInclusaoContinua =
         getTiposAlimentacaoInclusoesContinuas(response_inclusoes_autorizadas);
-      const cloneTiposAlimentacao = deepCopy(tipos_alimentacao);
+      const cloneTiposAlimentacao = deepCopy(tipos_alimentacao).map(
+        (alimentacao) => {
+          if (typeof alimentacao === "string") {
+            return { nome: alimentacao };
+          }
+
+          return {
+            ...alimentacao,
+            nome: alimentacao?.nome ?? alimentacao?.name ?? "",
+          };
+        },
+      );
 
       const tiposAlimentacaoFormatadas = cloneTiposAlimentacao
         .filter((alimentacao) => alimentacao.nome !== "Lanche Emergencial")
@@ -1158,6 +1169,7 @@ export default () => {
             escola.uuid,
             mes,
             ano,
+            location.state.recreioNasFerias,
           );
         setKitLanchesAutorizadas(response_kit_lanches_autorizadas);
 

@@ -65,9 +65,11 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
     mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
       periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
     });
-    mock
-      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
-      .reply(200, { results: [] });
+    mock.onGet("/escola-solicitacoes/kit-lanches-autorizadas/").reply(200, {
+      results: [
+        { dia: "06", numero_alunos: 10, kit_lanche_id_externo: "0B9FF" },
+      ],
+    });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
       .reply(200, { results: [] });
@@ -135,6 +137,14 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
   it("Renderiza períodos Recreio nas Férias e Colaboradores", () => {
     expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
     expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+  });
+
+  it("Renderiza período Solicitações de Alimentação durante recreio quando há kit lanche autorizado", () => {
+    return waitFor(() => {
+      expect(
+        screen.getByText("Solicitações de Alimentação"),
+      ).toBeInTheDocument();
+    });
   });
 });
 

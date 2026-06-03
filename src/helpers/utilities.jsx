@@ -980,7 +980,7 @@ export const ehEscolaTipoCEUGESTAO = (nome_escola) => {
 };
 
 export const escolaNaoPossuiAlunosRegulares = (solicitacaoMedicaoInicial) => {
-  return solicitacaoMedicaoInicial.escola_possui_alunos_regulares === false;
+  return solicitacaoMedicaoInicial?.escola_possui_alunos_regulares === false;
 };
 
 export const recreioNasFeriasDaMedicao = (solicitacaoMedicaoInicial) => {
