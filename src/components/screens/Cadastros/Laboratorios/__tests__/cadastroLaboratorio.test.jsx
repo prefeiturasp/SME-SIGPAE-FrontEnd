@@ -78,26 +78,28 @@ const preencherFormularioValido = () => {
   fireEvent.click(screen.getByText("SIM"));
 };
 
+const mockListaLaboratorios = {
+  data: {
+    results: [
+      {
+        nome: "Laboratorio São Paulo",
+        cnpj: "22345678000199",
+      },
+      {
+        nome: "Laboratorio Rio de Janeiro",
+        cnpj: "12345678000199",
+      },
+    ],
+  },
+  status: 200,
+};
+
 describe("Testa o componente CadastroLaboratorio", () => {
   describe("Cadastro de laboratório", () => {
     beforeEach(async () => {
       jest.clearAllMocks();
 
-      getListaLaboratorios.mockResolvedValue({
-        data: {
-          results: [
-            {
-              nome: "Laboratorio São Paulo",
-              cnpj: "22345678000199",
-            },
-            {
-              nome: "Laboratorio Rio de Janeiro",
-              cnpj: "12345678000199",
-            },
-          ],
-        },
-        status: 200,
-      });
+      getListaLaboratorios.mockResolvedValue(mockListaLaboratorios);
 
       getEnderecoPorCEP.mockResolvedValue({
         status: 200,
@@ -387,21 +389,7 @@ describe("Testa o componente CadastroLaboratorio", () => {
     beforeEach(async () => {
       jest.clearAllMocks();
 
-      getListaLaboratorios.mockResolvedValue({
-        data: {
-          results: [
-            {
-              nome: "Laboratorio São Paulo",
-              cnpj: "22345678000199",
-            },
-            {
-              nome: "Laboratorio Rio de Janeiro",
-              cnpj: "12345678000199",
-            },
-          ],
-        },
-        status: 200,
-      });
+      getListaLaboratorios.mockResolvedValue(mockListaLaboratorios);
 
       getLaboratorio.mockResolvedValue({
         data: {
