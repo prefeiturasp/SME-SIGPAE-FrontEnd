@@ -62,9 +62,13 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   arrayCategoriesValues
     .filter(([key]) => !key.includes("observacoes"))
     .forEach((arr) => {
+      const extrairNumeros = (texto) => texto?.match(/\d/g)?.join("");
       const keySplitted = arr[0].split("__");
       const categoria = keySplitted.pop();
-      const idCategoria = categoria.match(/\d/g).join("");
+      const idCategoria = extrairNumeros(categoria);
+      if (!idCategoria) {
+        return;
+      }
       let dia = null;
       const nome_campo = keySplitted[0];
 
@@ -74,7 +78,11 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
         ehProgramasEProjetosLocation ||
         ehGrupoColaboradores
       ) {
-        dia = keySplitted[1].match(/\d/g).join("");
+        const diaParte = keySplitted.find((parte) => parte.includes("dia_"));
+        dia = extrairNumeros(diaParte);
+        if (!dia) {
+          return;
+        }
         return valoresMedicao.push({
           dia: dia,
           valor: ["<p></p>\n", ""].includes(arr[1]) ? 0 : arr[1],
@@ -82,8 +90,15 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
           categoria_medicao: idCategoria,
         });
       } else {
-        dia = keySplitted[2].match(/\d/g).join("");
-        const uuid_faixa_etaria = keySplitted[1].replace("faixa_", "");
+        const diaParte = keySplitted.find((parte) => parte.includes("dia_"));
+        dia = extrairNumeros(diaParte);
+        const faixaParte = keySplitted.find((parte) =>
+          parte.includes("faixa_"),
+        );
+        const uuid_faixa_etaria = faixaParte?.replace("faixa_", "") || null;
+        if (!dia) {
+          return;
+        }
         return valoresMedicao.push({
           dia: dia,
           valor: ["<p></p>\n", ""].includes(arr[1]) ? 0 : arr[1],
@@ -221,6 +236,12 @@ export const desabilitarField = (
   ehRecreioNasFerias,
   categoriasDeMedicao,
 ) => {
+  const mesConsiderado = format(mesAnoConsiderado, "LLLL", {
+    locale: ptBR,
+  }).toString();
+  const mesAtual = format(mesAnoDefault, "LLLL", {
+    locale: ptBR,
+  }).toString();
   let alimentacoesLancamentosEspeciaisDia = [];
   const valorAtual =
     values[`${rowName}__dia_${dia}__categoria_${categoria}`] ??
@@ -230,6 +251,16 @@ export const desabilitarField = (
 
   if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {
     return true;
+  }
+
+  if (ehRecreioNasFerias) {
+    if (
+      mesConsiderado === mesAtual &&
+      Number(dia) >= format(mesAnoDefault, "dd") &&
+      !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)
+    ) {
+      return true;
+    }
   }
 
   if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
@@ -523,13 +554,6 @@ export const desabilitarField = (
     }
   }
 
-  const mesConsiderado = format(mesAnoConsiderado, "LLLL", {
-    locale: ptBR,
-  }).toString();
-  const mesAtual = format(mesAnoDefault, "LLLL", {
-    locale: ptBR,
-  }).toString();
-
   if (nomeCategoria.includes("SOLICITAÇÕES")) {
     if (
       (!kitLanchesAutorizadas?.some((kitLanche) => kitLanche.dia === dia) &&
@@ -780,12 +804,14 @@ export const getSolicitacoesKitLanchesAutorizadasAsync = async (
   escolaUuuid,
   mes,
   ano,
+  recreioNasFerias = undefined,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
   params["tipo_solicitacao"] = "Kit Lanche";
   params["mes"] = mes;
   params["ano"] = ano;
+  params["recreio_nas_ferias"] = recreioNasFerias;
   const responseKitLanchesAutorizadas =
     await getSolicitacoesKitLanchesAutorizadasEscola(params);
   if (responseKitLanchesAutorizadas.status === HTTP_STATUS.OK) {
