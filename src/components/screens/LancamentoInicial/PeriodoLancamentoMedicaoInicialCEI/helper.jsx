@@ -62,9 +62,13 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
   arrayCategoriesValues
     .filter(([key]) => !key.includes("observacoes"))
     .forEach((arr) => {
+      const extrairNumeros = (texto) => texto?.match(/\d/g)?.join("");
       const keySplitted = arr[0].split("__");
       const categoria = keySplitted.pop();
-      const idCategoria = categoria.match(/\d/g).join("");
+      const idCategoria = extrairNumeros(categoria);
+      if (!idCategoria) {
+        return;
+      }
       let dia = null;
       const nome_campo = keySplitted[0];
 
@@ -74,7 +78,11 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
         ehProgramasEProjetosLocation ||
         ehGrupoColaboradores
       ) {
-        dia = keySplitted[1].match(/\d/g).join("");
+        const diaParte = keySplitted.find((parte) => parte.includes("dia_"));
+        dia = extrairNumeros(diaParte);
+        if (!dia) {
+          return;
+        }
         return valoresMedicao.push({
           dia: dia,
           valor: ["<p></p>\n", ""].includes(arr[1]) ? 0 : arr[1],
@@ -82,8 +90,15 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
           categoria_medicao: idCategoria,
         });
       } else {
-        dia = keySplitted[2].match(/\d/g).join("");
-        const uuid_faixa_etaria = keySplitted[1].replace("faixa_", "");
+        const diaParte = keySplitted.find((parte) => parte.includes("dia_"));
+        dia = extrairNumeros(diaParte);
+        const faixaParte = keySplitted.find((parte) =>
+          parte.includes("faixa_"),
+        );
+        const uuid_faixa_etaria = faixaParte?.replace("faixa_", "") || null;
+        if (!dia) {
+          return;
+        }
         return valoresMedicao.push({
           dia: dia,
           valor: ["<p></p>\n", ""].includes(arr[1]) ? 0 : arr[1],
@@ -789,12 +804,14 @@ export const getSolicitacoesKitLanchesAutorizadasAsync = async (
   escolaUuuid,
   mes,
   ano,
+  recreioNasFerias = undefined,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
   params["tipo_solicitacao"] = "Kit Lanche";
   params["mes"] = mes;
   params["ano"] = ano;
+  params["recreio_nas_ferias"] = recreioNasFerias;
   const responseKitLanchesAutorizadas =
     await getSolicitacoesKitLanchesAutorizadasEscola(params);
   if (responseKitLanchesAutorizadas.status === HTTP_STATUS.OK) {

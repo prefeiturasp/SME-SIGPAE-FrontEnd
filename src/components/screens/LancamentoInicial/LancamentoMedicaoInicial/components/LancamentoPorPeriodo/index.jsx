@@ -141,11 +141,17 @@ export const LancamentoPorPeriodo = ({
   const getSolicitacoesKitLanchesAutorizadasAsync = async () => {
     const escola_uuid = escolaInstituicao.uuid;
     const tipo_solicitacao = "Kit Lanche";
+    const recreioNasFeriasUuid =
+      typeof solicitacaoMedicaoInicial?.recreio_nas_ferias === "string"
+        ? solicitacaoMedicaoInicial.recreio_nas_ferias
+        : solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid ||
+          new URLSearchParams(window.location.search).get("recreio_nas_ferias");
     const response = await getSolicitacoesKitLanchesAutorizadasEscola({
       escola_uuid,
       mes,
       ano,
       tipo_solicitacao,
+      recreio_nas_ferias: recreioNasFeriasUuid,
     });
     if (response.status === HTTP_STATUS.OK) {
       setSolicitacoesKitLanchesAutorizadas(response.data.results);
@@ -624,6 +630,21 @@ export const LancamentoPorPeriodo = ({
                   periodoSelecionado={periodoSelecionado}
                   solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                   objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  quantidadeAlimentacoesLancadas={
+                    quantidadeAlimentacoesLancadas
+                  }
+                  errosAoSalvar={errosAoSalvar}
+                />
+              )}
+              {solicitacoesKitLanchesAutorizadas?.length > 0 && (
+                <CardLancamento
+                  grupo="Solicitações de Alimentação"
+                  cor={CORES[5]}
+                  tipos_alimentacao={["Kit Lanche", "Lanche Emergencial"]}
+                  periodoSelecionado={periodoSelecionado}
+                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                  objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  ehGrupoSolicitacoesDeAlimentacao={true}
                   quantidadeAlimentacoesLancadas={
                     quantidadeAlimentacoesLancadas
                   }

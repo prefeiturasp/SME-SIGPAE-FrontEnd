@@ -438,6 +438,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             escola.uuid,
             mes,
             ano,
+            location.state.recreioNasFerias,
           );
         setKitLanchesAutorizadas(response_kit_lanches_autorizadas);
 
@@ -1172,6 +1173,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       ...dadosValoresForaDoMes,
       semanaSelecionada,
     });
+
+    const possuiValoresPreenchidosSolicitacoes =
+      ehSolicitacoesAlimentacaoLocation &&
+      Object.keys(dadosValoresKitLanchesAutorizadas).length > 0;
+
+    if (possuiValoresPreenchidosSolicitacoes) {
+      setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
+    }
+
     setLoading(false);
   };
 
@@ -2581,7 +2592,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     if (
       ehRecreioNasFerias() &&
       !(ehGrupoColaboradores() || ehRecreioEmeiDaCemei()) &&
-      !(nomeCategoria === "ALIMENTAÇÃO" || linha.nome === "Observações")
+      !(
+        nomeCategoria === "ALIMENTAÇÃO" ||
+        nomeCategoria.includes("SOLICITAÇÕES") ||
+        linha.nome === "Observações"
+      )
     ) {
       return (
         faixasAtivasPorTipo?.[nomeCategoria]?.includes(linha.uuid) ?? false
