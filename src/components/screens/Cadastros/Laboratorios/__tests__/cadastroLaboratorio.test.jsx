@@ -16,9 +16,17 @@ import {
   getListaLaboratorios,
 } from "src/services/laboratorio.service";
 import { getEnderecoPorCEP } from "src/services/cep.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+
+import { exibeError } from "src/helpers/utilities";
 
 jest.mock("src/services/laboratorio.service");
 jest.mock("src/services/cep.service");
+jest.mock("src/components/Shareable/Toast/dialogs", () => ({
+  toastError: jest.fn(),
+}));
+
+jest.mock("src/helpers/utilities");
 
 describe("Testa o componente CadastroLaboratorio", () => {
   describe("Cadastro de laboratório", () => {
@@ -412,6 +420,144 @@ describe("Testa o componente CadastroLaboratorio", () => {
         ).not.toBeInTheDocument();
       });
     });
+
+    it("deve chamar cadastraLaboratorio ao confirmar retornando 500", async () => {
+      cadastraLaboratorio.mockResolvedValueOnce({
+        status: 500,
+      });
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o Nome do Laboratório"),
+        { target: { value: "LAB TESTE" } },
+      );
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
+        { target: { value: "12.345.678/0001-99" } },
+      );
+
+      fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
+        target: { value: "20931-900" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
+        target: { value: "Rua da Central" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
+        target: { value: "123" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
+        target: { value: "Bairro da Central" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
+        target: { value: "Rio de Janeiro" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
+        target: { value: "Rio de Janeiro" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
+        target: { value: "João" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
+        target: { value: "(11) 99999-9999" },
+      });
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o E-mail do Contato"),
+        { target: { value: "joao@email.com" } },
+      );
+
+      fireEvent.click(screen.getByText("SIM"));
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Salvar",
+        }),
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Sim",
+        }),
+      );
+
+      await waitFor(() => {
+        expect(toastError).toHaveBeenCalledWith(
+          "Ocorreu um erro ao salvar o Laboratório",
+        );
+      });
+    });
+
+    it("deve chamar cadastraLaboratorio ao confirmar retornando `exibirErro`", async () => {
+      cadastraLaboratorio.mockRejectedValueOnce(new Error("erro"));
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o Nome do Laboratório"),
+        { target: { value: "LAB TESTE" } },
+      );
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o CNPJ do Laboratório"),
+        { target: { value: "12.345.678/0001-99" } },
+      );
+
+      fireEvent.change(screen.getByPlaceholderText("Digite o CEP"), {
+        target: { value: "20931-900" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome do Logradouro"), {
+        target: { value: "Rua da Central" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Digite o número"), {
+        target: { value: "123" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome do Bairro"), {
+        target: { value: "Bairro da Central" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome da Cidade"), {
+        target: { value: "Rio de Janeiro" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Nome do Estado"), {
+        target: { value: "Rio de Janeiro" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("Nome do Contato"), {
+        target: { value: "João" },
+      });
+
+      fireEvent.change(screen.getByPlaceholderText("(00) 0000-00000"), {
+        target: { value: "(11) 99999-9999" },
+      });
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o E-mail do Contato"),
+        { target: { value: "joao@email.com" } },
+      );
+
+      fireEvent.click(screen.getByText("SIM"));
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Salvar",
+        }),
+      );
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: "Sim",
+        }),
+      );
+
+      await waitFor(() => {
+        expect(exibeError).toHaveBeenCalled();
+      });
+    });
   });
 
   describe("Visualização de laboratório", () => {
@@ -496,6 +642,15 @@ describe("Testa o componente CadastroLaboratorio", () => {
         );
       });
     });
+    it("deve manter todos os campos desabilitados", async () => {
+      await screen.findByDisplayValue("Laboratorio São Paulo");
+
+      expect(screen.getByDisplayValue("Laboratorio São Paulo")).toBeDisabled();
+
+      expect(screen.getByDisplayValue("JOSE")).toBeDisabled();
+
+      expect(screen.getByDisplayValue("email@gmail.com")).toBeDisabled();
+    });
 
     it("deve exibir o credenciamento em modo somente leitura", async () => {
       expect(await screen.findByDisplayValue("Sim")).toBeInTheDocument();
@@ -539,16 +694,23 @@ describe("Testa o componente CadastroLaboratorio", () => {
       expect(possuiLixeira).toBe(false);
     });
 
-    it("deve manter todos os campos desabilitados", async () => {
-      await screen.findByDisplayValue("Laboratorio São Paulo");
+    it("deve exibir erro ao falhar ao carregar laboratório", async () => {
+      getLaboratorio.mockRejectedValueOnce(new Error("erro"));
 
-      expect(screen.getByDisplayValue("Laboratorio São Paulo")).toBeDisabled();
+      const search = `?uuid=${uuidLaboratorio}`;
+      window.history.pushState({}, "", search);
 
-      expect(screen.getByDisplayValue("04.060.448/0001-51")).toBeDisabled();
+      render(
+        <MemoryRouter>
+          <CadastroLaboratorio naoEditavel={true} />
+        </MemoryRouter>,
+      );
 
-      expect(screen.getByDisplayValue("JOSE")).toBeDisabled();
-
-      expect(screen.getByDisplayValue("email@gmail.com")).toBeDisabled();
+      await waitFor(() => {
+        expect(toastError).toHaveBeenCalledWith(
+          "Ocorreu um erro ao carregar dados do laboratório",
+        );
+      });
     });
   });
 });
