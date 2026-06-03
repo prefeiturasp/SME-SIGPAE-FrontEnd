@@ -1618,6 +1618,16 @@ export default () => {
       ...dadosValoresForaDoMes,
       semanaSelecionada,
     });
+
+    const possuiValoresPreenchidosSolicitacoes =
+      ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
+      Object.keys(dadosValoresKitLanchesAutorizadas).length > 0;
+
+    if (possuiValoresPreenchidosSolicitacoes) {
+      setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
+    }
+
     setLoading(false);
   };
 

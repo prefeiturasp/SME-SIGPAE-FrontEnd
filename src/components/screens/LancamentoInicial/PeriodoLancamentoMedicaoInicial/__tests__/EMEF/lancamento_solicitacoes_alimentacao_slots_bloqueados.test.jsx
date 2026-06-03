@@ -177,6 +177,11 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     expect(inputKitLancheDia06).not.toBeDisabled();
   });
 
+  it("habilita o botão Salvar Lançamentos quando há kits autorizados já carregados", () => {
+    const botao = screen.getByRole("button", { name: /salvar lançamentos/i });
+    expect(botao).not.toBeDisabled();
+  });
+
   it("consulta lanche emergencial sem filtrar por nome do período escolar", () => {
     expect(alteracoesAlimentacaoParams.length).toBeGreaterThan(0);
     expect(alteracoesAlimentacaoParams).toEqual(
