@@ -16,7 +16,7 @@ import {
   getListaLaboratorios,
 } from "src/services/laboratorio.service";
 import { getEnderecoPorCEP } from "src/services/cep.service";
-import preview from "jest-preview";
+
 jest.mock("src/services/laboratorio.service");
 jest.mock("src/services/cep.service");
 
@@ -414,7 +414,7 @@ describe("Testa o componente CadastroLaboratorio", () => {
     });
   });
 
-  describe.only("Edição de laboratório", () => {
+  describe("Visualização de laboratório", () => {
     const uuidLaboratorio = "41b140d4-580e-4783-999f-42beae4352a5";
     beforeEach(async () => {
       jest.clearAllMocks();
@@ -480,7 +480,7 @@ describe("Testa o componente CadastroLaboratorio", () => {
         },
       });
 
-      const search = `?uuid=${uuidLaboratorio}`;
+      const search = `detalhar?uuid=${uuidLaboratorio}`;
       window.history.pushState({}, "", search);
       await act(async () => {
         render(
@@ -497,8 +497,58 @@ describe("Testa o componente CadastroLaboratorio", () => {
       });
     });
 
-    it("deve renderizar os títulos principais", async () => {
-      preview.debug();
+    it("deve exibir o credenciamento em modo somente leitura", async () => {
+      expect(await screen.findByDisplayValue("Sim")).toBeInTheDocument();
+    });
+
+    it("não deve exibir radios de credenciamento", async () => {
+      expect(screen.queryByText("SIM")).not.toBeInTheDocument();
+
+      expect(screen.queryByText("NÃO")).not.toBeInTheDocument();
+    });
+
+    it("não deve exibir botão salvar", async () => {
+      expect(
+        screen.queryByRole("button", {
+          name: "Salvar",
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("não deve exibir botão cancelar", async () => {
+      expect(
+        screen.queryByRole("button", {
+          name: "Cancelar",
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("não deve exibir botão adicionar contato", async () => {
+      expect(
+        screen.queryByRole("button", {
+          name: "+",
+        }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("não deve exibir botão remover contato", async () => {
+      const possuiLixeira = screen
+        .queryAllByRole("button")
+        .some((btn) => btn.querySelector(".fa-trash"));
+
+      expect(possuiLixeira).toBe(false);
+    });
+
+    it("deve manter todos os campos desabilitados", async () => {
+      await screen.findByDisplayValue("Laboratorio São Paulo");
+
+      expect(screen.getByDisplayValue("Laboratorio São Paulo")).toBeDisabled();
+
+      expect(screen.getByDisplayValue("04.060.448/0001-51")).toBeDisabled();
+
+      expect(screen.getByDisplayValue("JOSE")).toBeDisabled();
+
+      expect(screen.getByDisplayValue("email@gmail.com")).toBeDisabled();
     });
   });
 });
