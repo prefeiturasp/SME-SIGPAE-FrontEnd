@@ -1280,6 +1280,7 @@ export const validacoesTabelasDietas = (
   } else if (
     inputName.includes("frequencia") &&
     !location.state.periodo?.includes("INTEGRAL") &&
+    !location.state.recreioNasFerias &&
     categoria !== idCategoriaAlimentacao &&
     value &&
     totalLanchesDieta &&
