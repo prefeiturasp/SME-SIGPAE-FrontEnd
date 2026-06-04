@@ -653,7 +653,9 @@ export const LancamentoPorPeriodo = ({
                   errosAoSalvar={errosAoSalvar}
                 />
               )}
-              {solicitacoesKitLanchesAutorizadas?.length > 0 && (
+              {(solicitacoesKitLanchesAutorizadas?.length > 0 ||
+                solicitacoesAlteracaoLancheEmergencialAutorizadas?.length > 0 ||
+                temLancheEmergencialDiarioAtivo) && (
                 <CardLancamento
                   grupo="Solicitações de Alimentação"
                   cor={CORES[5]}

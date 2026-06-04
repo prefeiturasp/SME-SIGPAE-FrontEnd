@@ -673,8 +673,12 @@ export const LancamentoPorPeriodoCEI = ({
                 {recreioNasFeriasDaMedicaoEMEIdaCEMEI(
                   solicitacaoMedicaoInicial,
                 ) &&
-                  solicitacoesKitLanchesAutorizadas &&
-                  solicitacoesKitLanchesAutorizadas.length > 0 && (
+                  ((solicitacoesKitLanchesAutorizadas &&
+                    solicitacoesKitLanchesAutorizadas.length > 0) ||
+                    (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
+                      solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
+                        0) ||
+                    temLancheEmergencialDiarioAtivo) && (
                     <CardLancamentoCEI
                       textoCabecalho={"Solicitações de Alimentação"}
                       cor={CORES[5]}
