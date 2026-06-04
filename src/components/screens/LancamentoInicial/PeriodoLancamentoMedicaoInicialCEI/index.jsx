@@ -369,6 +369,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       setDiasSobremesaDoce(response_sobremesa_doce);
 
       let response_inclusoes_autorizadas = [];
+      const recreioNasFeriasUuid =
+        typeof location?.state?.solicitacaoMedicaoInicial
+          ?.recreio_nas_ferias === "string"
+          ? location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
+          : location?.state?.solicitacaoMedicaoInicial?.recreio_nas_ferias
+              ?.uuid ||
+            new URLSearchParams(window.location.search).get(
+              "recreio_nas_ferias",
+            );
+
       response_inclusoes_autorizadas =
         await getSolicitacoesInclusaoAutorizadasAsync(
           escola.uuid,
@@ -404,6 +414,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           mes,
           ano,
           ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
+          false,
+          recreioNasFeriasUuid,
         );
       setAlteracoesAlimentacaoAutorizadas(
         response_alteracoes_alimentacao_autorizadas,
@@ -417,6 +429,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             ano,
             ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
             true,
+            recreioNasFeriasUuid,
           );
         setAlteracoesLancheEmergencialAutorizadas(
           response_alteracoes_lanche_emergencial_autorizadas,
@@ -451,6 +464,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             ano,
             undefined,
             true,
+            recreioNasFeriasUuid,
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
