@@ -2444,6 +2444,7 @@ export default () => {
         categoria,
         column,
         value,
+        row,
       ) ||
       exibirTooltipRPLAutorizadas(
         formValuesAtualizados,
