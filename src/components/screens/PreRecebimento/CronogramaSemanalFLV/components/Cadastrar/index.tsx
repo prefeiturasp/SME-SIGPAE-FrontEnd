@@ -18,7 +18,11 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { required } from "src/helpers/fieldValidators";
+import {
+  composeValidators,
+  naoPodeSerZero,
+  required,
+} from "src/helpers/fieldValidators";
 import {
   exibeError,
   formataMilharDecimal,
@@ -42,6 +46,7 @@ import {
 } from "src/interfaces/cronograma_semanal.interface";
 import { obterLimitesMes, formataDataISOparaDDMMYYYY } from "./helpers";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import {
   PRE_RECEBIMENTO,
   CRONOGRAMA_SEMANAL_FLV,
@@ -82,6 +87,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
   const [carregando, setCarregando] = useState(false);
   const [edicao, setEdicao] = useState(false);
   const [showModalAssinatura, setShowModalAssinatura] = useState(false);
+  const [showModalExcesso, setShowModalExcesso] = useState(false);
   const [loadingAssinatura, setLoadingAssinatura] = useState(false);
   const [cronogramasMensal, setCronogramasMensal] = useState<
     CronogramaMensalSimples[]
@@ -530,12 +536,16 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       return false;
     }
 
-    const diferenca = calcularDiferenca(values.programacoes);
-    if (diferenca !== 0) {
-      return false;
-    }
-
     return true;
+  };
+
+  const quantidadeAcimaDoPrevisto = (
+    programacoes: FormValues["programacoes"],
+  ): boolean => {
+    if (!cronogramaMensalSelecionado) return false;
+    const quantidadeEstimada = calcularQuantidadeEstimada(programacoes);
+    if (quantidadeEstimada === 0) return false;
+    return calcularDiferenca(programacoes) < 0;
   };
 
   return (
@@ -747,6 +757,8 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         showMonthYearPicker={false}
                                         dateFormat="DD/MM/YYYY"
                                         dateFormatPicker="dd/MM/yyyy"
+                                        required
+                                        validate={required}
                                         minDate={
                                           obterLimitesMes(
                                             values.programacoes?.[index]
@@ -778,6 +790,8 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         showMonthYearPicker={false}
                                         dateFormat="DD/MM/YYYY"
                                         dateFormatPicker="dd/MM/yyyy"
+                                        required
+                                        validate={required}
                                         minDate={
                                           (values.programacoes?.[index]
                                             ?.data_inicio &&
@@ -805,6 +819,11 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         label="Quantidade da Entrega"
                                         name={`${name}.quantidade`}
                                         placeholder="Informe a quantidade"
+                                        required
+                                        validate={composeValidators(
+                                          required,
+                                          naoPodeSerZero,
+                                        )}
                                         agrupadorMilharComDecimal
                                       />
                                     </div>
@@ -854,7 +873,15 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                               style={BUTTON_STYLE.GREEN}
                               className="float-end"
                               disabled={!formularioValido(values, errors)}
-                              onClick={() => setShowModalAssinatura(true)}
+                              onClick={() => {
+                                if (
+                                  quantidadeAcimaDoPrevisto(values.programacoes)
+                                ) {
+                                  setShowModalExcesso(true);
+                                } else {
+                                  setShowModalAssinatura(true);
+                                }
+                              }}
                               dataTestId="botao-atualizar"
                             />
                           )}
@@ -867,7 +894,17 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                 style={BUTTON_STYLE.GREEN}
                                 className="float-end"
                                 disabled={!formularioValido(values, errors)}
-                                onClick={() => setShowModalAssinatura(true)}
+                                onClick={() => {
+                                  if (
+                                    quantidadeAcimaDoPrevisto(
+                                      values.programacoes,
+                                    )
+                                  ) {
+                                    setShowModalExcesso(true);
+                                  } else {
+                                    setShowModalAssinatura(true);
+                                  }
+                                }}
                                 dataTestId="botao-assinar-enviar"
                               />
                               <Botao
@@ -907,6 +944,19 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
         texto="Deseja salvar o Cadastro do Cronograma e enviar para aprovação?"
         textoBotao="Salvar e Enviar"
         textoBotaoNao="Continuar Editando"
+      />
+
+      <ModalGenerico
+        show={showModalExcesso}
+        titulo="Atenção - Quantidade Excedente"
+        texto="A quantidade da entrega informada está acima do quantitativo mensal previsto para este cronograma. Deseja continuar com o envio?"
+        textoBotaoClose="Continuar Editando"
+        textoBotaoSim="Salvar e Enviar"
+        handleClose={() => setShowModalExcesso(false)}
+        handleSim={() => {
+          setShowModalExcesso(false);
+          setShowModalAssinatura(true);
+        }}
       />
     </>
   );
