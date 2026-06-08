@@ -489,7 +489,8 @@ export const desabilitarField = (
       (!temLancheEmergencialAutorizadoNoDia &&
         !temLancheEmergencialDiarioAtivoNoDia &&
         rowName === "lanche_emergencial") ||
-      (!validacaoDiaLetivoLancheEmergencial(dia) &&
+      (temLancheEmergencialDiarioAtivoNoDia &&
+        !validacaoDiaLetivoLancheEmergencial(dia) &&
         rowName === "lanche_emergencial") ||
       validacaoSemana(dia) ||
       (mesConsiderado === mesAtual &&
