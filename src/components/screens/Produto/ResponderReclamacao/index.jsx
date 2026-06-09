@@ -85,7 +85,7 @@ const TabelaProdutos = ({
                       onClick={() => {
                         ativos.includes(indexProduto)
                           ? setAtivos(
-                              ativos.filter((el) => el !== indexProduto)
+                              ativos.filter((el) => el !== indexProduto),
                             )
                           : setAtivos([...ativos, indexProduto]);
                       }}
@@ -124,13 +124,10 @@ const TabelaProdutos = ({
                           produtos={produtos}
                           produto={produto}
                           setCarregando={setCarregando}
-                          rastro_terceirizada={
-                            produto.ultima_homologacao.rastro_terceirizada
-                          }
                         />,
                         deveMostrarBarraHorizontal && <hr />,
                       ];
-                    }
+                    },
                   )}
 
                   <div className="mt-4 mb-5"> &nbsp;</div>
@@ -270,10 +267,10 @@ const mapDispatchToProps = (dispatch) =>
       setProdutos,
       reset,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(ResponderReclamacaoProduto);
