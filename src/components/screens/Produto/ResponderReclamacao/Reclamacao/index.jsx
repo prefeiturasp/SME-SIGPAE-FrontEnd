@@ -85,7 +85,6 @@ const Reclamacao = ({
   produto,
   setProdutos,
   setCarregando,
-  rastro_terceirizada,
 }) => {
   const [exibirModal, setExibirModal] = useState(null);
 
@@ -107,10 +106,10 @@ const Reclamacao = ({
   };
 
   const responder_deve_aparecer = (reclamacao_status) => {
-    if (rastro_terceirizada === null) {
+    if (!reclamacao?.escola?.lote?.terceirizada?.nome_fantasia) {
       return false;
     } else if (
-      `"${rastro_terceirizada.nome_fantasia}"` !==
+      `"${reclamacao?.escola?.lote?.terceirizada?.nome_fantasia}"` !==
       localStorage.getItem("nome_instituicao")
     ) {
       return false;
