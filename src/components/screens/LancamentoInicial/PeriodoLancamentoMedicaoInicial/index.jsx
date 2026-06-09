@@ -543,6 +543,15 @@ export default () => {
 
       const mes = format(mesAnoSelecionado, "MM");
       const ano = getYear(mesAnoSelecionado);
+      const recreioNasFeriasUuid =
+        typeof location?.state?.solicitacaoMedicaoInicial
+          ?.recreio_nas_ferias === "string"
+          ? location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
+          : location?.state?.solicitacaoMedicaoInicial?.recreio_nas_ferias
+              ?.uuid ||
+            new URLSearchParams(window.location.search).get(
+              "recreio_nas_ferias",
+            );
 
       let response_inclusoes_autorizadas = [];
       response_inclusoes_autorizadas =
@@ -1078,6 +1087,8 @@ export default () => {
             mes,
             ano,
             periodo.periodo_escolar.nome,
+            false,
+            recreioNasFeriasUuid,
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
@@ -1090,6 +1101,7 @@ export default () => {
             ano,
             periodo.periodo_escolar.nome,
             true,
+            recreioNasFeriasUuid,
           );
         setAlteracoesLancheEmergencialAutorizadas(
           response_alteracoes_lanche_emergencial_autorizadas,
@@ -1180,6 +1192,7 @@ export default () => {
             ano,
             undefined,
             true,
+            recreioNasFeriasUuid,
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
@@ -2431,6 +2444,7 @@ export default () => {
         categoria,
         column,
         value,
+        row,
       ) ||
       exibirTooltipRPLAutorizadas(
         formValuesAtualizados,
