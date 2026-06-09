@@ -780,6 +780,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
   ano,
   nomePeriodoEscolar,
   ehLancheEmergencial = false,
+  recreioNasFerias = undefined,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -787,6 +788,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
   params["mes"] = mes;
   params["ano"] = ano;
   params["eh_lanche_emergencial"] = ehLancheEmergencial;
+  params["recreio_nas_ferias"] = recreioNasFerias;
   if (nomePeriodoEscolar) {
     params["nome_periodo_escolar"] = nomePeriodoEscolar;
   }

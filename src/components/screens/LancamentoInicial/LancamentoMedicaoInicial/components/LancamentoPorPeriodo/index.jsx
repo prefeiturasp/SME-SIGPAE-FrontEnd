@@ -166,11 +166,19 @@ export const LancamentoPorPeriodo = ({
   const getSolicitacoesAlteracaoLancheEmergencialAutorizadasAsync =
     async () => {
       const params = {};
+      const recreioNasFeriasUuid =
+        typeof solicitacaoMedicaoInicial?.recreio_nas_ferias === "string"
+          ? solicitacaoMedicaoInicial.recreio_nas_ferias
+          : solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid ||
+            new URLSearchParams(window.location.search).get(
+              "recreio_nas_ferias",
+            );
       params["escola_uuid"] = escolaInstituicao.uuid;
       params["tipo_solicitacao"] = "Alteração";
       params["mes"] = mes;
       params["ano"] = ano;
       params["eh_lanche_emergencial"] = true;
+      params["recreio_nas_ferias"] = recreioNasFeriasUuid;
       const response =
         await getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola(params);
       if (response.status === HTTP_STATUS.OK) {
@@ -645,7 +653,9 @@ export const LancamentoPorPeriodo = ({
                   errosAoSalvar={errosAoSalvar}
                 />
               )}
-              {solicitacoesKitLanchesAutorizadas?.length > 0 && (
+              {(solicitacoesKitLanchesAutorizadas?.length > 0 ||
+                solicitacoesAlteracaoLancheEmergencialAutorizadas?.length > 0 ||
+                temLancheEmergencialDiarioAtivo) && (
                 <CardLancamento
                   grupo="Solicitações de Alimentação"
                   cor={CORES[5]}
