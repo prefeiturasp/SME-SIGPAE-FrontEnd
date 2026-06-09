@@ -3,7 +3,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import { combineReducers, createStore } from "redux";
 import { reducer as formReducer } from "redux-form";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import {
     FiltroEnum,
     TIPO_SOLICITACAO,
@@ -355,5 +355,111 @@ describe("PainelPedidos", () => {
             expect(mockGetLotesSimples).toHaveBeenCalledTimes(1);
             expect(mockGetDiretoriaregionalSimplissima).toHaveBeenCalledTimes(1);
         });
+    });
+
+    it("preenche os campos do formulário quando recebe filtros por props", async () => {
+        renderPainelPedidos({
+            props: {
+                filtros: {
+                    diretoria_regional: dreUuid,
+                    lote: loteUuid,
+                },
+            },
+        });
+
+        await waitForPedidosLoad();
+
+        expect(screen.getByTestId("select-diretoria_regional")).toHaveValue(dreUuid);
+        expect(screen.getByTestId("select-lote")).toHaveValue(loteUuid);
+    });
+
+    it("filtra pelo select comum quando o usuário não é CODAE Gestão Alimentação", async () => {
+        mockUsuarioEhCODAEGestaoAlimentacao.mockReturnValue(false);
+
+        renderPainelPedidos();
+
+        await waitForPedidosLoad();
+
+        mockGetCodaePedidosDeKitLanche.mockClear();
+
+        fireEvent.change(screen.getByTestId("select-visao-por"), {
+            target: {
+                value: "outro_filtro",
+            },
+        });
+
+        await waitFor(() => {
+            expect(mockGetCodaePedidosDeKitLanche).toHaveBeenCalledTimes(3);
+        });
+
+        expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
+            1,
+            "outro_filtro",
+            TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+            {
+                lote: undefined,
+                diretoria_regional: undefined,
+            },
+        );
+    });
+
+    it("filtra novamente ao selecionar DRE e lote", async () => {
+        renderPainelPedidos();
+
+        await waitForPedidosLoad();
+
+        mockGetCodaePedidosDeKitLanche.mockClear();
+
+        fireEvent.change(screen.getByTestId("select-diretoria_regional"), {
+            target: {
+                value: dreUuid,
+            },
+        });
+
+        await waitFor(() => {
+            expect(mockGetCodaePedidosDeKitLanche).toHaveBeenCalledTimes(3);
+        });
+
+        expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
+            1,
+            FiltroEnum.SEM_FILTRO,
+            TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+            {
+                diretoria_regional: dreUuid,
+                lote: undefined,
+            },
+        );
+
+        await waitForPedidosLoad();
+
+        mockGetCodaePedidosDeKitLanche.mockClear();
+
+        fireEvent.change(screen.getByTestId("select-lote"), {
+            target: {
+                value: loteUuid,
+            },
+        });
+
+        await waitFor(() => {
+            expect(mockGetCodaePedidosDeKitLanche).toHaveBeenCalledTimes(3);
+        });
+
+        expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
+            1,
+            FiltroEnum.SEM_FILTRO,
+            TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+            {
+                diretoria_regional: dreUuid,
+                lote: loteUuid,
+            },
+        );
+
+        await waitForPedidosLoad();
+
+        fireEvent.blur(screen.getByTestId("select-diretoria_regional"));
+        fireEvent.blur(screen.getByTestId("select-lote"));
+
+        expect(screen.getByTestId("select-diretoria_regional")).toBeInTheDocument();
+        expect(screen.getByTestId("select-lote")).toBeInTheDocument();
     });
 });
