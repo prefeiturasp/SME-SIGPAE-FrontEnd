@@ -14,6 +14,8 @@ import {
 import { mockGetNomesProdutosReclamacao } from "../../../../../mocks/produto.service/mockGetResponderReclamacaoNomesProdutos";
 import { mockGetNomesMarcasReclamacao } from "../../../../../mocks/produto.service/mockGetResponderReclamacaoNomesMarcas";
 import { mockGetNomesFabricantesReclamacao } from "../../../../../mocks/produto.service/mockGetResponderReclamacaoNomesFabricantes";
+import { STATUS_RECLAMACAO } from "src/configs/constants";
+import Reclamacao from "../Reclamacao";
 
 const setup = async (uuid = null) => {
   if (uuid) {
@@ -111,5 +113,81 @@ describe("Teste <ResponderReclamacao>", () => {
     );
     expect(screen.queryByText("Fabricante do Produto")).not.toBeInTheDocument();
     expect(screen.queryByText("Marca do Produto")).not.toBeInTheDocument();
+  });
+
+  describe("Botão Responder", () => {
+    const NOME_FANTASIA = "ALIMENTAR";
+
+    const buildReclamacao = (nomeFantasia, status) => ({
+      uuid: "test-uuid",
+      id_externo: "TESTE",
+      status,
+      status_titulo: "Aguardando resposta terceirizada",
+      reclamante_nome: "Usuário Teste",
+      reclamante_registro_funcional: "123456",
+      criado_em: "01/01/2024 12:00:00",
+      reclamacao: "<p>Reclamação teste</p>",
+      logs: [],
+      escola: {
+        nome: "Escola Teste",
+        codigo_eol: "12345",
+        lote: {
+          terceirizada: {
+            nome_fantasia: nomeFantasia,
+          },
+        },
+      },
+    });
+
+    const renderReclamacao = (reclamacao) => {
+      const props = {
+        reclamacao,
+        indexProduto: 0,
+        setAtivos: jest.fn(),
+        produtos: [{}],
+        produto: { ultima_homologacao: { uuid: "uuid-mock" } },
+        setProdutos: jest.fn(),
+        setCarregando: jest.fn(),
+      };
+
+      return renderWithProvider(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <Reclamacao {...props} />
+        </MemoryRouter>,
+      );
+    };
+
+    it("exibe o botão quando logado como a mesma terceirizada e status Aguardando Resposta", () => {
+      localStorage.setItem("nome_instituicao", `"${NOME_FANTASIA}"`);
+      localStorage.setItem("tipo_servico", TIPO_SERVICO.TERCEIRIZADA);
+
+      const reclamacao = buildReclamacao(
+        NOME_FANTASIA,
+        STATUS_RECLAMACAO.AGUARDANDO_RESPOSTA_TERCEIRIZADA,
+      );
+
+      renderReclamacao(reclamacao);
+
+      expect(screen.getByText("Responder")).toBeInTheDocument();
+    });
+
+    it("não exibe o botão quando logado como terceirizada diferente da reclamação", () => {
+      localStorage.setItem("nome_instituicao", '"OUTRA_EMPRESA"');
+      localStorage.setItem("tipo_servico", TIPO_SERVICO.TERCEIRIZADA);
+
+      const reclamacao = buildReclamacao(
+        NOME_FANTASIA,
+        STATUS_RECLAMACAO.AGUARDANDO_RESPOSTA_TERCEIRIZADA,
+      );
+
+      renderReclamacao(reclamacao);
+
+      expect(screen.queryByText("Responder")).not.toBeInTheDocument();
+    });
   });
 });
