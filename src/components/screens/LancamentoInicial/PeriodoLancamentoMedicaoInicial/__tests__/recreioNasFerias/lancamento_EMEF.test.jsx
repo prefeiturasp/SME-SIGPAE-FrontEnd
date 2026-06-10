@@ -653,6 +653,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
+      const inputElementFrequenciaDia8 = screen.getByTestId(
+        "frequencia__dia_05__categoria_1",
+      );
+      fireEvent.change(inputElementFrequenciaDia8, {
+        target: { value: "100" },
+      });
+
       const inputRefeicao = screen.getByTestId("refeicao__dia_05__categoria_1");
       fireEvent.change(inputRefeicao, {
         target: { value: "60" },
@@ -663,7 +670,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       );
       waitFor(() => {
         fireEvent.change(inputRepeticaoRefeicao, {
-          target: { value: "170" },
+          target: { value: "70" },
         });
       });
 
@@ -682,6 +689,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       const semana1Element = screen.getByText("Semana 1");
       fireEvent.click(semana1Element);
 
+      const inputParticipantes = screen.getByTestId(
+        `participantes__dia_05__categoria_1`,
+      );
+      fireEvent.change(inputParticipantes, {
+        target: { value: "100" },
+      });
+
       const inputRefeicao = screen.getByTestId(
         "sobremesa__dia_05__categoria_1",
       );
@@ -694,7 +708,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       );
       waitFor(() => {
         fireEvent.change(inputRepeticaoRefeicao, {
-          target: { value: "170" },
+          target: { value: "70" },
         });
       });
 
@@ -969,7 +983,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       );
       waitFor(() => {
         fireEvent.change(inputRepeticaoRefeicao, {
-          target: { value: "170" },
+          target: { value: "80" },
         });
       });
 
@@ -1007,7 +1021,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Recreio Nas Féri
       );
       waitFor(() => {
         fireEvent.change(inputRepeticaoRefeicao, {
-          target: { value: "170" },
+          target: { value: "70" },
         });
       });
 

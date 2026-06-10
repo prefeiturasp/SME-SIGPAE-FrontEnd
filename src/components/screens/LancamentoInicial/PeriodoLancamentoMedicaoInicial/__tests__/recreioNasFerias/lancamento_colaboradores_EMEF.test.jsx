@@ -568,6 +568,13 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
     const semana1Element = screen.getByText("Semana 1");
     fireEvent.click(semana1Element);
 
+    const inputElementFrequenciaDia8 = screen.getByTestId(
+      "frequencia__dia_03__categoria_1",
+    );
+    fireEvent.change(inputElementFrequenciaDia8, {
+      target: { value: "50" },
+    });
+
     const inputRefeicao = screen.getByTestId("refeicao__dia_03__categoria_1");
     fireEvent.change(inputRefeicao, {
       target: { value: "45" },
@@ -727,7 +734,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
 
     const inputRefeicao = screen.getByTestId("refeicao__dia_08__categoria_1");
     fireEvent.change(inputRefeicao, {
-      target: { value: "48" },
+      target: { value: "38" },
     });
 
     const inputRepeticaoRefeicao = screen.getByTestId(
@@ -735,7 +742,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> para o Grupo Colaboradores - E
     );
     waitFor(() => {
       fireEvent.change(inputRepeticaoRefeicao, {
-        target: { value: "60" },
+        target: { value: "48" },
       });
     });
 

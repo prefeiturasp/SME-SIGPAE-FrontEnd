@@ -30,11 +30,13 @@ export const mockCronogramaMensalDetalhado: CronogramaMensalDetalhado = {
       uuid: "etapa-uuid-1",
       data_programada: "03/2026",
       quantidade: 500.0,
+      quantidade_estimada_disponivel: 500.0,
     },
     {
       uuid: "etapa-uuid-2",
       data_programada: "04/2026",
       quantidade: 500.0,
+      quantidade_estimada_disponivel: 500.0,
     },
   ],
 };
@@ -70,21 +72,25 @@ export const mockCronogramaMensalDetalhadoComEtapasMultiplas: CronogramaMensalDe
         uuid: "etapa-uuid-3",
         data_programada: "01/2026",
         quantidade: 400.0,
+        quantidade_estimada_disponivel: 400.0,
       },
       {
         uuid: "etapa-uuid-4",
         data_programada: "02/2026",
         quantidade: 600.0,
+        quantidade_estimada_disponivel: 600.0,
       },
       {
         uuid: "etapa-uuid-5",
         data_programada: "03/2026",
         quantidade: 500.0,
+        quantidade_estimada_disponivel: 500.0,
       },
       {
         uuid: "etapa-uuid-6",
         data_programada: "04/2026",
         quantidade: 500.0,
+        quantidade_estimada_disponivel: 500.0,
       },
     ],
   };
