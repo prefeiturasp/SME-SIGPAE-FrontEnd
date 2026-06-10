@@ -21,6 +21,7 @@ export interface EtapaCronograma {
   uuid: string;
   data_programada: string;
   quantidade: number;
+  quantidade_estimada_disponivel: number | null;
 }
 
 export interface CronogramaMensalDetalhado {
@@ -59,6 +60,7 @@ export interface CronogramaMensalSimples {
 export interface EtapaMes {
   mes_ano: string;
   quantidade_total: number;
+  quantidade_estimada_disponivel: number;
 }
 
 export interface ProgramacaoEntregaSemanal {

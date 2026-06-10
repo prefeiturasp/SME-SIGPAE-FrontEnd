@@ -885,6 +885,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 mesSolicitacao,
                 anoSolicitacao,
                 periodoGrupo.nome_periodo_grupo,
+                false,
+                new URLSearchParams(window.location.search).get(
+                  "recreio_nas_ferias",
+                ),
               );
             setAlteracoesAlimentacaoAutorizadas(
               response_alteracoes_alimentacao_autorizadas,

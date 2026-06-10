@@ -675,6 +675,25 @@ describe("CadastrarCronogramaSemanal", () => {
         fireEvent.change(selectMes, { target: { value: "03/2026" } });
       }
 
+      // Preencher datas (agora obrigatórias)
+      const inputsData = screen.getAllByPlaceholderText("");
+      const dataInicioInput = inputsData.find(
+        (input: any) => input.getAttribute("type") === "text" && !input.value,
+      );
+      if (dataInicioInput) {
+        fireEvent.change(dataInicioInput, { target: { value: "01/03/2026" } });
+      }
+
+      const dataFimInput = inputsData.find(
+        (input: any) =>
+          input !== dataInicioInput &&
+          input.getAttribute("type") === "text" &&
+          !input.value,
+      );
+      if (dataFimInput) {
+        fireEvent.change(dataFimInput, { target: { value: "31/03/2026" } });
+      }
+
       const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
       fireEvent.change(inputQtd, { target: { value: "1000" } });
 
@@ -896,6 +915,197 @@ describe("CadastrarCronogramaSemanal", () => {
         },
         { timeout: 5000 },
       );
+    });
+
+    it("botão habilitado com quantidade parcial", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "200" } });
+
+      await waitFor(() => {
+        const botaoAssinar = screen
+          .getByText("Assinar e Enviar")
+          .closest("button");
+        expect(botaoAssinar).not.toBeDisabled();
+      });
+    });
+
+    it("botão habilitado com quantidade acima do previsto", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "600" } });
+
+      await waitFor(() => {
+        const botaoAssinar = screen
+          .getByText("Assinar e Enviar")
+          .closest("button");
+        expect(botaoAssinar).not.toBeDisabled();
+      });
+    });
+
+    it("clicar com quantidade acima do previsto exibe modal de excesso", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "600" } });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Atenção - Quantidade Excedente"),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "A quantidade da entrega informada está acima do quantitativo mensal previsto para este cronograma. Deseja continuar com o envio?",
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("Continuar Editando no modal de excesso fecha sem enviar", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "600" } });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Atenção - Quantidade Excedente"),
+        ).toBeInTheDocument();
+      });
+
+      const botaoContinuar = screen.getByText("Continuar Editando");
+      fireEvent.click(botaoContinuar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Atenção - Quantidade Excedente"),
+        ).not.toBeInTheDocument();
+      });
+
+      // Modal de senha também não deve abrir
+      expect(screen.queryByText("Assinar Cronograma")).not.toBeInTheDocument();
+    });
+
+    it("Salvar e Enviar no modal de excesso abre tela de senha", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "600" } });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Atenção - Quantidade Excedente"),
+        ).toBeInTheDocument();
+      });
+
+      const botaoSalvarEnviar = screen.getByText("Salvar e Enviar");
+      fireEvent.click(botaoSalvarEnviar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Atenção - Quantidade Excedente"),
+        ).not.toBeInTheDocument();
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            "Deseja salvar o Cadastro do Cronograma e enviar para aprovação?",
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("modal de excesso não aparece quando quantidade igual ao previsto", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Atenção - Quantidade Excedente"),
+        ).not.toBeInTheDocument();
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+      });
+    });
+
+    it("modal de excesso não aparece quando quantidade menor que o previsto", async () => {
+      await setup();
+      await preencherProgramacao();
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "200" } });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Atenção - Quantidade Excedente"),
+        ).not.toBeInTheDocument();
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+      });
+    });
+
+    it("modal de excesso não aparece quando total mensal previsto está indisponível (etapas com quantidade 0)", async () => {
+      const mockCronogramaQuantidadeZero = {
+        ...mockCronogramaMensalDetalhado,
+        etapas: [
+          {
+            ...mockCronogramaMensalDetalhado.etapas[0],
+            quantidade: 0,
+          },
+        ],
+      };
+
+      mock.reset();
+      mock
+        .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+        .reply(200, mockCronogramasMensalAssinados);
+      mock
+        .onGet("/cronogramas/cronograma-uuid-1/")
+        .reply(200, mockCronogramaQuantidadeZero);
+      mock
+        .onPost("/cronogramas-semanais/rascunho/")
+        .reply(201, { uuid: "novo-uuid-123" });
+      mock
+        .onPatch(/\/cronogramas-semanais\/.+\/assinar-e-enviar\//)
+        .reply(200, { uuid: "novo-uuid-123", status: "ENVIADO_AO_FORNECEDOR" });
+      mock
+        .onGet("/cronogramas-semanais/rascunhos/")
+        .reply(200, { results: [] });
+
+      await setup();
+      await preencherProgramacao();
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "600" } });
+
+      const botaoAssinar = screen.getByText("Assinar e Enviar");
+      fireEvent.click(botaoAssinar);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Atenção - Quantidade Excedente"),
+        ).not.toBeInTheDocument();
+        expect(screen.getByText("Assinar Cronograma")).toBeInTheDocument();
+      });
     });
   });
 

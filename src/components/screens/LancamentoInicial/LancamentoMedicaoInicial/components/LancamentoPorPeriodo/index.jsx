@@ -50,6 +50,7 @@ import {
   verificaSeEnviarCorrecaoDisabled,
 } from "./helpers";
 
+import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
 export const LancamentoPorPeriodo = ({
   escolaInstituicao,
   periodosEscolaSimples,
@@ -165,11 +166,19 @@ export const LancamentoPorPeriodo = ({
   const getSolicitacoesAlteracaoLancheEmergencialAutorizadasAsync =
     async () => {
       const params = {};
+      const recreioNasFeriasUuid =
+        typeof solicitacaoMedicaoInicial?.recreio_nas_ferias === "string"
+          ? solicitacaoMedicaoInicial.recreio_nas_ferias
+          : solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid ||
+            new URLSearchParams(window.location.search).get(
+              "recreio_nas_ferias",
+            );
       params["escola_uuid"] = escolaInstituicao.uuid;
       params["tipo_solicitacao"] = "Alteração";
       params["mes"] = mes;
       params["ano"] = ano;
       params["eh_lanche_emergencial"] = true;
+      params["recreio_nas_ferias"] = recreioNasFeriasUuid;
       const response =
         await getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola(params);
       if (response.status === HTTP_STATUS.OK) {
@@ -436,6 +445,13 @@ export const LancamentoPorPeriodo = ({
     }
   };
 
+  const ordenarTiposAlimentacao = (tipos) =>
+    [...tipos].sort(
+      (a, b) =>
+        (ORDEM_ALIMENTACAO_RECREIO[a.nome] ?? 999) -
+        (ORDEM_ALIMENTACAO_RECREIO[b.nome] ?? 999),
+    );
+
   return (
     <div>
       {erroAPI && <div>{erroAPI}</div>}
@@ -609,10 +625,10 @@ export const LancamentoPorPeriodo = ({
               <CardLancamento
                 grupo="Recreio nas Férias"
                 cor={CORES[10]}
-                tipos_alimentacao={
+                tipos_alimentacao={ordenarTiposAlimentacao(
                   recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
-                    .unidades_participantes[0].tipos_alimentacao.inscritos
-                }
+                    .unidades_participantes[0].tipos_alimentacao.inscritos,
+                )}
                 periodoSelecionado={periodoSelecionado}
                 solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                 objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
@@ -623,10 +639,11 @@ export const LancamentoPorPeriodo = ({
                 <CardLancamento
                   grupo="Colaboradores"
                   cor={CORES[11]}
-                  tipos_alimentacao={
+                  tipos_alimentacao={ordenarTiposAlimentacao(
                     recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial)
-                      .unidades_participantes[0].tipos_alimentacao.colaboradores
-                  }
+                      .unidades_participantes[0].tipos_alimentacao
+                      .colaboradores,
+                  )}
                   periodoSelecionado={periodoSelecionado}
                   solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                   objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
@@ -636,7 +653,9 @@ export const LancamentoPorPeriodo = ({
                   errosAoSalvar={errosAoSalvar}
                 />
               )}
-              {solicitacoesKitLanchesAutorizadas?.length > 0 && (
+              {(solicitacoesKitLanchesAutorizadas?.length > 0 ||
+                solicitacoesAlteracaoLancheEmergencialAutorizadas?.length > 0 ||
+                temLancheEmergencialDiarioAtivo) && (
                 <CardLancamento
                   grupo="Solicitações de Alimentação"
                   cor={CORES[5]}
