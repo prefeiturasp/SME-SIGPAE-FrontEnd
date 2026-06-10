@@ -35,7 +35,7 @@ export class InputComData extends Component {
     }).isRequired,
     meta: PropTypes.shape({
       touched: PropTypes.bool,
-      error: PropTypes.bool,
+      error: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
     }),
     placeholder: PropTypes.string,
     label: PropTypes.string,

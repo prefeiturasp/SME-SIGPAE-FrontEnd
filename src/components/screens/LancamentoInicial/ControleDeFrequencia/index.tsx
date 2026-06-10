@@ -216,7 +216,7 @@ export function ControleDeFrequencia() {
                 dataFinal={dataFinal}
               />
 
-              <div className="mt-4">
+              <div className="mt-4" data-testid="resultado-controle-frequencia">
                 {totalMatriculados === 0 && !carregando && filtros.mes_ano && (
                   <div className="text-center mt-4 mb-4">
                     Nenhum resultado encontrado

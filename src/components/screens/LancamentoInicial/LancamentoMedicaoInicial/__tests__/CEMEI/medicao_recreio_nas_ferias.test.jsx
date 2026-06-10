@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -17,8 +17,15 @@ import mock from "src/services/_mock";
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Medição com Recreio nas Ferias", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
+  let paramsRequisicaoAlteracoes;
 
   beforeEach(async () => {
+    paramsRequisicaoAlteracoes = undefined;
+    mock.reset();
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
@@ -58,12 +65,17 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Mediçã
     mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
       periodos: null,
     });
-    mock
-      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
-      .reply(200, { results: [] });
+    mock.onGet("/escola-solicitacoes/kit-lanches-autorizadas/").reply(200, {
+      results: [
+        { dia: "17", numero_alunos: 80, kit_lanche_id_externo: "6CD6E" },
+      ],
+    });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, { results: [] });
+      .reply((config) => {
+        paramsRequisicaoAlteracoes = config.params;
+        return [200, { results: [] }];
+      });
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
@@ -123,5 +135,141 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Renderiza Mediçã
       screen.getByText("Recreio nas Férias - 4 a 14 anos"),
     ).toBeInTheDocument();
     expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+  });
+
+  it("Renderiza período Solicitações de Alimentação no recreio para EMEI da CEMEI quando há kit lanche autorizado", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitações de Alimentação - Infantil"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("requisita lanches emergenciais com recreio_nas_ferias para EMEI da CEMEI em recreio", async () => {
+    await waitFor(() => {
+      expect(paramsRequisicaoAlteracoes).toEqual(
+        expect.objectContaining({
+          recreio_nas_ferias: "cd27796f-9dbf-4e36-ac14-c44f23d41cd4",
+          eh_lanche_emergencial: true,
+        }),
+      );
+    });
+  });
+});
+
+describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Recreio com lanche emergencial autorizado", () => {
+  const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
+
+  beforeEach(async () => {
+    mock.reset();
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
+    mock
+      .onGet(`/escolas-simples/${escolaUuid}/`)
+      .reply(200, mockEscolaSimplesCEMEI);
+    mock
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, mockRecreioNasFeriasCEMEIDezembro2025);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
+    mock
+      .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
+      .reply(200, []);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/periodos-escola-cemei-com-alunos-emei/",
+      )
+      .reply(200, {
+        results: ["Infantil INTEGRAL"],
+      });
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
+      )
+      .reply(200, { results: [] });
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(200, mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025CEMEI);
+    mock
+      .onGet("/dias-calendario/")
+      .reply(200, mockDiasCalendarioDezembro2025CEMEI);
+    mock
+      .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
+      .reply(200, mockGetTiposDeContagemAlimentacao);
+    mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
+      periodos: null,
+    });
+    mock.onGet("/escola-solicitacoes/kit-lanches-autorizadas/").reply(200, {
+      results: [],
+    });
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, {
+        results: [
+          {
+            dia: "17",
+            numero_alunos: 80,
+            inclusao_id_externo: "6CD6E",
+            motivo: "Lanche Emergencial",
+            periodos_escolares: ["MANHA"],
+            tipos_alimentacao_de: ["Refeição", "Lanche"],
+          },
+        ],
+      });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
+      )
+      .reply(200, { results: [] });
+    mock.onGet("/matriculados-no-mes/").reply(200, []);
+    mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {
+      nome: mockEscolaSimplesCEMEI.nome,
+      tipo_unidade: mockEscolaSimplesCEMEI.tipo_unidade,
+    });
+
+    const search = `?mes=12&ano=2025&recreio_nas_ferias=cd27796f-9dbf-4e36-ac14-c44f23d41cd4`;
+    window.history.pushState({}, "", search);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("eh_cemei", "true");
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEMEI,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("Renderiza período Solicitações de Alimentação no recreio para EMEI da CEMEI quando há lanche emergencial autorizado", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitações de Alimentação - Infantil"),
+      ).toBeInTheDocument();
+    });
   });
 });

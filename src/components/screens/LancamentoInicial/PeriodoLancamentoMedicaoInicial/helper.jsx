@@ -489,7 +489,8 @@ export const desabilitarField = (
       (!temLancheEmergencialAutorizadoNoDia &&
         !temLancheEmergencialDiarioAtivoNoDia &&
         rowName === "lanche_emergencial") ||
-      (!validacaoDiaLetivoLancheEmergencial(dia) &&
+      (temLancheEmergencialDiarioAtivoNoDia &&
+        !validacaoDiaLetivoLancheEmergencial(dia) &&
         rowName === "lanche_emergencial") ||
       validacaoSemana(dia) ||
       (mesConsiderado === mesAtual &&
@@ -631,8 +632,21 @@ export const desabilitarField = (
   }
 
   if (grupoRecreio) {
-    if (feriadosNoMes.includes(dia)) {
+    if (
+      feriadosNoMes.includes(dia) ||
+      validacaoSemana(dia) ||
+      !validacaoDiaLetivoCalendario(dia) ||
+      (mesConsiderado === mesAtual &&
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado))
+    ) {
       return true;
+    }
+    if (
+      ehUltimoDiaLetivoDoAno(dia, mesConsiderado) &&
+      mesConsiderado === mesAtual
+    ) {
+      return !(Number(dia) === Number(format(mesAnoDefault, "dd")));
     }
     if (nomeCategoria === "ALIMENTAÇÃO" || nomeCategoria.includes("DIETA")) {
       const categoriaAlimentacao = categoriasDeMedicao.find(
@@ -653,10 +667,6 @@ export const desabilitarField = (
         values[chaveDietasAutorizadasNoDia] !== null &&
         values[chaveDietasAutorizadasNoDia] !== "" &&
         values[chaveDietasAutorizadasNoDia] !== "0";
-
-      if (validacaoSemana(dia) || !validacaoDiaLetivoCalendario(dia)) {
-        return true;
-      }
 
       if (nomeCategoria === "ALIMENTAÇÃO") {
         return !(participantesNoDia > 0);
@@ -895,6 +905,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
   ano,
   nomePeriodoEscolar,
   ehLancheEmergencial = false,
+  recreioNasFerias = undefined,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -902,6 +913,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
   params["mes"] = mes;
   params["ano"] = ano;
   params["eh_lanche_emergencial"] = ehLancheEmergencial;
+  params["recreio_nas_ferias"] = recreioNasFerias;
   if (nomePeriodoEscolar) {
     params["nome_periodo_escolar"] = nomePeriodoEscolar;
   }
@@ -919,12 +931,14 @@ export const getSolicitacoesKitLanchesAutorizadasAsync = async (
   escolaUuuid,
   mes,
   ano,
+  recreio_nas_ferias = undefined,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
   params["tipo_solicitacao"] = "Kit Lanche";
   params["mes"] = mes;
   params["ano"] = ano;
+  params["recreio_nas_ferias"] = recreio_nas_ferias;
   const responseKitLanchesAutorizadas =
     await getSolicitacoesKitLanchesAutorizadasEscola(params);
   if (responseKitLanchesAutorizadas.status === HTTP_STATUS.OK) {
