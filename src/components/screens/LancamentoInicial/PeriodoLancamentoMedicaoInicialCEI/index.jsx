@@ -2222,27 +2222,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const getClassNameToNextInput = (row, column, categoria, index) => {
-    if (
-      row.name !== "observacoes" &&
-      column &&
-      index + 1 < tabelaAlimentacaoCEIRows.length - 1
-    ) {
-      const faixa = ehGrupoColaboradores() ? "" : `__faixa_${row.uuid}`;
-      return `${tabelaAlimentacaoCEIRows[index + 1].name}${faixa}__dia_${column.dia}__categoria_${categoria.id}`;
-    }
-    return undefined;
+    return getClassNameToInput(row, column, categoria, index, 1);
   };
 
   const getClassNameToPrevInput = (row, column, categoria, index) => {
-    if (
-      row.name !== "frequencia" &&
-      column &&
-      tabelaAlimentacaoCEIRows[index - 1]
-    ) {
-      const faixa = ehGrupoColaboradores() ? "" : `__faixa_${row.uuid}`;
-      return `${tabelaAlimentacaoCEIRows[index - 1].name}${faixa}__dia_${column.dia}__categoria_${categoria.id}`;
-    }
-    return undefined;
+    return getClassNameToInput(row, column, categoria, index, -1);
   };
 
   const exibeBotaoAdicionarObservacao = (dia) => {
@@ -2636,6 +2620,149 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       );
     }
     return true;
+  };
+
+  const deveUsarFaixaNoNomeDoInput = () => {
+    return !(
+      ehEmeiDaCemeiLocation ||
+      ehSolicitacoesAlimentacaoLocation ||
+      ehProgramasEProjetosLocation ||
+      ehGrupoColaboradores()
+    );
+  };
+
+  const getRowsToNavigate = (categoria) => {
+    if (categoria.nome.includes("DIETA")) {
+      return categoria.nome.includes("ENTERAL")
+        ? tabelaDietaEnteralRows
+        : tabelaDietaCEIRows;
+    }
+
+    return tabelaAlimentacaoCEIRows;
+  };
+
+  const getInputName = (row, column, categoria) => {
+    const faixa = deveUsarFaixaNoNomeDoInput() ? `__faixa_${row.uuid}` : "";
+    return `${row.name}${faixa}__dia_${column.dia}__categoria_${categoria.id}`;
+  };
+
+  const isInputDisabled = (row, column, categoria) => {
+    const uuidFaixa = deveUsarFaixaNoNomeDoInput() ? row.uuid : null;
+
+    return desabilitarField(
+      column.dia,
+      row.name,
+      categoria.id,
+      categoria.nome,
+      formValuesAtualizados,
+      mesAnoConsiderado,
+      mesAnoDefault,
+      inclusoesAutorizadas,
+      validacaoDiaLetivo,
+      validacaoSemana,
+      location,
+      valoresPeriodosLancamentos,
+      feriadosNoMes,
+      uuidFaixa,
+      diasParaCorrecao,
+      ehEmeiDaCemeiLocation,
+      ehSolicitacoesAlimentacaoLocation,
+      permissoesLancamentosEspeciaisPorDia,
+      alimentacoesLancamentosEspeciais,
+      ehProgramasEProjetosLocation,
+      dadosValoresInclusoesAutorizadasState,
+      kitLanchesAutorizadas,
+      alteracoesAlimentacaoAutorizadas,
+      ehUltimoDiaLetivoDoAno,
+      calendarioMesConsiderado,
+      ehRecreioNasFerias(),
+      categoriasDeMedicao,
+    );
+  };
+
+  const getInputNameInRows = (rows, column, categoria, step) => {
+    const startIndex = step > 0 ? 0 : rows.length - 1;
+
+    for (
+      let index = startIndex;
+      index >= 0 && index < rows.length;
+      index += step
+    ) {
+      const row = rows[index];
+
+      if (!row || row.name === "observacoes") {
+        continue;
+      }
+
+      if (!exibeFaixaEtaria(categoria.nome, row)) {
+        continue;
+      }
+
+      if (!isInputDisabled(row, column, categoria)) {
+        return getInputName(row, column, categoria);
+      }
+    }
+
+    return undefined;
+  };
+
+  const getInputNameInSameTable = (rows, column, categoria, index, step) => {
+    for (
+      let nextIndex = index + step;
+      nextIndex >= 0 && nextIndex < rows.length;
+      nextIndex += step
+    ) {
+      const nextRow = rows[nextIndex];
+
+      if (!nextRow || nextRow.name === "observacoes") {
+        continue;
+      }
+
+      if (!exibeFaixaEtaria(categoria.nome, nextRow)) {
+        continue;
+      }
+
+      if (!isInputDisabled(nextRow, column, categoria)) {
+        return getInputName(nextRow, column, categoria);
+      }
+    }
+
+    return undefined;
+  };
+
+  const getInputNameInAnotherTable = (column, categoria, step) => {
+    const currentCategoryIndex = categoriasDeMedicao.findIndex(
+      (categoriaMedicao) => categoriaMedicao.id === categoria.id,
+    );
+
+    for (
+      let categoryIndex = currentCategoryIndex + step;
+      categoryIndex >= 0 && categoryIndex < categoriasDeMedicao.length;
+      categoryIndex += step
+    ) {
+      const nextCategoria = categoriasDeMedicao[categoryIndex];
+      const rows = getRowsToNavigate(nextCategoria);
+      const inputName = getInputNameInRows(rows, column, nextCategoria, step);
+
+      if (inputName) {
+        return inputName;
+      }
+    }
+
+    return undefined;
+  };
+
+  const getClassNameToInput = (row, column, categoria, index, step) => {
+    if (!column || row.name === "observacoes") {
+      return undefined;
+    }
+
+    const rows = getRowsToNavigate(categoria);
+
+    return (
+      getInputNameInSameTable(rows, column, categoria, index, step) ||
+      getInputNameInAnotherTable(column, categoria, step)
+    );
   };
 
   return (
@@ -3139,7 +3266,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               index,
                                                             )}
                                                             apenasNumeros
-                                                            name={`${row.name}__dia_${column.dia}__categoria_${categoria.id}`}
+                                                            name={getInputName(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                            )}
                                                             disabled={
                                                               campoDesabilitado
                                                             }
@@ -3336,7 +3467,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               index,
                                                             )}
                                                             apenasNumeros
-                                                            name={`${row.name}__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`}
+                                                            name={getInputName(
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                            )}
                                                             disabled={desabilitarField(
                                                               column.dia,
                                                               row.name,
