@@ -8,8 +8,8 @@ import {
   within,
 } from "@testing-library/react";
 import HTTP_STATUS from "http-status-codes";
-import Relatorio from "../index";
-import CorpoRelatorio from "../componentes/CorpoRelatorio";
+import Relatorio from "../Relatorio/index";
+import CorpoRelatorio from "../Relatorio/componentes/CorpoRelatorio";
 import { getDetalheKitLancheAvulsa } from "src/services/kitLanche";
 import { meusDados } from "src/services/perfil.service";
 import {
