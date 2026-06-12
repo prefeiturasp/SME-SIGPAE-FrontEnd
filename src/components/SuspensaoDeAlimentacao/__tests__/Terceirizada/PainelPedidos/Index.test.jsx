@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import PainelPedidos from "../../../Terceirizada/PainelPedidos";
 import {
   getSuspensaoDeAlimentacaoTomadaCiencia,
@@ -248,5 +248,24 @@ describe("PainelPedidos - Suspensão de Alimentação Terceirizada", () => {
       }),
       {},
     );
+  });
+  it("executa nova filtragem ao alterar o filtro do combo", async () => {
+    renderPainelPedidos();
+
+    await screen.findByText("Data: 12/06/2026");
+
+    fireEvent.change(screen.getByTestId("select-visao_por"), {
+      target: {
+        value: UUID_FILTRO_CUSTOMIZADO,
+      },
+    });
+
+    await waitFor(() => {
+      expect(getTerceirizadasSuspensoesDeAlimentacao).toHaveBeenLastCalledWith(
+        UUID_FILTRO_CUSTOMIZADO,
+      );
+    });
+
+    expect(getTerceirizadasSuspensoesDeAlimentacao).toHaveBeenCalledTimes(2);
   });
 });
