@@ -13,6 +13,8 @@ import {
   formatarPedidos,
 } from "src/helpers/painelPedidos";
 import { dataAtualDDMMYYYY } from "src/helpers/utilities";
+import { FiltroEnum, TIPODECARD } from "src/constants/shared";
+import { CardPendenteAcao } from "src/components/SuspensaoDeAlimentacao/components/CardPendenteAcao";
 
 jest.mock("react-redux", () => ({
   connect: () => (Component) => Component,
@@ -188,5 +190,63 @@ describe("PainelPedidos - Suspensão de Alimentação Terceirizada", () => {
     renderPainelPedidos();
 
     expect(screen.getByText("Carregando...")).toBeInTheDocument();
+  });
+
+  it("busca os pedidos ao montar a tela e renderiza os cards principais", async () => {
+    renderPainelPedidos();
+
+    await screen.findByText("Data: 12/06/2026");
+
+    expect(getTerceirizadasSuspensoesDeAlimentacao).toHaveBeenCalledWith(
+      FiltroEnum.SEM_FILTRO,
+    );
+    expect(getSuspensaoDeAlimentacaoTomadaCiencia).toHaveBeenCalledTimes(1);
+
+    expect(filtraPrioritarios).toHaveBeenCalledWith(pedidosResponse.results);
+    expect(filtraNoLimite).toHaveBeenCalledWith(pedidosResponse.results);
+    expect(filtraRegular).toHaveBeenCalledWith(pedidosResponse.results);
+
+    expect(
+      screen.getByText(
+        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Solicitações no prazo limite"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Solicitações no prazo regular"),
+    ).toBeInTheDocument();
+
+    expect(CardPendenteAcao).toHaveBeenCalledWith(
+      expect.objectContaining({
+        titulo:
+          "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+        tipoDeCard: TIPODECARD.PRIORIDADE,
+        pedidos: [pedidoPrioritario],
+        ultimaColunaLabel: "Data",
+      }),
+      {},
+    );
+
+    expect(CardPendenteAcao).toHaveBeenCalledWith(
+      expect.objectContaining({
+        titulo: "Solicitações no prazo limite",
+        tipoDeCard: TIPODECARD.NO_LIMITE,
+        pedidos: [pedidoNoLimite],
+        ultimaColunaLabel: "Data",
+      }),
+      {},
+    );
+
+    expect(CardPendenteAcao).toHaveBeenCalledWith(
+      expect.objectContaining({
+        titulo: "Solicitações no prazo regular",
+        tipoDeCard: TIPODECARD.REGULAR,
+        pedidos: [pedidoRegular],
+        ultimaColunaLabel: "Data",
+      }),
+      {},
+    );
   });
 });
