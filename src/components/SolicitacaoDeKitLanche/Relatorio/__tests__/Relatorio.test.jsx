@@ -12,7 +12,10 @@ import Relatorio from "../index";
 import CorpoRelatorio from "../componentes/CorpoRelatorio";
 import { getDetalheKitLancheAvulsa } from "src/services/kitLanche";
 import { meusDados } from "src/services/perfil.service";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { TIPO_PERFIL, statusEnum } from "src/constants/shared";
 import { CODAE } from "src/configs/constants";
 import { visualizaBotoesDoFluxo } from "src/helpers/utilities";
@@ -418,6 +421,68 @@ describe("Relatorio", () => {
       expect(
         screen.queryByTestId("modal-observacao-codae"),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  it("aprova a solicitação e recarrega os dados quando a API retorna sucesso", async () => {
+    visualizaBotoesDoFluxo.mockReturnValue(true);
+
+    const endpointAprovaSolicitacao = jest.fn().mockResolvedValue({
+      status: HTTP_STATUS.OK,
+    });
+
+    renderRelatorio({ endpointAprovaSolicitacao });
+
+    await screen.findByText("Kit Lanche Passeio - Solicitação # 12345");
+
+    fireEvent.click(screen.getByRole("button", { name: "Aprovar" }));
+
+    await waitFor(() => {
+      expect(endpointAprovaSolicitacao).toHaveBeenCalledWith(
+        UUID_SOLICITACAO,
+        "Justificativa teste",
+        TIPO_SOLICITACAO,
+      );
+    });
+
+    expect(toastSuccess).toHaveBeenCalledWith(
+      "Solicitação aprovada com sucesso",
+    );
+
+    expect(getDetalheKitLancheAvulsa).toHaveBeenCalledTimes(2);
+  });
+
+  it("exibe erro ao tentar aprovar quando a API retorna bad request", async () => {
+    visualizaBotoesDoFluxo.mockReturnValue(true);
+
+    const endpointAprovaSolicitacao = jest.fn().mockResolvedValue({
+      status: HTTP_STATUS.BAD_REQUEST,
+    });
+
+    renderRelatorio({ endpointAprovaSolicitacao });
+
+    await screen.findByText("Kit Lanche Passeio - Solicitação # 12345");
+
+    fireEvent.click(screen.getByRole("button", { name: "Aprovar" }));
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith("Erro ao aprovar solicitação");
+    });
+  });
+
+  it("exibe erro ao tentar aprovar quando a chamada da API falha", async () => {
+    visualizaBotoesDoFluxo.mockReturnValue(true);
+
+    const endpointAprovaSolicitacao = jest.fn().mockRejectedValue();
+
+    renderRelatorio({ endpointAprovaSolicitacao });
+
+    await screen.findByText("Kit Lanche Passeio - Solicitação # 12345");
+
+    fireEvent.click(screen.getByRole("button", { name: "Aprovar" }));
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith("Erro ao aprovar solicitação");
     });
   });
 });
