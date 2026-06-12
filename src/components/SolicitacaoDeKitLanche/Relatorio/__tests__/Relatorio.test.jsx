@@ -1,6 +1,12 @@
 import "@testing-library/jest-dom";
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import HTTP_STATUS from "http-status-codes";
 import Relatorio from "../index";
 import CorpoRelatorio from "../componentes/CorpoRelatorio";
@@ -281,5 +287,72 @@ describe("Relatorio", () => {
 
     expect(getDetalheKitLancheAvulsa).not.toHaveBeenCalled();
     expect(screen.getByText("Carregando...")).toBeInTheDocument();
+  });
+
+  it("abre e fecha o modal de questionamento", async () => {
+    visualizaBotoesDoFluxo.mockReturnValue(true);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
+
+    getDetalheKitLancheAvulsa.mockResolvedValue(
+      makeSolicitacao({
+        prioridade: "ALTA",
+        status: statusEnum.DRE_VALIDADO,
+      }),
+    );
+
+    renderRelatorio();
+
+    await screen.findByText("Kit Lanche Passeio - Solicitação # 12345");
+
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    const modalQuestionamento = screen.getByTestId("modal-questionamento");
+
+    expect(modalQuestionamento).toBeInTheDocument();
+    expect(within(modalQuestionamento).getByText("Sim")).toBeInTheDocument();
+    expect(
+      within(modalQuestionamento).getByText(UUID_SOLICITACAO),
+    ).toBeInTheDocument();
+    expect(
+      within(modalQuestionamento).getByText(TIPO_SOLICITACAO),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Fechar questionamento" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId("modal-questionamento"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("abre e fecha o modal de não aprovação", async () => {
+    visualizaBotoesDoFluxo.mockReturnValue(true);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.CODAE);
+
+    renderRelatorio();
+
+    await screen.findByText("Kit Lanche Passeio - Solicitação # 12345");
+
+    fireEvent.click(screen.getByRole("button", { name: "Não aprovar" }));
+
+    const modalNaoAprova = screen.getByTestId("modal-nao-aprova");
+
+    expect(modalNaoAprova).toBeInTheDocument();
+    expect(within(modalNaoAprova).getByText("Não")).toBeInTheDocument();
+    expect(
+      within(modalNaoAprova).getByText(UUID_SOLICITACAO),
+    ).toBeInTheDocument();
+    expect(
+      within(modalNaoAprova).getByText(TIPO_SOLICITACAO),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Fechar não aprova" }));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("modal-nao-aprova")).not.toBeInTheDocument();
+    });
   });
 });
