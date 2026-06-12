@@ -249,6 +249,7 @@ describe("PainelPedidos - Suspensão de Alimentação Terceirizada", () => {
       {},
     );
   });
+
   it("executa nova filtragem ao alterar o filtro do combo", async () => {
     renderPainelPedidos();
 
@@ -267,5 +268,30 @@ describe("PainelPedidos - Suspensão de Alimentação Terceirizada", () => {
     });
 
     expect(getTerceirizadasSuspensoesDeAlimentacao).toHaveBeenCalledTimes(2);
+  });
+
+  it("executa filtrarHoje ao selecionar o filtro de hoje", async () => {
+    const filtrarHojeMock = jest.fn();
+
+    PainelPedidos.prototype.filtrarHoje = filtrarHojeMock;
+
+    renderPainelPedidos({
+      visaoPorCombo: [
+        {
+          nome: "Hoje",
+          uuid: FiltroEnum.HOJE,
+        },
+      ],
+    });
+
+    await screen.findByText("Data: 12/06/2026");
+
+    fireEvent.change(screen.getByTestId("select-visao_por"), {
+      target: {
+        value: FiltroEnum.HOJE,
+      },
+    });
+
+    expect(filtrarHojeMock).toHaveBeenCalledTimes(1);
   });
 });
