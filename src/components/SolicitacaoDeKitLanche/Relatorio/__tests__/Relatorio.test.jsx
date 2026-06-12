@@ -355,4 +355,69 @@ describe("Relatorio", () => {
       expect(screen.queryByTestId("modal-nao-aprova")).not.toBeInTheDocument();
     });
   });
+
+  it("abre e fecha o modal de autorização após questionamento", async () => {
+    visualizaBotoesDoFluxo.mockReturnValue(true);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.CODAE);
+
+    getDetalheKitLancheAvulsa.mockResolvedValue(
+      makeSolicitacao({
+        prioridade: "ALTA",
+        status: statusEnum.CODAE_QUESTIONADO,
+        logs: [
+          {
+            status_evento_explicacao: "Outro status",
+            resposta_sim_nao: false,
+          },
+        ],
+      }),
+    );
+
+    renderRelatorio();
+
+    await screen.findByText("Kit Lanche Passeio - Solicitação # 12345");
+
+    fireEvent.click(screen.getByRole("button", { name: "Aprovar" }));
+
+    expect(screen.getByTestId("modal-autorizar")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Fechar autorização" }));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("modal-autorizar")).not.toBeInTheDocument();
+    });
+  });
+
+  it("abre e fecha o modal de observação CODAE para gestão alimentação terceirizada", async () => {
+    visualizaBotoesDoFluxo.mockReturnValue(true);
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+
+    getDetalheKitLancheAvulsa.mockResolvedValue(
+      makeSolicitacao({
+        prioridade: "REGULAR",
+        status: statusEnum.CODAE_AUTORIZADO,
+      }),
+    );
+
+    renderRelatorio();
+
+    await screen.findByText("Kit Lanche Passeio - Solicitação # 12345");
+
+    fireEvent.click(screen.getByRole("button", { name: "Aprovar" }));
+
+    expect(screen.getByTestId("modal-observacao-codae")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Fechar observação CODAE" }),
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId("modal-observacao-codae"),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
