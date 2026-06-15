@@ -8,7 +8,7 @@ import { Select } from "../../../Shareable/Select";
 import { InputText } from "../../../Shareable/Input/InputText";
 import { Link, Navigate } from "react-router-dom";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { ModalCadastroLote } from "./components/ModalCadastroLote";
 import {
   getLote,
@@ -105,14 +105,14 @@ class CadastroLote extends Component {
           let escolasSelecionadasNomes = [];
           response.data.escolas.forEach((escola) => {
             escolasSelecionadasNomes.push(
-              `${escola.codigo_eol} - ${escola.nome} - ${escola.lote.nome}`
+              `${escola.codigo_eol} - ${escola.nome} - ${escola.lote.nome}`,
             );
           });
           this.setState({
             diretoria_regional: response.data.diretoria_regional.nome,
             tipo_gestao: response.data.tipo_gestao.nome,
             subprefeiturasSelecionadas: extrairUUIDs(
-              response.data.subprefeituras
+              response.data.subprefeituras,
             ),
             subprefeiturasSelecionadasNomes,
             escolasSelecionadasNomes,
@@ -176,7 +176,7 @@ class CadastroLote extends Component {
         },
         function () {
           toastError("Houve um erro ao excluir o lote");
-        }
+        },
       );
     }
   }
@@ -184,7 +184,7 @@ class CadastroLote extends Component {
   onDiretoriaRegionalSelected = async (value) => {
     let { diretoriasRegionais, getEscolasPorDre } = this.props;
     const indice = diretoriasRegionais.findIndex(
-      (diretoria_regional) => diretoria_regional.uuid === value
+      (diretoria_regional) => diretoria_regional.uuid === value,
     );
     this.setState({
       diretoria_regional: diretoriasRegionais[indice].nome,
@@ -199,7 +199,7 @@ class CadastroLote extends Component {
     let subprefeiturasSelecionadasNomes = [];
     values.forEach((value) => {
       const indice = subprefeituras.findIndex(
-        (subprefeitura) => subprefeitura.value === value
+        (subprefeitura) => subprefeitura.value === value,
       );
       subprefeiturasSelecionadasNomes.push(subprefeituras[indice].label);
     });
@@ -212,7 +212,7 @@ class CadastroLote extends Component {
   onTipoGestaoSelected(value) {
     let tiposGestao = this.props.tiposGestao;
     const indice = tiposGestao.findIndex(
-      (tipo_gestao) => tipo_gestao.uuid === value
+      (tipo_gestao) => tipo_gestao.uuid === value,
     );
     this.setState({ tipo_gestao: tiposGestao[indice].nome });
   }
@@ -231,7 +231,7 @@ class CadastroLote extends Component {
     ["nome", "iniciais", "diretoria_regional", "tipo_gestao"].forEach(
       (element) => {
         this.props.change(element, "");
-      }
+      },
     );
     this.setState({
       subprefeiturasSelecionadas: [],
@@ -259,7 +259,7 @@ class CadastroLote extends Component {
         },
         function () {
           toastError("Houve um erro ao salvar o lote");
-        }
+        },
       );
       this.fecharModal();
     } else {
@@ -271,13 +271,13 @@ class CadastroLote extends Component {
             this.resetForm();
           } else {
             toastError(
-              `Houve um erro ao atualizar o lote ${getError(res.data)}`
+              `Houve um erro ao atualizar o lote ${getError(res.data)}`,
             );
           }
         },
         function () {
           toastError("Houve um erro ao atualizar o lote");
-        }
+        },
       );
       this.fecharModal();
     }
@@ -533,7 +533,7 @@ const mapDispatchToProps = (dispatch) =>
     {
       loadLote,
     },
-    dispatch
+    dispatch,
   );
 
 export default connect(mapStateToProps, mapDispatchToProps)(loteForm);
