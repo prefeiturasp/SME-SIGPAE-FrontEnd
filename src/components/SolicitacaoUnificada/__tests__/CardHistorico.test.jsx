@@ -2,7 +2,9 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { CardHistorico } from "src/components/SolicitacaoUnificada/components/CardHistorico";
+import CardHistoricoDefault, {
+  CardHistorico,
+} from "src/components/SolicitacaoUnificada/components/CardHistorico";
 import {
   RELATORIO,
   SOLICITACAO_KIT_LANCHE_UNIFICADA,
@@ -277,5 +279,54 @@ describe("CardHistorico - Solicitação Unificada", () => {
       "data-to",
       expectedUrl,
     );
+  });
+
+  it("redireciona para o relatório ao clicar na data do pedido", async () => {
+    const pedido = pedidosMock[0];
+
+    renderComponent({
+      pedidos: [{ ...pedido }],
+    });
+
+    await expandCard();
+
+    fireEvent.click(screen.getByText("10/06/2026"));
+
+    const expectedUrl = `/${SOLICITACAO_KIT_LANCHE_UNIFICADA}/${RELATORIO}?uuid=${pedido.uuid}`;
+
+    expect(screen.getByTestId("navigate")).toHaveAttribute(
+      "data-to",
+      expectedUrl,
+    );
+  });
+
+  it("renderiza o componente conectado com os valores do redux-form", async () => {
+    const change = jest.fn();
+
+    const { container } = render(
+      <CardHistoricoDefault
+        titulo="Histórico de solicitações"
+        ultimaColunaLabel="Data da solicitação"
+        pedidos={pedidosMock.map((pedido) => ({ ...pedido }))}
+        change={change}
+        handleSubmit={jest.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByTestId("toggle-expandir"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("collapse-open")).toBeInTheDocument();
+    });
+
+    const selecionarTodosButton = container.querySelector(
+      ".select-all .checkbox-custom",
+    );
+
+    fireEvent.click(selecionarTodosButton);
+
+    expect(change).toHaveBeenCalledWith("check_0", true);
+    expect(change).toHaveBeenCalledWith("check_1", true);
+    expect(change).toHaveBeenCalledWith("selecionar_todos", true);
   });
 });
