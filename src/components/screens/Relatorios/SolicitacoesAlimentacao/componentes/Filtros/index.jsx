@@ -1,4 +1,4 @@
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Spin } from "antd";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { InputComData } from "src/components/Shareable/DatePicker";
@@ -145,12 +145,12 @@ export const Filtros = ({ ...props }) => {
   const filtroEscolas = (unidadesEducacionais, values) => {
     if (values.lotes && values.lotes.length > 0) {
       unidadesEducacionais = unidadesEducacionais.filter((ue) =>
-        values.lotes.includes(ue.lote)
+        values.lotes.includes(ue.lote),
       );
     }
     if (values.tipos_unidade && values.tipos_unidade.length > 0) {
       unidadesEducacionais = unidadesEducacionais.filter((ue) =>
-        values.tipos_unidade.includes(ue.tipo_unidade)
+        values.tipos_unidade.includes(ue.tipo_unidade),
       );
     }
     return unidadesEducacionais.map((unidadeEducacional) => ({
@@ -180,7 +180,7 @@ export const Filtros = ({ ...props }) => {
       await getSolicitacoesDetalhadasAsync(response.data.results);
     } else {
       toastError(
-        "Houve um erro ao filtrar solicitações, tente novamente mais tarde"
+        "Houve um erro ao filtrar solicitações, tente novamente mais tarde",
       );
     }
     setCarregando(false);
@@ -344,7 +344,7 @@ export const Filtros = ({ ...props }) => {
                         terceirizadas.map((terceirizada) => ({
                           nome: terceirizada.nome_fantasia,
                           uuid: terceirizada.uuid,
-                        }))
+                        })),
                       )}
                       naoDesabilitarPrimeiraOpcao
                     />

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Form, Field } from "react-final-form";
 import { Modal } from "react-bootstrap";
 import InputText from "src/components/Shareable/Input/InputText";

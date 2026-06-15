@@ -1,5 +1,5 @@
 import React from "react";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import HTTP_STATUS from "http-status-codes";
 import { Modal } from "react-bootstrap";
 import { Field, Form } from "react-final-form";
@@ -57,7 +57,7 @@ const ModalCancelarSolicitacao = ({
       uuid,
       values.justificativa,
       tipoSolicitacao,
-      values.escolas
+      values.escolas,
     );
     if (resp.status === HTTP_STATUS.OK) {
       closeModal();
@@ -87,7 +87,7 @@ const ModalCancelarSolicitacao = ({
                       {solicitacao &&
                         mensagemCancelamento(
                           solicitacao.status,
-                          solicitacao.tipo
+                          solicitacao.tipo,
                         )}
                       Deseja seguir em frente com o cancelamento?
                     </p>

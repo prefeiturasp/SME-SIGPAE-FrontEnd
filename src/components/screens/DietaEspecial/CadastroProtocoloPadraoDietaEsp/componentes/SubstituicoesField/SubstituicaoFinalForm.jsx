@@ -13,7 +13,7 @@ import {
 import { Tooltip } from "antd";
 
 import "./style.scss";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 
 const { Option } = SelectAntd;
 
