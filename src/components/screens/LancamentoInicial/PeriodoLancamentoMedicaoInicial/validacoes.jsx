@@ -985,7 +985,14 @@ export const validacoesTabelaAlimentacao = (
     (inputName.includes("refeicao") ||
       inputName.includes("sobremesa") ||
       inputName.includes("lanche")) &&
+    !inputName.includes("repeticao") &&
     !inputName.includes("emergencial")
+  ) {
+    return "Lançamento maior que a frequência de alunos no dia.";
+  } else if (
+    inputName.includes("repeticao") &&
+    maxFrequencia === 0 &&
+    Number(value) > 0
   ) {
     return "Lançamento maior que a frequência de alunos no dia.";
   } else if (
