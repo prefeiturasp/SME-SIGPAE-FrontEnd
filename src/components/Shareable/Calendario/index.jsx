@@ -5,7 +5,7 @@ import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import "moment/dist/locale/pt-br";
 moment.locale("pt-br");
-import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import dragAndDropAddon from "react-big-calendar/lib/addons/dragAndDrop";
 import { formataComoEventos } from "src/components/Shareable/Calendario/helpers";
 import { Spin } from "antd";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
@@ -17,6 +17,8 @@ import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 import "src/components/Shareable/Calendario/style.scss";
 import { getNumerosEditais } from "src/services/edital.service";
 
+// Vite 8 preserves the nested default export from this CommonJS addon.
+const withDragAndDrop = dragAndDropAddon.default ?? dragAndDropAddon;
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 const localizer = momentLocalizer(moment);
