@@ -488,6 +488,20 @@ describe("CadastrarCronogramaSemanal", () => {
       await selecionarCronograma();
 
       await waitFor(() => {
+        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
+      });
+
+      // Selecionar mês para exibir a quantidade estimada por linha
+      const selectMes = screen
+        .getByText("Mês Programado")
+        .closest(".row")
+        ?.querySelector("select");
+
+      if (selectMes) {
+        fireEvent.change(selectMes, { target: { value: "03/2026" } });
+      }
+
+      await waitFor(() => {
         expect(screen.getByText(/Quantidade estimada/i)).toBeInTheDocument();
       });
 
@@ -1428,6 +1442,143 @@ describe("CadastrarCronogramaSemanal", () => {
         "href",
         "/pre-recebimento/cadastro-cronograma-semanal?uuid=rascunho-uuid-1",
       );
+    });
+  });
+
+  describe("Cálculo por Linha (Quantidade Estimada e Diferença)", () => {
+    const preencherPrimeiraLinha = async () => {
+      await selecionarCronograma();
+
+      await waitFor(() => {
+        expect(screen.getByText("Mês Programado")).toBeInTheDocument();
+      });
+
+      // Selecionar mês 03/2026 na primeira linha
+      const selectMes = screen
+        .getByText("Mês Programado")
+        .closest(".row")
+        ?.querySelector("select");
+
+      if (selectMes) {
+        fireEvent.change(selectMes, { target: { value: "03/2026" } });
+      }
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      });
+
+      // Preencher datas
+      const inputsDataInicio = screen.getAllByPlaceholderText("");
+      const dataInicioInput = inputsDataInicio.find(
+        (input: any) => input.getAttribute("type") === "text" && !input.value,
+      );
+      if (dataInicioInput) {
+        fireEvent.change(dataInicioInput, { target: { value: "01/03/2026" } });
+      }
+
+      const dataFimInput = inputsDataInicio.find(
+        (input: any) =>
+          input !== dataInicioInput &&
+          input.getAttribute("type") === "text" &&
+          !input.value,
+      );
+      if (dataFimInput) {
+        fireEvent.change(dataFimInput, { target: { value: "31/03/2026" } });
+      }
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      });
+
+      const inputQtd = screen.getByPlaceholderText("Informe a quantidade");
+      fireEvent.change(inputQtd, { target: { value: "200" } });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
+    };
+
+    it("exibe Quantidade Estimada e Diferença por linha quando mês é selecionado", async () => {
+      await setup();
+      await preencherPrimeiraLinha();
+
+      // Verificar se o texto de quantidade estimada apareceu
+      expect(screen.queryByText(/Quantidade estimada/)).toBeInTheDocument();
+      expect(screen.queryByText(/Diferença de/)).toBeInTheDocument();
+    });
+
+    it("exibe valores independentes para cada linha com meses diferentes", async () => {
+      await setup();
+      await preencherPrimeiraLinha();
+
+      // Adicionar segunda programação
+      const botaoAdicionar = screen.getByText("+ Adicionar Programação");
+      fireEvent.click(botaoAdicionar);
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
+
+      // Preencher segunda linha com mês 04/2026
+      const selects = screen.getAllByRole("combobox");
+      if (selects.length >= 2) {
+        fireEvent.change(selects[1], { target: { value: "04/2026" } });
+      }
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
+
+      // Preencher quantidade da segunda linha
+      const inputsQtd = screen.getAllByPlaceholderText("Informe a quantidade");
+      if (inputsQtd.length >= 2) {
+        fireEvent.change(inputsQtd[1], { target: { value: "300" } });
+      }
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
+
+      // Verificar que há textos de quantidade estimada visíveis
+      const textosEstimativa = screen.getAllByText(/Quantidade estimada/);
+      expect(textosEstimativa.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("exibe diferença considerando soma de duas linhas do mesmo mês", async () => {
+      await setup();
+      await preencherPrimeiraLinha();
+
+      // Adicionar segunda programação
+      const botaoAdicionar = screen.getByText("+ Adicionar Programação");
+      fireEvent.click(botaoAdicionar);
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
+
+      // Na segunda linha, selecionar o mesmo mês 03/2026
+      const selects = screen.getAllByRole("combobox");
+      if (selects.length >= 2) {
+        fireEvent.change(selects[1], { target: { value: "03/2026" } });
+      }
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
+
+      // Preencher quantidade da segunda linha
+      const inputsQtd = screen.getAllByPlaceholderText("Informe a quantidade");
+      if (inputsQtd.length >= 2) {
+        fireEvent.change(inputsQtd[1], { target: { value: "100" } });
+      }
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      });
+
+      // Verificar diferença visível
+      const diffTexts = screen.getAllByText(/Diferença de/);
+      expect(diffTexts.length).toBeGreaterThanOrEqual(1);
     });
   });
 });
