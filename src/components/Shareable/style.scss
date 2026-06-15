@@ -8,7 +8,7 @@ label {
   margin-bottom: 0 !important;
 }
 
-input::placeholder:not(.input-search) {
+input:not(.input-search)::placeholder {
   color: $placeholder !important;
   text-align: left;
   font-size: 12px;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Form, Field } from "react-final-form";
 import arrayMutators from "final-form-arrays";

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Field } from "react-final-form";
 import { required } from "src/helpers/fieldValidators";
 import Select from "src/components/Shareable/Select";

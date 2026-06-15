@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Field } from "react-final-form";
-import Multiselect from "multiselect-react-dropdown";
+import { Multiselect } from "multiselect-react-dropdown";
 import $ from "jquery";
 import { slugify } from "../../../../../../helper";
 
@@ -15,7 +15,7 @@ export class MultiselectDiagnosticos extends Multiselect {
     if (JSON.stringify(prevOptions) !== JSON.stringify(options)) {
       this.setState(
         { options, filteredOptions: options, unfilteredOptions: options },
-        this.initialSetValue
+        this.initialSetValue,
       );
     }
     if (JSON.stringify(prevSelectedvalues) !== JSON.stringify(selectedValues)) {
@@ -24,7 +24,7 @@ export class MultiselectDiagnosticos extends Multiselect {
           selectedValues: Object.assign([], selectedValues),
           preSelectedValues: Object.assign([], selectedValues),
         },
-        this.initialSetValue
+        this.initialSetValue,
       );
     }
 
@@ -32,7 +32,7 @@ export class MultiselectDiagnosticos extends Multiselect {
     let lis = $(
       `.optionContainer li:nth-child(-n+${
         this.state.selectedValues.length + 1
-      })`
+      })`,
     );
     $(lis).each((_, element) => {
       $(element).css("font-weight", "");
@@ -40,7 +40,7 @@ export class MultiselectDiagnosticos extends Multiselect {
 
     // Negrito colocado só nos que estão selecionados
     lis = $(
-      `.optionContainer li:nth-child(-n+${this.state.selectedValues.length})`
+      `.optionContainer li:nth-child(-n+${this.state.selectedValues.length})`,
     );
     $(lis).each((index, element) => {
       if (
@@ -63,13 +63,13 @@ export class MultiselectDiagnosticos extends Multiselect {
 
     const wordToFilter = slugify(inputValue.toLowerCase());
     const stateOptions = filteredOptions.filter(
-      (op) => !selectedValues.find((o) => o.uuid === op.uuid)
+      (op) => !selectedValues.find((o) => o.uuid === op.uuid),
     );
     const orderedNewOptions = selectedValues.sort(this.compare);
     options = orderedNewOptions
       .concat(stateOptions.sort(this.compare))
       .filter(
-        (item) => slugify(item.nome.toLowerCase()).search(wordToFilter) !== -1
+        (item) => slugify(item.nome.toLowerCase()).search(wordToFilter) !== -1,
       );
 
     this.groupByOptions(options);
@@ -101,7 +101,7 @@ const Diagnosticos = ({
     }
     setDiagnosticosSelecionados(formatarDiagnostico(values));
     const stateOptions = diagnosticos.filter(
-      (op) => !values.find((o) => o.uuid === op.uuid)
+      (op) => !values.find((o) => o.uuid === op.uuid),
     );
     const orderedNewOptions = values.sort(compare);
     setDiags(orderedNewOptions.concat(stateOptions.sort(compare)));
@@ -110,7 +110,7 @@ const Diagnosticos = ({
   const onRemove = (values) => {
     setDiagnosticosSelecionados(formatarDiagnostico(values));
     const stateOptions = diagnosticos.filter(
-      (op) => !values.find((o) => o.uuid === op.uuid)
+      (op) => !values.find((o) => o.uuid === op.uuid),
     );
     const orderedNewOptions = values.sort(compare);
     setDiags(orderedNewOptions.concat(stateOptions.sort(compare)));

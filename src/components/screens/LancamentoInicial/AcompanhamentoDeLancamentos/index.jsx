@@ -1,4 +1,4 @@
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Select as SelectAntd, Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";

@@ -51,7 +51,7 @@
       font-weight: bold;
       background-color: #198459;
       color: white;
-       width: 18px;
+      width: 18px;
       height: 18px;
 
       display: inline-flex;
@@ -62,9 +62,9 @@
       margin-left: 6px;
     }
     .qtd-dois-digitos {
-        width: auto;
-        padding: 0 6px;
-        border-radius: 10px;
+      width: auto;
+      padding: 0 6px;
+      border-radius: 10px;
     }
     &:hover {
       text-decoration: underline;
@@ -78,8 +78,14 @@
     color: $blackInput;
     padding-right: 35px;
   }
-  span.conferida {
+  p.conferida {
     color: #198459 !important;
+  }
+  p.cancelada {
+    color: $red !important;
+  }
+  p.alterada {
+    color: $blue !important;
   }
   a.see-more {
     font-weight: bold;

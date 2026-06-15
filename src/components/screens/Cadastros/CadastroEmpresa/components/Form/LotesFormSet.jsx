@@ -1,6 +1,6 @@
 import React from "react";
 import { Field } from "react-final-form";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { useState } from "react";
 import { useEffect } from "react";
 import { getLotesSimples } from "src/services/lote.service";
@@ -44,12 +44,12 @@ export const LotesFormSet = (props) => {
         .filter((lote) => !values.includes(lote)).length > 0
     ) {
       toastError(
-        "Não é possível remover um lote, apenas transferí-lo para outra empresa."
+        "Não é possível remover um lote, apenas transferí-lo para outra empresa.",
       );
       return;
     }
     const loteSelecionado = values.find(
-      (lote) => !lotesSelecionados.includes(lote)
+      (lote) => !lotesSelecionados.includes(lote),
     );
     if (
       loteSelecionado &&
@@ -73,7 +73,7 @@ export const LotesFormSet = (props) => {
     setExibirModalTransferenciaLote(false);
     setLotesSelecionados(lotesSelecionados.filter((l) => l !== lote.uuid));
     setLotesNomesSelecionados(
-      lotesNomesSelecionados.filter((l) => l !== lote.nome)
+      lotesNomesSelecionados.filter((l) => l !== lote.nome),
     );
   };
 

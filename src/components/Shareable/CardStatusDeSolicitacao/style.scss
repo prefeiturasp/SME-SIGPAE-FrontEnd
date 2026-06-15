@@ -49,6 +49,12 @@
   p.conferida {
     color: #198459 !important;
   }
+  p.cancelada {
+    color: $red !important;
+  }
+  p.alterada {
+    color: $blue !important;
+  }
   a.see-more {
     font-weight: bold;
     font-size: 13px;
