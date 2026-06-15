@@ -1,4 +1,4 @@
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Botao } from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -57,7 +57,7 @@ export const FieldArrayContratos = ({
 
   const renderizarLabelLote = (
     selected: Array<string>,
-    options: Array<string>
+    options: Array<string>,
   ): string => {
     if (selected.length === 0) {
       return "Selecione um ou mais lotes...";
@@ -73,7 +73,7 @@ export const FieldArrayContratos = ({
 
   const renderizarDiretoriaRegional = (
     selected: Array<string>,
-    options: Array<string>
+    options: Array<string>,
   ): string => {
     if (selected.length === 0) {
       return "Selecione uma ou mais diretorias...";
@@ -92,14 +92,14 @@ export const FieldArrayContratos = ({
       `contratos`,
       values.contratos.filter(
         (_: FormCadastroEditaisContratosContratoInterface, i: number) =>
-          i !== index_contratos
-      )
+          i !== index_contratos,
+      ),
     );
   };
 
   const exibeBotaoRemoverVigencia = (
     indexVigencia: number,
-    index_contratos: number
+    index_contratos: number,
   ): boolean => {
     return (
       indexVigencia > 0 &&
@@ -108,27 +108,27 @@ export const FieldArrayContratos = ({
         moment(
           values.contratos[index_contratos].vigencias[indexVigencia]
             ?.data_final,
-          "DD/MM/YYYY"
+          "DD/MM/YYYY",
         ).toDate() > new Date())
     );
   };
 
   const removeVigencia = (
     index_contratos: number,
-    indexVigencia: number
+    indexVigencia: number,
   ): void => {
     form.change(
       `contratos[${index_contratos}].vigencias`,
       values.contratos[index_contratos].vigencias.filter(
         (_: FormCadastroEditaisContratosVigenciaInterface, i: number) =>
-          i !== indexVigencia
-      )
+          i !== indexVigencia,
+      ),
     );
   };
 
   const exibeAvisoVigenciaVencida = (
     indexVigencia: number,
-    index_contratos: number
+    index_contratos: number,
   ): boolean => {
     return (
       indexVigencia ===
@@ -140,7 +140,7 @@ export const FieldArrayContratos = ({
 
   const exibeAvisoContratoEncerrado = (
     indexVigencia: number,
-    index_contratos: number
+    index_contratos: number,
   ): boolean => {
     return (
       indexVigencia ===
@@ -150,7 +150,7 @@ export const FieldArrayContratos = ({
   };
 
   const encerrarContrato = async (
-    contrato: FormCadastroEditaisContratosContratoInterface
+    contrato: FormCadastroEditaisContratosContratoInterface,
   ): Promise<void> => {
     const response = await encerraContratoTerceirizada(contrato.uuid);
     if (response.status === HTTP_STATUS.OK) {
@@ -168,44 +168,44 @@ export const FieldArrayContratos = ({
       (!values.contratos[index_contratos]?.uuid ||
         moment(
           values.contratos[index_contratos]?.vigencias[0]?.data_inicial,
-          "DD/MM/YYYY"
+          "DD/MM/YYYY",
         ).toDate() > new Date())
     );
   };
 
   const getMinDateDataInicial = (
     index_contratos: number,
-    indexVigencia: number
+    indexVigencia: number,
   ): Date | null => {
     return indexVigencia === 0
       ? null
       : moment(
           values.contratos[index_contratos].vigencias[indexVigencia - 1]
             ?.data_final,
-          "DD/MM/YYYY"
+          "DD/MM/YYYY",
         ).toDate();
   };
 
   const getMinDateDataFinal = (
     index_contratos: number,
-    indexVigencia: number
+    indexVigencia: number,
   ): Date => {
     return indexVigencia === 0
       ? moment(
           values.contratos[index_contratos].vigencias[indexVigencia]
             .data_inicial,
-          "DD/MM/YYYY"
+          "DD/MM/YYYY",
         ).toDate()
       : moment(
           values.contratos[index_contratos].vigencias[indexVigencia - 1]
             ?.data_final,
-          "DD/MM/YYYY"
+          "DD/MM/YYYY",
         ).toDate();
   };
 
   const getDataInicialDisabled = (
     index_contratos: number,
-    indexVigencia: number
+    indexVigencia: number,
   ): boolean => {
     return (
       values.contratos[index_contratos].encerrado ||
@@ -213,14 +213,14 @@ export const FieldArrayContratos = ({
         moment(
           values.contratos[index_contratos].vigencias[indexVigencia]
             ?.data_inicial,
-          "DD/MM/YYYY"
+          "DD/MM/YYYY",
         ).toDate() <= new Date())
     );
   };
 
   const getDataFinalDisabled = (
     index_contratos: number,
-    indexVigencia: number
+    indexVigencia: number,
   ): boolean => {
     return (
       values.contratos[index_contratos].encerrado ||
@@ -228,7 +228,7 @@ export const FieldArrayContratos = ({
         moment(
           values.contratos[index_contratos].vigencias[indexVigencia]
             ?.data_final,
-          "DD/MM/YYYY"
+          "DD/MM/YYYY",
         ).toDate() <= new Date())
     );
   };
@@ -309,19 +309,19 @@ export const FieldArrayContratos = ({
                           writable={false}
                           minDate={getMinDateDataInicial(
                             index_contratos,
-                            indexVigencia
+                            indexVigencia,
                           )}
                           maxDate={moment(
                             values.contratos[index_contratos].vigencias[
                               indexVigencia
                             ]?.data_final,
-                            "DD/MM/YYYY"
+                            "DD/MM/YYYY",
                           ).toDate()}
                           required
                           validate={required}
                           disabled={getDataInicialDisabled(
                             index_contratos,
-                            indexVigencia
+                            indexVigencia,
                           )}
                         />
                       </div>
@@ -334,23 +334,23 @@ export const FieldArrayContratos = ({
                           writable={false}
                           minDate={getMinDateDataFinal(
                             index_contratos,
-                            indexVigencia
+                            indexVigencia,
                           )}
                           maxDate={null}
                           disabled={getDataFinalDisabled(
                             index_contratos,
-                            indexVigencia
+                            indexVigencia,
                           )}
                         />
                       </div>
                       {indexVigencia > 0 &&
                         !exibeBotaoRemoverVigencia(
                           indexVigencia,
-                          index_contratos
+                          index_contratos,
                         ) && <div className="col-2" />}
                       {exibeBotaoRemoverVigencia(
                         indexVigencia,
-                        index_contratos
+                        index_contratos,
                       ) && (
                         <div className="col-2 mt-auto mb-2">
                           <Botao
@@ -365,7 +365,7 @@ export const FieldArrayContratos = ({
                       )}
                       {exibeAvisoVigenciaVencida(
                         indexVigencia,
-                        index_contratos
+                        index_contratos,
                       ) && (
                         <div
                           className="pt-3 pb-3"
@@ -381,7 +381,7 @@ export const FieldArrayContratos = ({
                       )}
                       {exibeAvisoContratoEncerrado(
                         indexVigencia,
-                        index_contratos
+                        index_contratos,
                       ) && (
                         <div
                           className="pt-3 pb-3"
@@ -481,8 +481,8 @@ export const FieldArrayContratos = ({
                     {lotes
                       .filter((lote) =>
                         values.contratos[index_contratos].lotes.includes(
-                          lote.uuid
-                        )
+                          lote.uuid,
+                        ),
                       )
                       .map((lote, indice) => {
                         return (
@@ -513,7 +513,7 @@ export const FieldArrayContratos = ({
                   onSelectedChanged={(values_: Array<string>) => {
                     form.change(
                       `contratos[${index_contratos}].diretorias_regionais`,
-                      values_
+                      values_,
                     );
                   }}
                   overrideStrings={{
@@ -533,7 +533,7 @@ export const FieldArrayContratos = ({
                     {DREs.filter((dre) =>
                       values.contratos[
                         index_contratos
-                      ]?.diretorias_regionais.includes(dre.uuid)
+                      ]?.diretorias_regionais.includes(dre.uuid),
                     ).map((dre, indice) => {
                       return (
                         <div className="value-selected-unities" key={indice}>
@@ -565,7 +565,7 @@ export const FieldArrayContratos = ({
                         nome: empresa.nome_fantasia,
                         uuid: empresa.uuid,
                       };
-                    })
+                    }),
                   )}
                   required
                   validate={required}
