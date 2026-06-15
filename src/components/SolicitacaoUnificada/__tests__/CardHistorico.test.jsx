@@ -169,4 +169,52 @@ describe("CardHistorico - Solicitação Unificada", () => {
 
     expect(screen.getByText("Data")).toBeInTheDocument();
   });
+
+  it("marca todos os pedidos ao clicar em Selecionar todos", async () => {
+    const { container, props } = renderComponent();
+
+    await expandCard();
+
+    const selecionarTodosButton = container.querySelector(
+      ".select-all .checkbox-custom",
+    );
+
+    fireEvent.click(selecionarTodosButton);
+
+    expect(props.change).toHaveBeenCalledWith("check_0", true);
+    expect(props.change).toHaveBeenCalledWith("check_1", true);
+    expect(props.change).toHaveBeenCalledWith("selecionar_todos", true);
+  });
+
+  it("desmarca todos os pedidos quando selecionar_todos já está marcado", async () => {
+    const { container, props } = renderComponent({
+      selecionar_todos: true,
+    });
+
+    await expandCard();
+
+    const selecionarTodosButton = container.querySelector(
+      ".select-all .checkbox-custom",
+    );
+
+    fireEvent.click(selecionarTodosButton);
+
+    expect(props.change).toHaveBeenCalledWith("check_0", false);
+    expect(props.change).toHaveBeenCalledWith("check_1", false);
+    expect(props.change).toHaveBeenCalledWith("selecionar_todos", false);
+  });
+
+  it("alterna a seleção individual de um pedido", async () => {
+    const { container, props } = renderComponent();
+
+    await expandCard();
+
+    const checkboxPedido = container.querySelector(
+      "tbody .checkbox-custom.report-line",
+    );
+
+    fireEvent.click(checkboxPedido);
+
+    expect(props.change).toHaveBeenCalledWith("check_0", true);
+  });
 });
