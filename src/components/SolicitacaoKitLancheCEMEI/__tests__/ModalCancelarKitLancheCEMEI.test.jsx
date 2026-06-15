@@ -1,7 +1,12 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import HTTP_STATUS from "http-status-codes";
 
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { getError, mensagemCancelamento } from "src/helpers/utilities";
 import { SolicitacaoAlimentacaoContext } from "src/context/SolicitacaoAlimentacao";
 import { ModalCancelarKitLancheCEMEI } from "src/components/SolicitacaoKitLancheCEMEI/Relatorio/components/ModalCancelarKitLancheCEMEI";
@@ -13,6 +18,11 @@ jest.mock("src/helpers/utilities", () => ({
 
 jest.mock("src/helpers/fieldValidators", () => ({
   textAreaRequired: jest.fn(),
+}));
+
+jest.mock("src/components/Shareable/Toast/dialogs", () => ({
+  toastError: jest.fn(),
+  toastSuccess: jest.fn(),
 }));
 
 jest.mock("src/components/Shareable/Botao/constants", () => ({
@@ -181,5 +191,95 @@ describe("ModalCancelarKitLancheCEMEI", () => {
     fireEvent.click(screen.getByRole("button", { name: "Não" }));
 
     expect(closeModal).toHaveBeenCalledTimes(1);
+  });
+
+  it("habilita o botão Sim quando a justificativa é preenchida", async () => {
+    renderComponent();
+
+    const textarea = screen.getByLabelText("Justificativa");
+    const submitButton = screen.getByRole("button", { name: "Sim" });
+
+    expect(submitButton).toBeDisabled();
+
+    fireEvent.change(textarea, {
+      target: {
+        value: "Cancelamento solicitado pela unidade.",
+      },
+    });
+
+    await waitFor(() => {
+      expect(submitButton).not.toBeDisabled();
+    });
+  });
+
+  it("envia a justificativa, fecha o modal e exibe toast de sucesso", async () => {
+    const closeModal = jest.fn();
+
+    const endpoint = jest.fn().mockResolvedValue({
+      status: HTTP_STATUS.OK,
+    });
+
+    renderComponent({
+      closeModal,
+      endpoint,
+    });
+
+    fireEvent.change(screen.getByLabelText("Justificativa"), {
+      target: {
+        value: "Cancelamento solicitado pela unidade.",
+      },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    await waitFor(() => {
+      expect(endpoint).toHaveBeenCalledWith(solicitacaoMock.uuid, {
+        justificativa: "Cancelamento solicitado pela unidade.",
+      });
+    });
+
+    expect(closeModal).toHaveBeenCalledTimes(1);
+
+    expect(toastSuccess).toHaveBeenCalledWith(
+      "Solicitação cancelada com sucesso!",
+    );
+
+    expect(toastError).not.toHaveBeenCalled();
+    expect(mockUpdateSolicitacaoAlimentacao).not.toHaveBeenCalled();
+  });
+
+  it("recarrega a solicitação e atualiza o contexto quando loadSolicitacao retorna sucesso", async () => {
+    const responseData = {
+      uuid: solicitacaoMock.uuid,
+      status: "CANCELADA",
+    };
+
+    const endpoint = jest.fn().mockResolvedValue({
+      status: HTTP_STATUS.OK,
+    });
+
+    const loadSolicitacao = jest.fn().mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: responseData,
+    });
+
+    renderComponent({
+      endpoint,
+      loadSolicitacao,
+    });
+
+    fireEvent.change(screen.getByLabelText("Justificativa"), {
+      target: {
+        value: "Cancelamento solicitado pela unidade.",
+      },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    await waitFor(() => {
+      expect(loadSolicitacao).toHaveBeenCalledWith(solicitacaoMock.uuid);
+    });
+
+    expect(mockUpdateSolicitacaoAlimentacao).toHaveBeenCalledWith(responseData);
   });
 });
