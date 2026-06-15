@@ -17,7 +17,7 @@ import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 import "src/components/Shareable/Calendario/style.scss";
 import { getNumerosEditais } from "src/services/edital.service";
 
-// Vite 8 preserves the nested default export from this CommonJS addon.
+// O Vite 8 mantém a exportação padrão aninhada deste módulo CommonJS.
 const withDragAndDrop = dragAndDropAddon.default ?? dragAndDropAddon;
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
