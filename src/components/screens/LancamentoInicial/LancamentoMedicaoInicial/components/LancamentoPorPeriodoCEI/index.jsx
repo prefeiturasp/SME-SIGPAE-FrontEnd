@@ -297,11 +297,19 @@ export const LancamentoPorPeriodoCEI = ({
     if (ehEscolaTipoCEMEI(escolaInstituicao)) {
       const escola_uuid = escolaInstituicao.uuid;
       const tipo_solicitacao = "Kit Lanche";
+      const recreioNasFeriasUuid =
+        typeof solicitacaoMedicaoInicial?.recreio_nas_ferias === "string"
+          ? solicitacaoMedicaoInicial.recreio_nas_ferias
+          : solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid ||
+            new URLSearchParams(window.location.search).get(
+              "recreio_nas_ferias",
+            );
       const response = await getSolicitacoesKitLanchesAutorizadasEscola({
         escola_uuid,
         mes,
         ano,
         tipo_solicitacao,
+        recreio_nas_ferias: recreioNasFeriasUuid,
       });
       if (response.status === HTTP_STATUS.OK) {
         setSolicitacoesKitLanchesAutorizadas(response.data.results);
@@ -317,11 +325,19 @@ export const LancamentoPorPeriodoCEI = ({
     async () => {
       if (ehEscolaTipoCEMEI(escolaInstituicao)) {
         const params = {};
+        const recreioNasFeriasUuid =
+          typeof solicitacaoMedicaoInicial?.recreio_nas_ferias === "string"
+            ? solicitacaoMedicaoInicial.recreio_nas_ferias
+            : solicitacaoMedicaoInicial?.recreio_nas_ferias?.uuid ||
+              new URLSearchParams(window.location.search).get(
+                "recreio_nas_ferias",
+              );
         params["escola_uuid"] = escolaInstituicao.uuid;
         params["tipo_solicitacao"] = "Alteração";
         params["mes"] = mes;
         params["ano"] = ano;
         params["eh_lanche_emergencial"] = true;
+        params["recreio_nas_ferias"] = recreioNasFeriasUuid;
         const response =
           await getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola(params);
         if (response.status === HTTP_STATUS.OK) {
@@ -654,6 +670,35 @@ export const LancamentoPorPeriodoCEI = ({
                     grupo="Colaboradores"
                   />
                 )}
+                {recreioNasFeriasDaMedicaoEMEIdaCEMEI(
+                  solicitacaoMedicaoInicial,
+                ) &&
+                  ((solicitacoesKitLanchesAutorizadas &&
+                    solicitacoesKitLanchesAutorizadas.length > 0) ||
+                    (solicitacoesAlteracaoLancheEmergencialAutorizadas &&
+                      solicitacoesAlteracaoLancheEmergencialAutorizadas.length >
+                        0) ||
+                    temLancheEmergencialDiarioAtivo) && (
+                    <CardLancamentoCEI
+                      textoCabecalho={"Solicitações de Alimentação"}
+                      cor={CORES[5]}
+                      solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                      escolaInstituicao={escolaInstituicao}
+                      quantidadeAlimentacoesLancadas={
+                        quantidadeAlimentacoesLancadas
+                      }
+                      periodoSelecionado={periodoSelecionado}
+                      periodosEscolaCemeiComAlunosEmei={
+                        periodosEscolaCemeiComAlunosEmei
+                      }
+                      tiposAlimentacao={[
+                        { nome: "Kit Lanche" },
+                        { nome: "Lanche Emergencial" },
+                      ]}
+                      errosAoSalvar={errosAoSalvar}
+                      grupo="Solicitações de Alimentação"
+                    />
+                  )}
               </>
             )}
             <div className="mt-4">

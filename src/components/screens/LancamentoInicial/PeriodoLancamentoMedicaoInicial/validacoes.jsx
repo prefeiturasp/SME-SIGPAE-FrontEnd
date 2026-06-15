@@ -1279,6 +1279,7 @@ export const validacoesTabelasDietas = (
   } else if (
     inputName.includes("frequencia") &&
     !location.state.periodo?.includes("INTEGRAL") &&
+    !location.state.recreioNasFerias &&
     categoria !== idCategoriaAlimentacao &&
     value &&
     totalLanchesDieta &&
@@ -1778,8 +1779,10 @@ export const campoComKitLancheAutorizadoMenorQueSolicitadoESemObservacaoOuMaiorQ
     categoria,
     column,
     value,
+    row,
   ) => {
     if (categoria.nome !== "SOLICITAÇÕES DE ALIMENTAÇÃO") return false;
+    if (row.name !== "kit_lanche") return false;
     let erro = false;
 
     for (let diaDaSemana of diasDaSemanaSelecionada) {

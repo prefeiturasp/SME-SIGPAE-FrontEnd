@@ -11,7 +11,12 @@ const recreioCEIMock = {
   unidades_participantes: [
     {
       tipos_alimentacao: {
-        colaboradores: [{ nome: "Lanche 4h" }, { nome: "Lanche" }],
+        colaboradores: [
+          { nome: "Refeição" },
+          { nome: "Lanche 4h" },
+          { nome: "Lanche" },
+          { nome: "Sobremesa" },
+        ],
         inscritos: [
           { nome: "Lanche" },
           { nome: "Refeição" },
@@ -61,18 +66,26 @@ describe("tiposAlimentacaoRecreio", () => {
     it("retorna inscritos quando colaboradores=false", () => {
       const result = tiposAlimentacaoRecreio(solicitacao, escola);
 
-      expect(result).toEqual(
-        recreioCEIMock.unidades_participantes[0].tipos_alimentacao.inscritos,
-      );
+      expect(result.map((item) => item.nome)).toEqual([
+        "Lanche",
+        "Refeição",
+        "Sobremesa",
+        "Colação",
+        "Refeição da tarde",
+        "Desjejum",
+        "Almoço",
+      ]);
     });
 
     it("retorna colaboradores quando colaboradores=true", () => {
       const result = tiposAlimentacaoRecreio(solicitacao, escola, true);
 
-      expect(result).toEqual(
-        recreioCEIMock.unidades_participantes[0].tipos_alimentacao
-          .colaboradores,
-      );
+      expect(result.map((item) => item.nome)).toEqual([
+        "Lanche",
+        "Refeição",
+        "Sobremesa",
+        "Lanche 4h",
+      ]);
     });
   });
 
@@ -87,9 +100,7 @@ describe("tiposAlimentacaoRecreio", () => {
 
       const result = tiposAlimentacaoRecreio(solicitacao, escola);
 
-      expect(result).toEqual(
-        recreioCEMEIMock.unidades_participantes[0].tipos_alimentacao.inscritos,
-      );
+      expect(result.map((item) => item.nome)).toEqual(["Lanche", "Refeição"]);
     });
 
     it("retorna infantil ordenado quando tipo EMEI", () => {
@@ -97,23 +108,13 @@ describe("tiposAlimentacaoRecreio", () => {
 
       const result = tiposAlimentacaoRecreio(solicitacao, escola);
 
-      const expected = [
-        ...recreioCEMEIMock.unidades_participantes[1].tipos_alimentacao
-          .infantil,
-      ].sort((a, b) => a.nome.localeCompare(b.nome));
-
-      expect(result).toEqual(expected);
+      expect(result.map((item) => item.nome)).toEqual(["Lanche", "Sobremesa"]);
     });
 
     it("retorna colaboradores ordenados quando colaboradores=true", () => {
       const result = tiposAlimentacaoRecreio(solicitacao, escola, true);
 
-      const expected = [
-        ...recreioCEMEIMock.unidades_participantes[0].tipos_alimentacao
-          .colaboradores,
-      ].sort((a, b) => a.nome.localeCompare(b.nome));
-
-      expect(result).toEqual(expected);
+      expect(result.map((item) => item.nome)).toEqual(["Lanche", "Sobremesa"]);
     });
   });
 });

@@ -66,7 +66,11 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { escolaCorrigeMedicao } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getMeusDados } from "src/services/perfil.service";
-import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS } from "../constants";
+import {
+  ALUNOS_EMEBS,
+  FUNDAMENTAL_EMEBS,
+  ORDEM_CAMPOS_DIETAS_RECREIO,
+} from "../constants";
 import ModalErro from "./components/ModalErro";
 import ModalObservacaoDiaria from "./components/ModalObservacaoDiaria";
 import ModalSalvarCorrecoes from "./components/ModalSalvarCorrecoes";
@@ -539,6 +543,15 @@ export default () => {
 
       const mes = format(mesAnoSelecionado, "MM");
       const ano = getYear(mesAnoSelecionado);
+      const recreioNasFeriasUuid =
+        typeof location?.state?.solicitacaoMedicaoInicial
+          ?.recreio_nas_ferias === "string"
+          ? location.state.solicitacaoMedicaoInicial.recreio_nas_ferias
+          : location?.state?.solicitacaoMedicaoInicial?.recreio_nas_ferias
+              ?.uuid ||
+            new URLSearchParams(window.location.search).get(
+              "recreio_nas_ferias",
+            );
 
       let response_inclusoes_autorizadas = [];
       response_inclusoes_autorizadas =
@@ -562,7 +575,18 @@ export default () => {
 
       const tiposAlimentacaoInclusaoContinua =
         getTiposAlimentacaoInclusoesContinuas(response_inclusoes_autorizadas);
-      const cloneTiposAlimentacao = deepCopy(tipos_alimentacao);
+      const cloneTiposAlimentacao = deepCopy(tipos_alimentacao).map(
+        (alimentacao) => {
+          if (typeof alimentacao === "string") {
+            return { nome: alimentacao };
+          }
+
+          return {
+            ...alimentacao,
+            nome: alimentacao?.nome ?? alimentacao?.name ?? "",
+          };
+        },
+      );
 
       const tiposAlimentacaoFormatadas = cloneTiposAlimentacao
         .filter((alimentacao) => alimentacao.nome !== "Lanche Emergencial")
@@ -752,7 +776,13 @@ export default () => {
         name: "observacoes",
         uuid: null,
       });
-
+      if (ehRecreioNasFerias()) {
+        rowsDietas.sort(
+          (a, b) =>
+            (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+            (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+        );
+      }
       setTabelaDietaRows(rowsDietas);
 
       const cloneRowsDietas = deepCopy(rowsDietas);
@@ -773,7 +803,13 @@ export default () => {
           uuid: cloneTiposAlimentacao[indexRefeicaoDieta].uuid,
         });
       }
-
+      if (ehRecreioNasFerias()) {
+        cloneRowsDietas.sort(
+          (a, b) =>
+            (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+            (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+        );
+      }
       setTabelaDietaEnteralRows(cloneRowsDietas);
 
       rowsSolicitacoesAlimentacao.push(
@@ -1051,6 +1087,8 @@ export default () => {
             mes,
             ano,
             periodo.periodo_escolar.nome,
+            false,
+            recreioNasFeriasUuid,
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
@@ -1063,6 +1101,7 @@ export default () => {
             ano,
             periodo.periodo_escolar.nome,
             true,
+            recreioNasFeriasUuid,
           );
         setAlteracoesLancheEmergencialAutorizadas(
           response_alteracoes_lanche_emergencial_autorizadas,
@@ -1142,6 +1181,7 @@ export default () => {
             escola.uuid,
             mes,
             ano,
+            location.state.recreioNasFerias,
           );
         setKitLanchesAutorizadas(response_kit_lanches_autorizadas);
 
@@ -1152,6 +1192,7 @@ export default () => {
             ano,
             undefined,
             true,
+            recreioNasFeriasUuid,
           );
         setAlteracoesAlimentacaoAutorizadas(
           response_alteracoes_alimentacao_autorizadas,
@@ -1590,6 +1631,16 @@ export default () => {
       ...dadosValoresForaDoMes,
       semanaSelecionada,
     });
+
+    const possuiValoresPreenchidosSolicitacoes =
+      ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
+      Object.keys(dadosValoresKitLanchesAutorizadas).length > 0;
+
+    if (possuiValoresPreenchidosSolicitacoes) {
+      setDisableBotaoSalvarLancamentos(false);
+      setExibirTooltip(false);
+    }
+
     setLoading(false);
   };
 
@@ -2393,6 +2444,7 @@ export default () => {
         categoria,
         column,
         value,
+        row,
       ) ||
       exibirTooltipRPLAutorizadas(
         formValuesAtualizados,
@@ -2631,30 +2683,149 @@ export default () => {
       : setShowModalVoltarPeriodoLancamento(true);
   };
 
-  const getClassNameToNextInput = (row, column, categoria, index) => {
-    if (
-      row.name !== "observacoes" &&
-      column &&
-      index + 1 < linhasTabelaAlimentacao(categoria).length - 1
-    ) {
-      return `${linhasTabelaAlimentacao(categoria)[index + 1].name}__dia_${
-        column.dia
-      }__categoria_${categoria.id}`;
+  const getRowsToNavigate = (categoria) => {
+    if (categoria.nome.includes("DIETA")) {
+      return categoria.nome.includes("ENTERAL")
+        ? tabelaDietaEnteralRows
+        : tabelaDietaRows;
     }
+
+    return linhasTabelaAlimentacao(categoria);
+  };
+
+  const getInputName = (row, column, categoria) => {
+    return `${row.name}__dia_${column.dia}__categoria_${categoria.id}`;
+  };
+
+  const isInputDisabled = (row, column, categoria) => {
+    return desabilitarField(
+      column.dia,
+      row.name,
+      categoria.id,
+      categoria.nome,
+      formValuesAtualizados,
+      mesAnoConsiderado,
+      mesAnoDefault,
+      dadosValoresInclusoesAutorizadasState,
+      validacaoDiaLetivo,
+      validacaoDiaLetivoCalendario,
+      validacaoDiaLetivoLancheEmergencial,
+      validacaoSemana,
+      location,
+      ehGrupoETECUrlParam,
+      dadosValoresInclusoesEtecAutorizadasState,
+      inclusoesEtecAutorizadas,
+      grupoLocation,
+      valoresPeriodosLancamentos,
+      feriadosNoMes,
+      inclusoesAutorizadas,
+      categoriasDeMedicao,
+      kitLanchesAutorizadas,
+      alteracoesAlimentacaoAutorizadas,
+      diasLancheEmergencialDiarioAtivo,
+      diasParaCorrecao,
+      ehPeriodoEscolarSimples,
+      permissoesLancamentosEspeciaisPorDia,
+      alimentacoesLancamentosEspeciais,
+      escolaEhEMEBS(),
+      alunosTabSelecionada,
+      ehUltimoDiaLetivoDoAno,
+    );
+  };
+
+  const getInputNameInRows = (rows = [], column, categoria, step) => {
+    const startIndex = step > 0 ? 0 : rows.length - 1;
+
+    for (
+      let index = startIndex;
+      index >= 0 && index < rows.length;
+      index += step
+    ) {
+      const row = rows[index];
+
+      if (!row || row.name === "observacoes") {
+        continue;
+      }
+
+      if (!isInputDisabled(row, column, categoria)) {
+        return getInputName(row, column, categoria);
+      }
+    }
+
     return undefined;
   };
 
-  const getClassNameToPrevInput = (row, column, categoria, index) => {
-    if (
-      row.name !== "frequencia" &&
-      column &&
-      linhasTabelaAlimentacao(categoria)[index - 1]
+  const getInputNameInSameTable = (
+    rows = [],
+    column,
+    categoria,
+    index,
+    step,
+  ) => {
+    for (
+      let nextIndex = index + step;
+      nextIndex >= 0 && nextIndex < rows.length;
+      nextIndex += step
     ) {
-      return `${linhasTabelaAlimentacao(categoria)[index - 1].name}__dia_${
-        column.dia
-      }__categoria_${categoria.id}`;
+      const nextRow = rows[nextIndex];
+
+      if (!nextRow || nextRow.name === "observacoes") {
+        continue;
+      }
+
+      if (!isInputDisabled(nextRow, column, categoria)) {
+        return getInputName(nextRow, column, categoria);
+      }
     }
+
     return undefined;
+  };
+
+  const getInputNameInAnotherTable = (column, categoria, step) => {
+    const currentCategoryIndex = categoriasDeMedicao.findIndex(
+      (categoriaMedicao) => categoriaMedicao.id === categoria.id,
+    );
+
+    if (currentCategoryIndex === -1) {
+      return undefined;
+    }
+
+    for (
+      let categoryIndex = currentCategoryIndex + step;
+      categoryIndex >= 0 && categoryIndex < categoriasDeMedicao.length;
+      categoryIndex += step
+    ) {
+      const nextCategoria = categoriasDeMedicao[categoryIndex];
+      const rows = getRowsToNavigate(nextCategoria);
+      const inputName = getInputNameInRows(rows, column, nextCategoria, step);
+
+      if (inputName) {
+        return inputName;
+      }
+    }
+
+    return undefined;
+  };
+
+  const getClassNameToInput = (row, column, categoria, index, step) => {
+    if (!column || row.name === "observacoes") {
+      return undefined;
+    }
+
+    const rows = getRowsToNavigate(categoria);
+
+    return (
+      getInputNameInSameTable(rows, column, categoria, index, step) ||
+      getInputNameInAnotherTable(column, categoria, step)
+    );
+  };
+
+  const getClassNameToNextInput = (row, column, categoria, index) => {
+    return getClassNameToInput(row, column, categoria, index, 1);
+  };
+
+  const getClassNameToPrevInput = (row, column, categoria, index) => {
+    return getClassNameToInput(row, column, categoria, index, -1);
   };
 
   const exibeBotaoAdicionarObservacao = (dia, categoriaId) => {
