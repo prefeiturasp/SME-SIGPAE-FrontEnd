@@ -282,4 +282,37 @@ describe("ModalCancelarKitLancheCEMEI", () => {
 
     expect(mockUpdateSolicitacaoAlimentacao).toHaveBeenCalledWith(responseData);
   });
+
+  it("fecha o modal e exibe toast de erro quando o cancelamento falha", async () => {
+    const closeModal = jest.fn();
+    const endpoint = jest.fn().mockResolvedValue({
+      status: HTTP_STATUS.BAD_REQUEST,
+      data: {
+        detail: "Erro ao cancelar solicitação.",
+      },
+    });
+    renderComponent({
+      closeModal,
+      endpoint,
+    });
+    fireEvent.change(screen.getByLabelText("Justificativa"), {
+      target: {
+        value: "Cancelamento solicitado pela unidade.",
+      },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+    await waitFor(() => {
+      expect(endpoint).toHaveBeenCalledWith(solicitacaoMock.uuid, {
+        justificativa: "Cancelamento solicitado pela unidade.",
+      });
+    });
+    expect(closeModal).toHaveBeenCalledTimes(1);
+    expect(getError).toHaveBeenCalledWith({
+      detail: "Erro ao cancelar solicitação.",
+    });
+    expect(toastError).toHaveBeenCalledWith(
+      "Houve um erro ao cancelar solicitação: Erro tratado",
+    );
+    expect(toastSuccess).not.toHaveBeenCalled();
+  });
 });
