@@ -3,6 +3,10 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { CardHistorico } from "src/components/SolicitacaoUnificada/components/CardHistorico";
+import {
+  RELATORIO,
+  SOLICITACAO_KIT_LANCHE_UNIFICADA,
+} from "src/configs/constants";
 
 jest.mock("react-redux", () => {
   const React = require("react");
@@ -216,5 +220,62 @@ describe("CardHistorico - Solicitação Unificada", () => {
     fireEvent.click(checkboxPedido);
 
     expect(props.change).toHaveBeenCalledWith("check_0", true);
+  });
+
+  it("redireciona para o relatório ao clicar no código do pedido", async () => {
+    const pedido = pedidosMock[0];
+
+    renderComponent({
+      pedidos: [{ ...pedido }],
+    });
+
+    await expandCard();
+
+    fireEvent.click(screen.getByText("PEDIDO-001"));
+
+    const expectedUrl = `/${SOLICITACAO_KIT_LANCHE_UNIFICADA}/${RELATORIO}?uuid=${pedido.uuid}`;
+
+    expect(screen.getByTestId("navigate")).toHaveAttribute(
+      "data-to",
+      expectedUrl,
+    );
+  });
+
+  it("redireciona para o relatório ao clicar no lote do pedido", async () => {
+    const pedido = pedidosMock[0];
+
+    renderComponent({
+      pedidos: [{ ...pedido }],
+    });
+
+    await expandCard();
+
+    fireEvent.click(screen.getByText("Lote 1"));
+
+    const expectedUrl = `/${SOLICITACAO_KIT_LANCHE_UNIFICADA}/${RELATORIO}?uuid=${pedido.uuid}`;
+
+    expect(screen.getByTestId("navigate")).toHaveAttribute(
+      "data-to",
+      expectedUrl,
+    );
+  });
+
+  it("redireciona para o relatório ao clicar na DRE do pedido", async () => {
+    const pedido = pedidosMock[0];
+
+    renderComponent({
+      pedidos: [{ ...pedido }],
+    });
+
+    await expandCard();
+
+    fireEvent.click(screen.getByText("DRE Butantã"));
+
+    const expectedUrl = `/${SOLICITACAO_KIT_LANCHE_UNIFICADA}/${RELATORIO}?uuid=${pedido.uuid}`;
+
+    expect(screen.getByTestId("navigate")).toHaveAttribute(
+      "data-to",
+      expectedUrl,
+    );
   });
 });
