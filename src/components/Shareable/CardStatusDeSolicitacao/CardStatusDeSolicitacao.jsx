@@ -47,7 +47,6 @@ export const CardStatusDeSolicitacao = (props) => {
     hrefCard,
     dataTestId,
   } = props;
-
   const [dietasAbertas, setDietasAbertas] = useState([]);
   const [filteredSolicitations, setFilteredSolicitations] = useState(undefined);
 
@@ -62,7 +61,7 @@ export const CardStatusDeSolicitacao = (props) => {
       ({ data }) => {
         getDietasEspeciaisAbertas(JSON.parse(data));
       },
-      () => initSocket()
+      () => initSocket(),
     );
   };
 
@@ -81,16 +80,16 @@ export const CardStatusDeSolicitacao = (props) => {
           solicitations.filter(
             (solicitation) =>
               ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS.CODAE_PEDIU_ANALISE_RECLAMACAO.toUpperCase() ===
-              solicitation.status
-          )
+              solicitation.status,
+          ),
         );
       } else if (tipoPerfil === TIPO_PERFIL.SUPERVISAO_NUTRICAO) {
         setFilteredSolicitations(
           solicitations.filter(
             (solicitation) =>
               ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS.CODAE_QUESTIONOU_NUTRISUPERVISOR.toUpperCase() ===
-              solicitation.status
-          )
+              solicitation.status,
+          ),
         );
       } else {
         setFilteredSolicitations(
@@ -99,8 +98,8 @@ export const CardStatusDeSolicitacao = (props) => {
               nomeUsuario ===
                 `"${solicitation.nome_usuario_log_de_reclamacao}"` &&
               ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS.CODAE_QUESTIONOU_UE.toUpperCase() ===
-                solicitation.status
-          )
+                solicitation.status,
+          ),
         );
       }
     } else {
@@ -110,7 +109,7 @@ export const CardStatusDeSolicitacao = (props) => {
 
   const dietasFiltradas = (solicitation) => {
     return dietasAbertas.filter((dieta) =>
-      solicitation.link.includes(dieta.uuid_solicitacao)
+      solicitation.link.includes(dieta.uuid_solicitacao),
     );
   };
 
