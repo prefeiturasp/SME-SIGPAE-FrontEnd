@@ -61,17 +61,14 @@ export const conferidaClass = (solicitation, cardTitle) => {
     ["Autorizadas", "Canceladas", "Negadas"].includes(cardTitle);
 
   let situacao = "";
-  if (
-    condicaoNutriCODAE &&
-    solicitation.tipo_solicitacao_dieta === "ALTERACAO_UE"
-  ) {
-    situacao = "alterada";
-  } else if (condicaoTerceirizada || condicaoNutriCODAE) {
-    if (solicitation.conferido) {
-      situacao = "conferida";
-    } else if (solicitation.tipo_solicitacao_dieta === "CANCELAMENTO_DIETA") {
+  if (condicaoNutriCODAE) {
+    if (solicitation.tipo_solicitacao_dieta === "ALTERACAO_UE")
+      situacao = "alterada";
+    else if (solicitation.tipo_solicitacao_dieta === "CANCELAMENTO_DIETA") {
       situacao = "cancelada";
     }
+  } else if (condicaoTerceirizada && solicitation.conferido) {
+    situacao = "conferida";
   }
   return situacao;
 };
