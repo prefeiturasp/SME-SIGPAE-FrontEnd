@@ -60,14 +60,15 @@ export const conferidaClass = (solicitation, cardTitle) => {
     tipoPerfil === TIPO_PERFIL.TERCEIRIZADA &&
     ["Autorizadas", "Canceladas", "Negadas"].includes(cardTitle);
 
-  const ehConferida = condicaoTerceirizada
-    ? solicitation.conferido
-    : solicitation.tipo_solicitacao_dieta === "CANCELAMENTO_DIETA";
-
-  let conferida = "";
-  if (condicaoTerceirizada || condicaoNutriCODAE) {
-    conferida = ehConferida ? "conferida" : "";
+  let situacao = "";
+  if (condicaoNutriCODAE) {
+    if (solicitation.tipo_solicitacao_dieta === "ALTERACAO_UE")
+      situacao = "alterada";
+    else if (solicitation.tipo_solicitacao_dieta === "CANCELAMENTO_DIETA") {
+      situacao = "cancelada";
+    }
+  } else if (condicaoTerceirizada && solicitation.conferido) {
+    situacao = "conferida";
   }
-
-  return conferida;
+  return situacao;
 };

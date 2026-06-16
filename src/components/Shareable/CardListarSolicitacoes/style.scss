@@ -51,7 +51,7 @@
       font-weight: bold;
       background-color: #198459;
       color: white;
-       width: 18px;
+      width: 18px;
       height: 18px;
 
       display: inline-flex;
@@ -62,24 +62,31 @@
       margin-left: 6px;
     }
     .qtd-dois-digitos {
-        width: auto;
-        padding: 0 6px;
-        border-radius: 10px;
+      width: auto;
+      padding: 0 6px;
+      border-radius: 10px;
     }
     &:hover {
       text-decoration: underline;
     }
   }
-  p.conferida {
-    color: #198459 !important;
-  }
+
   span.date-time {
     font-size: 10px;
     color: $blackInput;
     padding-right: 35px;
   }
+  p.conferida,
   span.conferida {
     color: #198459 !important;
+  }
+  span.cancelada,
+  p.cancelada {
+    color: $red !important;
+  }
+  span.alterada,
+  p.alterada {
+    color: $blue !important;
   }
   a.see-more {
     font-weight: bold;

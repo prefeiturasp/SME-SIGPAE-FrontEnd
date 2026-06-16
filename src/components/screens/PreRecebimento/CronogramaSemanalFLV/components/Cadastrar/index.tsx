@@ -44,7 +44,13 @@ import {
   CronogramaSemanalDetalhado,
   EtapaMes,
 } from "src/interfaces/cronograma_semanal.interface";
-import { obterLimitesMes, formataDataISOparaDDMMYYYY } from "./helpers";
+import {
+  obterLimitesMes,
+  formataDataISOparaDDMMYYYY,
+  calcularQuantidadeEstimada,
+  calcularQuantidadeEstimadaDisponivel,
+  calcularDiferenca,
+} from "./helpers";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import {
@@ -316,75 +322,6 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     }
   };
 
-  const calcularQuantidadeEstimada = (
-    programacoes: FormValues["programacoes"],
-  ): number => {
-    if (
-      !cronogramaMensalSelecionado ||
-      !cronogramaMensalSelecionado.etapas ||
-      !programacoes
-    ) {
-      return 0;
-    }
-
-    // Obter meses únicos selecionados nas programações
-    const mesesSelecionados = Array.from(
-      new Set(
-        (programacoes || []).map((p) => p.mes_programado).filter((m) => !!m),
-      ),
-    );
-
-    return mesesSelecionados.reduce((total, mesProgramado) => {
-      const etapasDoMes = cronogramaMensalSelecionado.etapas.filter(
-        (etapa: any) => {
-          if (!etapa.data_programada) return false;
-          return etapa.data_programada === mesProgramado;
-        },
-      );
-
-      const qtdMes = etapasDoMes.reduce(
-        (sum: number, etapa: any) => sum + (etapa.quantidade || 0),
-        0,
-      );
-      return total + qtdMes;
-    }, 0);
-  };
-
-  const calcularDiferenca = (
-    programacoes: FormValues["programacoes"],
-  ): number => {
-    const quantidadeEstimadaDisponivel =
-      calcularQuantidadeEstimadaDisponivel(programacoes);
-    const quantidadeEntregue = (programacoes || []).reduce((total, prog) => {
-      const qtd =
-        parseFloat(
-          prog.quantidade?.replace(/\./g, "").replace(",", ".") || "0",
-        ) || 0;
-      return total + qtd;
-    }, 0);
-    return (
-      Math.round((quantidadeEstimadaDisponivel - quantidadeEntregue) * 100) /
-      100
-    );
-  };
-
-  const calcularQuantidadeEstimadaDisponivel = (
-    programacoes: FormValues["programacoes"],
-  ): number => {
-    if (!etapasMeses || !programacoes) return 0;
-
-    const mesesSelecionados = Array.from(
-      new Set(
-        (programacoes || []).map((p) => p.mes_programado).filter((m) => !!m),
-      ),
-    );
-
-    return mesesSelecionados.reduce((total, mesProgramado) => {
-      const etapaMes = etapasMeses.find((em) => em.mes_ano === mesProgramado);
-      return total + (etapaMes?.quantidade_estimada_disponivel || 0);
-    }, 0);
-  };
-
   const onSubmit = async (values: FormValues) => {
     if (!values.cronograma_mensal) {
       toastError("Selecione um Cronograma Mensal");
@@ -535,16 +472,27 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     uuid: e.mes_ano,
   }));
 
-  const textoFaltante = (programacoes: FormValues["programacoes"]) => {
+  const textoFaltante = (
+    mesProgramado: string,
+    programacoes: FormValues["programacoes"],
+  ) => {
+    if (!mesProgramado) return null;
+
     const unidade =
       (cronogramaMensalSelecionado as any)?.unidade_medida?.abreviacao ||
       (cronogramaMensalSelecionado as any)?.ficha_tecnica?.unidade_medida
         ?.abreviacao ||
       "";
 
-    const quantidadeEstimadaDisponivel =
-      calcularQuantidadeEstimadaDisponivel(programacoes);
-    const diferenca = calcularDiferenca(programacoes);
+    const quantidadeEstimadaDisponivel = calcularQuantidadeEstimadaDisponivel(
+      mesProgramado,
+      etapasMeses,
+    );
+    const diferenca = calcularDiferenca(
+      mesProgramado,
+      programacoes,
+      etapasMeses,
+    );
 
     return (
       <div className="row justify-content-end">
@@ -580,9 +528,27 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     programacoes: FormValues["programacoes"],
   ): boolean => {
     if (!cronogramaMensalSelecionado) return false;
-    const quantidadeEstimada = calcularQuantidadeEstimada(programacoes);
-    if (quantidadeEstimada === 0) return false;
-    return calcularDiferenca(programacoes) < 0;
+
+    const mesesSelecionados = Array.from(
+      new Set(
+        (programacoes || []).map((p) => p.mes_programado).filter((m) => !!m),
+      ),
+    );
+
+    return mesesSelecionados.some((mesProgramado) => {
+      const qtdEstimada = calcularQuantidadeEstimada(
+        mesProgramado,
+        cronogramaMensalSelecionado.etapas,
+      );
+      if (qtdEstimada === 0) return false;
+
+      const diferenca = calcularDiferenca(
+        mesProgramado,
+        programacoes,
+        etapasMeses,
+      );
+      return diferenca < 0;
+    });
   };
 
   return (
@@ -865,10 +831,14 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                       />
                                     </div>
                                   </div>
+
+                                  {textoFaltante(
+                                    values.programacoes?.[index]
+                                      ?.mes_programado,
+                                    values.programacoes,
+                                  )}
                                 </React.Fragment>
                               ))}
-
-                              {textoFaltante(values.programacoes)}
 
                               <div className="text-center mb-2 mt-2">
                                 <Botao

@@ -1,4 +1,4 @@
-import MultiSelect from "@khanacademy/react-multi-select";
+import MultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import React from "react";
 
 import { InputErroMensagem } from "src/components/Shareable/Input/InputErroMensagem";
@@ -35,7 +35,7 @@ export default ({
       return allItemsAreSelectedText;
     } else if (input.value[0]) {
       const matchingOption = props.options.find(
-        (e) => e.value === input.value[0]
+        (e) => e.value === input.value[0],
       );
       return matchingOption ? matchingOption.label : "";
     }

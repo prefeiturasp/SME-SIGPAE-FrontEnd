@@ -2683,30 +2683,149 @@ export default () => {
       : setShowModalVoltarPeriodoLancamento(true);
   };
 
-  const getClassNameToNextInput = (row, column, categoria, index) => {
-    if (
-      row.name !== "observacoes" &&
-      column &&
-      index + 1 < linhasTabelaAlimentacao(categoria).length - 1
-    ) {
-      return `${linhasTabelaAlimentacao(categoria)[index + 1].name}__dia_${
-        column.dia
-      }__categoria_${categoria.id}`;
+  const getRowsToNavigate = (categoria) => {
+    if (categoria.nome.includes("DIETA")) {
+      return categoria.nome.includes("ENTERAL")
+        ? tabelaDietaEnteralRows
+        : tabelaDietaRows;
     }
+
+    return linhasTabelaAlimentacao(categoria);
+  };
+
+  const getInputName = (row, column, categoria) => {
+    return `${row.name}__dia_${column.dia}__categoria_${categoria.id}`;
+  };
+
+  const isInputDisabled = (row, column, categoria) => {
+    return desabilitarField(
+      column.dia,
+      row.name,
+      categoria.id,
+      categoria.nome,
+      formValuesAtualizados,
+      mesAnoConsiderado,
+      mesAnoDefault,
+      dadosValoresInclusoesAutorizadasState,
+      validacaoDiaLetivo,
+      validacaoDiaLetivoCalendario,
+      validacaoDiaLetivoLancheEmergencial,
+      validacaoSemana,
+      location,
+      ehGrupoETECUrlParam,
+      dadosValoresInclusoesEtecAutorizadasState,
+      inclusoesEtecAutorizadas,
+      grupoLocation,
+      valoresPeriodosLancamentos,
+      feriadosNoMes,
+      inclusoesAutorizadas,
+      categoriasDeMedicao,
+      kitLanchesAutorizadas,
+      alteracoesAlimentacaoAutorizadas,
+      diasLancheEmergencialDiarioAtivo,
+      diasParaCorrecao,
+      ehPeriodoEscolarSimples,
+      permissoesLancamentosEspeciaisPorDia,
+      alimentacoesLancamentosEspeciais,
+      escolaEhEMEBS(),
+      alunosTabSelecionada,
+      ehUltimoDiaLetivoDoAno,
+    );
+  };
+
+  const getInputNameInRows = (rows = [], column, categoria, step) => {
+    const startIndex = step > 0 ? 0 : rows.length - 1;
+
+    for (
+      let index = startIndex;
+      index >= 0 && index < rows.length;
+      index += step
+    ) {
+      const row = rows[index];
+
+      if (!row || row.name === "observacoes") {
+        continue;
+      }
+
+      if (!isInputDisabled(row, column, categoria)) {
+        return getInputName(row, column, categoria);
+      }
+    }
+
     return undefined;
   };
 
-  const getClassNameToPrevInput = (row, column, categoria, index) => {
-    if (
-      row.name !== "frequencia" &&
-      column &&
-      linhasTabelaAlimentacao(categoria)[index - 1]
+  const getInputNameInSameTable = (
+    rows = [],
+    column,
+    categoria,
+    index,
+    step,
+  ) => {
+    for (
+      let nextIndex = index + step;
+      nextIndex >= 0 && nextIndex < rows.length;
+      nextIndex += step
     ) {
-      return `${linhasTabelaAlimentacao(categoria)[index - 1].name}__dia_${
-        column.dia
-      }__categoria_${categoria.id}`;
+      const nextRow = rows[nextIndex];
+
+      if (!nextRow || nextRow.name === "observacoes") {
+        continue;
+      }
+
+      if (!isInputDisabled(nextRow, column, categoria)) {
+        return getInputName(nextRow, column, categoria);
+      }
     }
+
     return undefined;
+  };
+
+  const getInputNameInAnotherTable = (column, categoria, step) => {
+    const currentCategoryIndex = categoriasDeMedicao.findIndex(
+      (categoriaMedicao) => categoriaMedicao.id === categoria.id,
+    );
+
+    if (currentCategoryIndex === -1) {
+      return undefined;
+    }
+
+    for (
+      let categoryIndex = currentCategoryIndex + step;
+      categoryIndex >= 0 && categoryIndex < categoriasDeMedicao.length;
+      categoryIndex += step
+    ) {
+      const nextCategoria = categoriasDeMedicao[categoryIndex];
+      const rows = getRowsToNavigate(nextCategoria);
+      const inputName = getInputNameInRows(rows, column, nextCategoria, step);
+
+      if (inputName) {
+        return inputName;
+      }
+    }
+
+    return undefined;
+  };
+
+  const getClassNameToInput = (row, column, categoria, index, step) => {
+    if (!column || row.name === "observacoes") {
+      return undefined;
+    }
+
+    const rows = getRowsToNavigate(categoria);
+
+    return (
+      getInputNameInSameTable(rows, column, categoria, index, step) ||
+      getInputNameInAnotherTable(column, categoria, step)
+    );
+  };
+
+  const getClassNameToNextInput = (row, column, categoria, index) => {
+    return getClassNameToInput(row, column, categoria, index, 1);
+  };
+
+  const getClassNameToPrevInput = (row, column, categoria, index) => {
+    return getClassNameToInput(row, column, categoria, index, -1);
   };
 
   const exibeBotaoAdicionarObservacao = (dia, categoriaId) => {
