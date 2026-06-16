@@ -70,20 +70,21 @@
       text-decoration: underline;
     }
   }
-  p.conferida {
-    color: #198459 !important;
-  }
+
   span.date-time {
     font-size: 10px;
     color: $blackInput;
     padding-right: 35px;
   }
-  p.conferida {
+  p.conferida,
+  span.conferida {
     color: #198459 !important;
   }
+  span.cancelada,
   p.cancelada {
     color: $red !important;
   }
+  span.alterada,
   p.alterada {
     color: $blue !important;
   }
