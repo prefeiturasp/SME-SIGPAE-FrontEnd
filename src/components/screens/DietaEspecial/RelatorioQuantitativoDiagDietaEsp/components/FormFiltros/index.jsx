@@ -46,12 +46,12 @@ export default ({ onSubmit, loading, setLoading }) => {
       const promiseDreEscolas = formFiltrosObtemDreEEscolasNovo(
         setEscolas,
         setDiretoriasRegionais,
-        dadosUsuario
+        dadosUsuario,
       );
       const promiseDadosIniciais = getDadosIniciais(dadosUsuario);
       const promiseDiagnosticos = getAlergiasIntolerancias();
       const [, responseDadosIniciais, responseDiagnosticos] = await Promise.all(
-        [promiseDreEscolas, promiseDadosIniciais, promiseDiagnosticos]
+        [promiseDreEscolas, promiseDadosIniciais, promiseDiagnosticos],
       );
       setDadosIniciais(responseDadosIniciais);
       if (responseDiagnosticos.status === HTTP_STATUS.OK) {
@@ -61,7 +61,7 @@ export default ({ onSubmit, loading, setLoading }) => {
               value: d.id,
               label: d.descricao,
             };
-          })
+          }),
         );
       } else {
         toastError("Erro ao obter os diagnósticos");
@@ -107,7 +107,7 @@ export default ({ onSubmit, loading, setLoading }) => {
                     if (value) {
                       form.change(
                         "dre",
-                        diretoriasRegionais.map((v) => v.value)
+                        diretoriasRegionais.map((v) => v.value),
                       );
                       form.change("status", "ativas");
                     } else {
@@ -233,6 +233,8 @@ export default ({ onSubmit, loading, setLoading }) => {
                       : moment()._d
                   }
                   required={!values.somente_dietas_ativas}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="col-3">
@@ -249,6 +251,8 @@ export default ({ onSubmit, loading, setLoading }) => {
                       : null
                   }
                   maxDate={moment()._d}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
             </div>
