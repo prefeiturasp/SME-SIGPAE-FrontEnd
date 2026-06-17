@@ -85,7 +85,8 @@
     "jest-watch-typeahead": "2.2.2",
     "minimatch": {
       "brace-expansion": "5.0.6"
-    }
+    },
+    "js-yaml": "4.2.0"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-react": "^11.0.0",
