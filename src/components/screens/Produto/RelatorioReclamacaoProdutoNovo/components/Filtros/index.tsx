@@ -66,7 +66,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
       setEditais(
         response.data.results.map((element: string) => {
           return { value: element, label: element };
-        })
+        }),
       );
     } else {
       setErroAPI("Erro ao carregar Editais. Tente novamente mais tarde.");
@@ -118,7 +118,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
             label: `${element.nome} - ${element.diretoria_regional.iniciais}`,
             value: element.uuid,
           };
-        })
+        }),
       );
     } else {
       setErroAPI("Erro ao carregar lotes. Tente novamente mais tarde.");
@@ -141,7 +141,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
             label: `${element.nome_fantasia}`,
             value: element.uuid,
           };
-        })
+        }),
       );
     } else {
       setErroAPI("Erro ao carregar terceirizadas. Tente novamente mais tarde.");
@@ -190,14 +190,14 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     (
       value: string,
       lista: Array<string>,
-      setListaFiltrada: (_lista: Array<string>) => void
+      setListaFiltrada: (_lista: Array<string>) => void,
     ) => {
       const filtrado = lista.filter((item) =>
-        item.toLowerCase().includes(value.toLowerCase())
+        item.toLowerCase().includes(value.toLowerCase()),
       );
       setListaFiltrada(filtrado);
     },
-    []
+    [],
   );
 
   const onSubmit = async (values: IFormValues) => {
@@ -211,7 +211,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     } else if (terceirizadas?.length === 1) {
       form.change(
         "terceirizadas",
-        terceirizadas.map((t) => t.value)
+        terceirizadas.map((t) => t.value),
       );
     } else {
       form.change("terceirizadas", undefined);
@@ -219,7 +219,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     if (editais?.length === 1) {
       form.change(
         "editais",
-        editais.map((t) => t.value)
+        editais.map((t) => t.value),
       );
     } else {
       form.change("editais", undefined);
@@ -227,7 +227,7 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
     if (lotes?.length === 1) {
       form.change(
         "lotes",
-        lotes.map((t) => t.value)
+        lotes.map((t) => t.value),
       );
     } else {
       form.change("lotes", undefined);
@@ -265,11 +265,11 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   options={editais || []}
                   selected={values.editais || []}
                   onSelectedChanged={(
-                    values_: Array<{ label: string; value: string }>
+                    values_: Array<{ label: string; value: string }>,
                   ) => {
                     form.change(
                       `editais`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                   }}
                   disabled={editais?.length === 1}
@@ -326,11 +326,11 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   options={getOpcoesStatusReclamacao()}
                   selected={values.status_reclamacao || []}
                   onSelectedChanged={(
-                    values_: Array<{ label: string; value: string }>
+                    values_: Array<{ label: string; value: string }>,
                   ) => {
                     form.change(
                       `status_reclamacao`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                   }}
                 />
@@ -347,11 +347,11 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   options={lotes || []}
                   selected={values.lotes || []}
                   onSelectedChanged={(
-                    values_: Array<{ label: string; value: string }>
+                    values_: Array<{ label: string; value: string }>,
                   ) => {
                     form.change(
                       `lotes`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                   }}
                   disabled={lotes?.length === 1}
@@ -369,10 +369,12 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                     values.data_final_reclamacao
                       ? moment(
                           values.data_final_reclamacao,
-                          "DD/MM/YYYY"
+                          "DD/MM/YYYY",
                         ).toDate()
                       : moment().toDate()
                   }
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="col-3">
@@ -386,11 +388,13 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                     values.data_inicial_reclamacao
                       ? moment(
                           values.data_inicial_reclamacao,
-                          "DD/MM/YYYY"
+                          "DD/MM/YYYY",
                         ).toDate()
                       : null
                   }
                   maxDate={moment().toDate()}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
             </div>
@@ -405,11 +409,11 @@ export const Filtros = ({ ...props }: IFiltrosProps) => {
                   options={terceirizadas || []}
                   selected={values.terceirizadas || []}
                   onSelectedChanged={(
-                    values_: Array<{ label: string; value: string }>
+                    values_: Array<{ label: string; value: string }>,
                   ) => {
                     form.change(
                       `terceirizadas`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                   }}
                   disabled={terceirizadas?.length === 1 || usuarioEhEmpresa()}

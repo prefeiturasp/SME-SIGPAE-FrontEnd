@@ -49,7 +49,7 @@ export const Filtros = ({ ...props }) => {
             value: meusDados.vinculo_atual.instituicao.uuid,
           },
         ]
-      : null
+      : null,
   );
   const [periodos, setPeriodos] = useState(null);
   const [classificacoesDieta, setClassificacoesDieta] = useState(null);
@@ -66,12 +66,12 @@ export const Filtros = ({ ...props }) => {
           response.data.map((unidade) => ({
             label: unidade.codigo_eol_escola,
             value: unidade.uuid,
-          }))
+          })),
         );
       }
     } else {
       setErro(
-        "Erro ao carregar unidades educacionais. Tente novamente mais tarde."
+        "Erro ao carregar unidades educacionais. Tente novamente mais tarde.",
       );
     }
   };
@@ -95,7 +95,7 @@ export const Filtros = ({ ...props }) => {
       setTiposUnidades(response.data.results);
     } else {
       setErro(
-        "Erro ao carregar tipos de unidade educacional. Tente novamente mais tarde."
+        "Erro ao carregar tipos de unidade educacional. Tente novamente mais tarde.",
       );
     }
   };
@@ -124,7 +124,7 @@ export const Filtros = ({ ...props }) => {
       setPeriodos(response.data.results);
     } else {
       setErro(
-        "Erro ao carregar períodos escolares. Tente novamente mais tarde."
+        "Erro ao carregar períodos escolares. Tente novamente mais tarde.",
       );
     }
   };
@@ -135,7 +135,7 @@ export const Filtros = ({ ...props }) => {
       setClassificacoesDieta(response.data);
     } else {
       setErro(
-        "Erro ao carregar classificações de dieta. Tente novamente mais tarde."
+        "Erro ao carregar classificações de dieta. Tente novamente mais tarde.",
       );
     }
   };
@@ -165,7 +165,7 @@ export const Filtros = ({ ...props }) => {
       setCount(response.data.count);
     } else {
       toastError(
-        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
+        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde.",
       );
     }
     setLoadingDietas(false);
@@ -179,7 +179,7 @@ export const Filtros = ({ ...props }) => {
       form.change("classificacoes_selecionadas", undefined);
       form.change(
         "tipo_gestao",
-        meusDados.vinculo_atual.instituicao.tipo_gestao_uuid
+        meusDados.vinculo_atual.instituicao.tipo_gestao_uuid,
       );
       form.change("lote", meusDados.vinculo_atual.instituicao.lotes[0].uuid);
       form.change("tipos_unidades_selecionadas", [
@@ -244,7 +244,7 @@ export const Filtros = ({ ...props }) => {
                       tiposGestao.map((tipoGestao) => ({
                         nome: tipoGestao.nome,
                         uuid: tipoGestao.uuid,
-                      }))
+                      })),
                     )}
                     naoDesabilitarPrimeiraOpcao
                     disabled={usuarioEhEscola()}
@@ -265,7 +265,7 @@ export const Filtros = ({ ...props }) => {
                     onSelectedChanged={(values_) => {
                       form.change(
                         `tipos_unidades_selecionadas`,
-                        values_.map((value_) => value_.value)
+                        values_.map((value_) => value_.value),
                       );
                     }}
                     disabled={usuarioEhEscola()}
@@ -284,7 +284,7 @@ export const Filtros = ({ ...props }) => {
                       lotes.map((lote) => ({
                         nome: `${lote.nome} - ${lote.diretoria_regional.nome}`,
                         uuid: lote.uuid,
-                      }))
+                      })),
                     )}
                     naoDesabilitarPrimeiraOpcao
                     onChangeEffect={async (e) => {
@@ -294,7 +294,7 @@ export const Filtros = ({ ...props }) => {
                         setUnidadesEducacionais([]);
                         form.change(
                           "unidades_educacionais_selecionadas",
-                          undefined
+                          undefined,
                         );
                       } else {
                         getUnidadesEducacionaisAsync(form.getState().values);
@@ -327,7 +327,7 @@ export const Filtros = ({ ...props }) => {
                       onSelectedChanged={(values_) => {
                         form.change(
                           `unidades_educacionais_selecionadas`,
-                          values_.map((value_) => value_.value)
+                          values_.map((value_) => value_.value),
                         );
                       }}
                       disabled={!values.lote || usuarioEhEscola()}
@@ -345,6 +345,8 @@ export const Filtros = ({ ...props }) => {
                     placeholder="Dia de referência"
                     maxDate={maxDate}
                     minDate={null}
+                    showMonthDropdown={true}
+                    showYearDropdown={true}
                   />
                 </div>
               </div>
@@ -362,7 +364,7 @@ export const Filtros = ({ ...props }) => {
                     onSelectedChanged={(values_) => {
                       form.change(
                         `periodos_escolares_selecionadas`,
-                        values_.map((value_) => value_.value)
+                        values_.map((value_) => value_.value),
                       );
                     }}
                   />
@@ -382,7 +384,7 @@ export const Filtros = ({ ...props }) => {
                     onSelectedChanged={(values_) => {
                       form.change(
                         `classificacoes_selecionadas`,
-                        values_.map((value_) => value_.value)
+                        values_.map((value_) => value_.value),
                       );
                     }}
                   />

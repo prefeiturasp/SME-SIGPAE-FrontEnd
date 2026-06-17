@@ -382,6 +382,8 @@ const SolicitacaoUnificada = ({
                         validate={required}
                         inputOnChange={(value) => validaDiasUteis(value)}
                         required
+                        showMonthDropdown={true}
+                        showYearDropdown={true}
                       />
                     </div>
                     <div className="col-5 pb-3">

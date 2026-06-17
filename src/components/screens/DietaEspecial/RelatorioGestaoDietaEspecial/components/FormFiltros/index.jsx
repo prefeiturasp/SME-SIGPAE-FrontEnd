@@ -54,7 +54,7 @@ export default ({ onSubmit, setCarregando }) => {
       const promiseDreEscolas = formFiltrosObtemDreEEscolasNovo(
         setEscolas,
         setDiretoriasRegionais,
-        dadosUsuario
+        dadosUsuario,
       );
       const promiseDadosIniciais = getDadosIniciais(dadosUsuario);
       const [
@@ -72,13 +72,13 @@ export default ({ onSubmit, setCarregando }) => {
       setDiagnosticos(
         responseDiagnosticos.data.map((d) => {
           return { value: d.id, label: d.descricao };
-        })
+        }),
       );
       getAlunos(dadosIniciaisObtidos);
       setClassificacoesDieta(
         responseClassificacoesDieta.data.map((c) => {
           return { value: c.id, label: c.nome };
-        })
+        }),
       );
       setCarregando(false);
     }
@@ -195,7 +195,7 @@ export default ({ onSubmit, setCarregando }) => {
                   options={[{ nome: "Selecione...", uuid: "" }].concat(
                     diretoriasRegionais.map((dre) => {
                       return { uuid: dre.value, nome: dre.label };
-                    })
+                    }),
                   )}
                   validate={required}
                   required={true}
@@ -294,6 +294,8 @@ export default ({ onSubmit, setCarregando }) => {
                       ? moment(values.data_final, "DD/MM/YYYY")._d
                       : moment()._d
                   }
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="col-2">
@@ -309,6 +311,8 @@ export default ({ onSubmit, setCarregando }) => {
                       : null
                   }
                   maxDate={moment()._d}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
             </div>
