@@ -245,6 +245,10 @@ export default () => {
                           label="Marca"
                           name={`marca`}
                           className="input-ficha-tecnica"
+                          required={values.categoria !== "FLV"}
+                          validate={
+                            values.categoria !== "FLV" ? required : undefined
+                          }
                           tooltipText={
                             "Caso não localize a marca no seletor, faça o cadastro no botão Cadastrar Marca."
                           }
