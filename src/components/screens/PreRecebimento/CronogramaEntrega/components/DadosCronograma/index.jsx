@@ -162,7 +162,7 @@ export default ({
                 <div className="col-4">
                   <p>Marca:</p>
                   <p>
-                    <b>{cronograma.ficha_tecnica?.marca.nome}</b>
+                    <b>{cronograma.ficha_tecnica?.marca?.nome}</b>
                   </p>
                 </div>
                 <div className="col-4">

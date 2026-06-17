@@ -152,8 +152,7 @@ export const CardLancamento = ({
           frequenciasDietasEscolaSemAlunoRegular:
             frequenciasDietasEscolaSemAlunoRegular,
           periodoEspecifico: periodoEspecifico,
-          recreioNasFerias:
-            solicitacaoMedicaoInicial.recreio_nas_ferias !== null,
+          recreioNasFerias: solicitacaoMedicaoInicial.recreio_nas_ferias?.uuid,
           ...location.state,
         },
       },

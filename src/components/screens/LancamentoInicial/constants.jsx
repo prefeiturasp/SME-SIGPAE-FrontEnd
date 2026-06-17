@@ -23,3 +23,19 @@ export const STATUS_RELATORIO_FINANCEIRO = {
   GERADA_MEDICAO_FINAL: "Gerada Medição Final",
   FINALIZADO: "Finalizado",
 };
+
+export const ORDEM_ALIMENTACAO_RECREIO = {
+  Lanche: 1,
+  Refeição: 2,
+  Sobremesa: 3,
+  "Lanche 4h": 4,
+};
+
+export const ORDEM_CAMPOS_DIETAS_RECREIO = {
+  "Dietas Autorizadas": 1,
+  Frequência: 2,
+  Lanche: 3,
+  Refeição: 4,
+  "Lanche 4h": 6,
+  Observações: 7,
+};

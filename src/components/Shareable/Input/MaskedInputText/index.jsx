@@ -1,8 +1,10 @@
 import React from "react";
-import MaskedInput from "react-text-mask";
+import maskedInputModule from "react-text-mask";
 import { InputErroMensagem } from "src/components/Shareable/Input/InputErroMensagem";
 import { HelpText } from "src/components/Shareable/HelpText";
 import "../style.scss";
+
+const MaskedInput = maskedInputModule.default ?? maskedInputModule;
 
 const MaskedInputText = ({
   name,

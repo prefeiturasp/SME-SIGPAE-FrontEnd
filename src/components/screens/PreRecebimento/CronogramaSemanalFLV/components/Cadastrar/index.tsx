@@ -18,7 +18,11 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { required } from "src/helpers/fieldValidators";
+import {
+  composeValidators,
+  naoPodeSerZero,
+  required,
+} from "src/helpers/fieldValidators";
 import {
   exibeError,
   formataMilharDecimal,
@@ -40,8 +44,15 @@ import {
   CronogramaSemanalDetalhado,
   EtapaMes,
 } from "src/interfaces/cronograma_semanal.interface";
-import { obterLimitesMes, formataDataISOparaDDMMYYYY } from "./helpers";
+import {
+  obterLimitesMes,
+  formataDataISOparaDDMMYYYY,
+  calcularQuantidadeEstimada,
+  calcularQuantidadeEstimadaDisponivel,
+  calcularDiferenca,
+} from "./helpers";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import {
   PRE_RECEBIMENTO,
   CRONOGRAMA_SEMANAL_FLV,
@@ -82,6 +93,7 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
   const [carregando, setCarregando] = useState(false);
   const [edicao, setEdicao] = useState(false);
   const [showModalAssinatura, setShowModalAssinatura] = useState(false);
+  const [showModalExcesso, setShowModalExcesso] = useState(false);
   const [loadingAssinatura, setLoadingAssinatura] = useState(false);
   const [cronogramasMensal, setCronogramasMensal] = useState<
     CronogramaMensalSimples[]
@@ -267,21 +279,35 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
         setValoresCronogramaMensal(novosValores);
 
         if (data.etapas && data.etapas.length > 0) {
-          const meses: { [key: string]: number } = {};
+          const meses: {
+            [key: string]: {
+              quantidade_total: number;
+              quantidade_estimada_disponivel: number;
+            };
+          } = {};
           data.etapas.forEach((etapa: any) => {
             if (etapa.data_programada) {
               const mesAno = etapa.data_programada;
               if (!meses[mesAno]) {
-                meses[mesAno] = 0;
+                meses[mesAno] = {
+                  quantidade_total: 0,
+                  quantidade_estimada_disponivel: 0,
+                };
               }
-              meses[mesAno] += etapa.quantidade || 0;
+              meses[mesAno].quantidade_total += etapa.quantidade || 0;
+              meses[mesAno].quantidade_estimada_disponivel =
+                etapa.quantidade_estimada_disponivel ?? 0;
             }
           });
 
           const etapasMesesList: EtapaMes[] = Object.entries(meses).map(
-            ([mes_ano, quantidade_total]) => ({
+            ([
+              mes_ano,
+              { quantidade_total, quantidade_estimada_disponivel },
+            ]) => ({
               mes_ano,
               quantidade_total,
+              quantidade_estimada_disponivel,
             }),
           );
           setEtapasMeses(etapasMesesList);
@@ -294,54 +320,6 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     } finally {
       setCarregando(false);
     }
-  };
-
-  const calcularQuantidadeEstimada = (
-    programacoes: FormValues["programacoes"],
-  ): number => {
-    if (
-      !cronogramaMensalSelecionado ||
-      !cronogramaMensalSelecionado.etapas ||
-      !programacoes
-    ) {
-      return 0;
-    }
-
-    // Obter meses únicos selecionados nas programações
-    const mesesSelecionados = Array.from(
-      new Set(
-        (programacoes || []).map((p) => p.mes_programado).filter((m) => !!m),
-      ),
-    );
-
-    return mesesSelecionados.reduce((total, mesProgramado) => {
-      const etapasDoMes = cronogramaMensalSelecionado.etapas.filter(
-        (etapa: any) => {
-          if (!etapa.data_programada) return false;
-          return etapa.data_programada === mesProgramado;
-        },
-      );
-
-      const qtdMes = etapasDoMes.reduce(
-        (sum: number, etapa: any) => sum + (etapa.quantidade || 0),
-        0,
-      );
-      return total + qtdMes;
-    }, 0);
-  };
-
-  const calcularDiferenca = (
-    programacoes: FormValues["programacoes"],
-  ): number => {
-    const quantidadeEstimada = calcularQuantidadeEstimada(programacoes);
-    const quantidadeEntregue = (programacoes || []).reduce((total, prog) => {
-      const qtd =
-        parseFloat(
-          prog.quantidade?.replace(/\./g, "").replace(",", ".") || "0",
-        ) || 0;
-      return total + qtd;
-    }, 0);
-    return Math.round((quantidadeEstimada - quantidadeEntregue) * 100) / 100;
   };
 
   const onSubmit = async (values: FormValues) => {
@@ -494,22 +472,35 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
     uuid: e.mes_ano,
   }));
 
-  const textoFaltante = (programacoes: FormValues["programacoes"]) => {
-    const diferenca = calcularDiferenca(programacoes);
+  const textoFaltante = (
+    mesProgramado: string,
+    programacoes: FormValues["programacoes"],
+  ) => {
+    if (!mesProgramado) return null;
+
     const unidade =
       (cronogramaMensalSelecionado as any)?.unidade_medida?.abreviacao ||
       (cronogramaMensalSelecionado as any)?.ficha_tecnica?.unidade_medida
         ?.abreviacao ||
       "";
 
-    const quantidadeEstimada = calcularQuantidadeEstimada(programacoes);
+    const quantidadeEstimadaDisponivel = calcularQuantidadeEstimadaDisponivel(
+      mesProgramado,
+      etapasMeses,
+    );
+    const diferenca = calcularDiferenca(
+      mesProgramado,
+      programacoes,
+      etapasMeses,
+    );
 
     return (
       <div className="row justify-content-end">
         <div className="col-auto texto-alimento-faltante">
           Quantidade estimada{" "}
           <b className="mensagem-verde">
-            {formataMilharDecimal(quantidadeEstimada?.toString())} {unidade}
+            {formataMilharDecimal(quantidadeEstimadaDisponivel?.toString())}{" "}
+            {unidade}
           </b>
           {diferenca !== 0 && (
             <>
@@ -530,12 +521,34 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       return false;
     }
 
-    const diferenca = calcularDiferenca(values.programacoes);
-    if (diferenca !== 0) {
-      return false;
-    }
-
     return true;
+  };
+
+  const quantidadeAcimaDoPrevisto = (
+    programacoes: FormValues["programacoes"],
+  ): boolean => {
+    if (!cronogramaMensalSelecionado) return false;
+
+    const mesesSelecionados = Array.from(
+      new Set(
+        (programacoes || []).map((p) => p.mes_programado).filter((m) => !!m),
+      ),
+    );
+
+    return mesesSelecionados.some((mesProgramado) => {
+      const qtdEstimada = calcularQuantidadeEstimada(
+        mesProgramado,
+        cronogramaMensalSelecionado.etapas,
+      );
+      if (qtdEstimada === 0) return false;
+
+      const diferenca = calcularDiferenca(
+        mesProgramado,
+        programacoes,
+        etapasMeses,
+      );
+      return diferenca < 0;
+    });
   };
 
   return (
@@ -747,6 +760,8 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         showMonthYearPicker={false}
                                         dateFormat="DD/MM/YYYY"
                                         dateFormatPicker="dd/MM/yyyy"
+                                        required
+                                        validate={required}
                                         minDate={
                                           obterLimitesMes(
                                             values.programacoes?.[index]
@@ -778,6 +793,8 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         showMonthYearPicker={false}
                                         dateFormat="DD/MM/YYYY"
                                         dateFormatPicker="dd/MM/yyyy"
+                                        required
+                                        validate={required}
                                         minDate={
                                           (values.programacoes?.[index]
                                             ?.data_inicio &&
@@ -805,14 +822,23 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         label="Quantidade da Entrega"
                                         name={`${name}.quantidade`}
                                         placeholder="Informe a quantidade"
+                                        required
+                                        validate={composeValidators(
+                                          required,
+                                          naoPodeSerZero,
+                                        )}
                                         agrupadorMilharComDecimal
                                       />
                                     </div>
                                   </div>
+
+                                  {textoFaltante(
+                                    values.programacoes?.[index]
+                                      ?.mes_programado,
+                                    values.programacoes,
+                                  )}
                                 </React.Fragment>
                               ))}
-
-                              {textoFaltante(values.programacoes)}
 
                               <div className="text-center mb-2 mt-2">
                                 <Botao
@@ -854,7 +880,15 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                               style={BUTTON_STYLE.GREEN}
                               className="float-end"
                               disabled={!formularioValido(values, errors)}
-                              onClick={() => setShowModalAssinatura(true)}
+                              onClick={() => {
+                                if (
+                                  quantidadeAcimaDoPrevisto(values.programacoes)
+                                ) {
+                                  setShowModalExcesso(true);
+                                } else {
+                                  setShowModalAssinatura(true);
+                                }
+                              }}
                               dataTestId="botao-atualizar"
                             />
                           )}
@@ -867,7 +901,17 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                 style={BUTTON_STYLE.GREEN}
                                 className="float-end"
                                 disabled={!formularioValido(values, errors)}
-                                onClick={() => setShowModalAssinatura(true)}
+                                onClick={() => {
+                                  if (
+                                    quantidadeAcimaDoPrevisto(
+                                      values.programacoes,
+                                    )
+                                  ) {
+                                    setShowModalExcesso(true);
+                                  } else {
+                                    setShowModalAssinatura(true);
+                                  }
+                                }}
                                 dataTestId="botao-assinar-enviar"
                               />
                               <Botao
@@ -907,6 +951,19 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
         texto="Deseja salvar o Cadastro do Cronograma e enviar para aprovação?"
         textoBotao="Salvar e Enviar"
         textoBotaoNao="Continuar Editando"
+      />
+
+      <ModalGenerico
+        show={showModalExcesso}
+        titulo="Atenção - Quantidade Excedente"
+        texto="A quantidade da entrega informada está acima do quantitativo mensal previsto para este cronograma. Deseja continuar com o envio?"
+        textoBotaoClose="Continuar Editando"
+        textoBotaoSim="Salvar e Enviar"
+        handleClose={() => setShowModalExcesso(false)}
+        handleSim={() => {
+          setShowModalExcesso(false);
+          setShowModalAssinatura(true);
+        }}
       />
     </>
   );

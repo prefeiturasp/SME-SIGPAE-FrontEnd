@@ -27,8 +27,11 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
   const solicitacaoMedicaoInicialUuid =
     mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].uuid;
+  let paramsRequisicaoAlteracoes;
 
   beforeEach(async () => {
+    paramsRequisicaoAlteracoes = undefined;
+    mock.reset();
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -65,12 +68,17 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
     mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
       periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
     });
-    mock
-      .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
-      .reply(200, { results: [] });
+    mock.onGet("/escola-solicitacoes/kit-lanches-autorizadas/").reply(200, {
+      results: [
+        { dia: "06", numero_alunos: 10, kit_lanche_id_externo: "0B9FF" },
+      ],
+    });
     mock
       .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-      .reply(200, { results: [] });
+      .reply((config) => {
+        paramsRequisicaoAlteracoes = config.params;
+        return [200, { results: [] }];
+      });
     mock
       .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
       .reply(200, { results: [] });
@@ -135,6 +143,148 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Renderiza Medição
   it("Renderiza períodos Recreio nas Férias e Colaboradores", () => {
     expect(screen.getByText("Recreio nas Férias")).toBeInTheDocument();
     expect(screen.getByText("Colaboradores")).toBeInTheDocument();
+  });
+
+  it("Renderiza período Solicitações de Alimentação durante recreio quando há kit lanche autorizado", () => {
+    return waitFor(() => {
+      expect(
+        screen.getByText("Solicitações de Alimentação"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("requisita lanches emergenciais com recreio_nas_ferias quando a medição é de recreio", async () => {
+    await waitFor(() => {
+      expect(paramsRequisicaoAlteracoes).toEqual(
+        expect.objectContaining({
+          recreio_nas_ferias: "0e3cdb48-3a82-47e6-9263-300d478c6934",
+          eh_lanche_emergencial: true,
+        }),
+      );
+    });
+  });
+});
+
+describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Recreio com lanche emergencial autorizado", () => {
+  const escolaUuid =
+    mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
+  const solicitacaoMedicaoInicialUuid =
+    mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF[0].uuid;
+
+  beforeEach(async () => {
+    mock.reset();
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/notificacoes/").reply(200, { results: [] });
+    mock
+      .onGet("/notificacoes/quantidade-nao-lidos/")
+      .reply(200, { quantidade_nao_lidos: 0 });
+    mock
+      .onGet(`/escolas-simples/${escolaUuid}/`)
+      .reply(200, mockEscolaSimplesEMEF);
+    mock
+      .onGet("/medicao-inicial/recreio-nas-ferias/")
+      .reply(200, mockRecreioNasFeriasEMEFDezembro2025);
+    mock
+      .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
+      .reply(200, []);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
+    mock
+      .onGet(
+        "/medicao-inicial/permissao-lancamentos-especiais/periodos-permissoes-lancamentos-especiais-mes-ano/",
+      )
+      .reply(200, { results: [] });
+    mock
+      .onGet("/medicao-inicial/solicitacao-medicao-inicial/")
+      .replyOnce(200, mockSolicitacaoMedicaoRecreioNasFeriasDezembro2025EMEF);
+    mock.onGet("/dias-calendario/").reply(200, mockDiasCalendarioEMEFMaio2025);
+    mock
+      .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
+      .reply(200, mockGetTiposDeContagemAlimentacao);
+    mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
+      periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
+    });
+    mock.onGet("/escola-solicitacoes/kit-lanches-autorizadas/").reply(200, {
+      results: [],
+    });
+    mock
+      .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
+      .reply(200, {
+        results: [
+          {
+            dia: "06",
+            numero_alunos: 10,
+            inclusao_id_externo: "0B9FF",
+            motivo: "Lanche Emergencial",
+            periodos_escolares: ["MANHA"],
+            tipos_alimentacao_de: ["Refeição", "Lanche"],
+          },
+        ],
+      });
+    mock
+      .onGet("/escola-solicitacoes/inclusoes-etec-autorizadas/")
+      .reply(200, { results: [] });
+    mock
+      .onGet(
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/vinculos-inclusoes-evento-especifico-autorizadas/",
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        `/medicao-inicial/solicitacao-medicao-inicial/${solicitacaoMedicaoInicialUuid}/ceu-gestao-frequencias-dietas/`,
+      )
+      .reply(200, []);
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/quantidades-alimentacoes-lancadas-periodo-grupo/",
+      )
+      .reply(200, quantidadesAlimentacaoesLancadasPeriodoGrupoEMEFMaio2025);
+
+    const search = `?mes=12&ano=2025&recreio_nas_ferias=0e3cdb48-3a82-47e6-9263-300d478c6934`;
+    window.history.pushState({}, "", search);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem(
+      "nome_instituicao",
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
+    );
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("Renderiza período Solicitações de Alimentação durante recreio quando há lanche emergencial autorizado", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitações de Alimentação"),
+      ).toBeInTheDocument();
+    });
   });
 });
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Form, Field } from "react-final-form";
 import AutoCompleteField from "src/components/Shareable/AutoCompleteField";
 import Botao from "src/components/Shareable/Botao";

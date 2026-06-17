@@ -1,5 +1,5 @@
 import React from "react";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import "./style.scss";
 import { HelpText } from "../HelpText";
 import InputErroMensagem from "../Input/InputErroMensagem";

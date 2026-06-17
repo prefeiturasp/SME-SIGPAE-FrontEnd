@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { Form, Field, FormSpy } from "react-final-form";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
-import StatefulMultiSelect from "@khanacademy/react-multi-select";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { formatarParaMultiselect } from "src/helpers/utilities";
 import { ASelect } from "src/components/Shareable/MakeField";
 import { Select as SelectAntd } from "antd";

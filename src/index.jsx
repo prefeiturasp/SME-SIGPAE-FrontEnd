@@ -4,11 +4,11 @@ import { Provider } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 // Redux
 import { applyMiddleware, createStore } from "redux";
-import multi from "redux-multi";
+import multiModule from "redux-multi";
 // Middleware
 import * as Sentry from "@sentry/browser";
-import promise from "redux-promise";
-import thunk from "redux-thunk";
+import promiseModule from "redux-promise";
+import thunkModule from "redux-thunk";
 import { ENVIRONMENT } from "src/constants/config";
 import { App } from "./App";
 import reducers from "./reducers";
@@ -52,14 +52,18 @@ if (process.env.NODE_ENV === "development") {
 // multi: para retornar uma lista de ações em vez de 1
 // promise: para poder usar o UNSAFE_componentWillMount no componente
 
+const thunk = thunkModule.default ?? thunkModule;
+const multi = multiModule.default ?? multiModule;
+const promise = promiseModule.default ?? promiseModule;
+
 const store = applyMiddleware(thunk, multi, promise)(createStore)(
   reducers,
-  devTools
+  devTools,
 );
 
 // store é o carinha que recebe todos os estados
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
     <App />
-  </Provider>
+  </Provider>,
 );
