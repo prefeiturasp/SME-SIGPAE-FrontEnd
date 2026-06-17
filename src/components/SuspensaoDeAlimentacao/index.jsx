@@ -672,6 +672,8 @@ class FoodSuspensionEditor extends Component {
                             label="Dia"
                             required
                             validate={required}
+                            showMonthDropdown={true}
+                            showYearDropdown={true}
                           />
                         </div>
                         <div className="form-group col-sm-8">
