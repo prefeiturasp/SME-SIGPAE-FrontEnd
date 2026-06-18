@@ -221,10 +221,10 @@ export const PeriodosInclusaoNormal = ({
 
   return (
     <>
-      <div className="row">
+      <div className="row table-titles ps-3">
         <div className="col-3">Período</div>
         <div className="col-6">Tipo de Alimentação</div>
-        <div className="col-3">Nº de Alunos</div>
+        <div className="col-3 ps-2">Nº de Alunos</div>
       </div>
       <FieldArray name="quantidades_periodo">
         {({ fields }) =>
