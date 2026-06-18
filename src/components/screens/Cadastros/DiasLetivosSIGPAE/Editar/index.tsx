@@ -241,10 +241,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                   </div>
                   <hr />
                   <div className="row mt-3">
-                    <div className="col-12">
-                      <label className="label fw-normal pb-2 pt-2">
-                        Recorrência
-                      </label>
+                    <div className="col-12 d-flex align-items-end">
+                      <strong className="me-2">Recorrência</strong>
+                      <hr className="flex-grow-1 mb-1" />
                     </div>
                   </div>
                   <FieldArray name="recorrencias">
