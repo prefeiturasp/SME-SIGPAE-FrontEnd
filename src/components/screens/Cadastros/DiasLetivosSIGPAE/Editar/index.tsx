@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { lotesToOptions } from "src/components/screens/Relatorios/SolicitacoesAlimentacao/helpers";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import { requiredMultiselect } from "src/helpers/fieldValidators";
 import { getLotesSimples } from "src/services/lote.service";
 
 export const EditarDiasLetivosSIGPAE = () => {
@@ -36,7 +37,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                 <form onSubmit={handleSubmit}>
                   <div className="row">
                     <div className="col-4">
-                      <label className="col-form-label">Lote</label>
+                      <label className="col-form-label">
+                        <span className="red">*</span> DRE/Lote
+                      </label>
                       <Field
                         component={MultiselectRaw}
                         name="lotes"
@@ -50,6 +53,8 @@ export const EditarDiasLetivosSIGPAE = () => {
                         }
                         hasSelectAll
                         placeholder="Selecione Lote(s)"
+                        required
+                        validate={requiredMultiselect}
                       />
                     </div>
                   </div>
