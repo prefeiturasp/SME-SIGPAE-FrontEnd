@@ -1,7 +1,11 @@
-import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Spin } from "antd";
+import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { Field } from "react-final-form";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { InputComData } from "src/components/Shareable/DatePicker";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import Select from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { required } from "src/helpers/fieldValidators";
@@ -12,10 +16,6 @@ import {
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
 } from "src/helpers/utilities";
-import HTTP_STATUS from "http-status-codes";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { Field } from "react-final-form";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import {
   getEscolaSimples,
