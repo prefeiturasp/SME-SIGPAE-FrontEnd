@@ -299,6 +299,8 @@ export default ({
                       writable
                       validate={required}
                       visitedError={true}
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                   <div className="col">
@@ -316,6 +318,8 @@ export default ({
                       maxDate={null}
                       writable
                       validate={required}
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                 </div>

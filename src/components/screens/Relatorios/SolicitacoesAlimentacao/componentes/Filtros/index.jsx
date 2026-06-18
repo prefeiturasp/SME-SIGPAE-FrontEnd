@@ -363,6 +363,8 @@ export const Filtros = ({ ...props }) => {
                         maxDate={null}
                         name="de"
                         disabled={!values.status}
+                        showMonthDropdown={true}
+                        showYearDropdown={true}
                       />
                     </div>
                     <div className="col-6">
@@ -373,6 +375,8 @@ export const Filtros = ({ ...props }) => {
                         maxDate={null}
                         name="ate"
                         disabled={!values.status}
+                        showMonthDropdown={true}
+                        showYearDropdown={true}
                       />
                     </div>
                   </div>

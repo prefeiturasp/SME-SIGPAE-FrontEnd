@@ -355,6 +355,8 @@ function SolicitacoesPorStatusGenerico(props) {
                             setLoading(false);
                             setCurrentPage(1);
                           }}
+                          showMonthDropdown={true}
+                          showYearDropdown={true}
                         />
                       </div>
                       {ehCODAE && (

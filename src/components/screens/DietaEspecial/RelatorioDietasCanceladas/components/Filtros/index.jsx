@@ -103,6 +103,8 @@ export const Filtros = ({ ...props }) => {
                         moment(values.data_cancelamento_final, "DD/MM/YYYY")._d
                       }
                       minDate={null}
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                   <div className="col-4">
@@ -117,6 +119,8 @@ export const Filtros = ({ ...props }) => {
                           ._d
                       }
                       maxDate={new Date()}
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                 </div>

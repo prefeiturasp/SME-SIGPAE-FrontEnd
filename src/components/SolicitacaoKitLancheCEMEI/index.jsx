@@ -64,11 +64,11 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
   const getAlunosPorFaixaEtariaNumaDataAsync = async (data) => {
     const periodo =
       props.meusDados.vinculo_atual.instituicao.periodos_escolares.find(
-        (p) => p.nome === "INTEGRAL"
+        (p) => p.nome === "INTEGRAL",
       );
     const response = await getAlunosPorFaixaEtariaNumaData(
       periodo.uuid,
-      data.split("/").reverse().join("-")
+      data.split("/").reverse().join("-"),
     );
     if (response.status === HTTP_STATUS.OK) {
       setFaixasEtariasCEI(response.data.results);
@@ -81,7 +81,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
     const values_ = deepCopy(values);
     if (!values_.uuid) {
       const response = await createSolicitacaoKitLancheCEMEI(
-        formataSubmit(values_, faixasEtariasCEI)
+        formataSubmit(values_, faixasEtariasCEI),
       );
       if (response.status === HTTP_STATUS.CREATED) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
@@ -96,7 +96,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
     } else {
       const response = await updateSolicitacaoKitLancheCEMEI(
         values_.uuid,
-        formataSubmit(values_, faixasEtariasCEI)
+        formataSubmit(values_, faixasEtariasCEI),
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values_.status === STATUS_DRE_A_VALIDAR) {
@@ -138,7 +138,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
         refresh(form);
       } else {
         toastError(
-          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`
+          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`,
         );
       }
     }
@@ -151,7 +151,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
         (faixa_quantidade) => {
           faixasQuantidades[faixa_quantidade.faixa_etaria.uuid] =
             faixa_quantidade.quantidade_alunos;
-        }
+        },
       );
       form.change(`solicitacao_cei.faixas_quantidades`, faixasQuantidades);
     }
@@ -180,8 +180,8 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
   const filtraKits = (tipoUnidadeSelecionada, kits) => {
     return kits.filter((kit) =>
       kit.tipos_unidades.some(
-        (tipo_unidade) => tipo_unidade.iniciais === tipoUnidadeSelecionada
-      )
+        (tipo_unidade) => tipo_unidade.iniciais === tipoUnidadeSelecionada,
+      ),
     );
   };
 
@@ -204,7 +204,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
-        proximosCincoDiasUteis
+        proximosCincoDiasUteis,
       )
     ) {
       setShowModal(true);
@@ -282,6 +282,8 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                         }
                       }}
                       dataTestId="data-passeio-cemei"
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                   <div className="col-9">
@@ -351,7 +353,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                           aluno.serie.includes("1") ||
                           aluno.serie.includes("2") ||
                           aluno.serie.includes("3") ||
-                          aluno.serie.includes("4")
+                          aluno.serie.includes("4"),
                       )}
                       solicitacao="solicitacao_cei"
                     />
@@ -382,7 +384,7 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
                             aluno.serie.includes("2") ||
                             aluno.serie.includes("3") ||
                             aluno.serie.includes("4")
-                          )
+                          ),
                       )}
                       solicitacao="solicitacao_emei"
                     />

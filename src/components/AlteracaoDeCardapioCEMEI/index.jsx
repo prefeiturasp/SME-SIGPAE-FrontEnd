@@ -67,23 +67,23 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     useState(false);
   const [alimentosCEI, setAlimentosCEI] = useState(
     vinculos.filter(
-      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "CEI DIRET"
-    )
+      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "CEI DIRET",
+    ),
   );
   const [substitutosCEI, setSubstitutosCEI] = useState(
     vinculos.filter(
-      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "CEI DIRET"
-    )
+      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "CEI DIRET",
+    ),
   );
   const [alimentosEMEI, setAlimentosEMEI] = useState(
     vinculos.filter(
-      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "EMEI"
-    )
+      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "EMEI",
+    ),
   );
   const [substitutosEMEI, setSubstitutosEMEI] = useState(
     vinculos.filter(
-      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "EMEI"
-    )
+      (vinculo) => vinculo.tipo_unidade_escolar.iniciais === "EMEI",
+    ),
   );
 
   const iniciarPedido = async (uuid, form) => {
@@ -102,7 +102,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
-        proximosCincoDiasUteis
+        proximosCincoDiasUteis,
       )
     ) {
       setShowModalDataPrioritaria(true);
@@ -112,10 +112,10 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
   const ehMotivoRPL = (values) => {
     return (
       motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE"
+        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE",
       ) &&
       motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE"
+        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE",
       ).uuid === values.motivo
     );
   };
@@ -130,7 +130,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     const formatedValues = formatarPayload(values_, meusDados);
     if (!uuid) {
       const response = await createAlteracaoCardapioCEMEI(
-        formataValues(formatedValues)
+        formataValues(formatedValues),
       );
       if (response.status === HTTP_STATUS.CREATED) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
@@ -145,7 +145,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     } else {
       const response = await updateAlteracaoCardapioCEMEI(
         uuid,
-        formataValues(formatedValues)
+        formataValues(formatedValues),
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
@@ -162,16 +162,16 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
 
   const modificarOpcoesAlimentos = async (motivo) => {
     let _alimentosCEI = vinculos.filter(
-      (v) => v.tipo_unidade_escolar.iniciais === "CEI DIRET"
+      (v) => v.tipo_unidade_escolar.iniciais === "CEI DIRET",
     );
     let _substitutosCEI = vinculos.filter(
-      (v) => v.tipo_unidade_escolar.iniciais === "CEI DIRET"
+      (v) => v.tipo_unidade_escolar.iniciais === "CEI DIRET",
     );
     let _alimentosEMEI = vinculos.filter(
-      (v) => v.tipo_unidade_escolar.iniciais === "EMEI"
+      (v) => v.tipo_unidade_escolar.iniciais === "EMEI",
     );
     let _substitutosEMEI = vinculos.filter(
-      (v) => v.tipo_unidade_escolar.iniciais === "EMEI"
+      (v) => v.tipo_unidade_escolar.iniciais === "EMEI",
     );
 
     if (motivo) {
@@ -179,7 +179,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
         case "RPL - Refeição por Lanche":
           _alimentosCEI = _alimentosCEI.map((v) => {
             const taCEI = v.tipos_alimentacao.filter((ta) =>
-              ["Refeição da tarde", "Almoço"].includes(ta.nome)
+              ["Refeição da tarde", "Almoço"].includes(ta.nome),
             );
             return {
               ...v,
@@ -188,7 +188,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           });
           _substitutosCEI = _substitutosCEI.map((v) => {
             const subCEI = v.tipos_alimentacao.filter((ta) =>
-              ["Lanche"].includes(ta.nome)
+              ["Lanche"].includes(ta.nome),
             );
             return {
               ...v,
@@ -197,7 +197,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           });
           _alimentosEMEI = _alimentosEMEI.map((v) => {
             const taEMEI = v.tipos_alimentacao.filter((ta) =>
-              ["Refeição", "Sobremesa"].includes(ta.nome)
+              ["Refeição", "Sobremesa"].includes(ta.nome),
             );
             return {
               ...v,
@@ -206,7 +206,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           });
           _substitutosEMEI = _substitutosEMEI.map((v) => {
             const subEMEI = v.tipos_alimentacao.filter((ta) =>
-              ["Lanche"].includes(ta.nome)
+              ["Lanche"].includes(ta.nome),
             );
             return {
               ...v,
@@ -218,7 +218,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
         case "LPR - Lanche por Refeição":
           _alimentosCEI = _alimentosCEI.map((v) => {
             const taCEI = v.tipos_alimentacao.filter((ta) =>
-              ["Lanche"].includes(ta.nome)
+              ["Lanche"].includes(ta.nome),
             );
             return {
               ...v,
@@ -227,7 +227,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           });
           _substitutosCEI = _substitutosCEI.map((v) => {
             const subCEI = v.tipos_alimentacao.filter((ta) =>
-              ["Refeição da tarde", "Almoço"].includes(ta.nome)
+              ["Refeição da tarde", "Almoço"].includes(ta.nome),
             );
             return {
               ...v,
@@ -236,7 +236,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           });
           _alimentosEMEI = _alimentosEMEI.map((v) => {
             const taEMEI = v.tipos_alimentacao.filter((ta) =>
-              ["Lanche"].includes(ta.nome)
+              ["Lanche"].includes(ta.nome),
             );
             return {
               ...v,
@@ -245,7 +245,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           });
           _substitutosEMEI = _substitutosEMEI.map((v) => {
             const subEMEI = v.tipos_alimentacao.filter((ta) =>
-              ["Refeição", "Sobremesa"].includes(ta.nome)
+              ["Refeição", "Sobremesa"].includes(ta.nome),
             );
             return {
               ...v,
@@ -257,7 +257,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
         case "Lanche Emergencial":
           _alimentosEMEI = _alimentosEMEI.map((v) => {
             const taEMEI = v.tipos_alimentacao.filter(
-              (ta) => !["Lanche Emergencial"].includes(ta.nome)
+              (ta) => !["Lanche Emergencial"].includes(ta.nome),
             );
             return {
               ...v,
@@ -266,7 +266,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           });
           _substitutosEMEI = _substitutosEMEI.map((v) => {
             const subEMEI = v.tipos_alimentacao.filter((ta) =>
-              ["Lanche Emergencial"].includes(ta.nome)
+              ["Lanche Emergencial"].includes(ta.nome),
             );
             return {
               ...v,
@@ -286,10 +286,10 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     let substituicoes = [];
     periodos_.forEach((periodo, periodoIndice) => {
       const subsCEI = alteracao_.substituicoes_cemei_cei_periodo_escolar.find(
-        (sub) => sub.periodo_escolar.nome === periodo.nome
+        (sub) => sub.periodo_escolar.nome === periodo.nome,
       );
       const subsEMEI = alteracao_.substituicoes_cemei_emei_periodo_escolar.find(
-        (sub) => sub.periodo_escolar.nome === periodo.nome
+        (sub) => sub.periodo_escolar.nome === periodo.nome,
       );
       substituicoes[periodoIndice] = { checked: false };
       if (subsCEI) {
@@ -298,10 +298,10 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           subsCEI.periodo_escolar.uuid;
         substituicoes[periodoIndice]["cei"] = {
           tipos_alimentacao_de: subsCEI.tipos_alimentacao_de.map(
-            (ta) => ta.uuid
+            (ta) => ta.uuid,
           ),
           tipos_alimentacao_para: subsCEI.tipos_alimentacao_para.map(
-            (ta) => ta.uuid
+            (ta) => ta.uuid,
           ),
           faixas_etarias: [],
         };
@@ -309,7 +309,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           substituicoes[periodoIndice]["cei"]["faixas_etarias"][faixaIndice] =
             {};
           const faixaRascunho = subsCEI.faixas_etarias.find(
-            (f) => f.faixa_etaria.__str__ === faixa.faixa
+            (f) => f.faixa_etaria.__str__ === faixa.faixa,
           );
           if (faixaRascunho) {
             substituicoes[periodoIndice]["cei"]["faixas_etarias"][faixaIndice] =
@@ -358,7 +358,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
         refresh(form);
       } else {
         toastError(
-          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`
+          `Houve um erro ao excluir o rascunho: ${getError(response.data)}`,
         );
       }
     }
@@ -557,6 +557,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                           onDataChanged(value);
                         }
                       }}
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                   <div className="col-1 text-center date-options">
@@ -580,6 +582,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                           onDataChanged(value);
                         }
                       }}
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                   <div className="col-3">
@@ -605,6 +609,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       }}
                       validate={values.data_inicial && required}
                       required={values.data_inicial}
+                      showMonthDropdown={true}
+                      showYearDropdown={true}
                     />
                   </div>
                 </div>

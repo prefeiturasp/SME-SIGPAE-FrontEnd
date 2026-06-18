@@ -400,6 +400,7 @@ export const validaProximoIdentificacaoProduto = (
     !values.prazo_validade ||
     !values.componentes_produto ||
     !values.gluten ||
+    (values.categoria !== "FLV" && !values.marca) ||
     !campoAlergenicosValido ||
     !campoComLactoseValido ||
     (values.categoria === "PERECIVEIS" && !campoOrganicoValido)
