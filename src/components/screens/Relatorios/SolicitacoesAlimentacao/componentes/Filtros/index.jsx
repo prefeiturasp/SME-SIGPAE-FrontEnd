@@ -229,7 +229,7 @@ export const Filtros = ({ ...props }) => {
                   />
                 </div>
                 <div className="col-4">
-                  <label>Lote</label>
+                  <label className="col-form-label">Lote</label>
                   <Field
                     component={StatefulMultiSelect}
                     name="lotes"
@@ -255,7 +255,7 @@ export const Filtros = ({ ...props }) => {
                   />
                 </div>
                 <div className="col-lg-5 col-xl-4">
-                  <label>Tipo de Solicitação</label>
+                  <label className="col-form-label">Tipo de Solicitação</label>
                   <Field
                     component={StatefulMultiSelect}
                     name="tipos_solicitacao"
@@ -277,7 +277,7 @@ export const Filtros = ({ ...props }) => {
               {values.status !== "EM_ANDAMENTO" && (
                 <div className="row mt-3">
                   <div className="col-4">
-                    <label>Tipo de Unidade</label>
+                    <label className="col-form-label">Tipo de Unidade</label>
                     <Field
                       component={StatefulMultiSelect}
                       name="tipos_unidade"
@@ -305,7 +305,9 @@ export const Filtros = ({ ...props }) => {
                     />
                   </div>
                   <div className="col-8">
-                    <label>Unidades Educacionais</label>
+                    <label className="col-form-label">
+                      Unidades Educacionais
+                    </label>
                     <Field
                       component={StatefulMultiSelect}
                       name="unidades_educacionais"
@@ -352,7 +354,7 @@ export const Filtros = ({ ...props }) => {
                 )}
                 <div className="col-6">
                   <div>
-                    <label>Período do Evento</label>
+                    <label className="col-form-label">Período do Evento</label>
                   </div>
                   <div className="row">
                     <div className="col-6 ps-0">
