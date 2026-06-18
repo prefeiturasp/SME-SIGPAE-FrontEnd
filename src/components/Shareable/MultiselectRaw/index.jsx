@@ -82,7 +82,7 @@ export const MultiselectRaw = (props) => {
         menuIsOpen={menuIsOpen}
         onMenuOpen={() => setMenuIsOpen(true)}
         onMenuClose={() => setMenuIsOpen(false)}
-        onBlur={onBlur}
+        onBlur={onBlur || input?.onBlur}
         classNamePrefix={dataTestId}
         options={optionsComTodos}
         isDisabled={disabled}

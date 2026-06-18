@@ -1,8 +1,9 @@
 import { Spin } from "antd";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Field, Form } from "react-final-form";
+import { useNavigate } from "react-router-dom";
 import { FieldArray } from "react-final-form-arrays";
 import { lotesToOptions } from "src/components/screens/Relatorios/SolicitacoesAlimentacao/helpers";
 import Botao from "src/components/Shareable/Botao";
@@ -13,13 +14,17 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import Weekly from "src/components/Shareable/Weekly/Weekly";
 import { required, requiredMultiselect } from "src/helpers/fieldValidators";
-import { getDataObj } from "src/helpers/utilities";
+import { getDataObj, getError } from "src/helpers/utilities";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { getUnidadesEducacionaisComCodEol } from "src/services/dietaEspecial.service";
 import { buscaPeriodosEscolares } from "src/services/escola.service";
+import { cadastrarDiasLetivos } from "src/services/diasLetivos";
 import { getLotesSimples } from "src/services/lote.service";
 import {
   FiltroUnidadesEducacionaisInterface,
@@ -38,6 +43,8 @@ export const EditarDiasLetivosSIGPAE = () => {
   const [periodosEscolares, setPeriodosEscolares] = useState<
     OpcaoMultiselectInterface[]
   >([]);
+
+  const navigate = useNavigate();
 
   const debounceUnidadesRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -72,8 +79,6 @@ export const EditarDiasLetivosSIGPAE = () => {
   const getUnidadesEducacionaisAsync = async (
     values: FiltroUnidadesEducacionaisInterface,
   ) => {
-    setCarregandoUnidades(true);
-    setUnidadesEducacionais([]);
     try {
       let data = values;
       const response = await getUnidadesEducacionaisComCodEol(data);
@@ -118,7 +123,14 @@ export const EditarDiasLetivosSIGPAE = () => {
     }
   };
 
-  const onSubmit = () => {};
+  const onSubmit = async (values) => {
+    const response = await cadastrarDiasLetivos(values);
+    if (response?.status === HTTP_STATUS.CREATED) {
+      toastSuccess("Dias letivos cadastrados com sucesso");
+    } else {
+      toastError(getError(response?.data));
+    }
+  };
 
   useEffect(() => {
     Promise.all([
@@ -127,6 +139,15 @@ export const EditarDiasLetivosSIGPAE = () => {
       getPeriodosAsync(),
     ]);
   }, []);
+
+  const tiposUnidadesOptions = useMemo(
+    () =>
+      tiposUnidades.map((tipo_unidade) => ({
+        label: tipo_unidade.iniciais,
+        value: tipo_unidade.uuid,
+      })),
+    [tiposUnidades],
+  );
 
   return (
     <div className="editar-dias-letivos d-flex flex-column flex-grow-1">
@@ -178,14 +199,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                         placeholder="Selecione o(s) tipo(s) de unidade"
                         name="tipos_unidades"
                         dataTestId="select-tipos-unidades"
-                        options={tiposUnidades.map((tipo_unidade) => ({
-                          label: tipo_unidade.iniciais,
-                          value: tipo_unidade.uuid,
-                        }))}
+                        options={tiposUnidadesOptions}
                         selected={values.tipos_unidades || []}
                         onSelectedChanged={(values_) => {
-                          setUnidadesEducacionais([]);
-                          form.change("unidades_educacionais", undefined);
                           form.change(
                             `tipos_unidades`,
                             values_.map((value_) => value_.value),
@@ -365,6 +381,32 @@ export const EditarDiasLetivosSIGPAE = () => {
                       </>
                     )}
                   </FieldArray>
+                  <div className="row mt-4">
+                    <div className="col-12 text-end">
+                      <Botao
+                        texto="Limpar"
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        className="me-3"
+                        onClick={() => {
+                          form.reset();
+                          setUnidadesEducacionais([]);
+                        }}
+                      />
+                      <Botao
+                        texto="Cancelar"
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        className="me-3"
+                        onClick={() => navigate(-1)}
+                      />
+                      <Botao
+                        texto="Salvar"
+                        type={BUTTON_TYPE.SUBMIT}
+                        style={BUTTON_STYLE.GREEN}
+                      />
+                    </div>
+                  </div>
                 </form>
               )}
             </Form>
