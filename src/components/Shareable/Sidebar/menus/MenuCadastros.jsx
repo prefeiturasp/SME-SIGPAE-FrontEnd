@@ -1,6 +1,7 @@
 import {
   CADASTROS,
   CONFIGURACOES,
+  DIAS_LETIVOS,
   EDITAIS_CONTRATOS,
   EMPRESA,
   EMPRESAS_CADASTRADAS,
@@ -111,6 +112,9 @@ const MenuCadastros = () => {
             to={`/${CONFIGURACOES}/${CADASTROS}/${SUSPENSAO_ATIVIDADES}`}
           >
             Suspensão de Atividades
+          </LeafItem>
+          <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}`}>
+            Dias Letivos
           </LeafItem>
         </>
       )}
