@@ -1,5 +1,5 @@
 import HTTP_STATUS from "http-status-codes";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Field, Form } from "react-final-form";
 import { lotesToOptions } from "src/components/screens/Relatorios/SolicitacoesAlimentacao/helpers";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
@@ -14,6 +14,12 @@ export const EditarDiasLetivosSIGPAE = () => {
   const [lotes, setLotes] = useState([]);
   const [tiposUnidades, setTiposUnidades] = useState([]);
   const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
+
+  const debounceUnidadesRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+
+  const [carregandoUnidades, setCarregandoUnidades] = useState(false);
 
   const [erroAPI, setErroAPI] = useState("");
 
@@ -40,28 +46,33 @@ export const EditarDiasLetivosSIGPAE = () => {
   };
 
   const getUnidadesEducacionaisAsync = async (values) => {
+    setCarregandoUnidades(true);
     setUnidadesEducacionais([]);
-    let data = values;
-    const response = await getUnidadesEducacionaisComCodEol(data);
-    if (response.status === HTTP_STATUS.OK) {
-      if (response.data.mensagem) {
-        setUnidadesEducacionais([
-          {
-            label: response.data.mensagem,
-            value: "__no_result__",
-            disabled: true,
-          },
-        ]);
-        return;
+    try {
+      let data = values;
+      const response = await getUnidadesEducacionaisComCodEol(data);
+      if (response.status === HTTP_STATUS.OK) {
+        if (response.data.mensagem) {
+          setUnidadesEducacionais([
+            {
+              label: response.data.mensagem,
+              value: "__no_result__",
+              disabled: true,
+            },
+          ]);
+          return;
+        }
+        setUnidadesEducacionais(
+          response.data.map((unidade) => ({
+            label: `${unidade.codigo_eol_escola}`,
+            value: unidade.uuid,
+          })),
+        );
+      } else {
+        toastError("Erro ao buscar unidades educacionais");
       }
-      setUnidadesEducacionais(
-        response.data.map((unidade) => ({
-          label: `${unidade.codigo_eol_escola}`,
-          value: unidade.uuid,
-        })),
-      );
-    } else {
-      toastError("Erro ao buscar unidades educacionais");
+    } finally {
+      setCarregandoUnidades(false);
     }
   };
 
@@ -117,17 +128,36 @@ export const EditarDiasLetivosSIGPAE = () => {
                           value: tipo_unidade.uuid,
                         }))}
                         selected={values.tipos_unidades || []}
-                        onSelectedChanged={async (values_) => {
+                        onSelectedChanged={(values_) => {
+                          setUnidadesEducacionais([]);
+                          form.change("unidades_educacionais", undefined);
                           form.change(
                             `tipos_unidades`,
                             values_.map((value_) => value_.value),
                           );
-                          await getUnidadesEducacionaisAsync({
-                            lotes: values.lotes,
-                            tipos_unidades: values_.map(
-                              (value_) => value_.value,
-                            ),
-                          });
+                          if (debounceUnidadesRef.current) {
+                            clearTimeout(debounceUnidadesRef.current);
+                          }
+                          const lotes = values.lotes;
+                          const tiposUnidades = values_.map((v) => v.value);
+                          debounceUnidadesRef.current = setTimeout(() => {
+                            getUnidadesEducacionaisAsync({
+                              lotes,
+                              tipos_unidades: tiposUnidades,
+                            });
+                          }, 3000);
+                        }}
+                        onBlur={() => {
+                          if (debounceUnidadesRef.current) {
+                            clearTimeout(debounceUnidadesRef.current);
+                            debounceUnidadesRef.current = null;
+                          }
+                          if (values.tipos_unidades?.length > 0) {
+                            getUnidadesEducacionaisAsync({
+                              lotes: values.lotes,
+                              tipos_unidades: values.tipos_unidades,
+                            });
+                          }
                         }}
                         required
                         validate={requiredMultiselect}
@@ -139,13 +169,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                       </label>
                       <Spin
                         tip="Carregando unidades educacionais..."
-                        spinning={
-                          values.lotes !== undefined &&
-                          values.lotes.length > 0 &&
-                          values.tipos_unidades !== undefined &&
-                          values.tipos_unidades.length > 0 &&
-                          unidadesEducacionais.length === 0
-                        }
+                        spinning={carregandoUnidades}
                       >
                         <Field
                           component={MultiselectRaw}
