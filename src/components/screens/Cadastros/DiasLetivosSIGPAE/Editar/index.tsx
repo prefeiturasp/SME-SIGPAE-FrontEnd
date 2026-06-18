@@ -129,10 +129,13 @@ export const EditarDiasLetivosSIGPAE = () => {
   }, []);
 
   return (
-    <div className="editar-dias-letivos">
+    <div className="editar-dias-letivos d-flex flex-column flex-grow-1">
       {erroAPI && <div>{erroAPI}</div>}
       {!erroAPI && (
-        <div className="card mt-3">
+        <div
+          className="card mt-3 flex-grow-1"
+          style={{ minHeight: "calc(100vh - 200px)" }}
+        >
           <div className="card-body">
             <Form
               initialValues={{
@@ -239,7 +242,6 @@ export const EditarDiasLetivosSIGPAE = () => {
                       </Spin>
                     </div>
                   </div>
-                  <hr />
                   <div className="row mt-3">
                     <div className="col-12 d-flex align-items-end">
                       <strong className="me-2">Recorrência</strong>
