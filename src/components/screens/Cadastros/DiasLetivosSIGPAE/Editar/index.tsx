@@ -46,6 +46,13 @@ export const EditarDiasLetivosSIGPAE = () => {
 
   const navigate = useNavigate();
 
+  const initialValues = useMemo(
+    () => ({
+      recorrencias: [{ data_inicial: undefined }],
+    }),
+    [],
+  );
+
   const debounceUnidadesRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -79,6 +86,8 @@ export const EditarDiasLetivosSIGPAE = () => {
   const getUnidadesEducacionaisAsync = async (
     values: FiltroUnidadesEducacionaisInterface,
   ) => {
+    setCarregandoUnidades(true);
+    setUnidadesEducacionais([]);
     try {
       let data = values;
       const response = await getUnidadesEducacionaisComCodEol(data);
@@ -159,9 +168,7 @@ export const EditarDiasLetivosSIGPAE = () => {
         >
           <div className="card-body">
             <Form
-              initialValues={{
-                recorrencias: [{ data_inicial: undefined }],
-              }}
+              initialValues={initialValues}
               onSubmit={onSubmit}
               mutators={{ ...arrayMutators }}
             >
@@ -202,6 +209,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                         options={tiposUnidadesOptions}
                         selected={values.tipos_unidades || []}
                         onSelectedChanged={(values_) => {
+                          form.change("unidades_educacionais", undefined);
                           form.change(
                             `tipos_unidades`,
                             values_.map((value_) => value_.value),
