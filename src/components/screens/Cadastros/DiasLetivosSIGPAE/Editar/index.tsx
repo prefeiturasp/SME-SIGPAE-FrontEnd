@@ -1,6 +1,7 @@
+import { Spin } from "antd";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import { lotesToOptions } from "src/components/screens/Relatorios/SolicitacoesAlimentacao/helpers";
@@ -12,20 +13,19 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
-import Weekly from "src/components/Shareable/Weekly/Weekly";
-import { requiredMultiselect } from "src/helpers/fieldValidators";
-import { getLotesSimples } from "src/services/lote.service";
-import { getUnidadesEducacionaisComCodEol } from "src/services/dietaEspecial.service";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import Weekly from "src/components/Shareable/Weekly/Weekly";
+import { required, requiredMultiselect } from "src/helpers/fieldValidators";
+import { getDataObj } from "src/helpers/utilities";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
-import { Spin } from "antd";
+import { getUnidadesEducacionaisComCodEol } from "src/services/dietaEspecial.service";
+import { buscaPeriodosEscolares } from "src/services/escola.service";
+import { getLotesSimples } from "src/services/lote.service";
 import {
   FiltroUnidadesEducacionaisInterface,
   OpcaoMultiselectInterface,
   TipoUnidadeEscolarInterface,
 } from "./interfaces";
-import { buscaPeriodosEscolares } from "src/services/escola.service";
-import { getDataObj } from "src/helpers/utilities";
 
 export const EditarDiasLetivosSIGPAE = () => {
   const [lotes, setLotes] = useState<OpcaoMultiselectInterface[]>([]);
@@ -134,7 +134,13 @@ export const EditarDiasLetivosSIGPAE = () => {
       {!erroAPI && (
         <div className="card mt-3">
           <div className="card-body">
-            <Form onSubmit={onSubmit} mutators={{ ...arrayMutators }}>
+            <Form
+              initialValues={{
+                recorrencias: [{ data_inicial: undefined }],
+              }}
+              onSubmit={onSubmit}
+              mutators={{ ...arrayMutators }}
+            >
               {({ handleSubmit, form, values }) => (
                 <form onSubmit={handleSubmit}>
                   <div className="row">
@@ -246,16 +252,16 @@ export const EditarDiasLetivosSIGPAE = () => {
                       <>
                         {fields.map((name, index) => (
                           <div key={name} className="row mt-2">
-                            <div className="col-4">
+                            <div className="col-5">
                               <label className="col-form-label">
                                 Período Letivo
                               </label>
-                              <div className="row">
-                                <div className="col-6">
+                              <div className="row g-0">
+                                <div className="col-6 pe-3">
                                   <Field
                                     component={InputComData}
+                                    placeholder="De"
                                     name={`${name}.data_inicial`}
-                                    label="De"
                                     required
                                     maxDate={
                                       values.recorrencias?.[index]?.data_final
@@ -270,8 +276,8 @@ export const EditarDiasLetivosSIGPAE = () => {
                                 <div className="col-6">
                                   <Field
                                     component={InputComData}
+                                    placeholder="Até"
                                     name={`${name}.data_final`}
-                                    label="Até"
                                     required
                                     minDate={
                                       values.recorrencias?.[index]?.data_inicial
@@ -285,7 +291,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-3">
+                            <div className="col-4">
                               <label className="label fw-normal pb-2 pt-2">
                                 Períodos Escolares
                               </label>
@@ -308,11 +314,13 @@ export const EditarDiasLetivosSIGPAE = () => {
                                 validate={requiredMultiselect}
                               />
                             </div>
-                            <div className="col-4">
+                            <div className="col-2 my-auto">
                               <Field
                                 component={Weekly}
                                 name={`${name}.dias_semana`}
                                 label="Repetir"
+                                required
+                                validate={required}
                                 arrayDiasSemana={
                                   values.recorrencias?.[index]?.dias_semana ||
                                   []
@@ -344,7 +352,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                           </div>
                         ))}
                         <div className="row mt-3">
-                          <div className="col-12 text-end">
+                          <div className="col-12 text-center">
                             <Botao
                               texto="Adicionar Recorrência"
                               onClick={() => fields.push({})}
