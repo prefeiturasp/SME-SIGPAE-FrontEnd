@@ -1,8 +1,18 @@
+import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState, useRef } from "react";
 import { Field, Form } from "react-final-form";
+import { FieldArray } from "react-final-form-arrays";
 import { lotesToOptions } from "src/components/screens/Relatorios/SolicitacoesAlimentacao/helpers";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import { InputComData } from "src/components/Shareable/DatePicker";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import Weekly from "src/components/Shareable/Weekly/Weekly";
 import { requiredMultiselect } from "src/helpers/fieldValidators";
 import { getLotesSimples } from "src/services/lote.service";
 import { getUnidadesEducacionaisComCodEol } from "src/services/dietaEspecial.service";
@@ -14,6 +24,8 @@ import {
   OpcaoMultiselectInterface,
   TipoUnidadeEscolarInterface,
 } from "./interfaces";
+import { buscaPeriodosEscolares } from "src/services/escola.service";
+import { getDataObj } from "src/helpers/utilities";
 
 export const EditarDiasLetivosSIGPAE = () => {
   const [lotes, setLotes] = useState<OpcaoMultiselectInterface[]>([]);
@@ -21,6 +33,9 @@ export const EditarDiasLetivosSIGPAE = () => {
     TipoUnidadeEscolarInterface[]
   >([]);
   const [unidadesEducacionais, setUnidadesEducacionais] = useState<
+    OpcaoMultiselectInterface[]
+  >([]);
+  const [periodosEscolares, setPeriodosEscolares] = useState<
     OpcaoMultiselectInterface[]
   >([]);
 
@@ -87,10 +102,30 @@ export const EditarDiasLetivosSIGPAE = () => {
     }
   };
 
+  const getPeriodosAsync = async () => {
+    const response = await buscaPeriodosEscolares();
+    if (response.status === HTTP_STATUS.OK) {
+      setPeriodosEscolares(
+        response.data.results.map((periodo) => ({
+          label: periodo.nome,
+          value: periodo.uuid,
+        })),
+      );
+    } else {
+      setErroAPI(
+        "Erro ao carregar períodos escolares. Tente novamente mais tarde.",
+      );
+    }
+  };
+
   const onSubmit = () => {};
 
   useEffect(() => {
-    Promise.all([getLotesSimplesAsync(), getTiposUnidadesUEAsync()]);
+    Promise.all([
+      getLotesSimplesAsync(),
+      getTiposUnidadesUEAsync(),
+      getPeriodosAsync(),
+    ]);
   }, []);
 
   return (
@@ -99,7 +134,7 @@ export const EditarDiasLetivosSIGPAE = () => {
       {!erroAPI && (
         <div className="card mt-3">
           <div className="card-body">
-            <Form onSubmit={onSubmit}>
+            <Form onSubmit={onSubmit} mutators={{ ...arrayMutators }}>
               {({ handleSubmit, form, values }) => (
                 <form onSubmit={handleSubmit}>
                   <div className="row">
@@ -198,6 +233,129 @@ export const EditarDiasLetivosSIGPAE = () => {
                       </Spin>
                     </div>
                   </div>
+                  <hr />
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <label className="label fw-normal pb-2 pt-2">
+                        Recorrência
+                      </label>
+                    </div>
+                  </div>
+                  <FieldArray name="recorrencias">
+                    {({ fields }) => (
+                      <>
+                        {fields.map((name, index) => (
+                          <div key={name} className="row mt-2">
+                            <div className="col-4">
+                              <label className="col-form-label">
+                                Período Letivo
+                              </label>
+                              <div className="row">
+                                <div className="col-6">
+                                  <Field
+                                    component={InputComData}
+                                    name={`${name}.data_inicial`}
+                                    label="De"
+                                    required
+                                    maxDate={
+                                      values.recorrencias?.[index]?.data_final
+                                        ? getDataObj(
+                                            values.recorrencias[index]
+                                              .data_final,
+                                          )
+                                        : undefined
+                                    }
+                                  />
+                                </div>
+                                <div className="col-6">
+                                  <Field
+                                    component={InputComData}
+                                    name={`${name}.data_final`}
+                                    label="Até"
+                                    required
+                                    minDate={
+                                      values.recorrencias?.[index]?.data_inicial
+                                        ? getDataObj(
+                                            values.recorrencias[index]
+                                              .data_inicial,
+                                          )
+                                        : undefined
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-3">
+                              <label className="label fw-normal pb-2 pt-2">
+                                Períodos Escolares
+                              </label>
+                              <Field
+                                component={MultiselectRaw}
+                                name={`${name}.periodos_escolares`}
+                                options={periodosEscolares}
+                                selected={
+                                  values.recorrencias?.[index]
+                                    ?.periodos_escolares || []
+                                }
+                                onSelectedChanged={(values_) => {
+                                  form.change(
+                                    `${name}.periodos_escolares`,
+                                    values_.map((v) => v.value),
+                                  );
+                                }}
+                                placeholder="Selecione os períodos"
+                                required
+                                validate={requiredMultiselect}
+                              />
+                            </div>
+                            <div className="col-4">
+                              <Field
+                                component={Weekly}
+                                name={`${name}.dias_semana`}
+                                label="Repetir"
+                                arrayDiasSemana={
+                                  values.recorrencias?.[index]?.dias_semana ||
+                                  []
+                                }
+                                handleWeekly={async (value) => {
+                                  const dias =
+                                    values.recorrencias?.[index]?.dias_semana ||
+                                    [];
+                                  const atualizado = dias.includes(value)
+                                    ? dias.filter((d) => d !== value)
+                                    : [...dias, value];
+                                  form.change(
+                                    `${name}.dias_semana`,
+                                    atualizado,
+                                  );
+                                }}
+                              />
+                            </div>
+                            {index > 0 && (
+                              <div className="col-1 d-flex align-items-end pb-1">
+                                <Botao
+                                  onClick={() => fields.remove(index)}
+                                  icon={BUTTON_ICON.TRASH}
+                                  type={BUTTON_TYPE.BUTTON}
+                                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                        <div className="row mt-3">
+                          <div className="col-12 text-end">
+                            <Botao
+                              texto="Adicionar Recorrência"
+                              onClick={() => fields.push({})}
+                              type={BUTTON_TYPE.BUTTON}
+                              style={BUTTON_STYLE.GREEN_OUTLINE}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </FieldArray>
                 </form>
               )}
             </Form>
