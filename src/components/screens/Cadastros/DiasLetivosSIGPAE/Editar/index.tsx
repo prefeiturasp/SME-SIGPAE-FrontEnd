@@ -9,11 +9,20 @@ import { getUnidadesEducacionaisComCodEol } from "src/services/dietaEspecial.ser
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { Spin } from "antd";
+import {
+  FiltroUnidadesEducacionaisInterface,
+  OpcaoMultiselectInterface,
+  TipoUnidadeEscolarInterface,
+} from "./interfaces";
 
 export const EditarDiasLetivosSIGPAE = () => {
-  const [lotes, setLotes] = useState([]);
-  const [tiposUnidades, setTiposUnidades] = useState([]);
-  const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
+  const [lotes, setLotes] = useState<OpcaoMultiselectInterface[]>([]);
+  const [tiposUnidades, setTiposUnidades] = useState<
+    TipoUnidadeEscolarInterface[]
+  >([]);
+  const [unidadesEducacionais, setUnidadesEducacionais] = useState<
+    OpcaoMultiselectInterface[]
+  >([]);
 
   const debounceUnidadesRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
@@ -45,7 +54,9 @@ export const EditarDiasLetivosSIGPAE = () => {
     }
   };
 
-  const getUnidadesEducacionaisAsync = async (values) => {
+  const getUnidadesEducacionaisAsync = async (
+    values: FiltroUnidadesEducacionaisInterface,
+  ) => {
     setCarregandoUnidades(true);
     setUnidadesEducacionais([]);
     try {
