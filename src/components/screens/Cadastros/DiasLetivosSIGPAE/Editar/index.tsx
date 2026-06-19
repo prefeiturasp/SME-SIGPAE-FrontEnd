@@ -49,9 +49,10 @@ export const EditarDiasLetivosSIGPAE = () => {
 
   const navigate = useNavigate();
   const initialValues = useMemo(
-    () => ({
-      recorrencias: [{ data_inicial: undefined }],
-    }),
+    () =>
+      ({
+        recorrencias: [{ data_inicial: undefined }],
+      }) as unknown as Partial<DiasLetivosFormInterface>,
     [],
   );
   const debounceUnidadesRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -165,7 +166,7 @@ export const EditarDiasLetivosSIGPAE = () => {
           className="card mt-3 flex-grow-1 d-flex flex-column"
           style={{ minHeight: "calc(100vh - 200px)" }}
         >
-          <Form
+          <Form<DiasLetivosFormInterface>
             initialValues={initialValues}
             onSubmit={onSubmit}
             mutators={{ ...arrayMutators }}
@@ -344,7 +345,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                     values_: OpcaoMultiselectInterface[],
                                   ) => {
                                     form.change(
-                                      `${name}.periodos_escolares`,
+                                      `${name}.periodos_escolares` as keyof DiasLetivosFormInterface,
                                       values_.map((v) => v.value),
                                     );
                                   }}
@@ -364,7 +365,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                     values.recorrencias?.[index]?.dias_semana ||
                                     []
                                   }
-                                  handleWeekly={async (value) => {
+                                  handleWeekly={async (value: string) => {
                                     const dias =
                                       values.recorrencias?.[index]
                                         ?.dias_semana || [];
@@ -372,7 +373,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                       ? dias.filter((d) => d !== value)
                                       : [...dias, value];
                                     form.change(
-                                      `${name}.dias_semana`,
+                                      `${name}.dias_semana` as keyof DiasLetivosFormInterface,
                                       atualizado,
                                     );
                                   }}
