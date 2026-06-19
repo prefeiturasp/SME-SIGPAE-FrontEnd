@@ -173,7 +173,7 @@ export const EditarDiasLetivosSIGPAE = () => {
               onSubmit={onSubmit}
               mutators={{ ...arrayMutators }}
             >
-              {({ handleSubmit, form, values }) => (
+              {({ handleSubmit, form, values, submitting }) => (
                 <form
                   onSubmit={handleSubmit}
                   className="d-flex flex-column flex-grow-1"
@@ -417,6 +417,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           className="me-3"
+                          disabled={submitting}
                           onClick={() => {
                             form.reset();
                             setUnidadesEducacionais([]);
@@ -427,12 +428,15 @@ export const EditarDiasLetivosSIGPAE = () => {
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           className="me-3"
+                          disabled={submitting}
                           onClick={() => navigate(-1)}
                         />
                         <Botao
-                          texto="Salvar"
-                          type={BUTTON_TYPE.SUBMIT}
+                          texto={submitting ? "" : "Salvar"}
+                          icon={submitting ? BUTTON_ICON.LOADING : undefined}
+                          type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN}
+                          onClick={() => !submitting && handleSubmit()}
                         />
                       </div>
                     </div>
