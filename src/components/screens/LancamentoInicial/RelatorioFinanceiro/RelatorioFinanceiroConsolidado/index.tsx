@@ -30,8 +30,13 @@ import {
   exportarPDFAsyncRelatorioAtesteFinanceiro,
   getRelatorioDadosLiquidacao,
 } from "src/services/medicaoInicial/relatorioFinanceiro.service";
-import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
+import {
+  DadosLiquidacaoEmpenho,
+  Escola,
+} from "src/interfaces/relatorio_financeiro.interface";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import ModalAplicarDesconto from "../components/ModalAplicarDesconto";
+import { getEscolasParaFiltros } from "src/services/escola.service";
 
 type TotaisParams = {
   mes: string;
@@ -51,9 +56,11 @@ export function RelatorioFinanceiroConsolidado() {
   const [tiposAlimentacao, setTiposAlimentacao] = useState<any[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
   const [editarEmpenhos, setEditarEmpenhos] = useState<boolean>(false);
+  const [aplicarDesconto, setAplicarDesconto] = useState<boolean>(false);
   const [exportando, setExportando] = useState<boolean>(false);
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState<boolean>(false);
+  const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
 
   const [searchParams] = useSearchParams();
   const uuidRelatorioFinanceiro = searchParams.get("uuid");
@@ -187,6 +194,30 @@ export function RelatorioFinanceiroConsolidado() {
     getTotaisConsumo();
   }, [state, gruposUnidadeEscolar]);
 
+  const getEscolasAsync = async (lote: string): Promise<void> => {
+    const unidadesUuid = getTiposUuid().join(",");
+    if (!unidadesUuid) return;
+
+    const response = await getEscolasParaFiltros({
+      lote__uid: lote,
+      tipo_unidade__uuid__in: unidadesUuid,
+    });
+
+    if (response.status === HTTP_STATUS.OK) {
+      setUnidadesEducacionais(
+        response.data.map((escola: Escola) => ({
+          label: escola.nome,
+          value: escola.uuid,
+        })),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (state?.lote?.length === 0) return;
+    getEscolasAsync(state?.lote[0]);
+  }, [state?.lote]);
+
   const grupo =
     relatorioConsolidado?.grupo_unidade_escolar?.nome?.toLowerCase();
 
@@ -270,7 +301,7 @@ export function RelatorioFinanceiroConsolidado() {
                     texto="Aplicar Descontos"
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN_OUTLINE}
-                    disabled
+                    onClick={() => setAplicarDesconto(true)}
                   />
                 </div>
               )}
@@ -311,15 +342,20 @@ export function RelatorioFinanceiroConsolidado() {
         showModal={editarEmpenhos}
         setShowModal={setEditarEmpenhos}
         empenhos={dadosLiquidacao}
-        lote={state?.lote[0]}
         relatorioFinanceiro={uuidRelatorioFinanceiro}
         onSave={(e) => setDadosLiquidacao(e)}
-        tiposUnidades={getTiposUuid()}
+        unidadesEducacionais={unidadesEducacionais}
       />
       <ModalSolicitacaoDownload
         show={exibirModalCentralDownloads}
         setShow={setExibirModalCentralDownloads}
         callbackClose={() => ""}
+      />
+      <ModalAplicarDesconto
+        relatorioFinanceiro={uuidRelatorioFinanceiro}
+        showModal={aplicarDesconto}
+        setShowModal={setAplicarDesconto}
+        unidadesEducacionais={unidadesEducacionais}
       />
     </div>
   );
