@@ -27,9 +27,12 @@ import { buscaPeriodosEscolares } from "src/services/escola.service";
 import { cadastrarDiasLetivos } from "src/services/diasLetivos";
 import { getLotesSimples } from "src/services/lote.service";
 import {
+  DiasLetivosFormInterface,
   FiltroUnidadesEducacionaisInterface,
   OpcaoMultiselectInterface,
+  PeriodoEscolarInterface,
   TipoUnidadeEscolarInterface,
+  UnidadeEducacionalInterface,
 } from "./interfaces";
 
 export const EditarDiasLetivosSIGPAE = () => {
@@ -45,20 +48,16 @@ export const EditarDiasLetivosSIGPAE = () => {
   >([]);
 
   const navigate = useNavigate();
-
   const initialValues = useMemo(
     () => ({
       recorrencias: [{ data_inicial: undefined }],
     }),
     [],
   );
-
   const debounceUnidadesRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-
   const [carregandoUnidades, setCarregandoUnidades] = useState(false);
-
   const [erroAPI, setErroAPI] = useState("");
 
   const getLotesSimplesAsync = async () => {
@@ -103,7 +102,7 @@ export const EditarDiasLetivosSIGPAE = () => {
           return;
         }
         setUnidadesEducacionais(
-          response.data.map((unidade) => ({
+          response.data.map((unidade: UnidadeEducacionalInterface) => ({
             label: `${unidade.codigo_eol_escola}`,
             value: unidade.uuid,
           })),
@@ -120,7 +119,7 @@ export const EditarDiasLetivosSIGPAE = () => {
     const response = await buscaPeriodosEscolares();
     if (response.status === HTTP_STATUS.OK) {
       setPeriodosEscolares(
-        response.data.results.map((periodo) => ({
+        response.data.results.map((periodo: PeriodoEscolarInterface) => ({
           label: periodo.nome,
           value: periodo.uuid,
         })),
@@ -132,7 +131,7 @@ export const EditarDiasLetivosSIGPAE = () => {
     }
   };
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: DiasLetivosFormInterface) => {
     const response = await cadastrarDiasLetivos(values);
     if (response?.status === HTTP_STATUS.CREATED) {
       toastSuccess("Dias letivos cadastrados com sucesso");
@@ -188,7 +187,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                           name="lotes"
                           selected={values.lotes || []}
                           options={lotes}
-                          onSelectedChanged={(values_) => {
+                          onSelectedChanged={(
+                            values_: OpcaoMultiselectInterface[],
+                          ) => {
                             form.change(
                               `lotes`,
                               values_.map((value_) => value_.value),
@@ -212,7 +213,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                           dataTestId="select-tipos-unidades"
                           options={tiposUnidadesOptions}
                           selected={values.tipos_unidades || []}
-                          onSelectedChanged={(values_) => {
+                          onSelectedChanged={(
+                            values_: OpcaoMultiselectInterface[],
+                          ) => {
                             form.change("unidades_educacionais", undefined);
                             form.change(
                               `tipos_unidades`,
@@ -259,7 +262,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                             name="unidades_educacionais"
                             options={unidadesEducacionais}
                             selected={values.unidades_educacionais || []}
-                            onSelectedChanged={(values_) => {
+                            onSelectedChanged={(
+                              values_: OpcaoMultiselectInterface[],
+                            ) => {
                               form.change(
                                 "unidades_educacionais",
                                 values_.map((value_) => value_.value),
@@ -300,6 +305,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                             )
                                           : undefined
                                       }
+                                      validate={required}
                                     />
                                   </div>
                                   <div className="col-6">
@@ -317,6 +323,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                             )
                                           : undefined
                                       }
+                                      validate={required}
                                     />
                                   </div>
                                 </div>
@@ -333,7 +340,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                                     values.recorrencias?.[index]
                                       ?.periodos_escolares || []
                                   }
-                                  onSelectedChanged={(values_) => {
+                                  onSelectedChanged={(
+                                    values_: OpcaoMultiselectInterface[],
+                                  ) => {
                                     form.change(
                                       `${name}.periodos_escolares`,
                                       values_.map((v) => v.value),
