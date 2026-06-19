@@ -58,12 +58,12 @@ export const getSolicitacoesPendentesAutorizacaoCodae = async (filtro) => {
     const json = await result.json();
     return json.results;
   } catch (error) {
-    console.log(error);
+    return error;
   }
 };
 
 export const getSolicitacoesPendentesAutorizacaoCodaeSemFiltro = async (
-  params
+  params,
 ) => {
   const url = `${TODAS_SOLICITACOES_CODAE_URL}/${SOLICITACOES.PENDENTES}/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -84,7 +84,7 @@ export const getSolicitacoesComQuestionamentoCodae = async (params) => {
 export const getSolicitacoesPendentesAutorizacaoCODAESecaoPendencias = async (
   filtroAplicado,
   tipoVisao,
-  params
+  params,
 ) => {
   const url = `${TODAS_SOLICITACOES_CODAE_URL}/${SOLICITACOES.PENDENTES}/${filtroAplicado}/${tipoVisao}/`;
 
@@ -106,7 +106,7 @@ export const getSolicitacoesNegadasCodae = async (params) => {
 };
 
 export const getResumoPendenciasInversoesCardapio = async (
-  filtro = "sem_filtro"
+  filtro = "sem_filtro",
 ) => {
   let resposta = {
     total: 0,
@@ -136,7 +136,7 @@ export const getResumoPendenciasInversoesCardapio = async (
 };
 
 export const getResumoPendenciasInclusaoAlimentacao = async (
-  filtro = "sem_filtro"
+  filtro = "sem_filtro",
 ) => {
   let resposta = {
     total: 0,
@@ -152,15 +152,15 @@ export const getResumoPendenciasInclusaoAlimentacao = async (
   const [continuas, avulsas, cei] = await Promise.all([
     codaeListarSolicitacoesDeInclusaoDeAlimentacao(
       filtro,
-      TIPO_SOLICITACAO.SOLICITACAO_CONTINUA
+      TIPO_SOLICITACAO.SOLICITACAO_CONTINUA,
     ),
     codaeListarSolicitacoesDeInclusaoDeAlimentacao(
       filtro,
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
     ),
     codaeListarSolicitacoesDeInclusaoDeAlimentacao(
       filtro,
-      TIPO_SOLICITACAO.SOLICITACAO_CEI
+      TIPO_SOLICITACAO.SOLICITACAO_CEI,
     ),
   ]);
 
@@ -181,7 +181,7 @@ export const getResumoPendenciasInclusaoAlimentacao = async (
 
 export const getResumoPendenciasKitLancheAvulso = async (
   //TODO: rename method
-  filtro = "sem_filtro"
+  filtro = "sem_filtro",
 ) => {
   let resposta = {
     total: 0,
@@ -197,7 +197,7 @@ export const getResumoPendenciasKitLancheAvulso = async (
   const [avulsos, cei] = await Promise.all([
     getCODAEPedidosKitLanchePendentes(
       filtro,
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
     ),
     getCODAEPedidosKitLanchePendentes(filtro, TIPO_SOLICITACAO.SOLICITACAO_CEI),
   ]);
@@ -218,7 +218,7 @@ export const getResumoPendenciasKitLancheAvulso = async (
 };
 
 export const getResumoPendenciasKitLancheUnificado = async (
-  filtro = "sem_filtro"
+  filtro = "sem_filtro",
 ) => {
   let resposta = {
     total: 0,
@@ -231,9 +231,8 @@ export const getResumoPendenciasKitLancheUnificado = async (
   let pedidosLimite = [];
   let pedidosRegular = [];
 
-  const solicitacoesUnificadas = await getCODAEPedidosSolicitacoesUnificadas(
-    filtro
-  );
+  const solicitacoesUnificadas =
+    await getCODAEPedidosSolicitacoesUnificadas(filtro);
 
   if (solicitacoesUnificadas) {
     pedidosPrioritarios = filtraPrioritarios(solicitacoesUnificadas.results);
@@ -250,7 +249,7 @@ export const getResumoPendenciasKitLancheUnificado = async (
 };
 
 export const getResumoPendenciasAlteracaoCardapio = async (
-  filtro = "sem_filtro"
+  filtro = "sem_filtro",
 ) => {
   let resposta = {
     total: 0,
@@ -266,11 +265,11 @@ export const getResumoPendenciasAlteracaoCardapio = async (
   const [avulsos, cei] = await Promise.all([
     codaeListarSolicitacoesDeAlteracaoDeCardapio(
       filtro,
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
     ),
     codaeListarSolicitacoesDeAlteracaoDeCardapio(
       filtro,
-      TIPO_SOLICITACAO.SOLICITACAO_CEI
+      TIPO_SOLICITACAO.SOLICITACAO_CEI,
     ),
   ]);
 
@@ -290,7 +289,7 @@ export const getResumoPendenciasAlteracaoCardapio = async (
 };
 
 export const getResumoPendenciasSuspensaoCardapio = async (
-  filtro = "sem_filtro"
+  filtro = "sem_filtro",
 ) => {
   let resposta = {
     total: 0,
@@ -323,11 +322,19 @@ export const getResumoPendenciasCODAEporDRE = async (filtro) => {
     if (!resumoPorDRE[corrente.dre_nome]) {
       resumoPorDRE[corrente.dre_nome] = {};
     }
-    if (corrente.prioridade !== "VENCIDO") {
-      resumoPorDRE[corrente.dre_nome][corrente.prioridade] = resumoPorDRE[
+    const prioridadeEfetiva =
+      corrente.prioridade === "VENCIDO" &&
+      corrente.motivo === "Lanche Emergencial"
+        ? "PRIORITARIO"
+        : corrente.prioridade;
+    if (
+      corrente.prioridade !== "VENCIDO" ||
+      corrente.motivo === "Lanche Emergencial"
+    ) {
+      resumoPorDRE[corrente.dre_nome][prioridadeEfetiva] = resumoPorDRE[
         corrente.dre_nome
-      ][corrente.prioridade]
-        ? (resumoPorDRE[corrente.dre_nome][corrente.prioridade] += 1)
+      ][prioridadeEfetiva]
+        ? (resumoPorDRE[corrente.dre_nome][prioridadeEfetiva] += 1)
         : 1;
       resumoPorDRE[corrente.dre_nome]["TOTAL"] = resumoPorDRE[
         corrente.dre_nome
@@ -351,11 +358,19 @@ export const getResumoPendenciasCODAEporLote = async (filtro) => {
     if (!resumoPorLote[corrente.lote]) {
       resumoPorLote[corrente.lote] = {};
     }
-    if (corrente.prioridade !== "VENCIDO") {
-      resumoPorLote[corrente.lote][corrente.prioridade] = resumoPorLote[
+    const prioridadeEfetiva =
+      corrente.prioridade === "VENCIDO" &&
+      corrente.motivo === "Lanche Emergencial"
+        ? "PRIORITARIO"
+        : corrente.prioridade;
+    if (
+      corrente.prioridade !== "VENCIDO" ||
+      corrente.motivo === "Lanche Emergencial"
+    ) {
+      resumoPorLote[corrente.lote][prioridadeEfetiva] = resumoPorLote[
         corrente.lote
-      ][corrente.prioridade]
-        ? (resumoPorLote[corrente.lote][corrente.prioridade] += 1)
+      ][prioridadeEfetiva]
+        ? (resumoPorLote[corrente.lote][prioridadeEfetiva] += 1)
         : 1;
       resumoPorLote[corrente.lote]["TOTAL"] = resumoPorLote[corrente.lote][
         "TOTAL"
