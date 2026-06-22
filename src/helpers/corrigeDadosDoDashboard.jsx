@@ -1,5 +1,6 @@
 const sumObjectsByKey = (...objs) => {
   return objs.reduce((a, b) => {
+    if (!b) return a;
     for (let k in b) {
       // eslint-disable-next-line no-prototype-builtins
       if (b.hasOwnProperty(k)) a[k] = (a[k] || 0) + b[k];
@@ -8,39 +9,53 @@ const sumObjectsByKey = (...objs) => {
   }, {});
 };
 
+/**
+ * Normaliza os nomes das chaves do resumo vindas do backend,
+ * tratando possíveis problemas de encoding (ex: "AlteraÃ§Ã£o" → "Alteração").
+ * Também faz o merge de CEI/CEMEI nas categorias base.
+ */
+const normalizaTexto = (texto) => {
+  try {
+    return decodeURIComponent(escape(texto));
+  } catch {
+    return texto;
+  }
+};
+
 export default (results) => {
   try {
-    if (
-      results["Inclusão de Alimentacao de CEI"] ||
-      results["Inclusão de Alimentação CEMEI"]
-    ) {
-      results["Inclusão de Alimentação"] = sumObjectsByKey(
-        results["Inclusão de Alimentação"],
-        results["Inclusão de Alimentacao de CEI"],
-        results["Inclusão de Alimentação CEMEI"]
-      );
+    // Primeiro normaliza todas as chaves para corrigir encoding incorreto
+    const chaves = Object.keys(results);
+    for (const chave of chaves) {
+      const normalizada = normalizaTexto(chave);
+      if (normalizada !== chave) {
+        results[normalizada] = results[chave];
+        delete results[chave];
+      }
     }
-    if (
-      results["Kit Lanche Passeio de CEI"] ||
-      results["Kit Lanche Passeio de CEMEI"]
-    ) {
-      results["Kit Lanche Passeio"] = sumObjectsByKey(
-        results["Kit Lanche Passeio"],
-        results["Kit Lanche Passeio de CEI"],
-        results["Kit Lanche Passeio de CEMEI"]
+
+    // Merge de CEI/CEMEI nas categorias base (usando includes para ser resiliente a encoding)
+    const CHAVES_BASE = [
+      { base: "Inclusão de Alimentação", cei: "CEI", cemei: "CEMEI" },
+      { base: "Kit Lanche Passeio", cei: "CEI", cemei: "CEMEI" },
+      { base: "Alteração do tipo de Alimentação", cei: "CEI", cemei: "CEMEI" },
+    ];
+
+    for (const { base, cei, cemei } of CHAVES_BASE) {
+      const chavesRelacionadas = Object.keys(results).filter(
+        (k) =>
+          k !== base &&
+          k.toLowerCase().includes(base.toLowerCase()) &&
+          (k.includes(cei) || k.includes(cemei)),
       );
+      if (chavesRelacionadas.length > 0) {
+        results[base] = sumObjectsByKey(
+          results[base],
+          ...chavesRelacionadas.map((k) => results[k]),
+        );
+      }
     }
-    if (
-      results["Alteração do Tipo de Alimentação CEI"] ||
-      results["Alteração do tipo de Alimentação CEMEI"]
-    ) {
-      results["Alteração do tipo de Alimentação"] = sumObjectsByKey(
-        results["Alteração do tipo de Alimentação"],
-        results["Alteração do Tipo de Alimentação CEI"],
-        results["Alteração do tipo de Alimentação CEMEI"]
-      );
-    }
-  } catch (error) {
+  } catch {
     return false;
   }
   return true;
