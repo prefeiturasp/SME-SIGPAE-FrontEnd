@@ -67,6 +67,9 @@ const CorpoRelatorio = ({
     ? ehCanceladaSegundoStep(dietaEspecial)
     : false;
 
+  const ehAutorizadaTemporariamente =
+    card === "autorizadas-temp" || Boolean(dietaEspecial.dieta_alterada);
+
   const downloadAnexo = (url) => {
     const a = document.createElement("a");
     a.href = url;
@@ -433,6 +436,7 @@ const CorpoRelatorio = ({
             tipoSolicitacao={dietaEspecial.tipo_solicitacao}
             dietaEspecial={dietaEspecial}
             card={card}
+            ehAutorizadaTemporariamente={ehAutorizadaTemporariamente}
           />
           {solicitacaoVigenteAtiva &&
             ["pendentes-aut"].includes(card) &&
