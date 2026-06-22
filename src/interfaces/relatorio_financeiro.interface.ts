@@ -96,3 +96,15 @@ export type Escola = {
   tipo_unidade: TipoUnidade;
   lote: Lote;
 };
+
+export type DescontoFinanceiro = {
+  uuid?: string;
+  relatorio_financeiro?: string | RelatorioFinanceiroInterface;
+  clausula_desconto: string;
+  unidades_educacionais: any[];
+  faixa_etaria?: string;
+  quantidade: number;
+  tipo_lancamento: string;
+  valor_unitario?: number;
+  total_desconto?: number;
+};

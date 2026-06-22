@@ -187,19 +187,12 @@ export function RelatorioFinanceiroConsolidado() {
     getTodasFaixasEtarias();
   }, []);
 
-  useEffect(() => {
-    if (!state?.grupo_unidade_escolar?.length || !gruposUnidadeEscolar?.length)
-      return;
-    getTiposUnidades();
-    getTotaisConsumo();
-  }, [state, gruposUnidadeEscolar]);
-
-  const getEscolasAsync = async (lote: string): Promise<void> => {
+  const getEscolasAsync = async (): Promise<void> => {
     const unidadesUuid = getTiposUuid().join(",");
     if (!unidadesUuid) return;
 
     const response = await getEscolasParaFiltros({
-      lote__uid: lote,
+      lote__uid: state?.lote[0],
       tipo_unidade__uuid__in: unidadesUuid,
     });
 
@@ -214,9 +207,16 @@ export function RelatorioFinanceiroConsolidado() {
   };
 
   useEffect(() => {
-    if (state?.lote?.length === 0) return;
-    getEscolasAsync(state?.lote[0]);
-  }, [state?.lote]);
+    if (
+      !state?.grupo_unidade_escolar?.length ||
+      !gruposUnidadeEscolar?.length ||
+      !state?.lote?.length
+    )
+      return;
+    getTiposUnidades();
+    getTotaisConsumo();
+    getEscolasAsync();
+  }, [state, gruposUnidadeEscolar]);
 
   const grupo =
     relatorioConsolidado?.grupo_unidade_escolar?.nome?.toLowerCase();
@@ -356,6 +356,7 @@ export function RelatorioFinanceiroConsolidado() {
         showModal={aplicarDesconto}
         setShowModal={setAplicarDesconto}
         unidadesEducacionais={unidadesEducacionais}
+        faixasEtarias={faixasEtarias}
       />
     </div>
   );
