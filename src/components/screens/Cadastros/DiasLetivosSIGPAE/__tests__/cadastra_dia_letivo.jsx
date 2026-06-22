@@ -239,4 +239,39 @@ describe("Teste Cadastrar Dia Letivo do SIGPAE", () => {
     fireEvent.click(screen.getByTestId("btn-cancelar"));
     expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
   });
+
+  it("Deve limpar o debounce ao selecionar outro tipo de unidade", async () => {
+    const clearTimeoutSpy = jest.spyOn(global, "clearTimeout");
+
+    await selecionarOpcao("select-lotes", "SA - 1");
+
+    await selecionarOpcao("select-tipos-unidades", "CCI/CIPS");
+
+    await selecionarOpcao("select-tipos-unidades", "CEI");
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+
+    clearTimeoutSpy.mockRestore();
+  });
+
+  it("Não deve disparar busca de unidades se nenhum tipo de unidade foi selecionado ao sair do campo", async () => {
+    await selecionarOpcao("select-lotes", "SA - 1");
+
+    const selectTipos = screen.getByTestId("select-tipos-unidades");
+    const comboboxTipos = within(selectTipos).getByRole("combobox");
+    fireEvent.mouseDown(comboboxTipos);
+    fireEvent.keyDown(comboboxTipos, {
+      key: "Escape",
+      code: "Escape",
+      keyCode: 27,
+    });
+
+    const selectUnidades = screen.getByTestId("select-unidades-educacionais");
+    const comboboxUnidades = within(selectUnidades).getByRole("combobox");
+    fireEvent.mouseDown(comboboxUnidades);
+
+    expect(
+      screen.queryByText("000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA"),
+    ).not.toBeInTheDocument();
+  });
 });
