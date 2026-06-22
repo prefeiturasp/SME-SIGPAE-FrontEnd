@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -13,48 +20,98 @@ import { mockGetUnidadeEducacional } from "src/mocks/services/dietaEspecial.serv
 import { EditarDiasLetivosPage } from "src/pages/Cadastros/EditarDiasLetivosSIGPAEPage";
 import mock from "src/services/_mock";
 
-describe("Teste Cadastrar Dia Letivo do SIGPAE", () => {
-  beforeEach(async () => {
-    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
-    mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
-    mock
-      .onGet("/tipos-unidade-escolar/")
-      .reply(200, mockGetTiposUnidadeEscolar);
-    mock.onGet("/periodos-escolares/").reply(200, mockGetPeriodoEscolar);
-    mock
-      .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
-      .reply(200, mockGetUnidadeEducacional);
+const mockedUsedNavigate = jest.fn();
 
-    Object.defineProperty(global, "localStorage", { value: localStorageMock });
-    localStorage.setItem(
-      "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
-    );
-    localStorage.setItem(
-      "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
-    );
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedUsedNavigate,
+}));
 
-    await act(async () => {
-      render(
-        <MemoryRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
+jest.mock("src/components/Shareable/DatePicker", () => {
+  const React = require("react");
+  return {
+    InputComData: ({ input, dataTestId, placeholder }) => {
+      React.useEffect(() => {
+        if (input.value !== undefined) return;
+      }, [input.value]);
+      return (
+        <div data-testid={dataTestId}>
+          <input
+            type="text"
+            value={input.value || ""}
+            placeholder={placeholder}
+            onChange={(e) => input.onChange(e.target.value)}
+            data-testid={`${dataTestId}-input`}
+          />
+        </div>
+      );
+    },
+  };
+});
+
+const setup = async () => {
+  mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
+  mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
+  mock.onGet("/tipos-unidade-escolar/").reply(200, mockGetTiposUnidadeEscolar);
+  mock.onGet("/periodos-escolares/").reply(200, mockGetPeriodoEscolar);
+  mock.onGet("/notificacoes/").reply(200, { results: [] });
+  mock
+    .onGet("/notificacoes/quantidade-nao-lidos/")
+    .reply(200, { quantidade: 0 });
+  mock
+    .onPost("/escolas-simplissima-com-eol/escolas-com-cod-eol/")
+    .reply(200, mockGetUnidadeEducacional);
+
+  Object.defineProperty(global, "localStorage", { value: localStorageMock });
+  localStorage.setItem(
+    "tipo_perfil",
+    TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+  );
+  localStorage.setItem(
+    "perfil",
+    PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+  );
+
+  await act(async () => {
+    render(
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosCODAEGA,
+            setMeusDados: jest.fn(),
           }}
         >
-          <MeusDadosContext.Provider
-            value={{
-              meusDados: mockMeusDadosCODAEGA,
-              setMeusDados: jest.fn(),
-            }}
-          >
-            <EditarDiasLetivosPage />
-            <ToastContainer />
-          </MeusDadosContext.Provider>
-        </MemoryRouter>,
-      );
-    });
+          <EditarDiasLetivosPage />
+          <ToastContainer />
+        </MeusDadosContext.Provider>
+      </MemoryRouter>,
+    );
+  });
+};
+
+const selecionarOpcao = async (dataTestId, optionText) => {
+  const selectWrapper = screen.getByTestId(dataTestId);
+  const combobox = within(selectWrapper).getByRole("combobox");
+  fireEvent.mouseDown(combobox);
+  const option = screen.getByText(optionText);
+  fireEvent.click(option);
+};
+
+const preencherData = (dataTestId, value) => {
+  const input = screen.getByTestId(`${dataTestId}-input`);
+  fireEvent.change(input, { target: { value } });
+};
+
+describe("Teste Cadastrar Dia Letivo do SIGPAE", () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    mock.reset();
+    await setup();
   });
 
   it("Verifica se o componente foi renderizado", () => {
@@ -66,5 +123,85 @@ describe("Teste Cadastrar Dia Letivo do SIGPAE", () => {
     expect(screen.getByText("Períodos Escolares")).toBeInTheDocument();
     expect(screen.getByText("Repetir")).toBeInTheDocument();
     expect(screen.getByText("Adicionar Recorrência")).toBeInTheDocument();
+  });
+
+  it("Deve preencher todos os campos, adicionar recorrência e submeter com sucesso", async () => {
+    mock.onPost("/dias-letivos/").reply(201, {});
+
+    await selecionarOpcao("select-lotes", "SA - 1");
+    await selecionarOpcao("select-tipos-unidades", "CCI/CIPS");
+
+    preencherData("input-data-inicial-0", "01/01/2025");
+    preencherData("input-data-final-0", "31/01/2025");
+
+    await selecionarOpcao("select-periodos-escolares-0", "INTEGRAL");
+    fireEvent.click(screen.getByTestId("weekly-dias-semana-0-1"));
+
+    fireEvent.click(screen.getByTestId("btn-adicionar-recorrencia"));
+
+    preencherData("input-data-inicial-1", "02/02/2025");
+    preencherData("input-data-final-1", "28/02/2025");
+    await selecionarOpcao("select-periodos-escolares-1", "MANHA");
+    fireEvent.click(screen.getByTestId("weekly-dias-semana-1-2"));
+
+    fireEvent.click(screen.getByTestId("btn-salvar"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Dias letivos cadastrados com sucesso"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve adicionar recorrência e removê-la com a lixeira", async () => {
+    fireEvent.click(screen.getByTestId("btn-adicionar-recorrencia"));
+
+    expect(screen.getByTestId("btn-remover-recorrencia-1")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("btn-remover-recorrencia-1"));
+
+    expect(
+      screen.queryByTestId("btn-remover-recorrencia-1"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("Deve exibir toast de erro ao falhar no cadastro", async () => {
+    mock
+      .onPost("/dias-letivos/")
+      .reply(400, { detail: "Erro ao cadastrar dias letivos" });
+
+    await selecionarOpcao("select-lotes", "SA - 1");
+    await selecionarOpcao("select-tipos-unidades", "CCI/CIPS");
+    preencherData("input-data-inicial-0", "01/01/2025");
+    preencherData("input-data-final-0", "31/01/2025");
+    await selecionarOpcao("select-periodos-escolares-0", "INTEGRAL");
+    fireEvent.click(screen.getByTestId("weekly-dias-semana-0-1"));
+
+    fireEvent.click(screen.getByTestId("btn-salvar"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao cadastrar dias letivos"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve limpar os campos ao clicar em Limpar", async () => {
+    await selecionarOpcao("select-lotes", "SA - 1");
+
+    const selectWrapper = screen.getByTestId("select-lotes");
+
+    fireEvent.click(screen.getByTestId("btn-limpar"));
+
+    await waitFor(() => {
+      expect(
+        within(selectWrapper).getByText("Selecione os Lote(s)"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Deve voltar para tela anterior ao clicar em Cancelar", () => {
+    fireEvent.click(screen.getByTestId("btn-cancelar"));
+    expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
   });
 });

@@ -188,6 +188,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                           <Field
                             component={MultiselectRaw}
                             name="lotes"
+                            dataTestId="select-lotes"
                             selected={values.lotes || []}
                             options={lotes}
                             onSelectedChanged={(
@@ -263,6 +264,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                             <Field
                               component={MultiselectRaw}
                               name="unidades_educacionais"
+                              dataTestId="select-unidades-educacionais"
                               options={unidadesEducacionais}
                               selected={values.unidades_educacionais || []}
                               onSelectedChanged={(
@@ -300,6 +302,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                         component={InputComData}
                                         placeholder="De"
                                         name={`${name}.data_inicial`}
+                                        dataTestId={`input-data-inicial-${index}`}
                                         required
                                         maxDate={
                                           values.recorrencias?.[index]
@@ -318,6 +321,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                         component={InputComData}
                                         placeholder="Até"
                                         name={`${name}.data_final`}
+                                        dataTestId={`input-data-final-${index}`}
                                         required
                                         minDate={
                                           values.recorrencias?.[index]
@@ -341,6 +345,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                   <Field
                                     component={MultiselectRaw}
                                     name={`${name}.periodos_escolares`}
+                                    dataTestId={`select-periodos-escolares-${index}`}
                                     options={periodosEscolares}
                                     selected={
                                       values.recorrencias?.[index]
@@ -366,6 +371,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                     label="Repetir"
                                     required
                                     validate={requiredMultiselect}
+                                    dataTestId={`weekly-dias-semana-${index}`}
                                     arrayDiasSemana={
                                       values.recorrencias?.[index]
                                         ?.dias_semana || []
@@ -387,6 +393,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                 {index > 0 && (
                                   <div className="col-1 d-flex align-items-end pb-1">
                                     <Botao
+                                      dataTestId={`btn-remover-recorrencia-${index}`}
                                       onClick={() => fields.remove(index)}
                                       icon={BUTTON_ICON.TRASH}
                                       type={BUTTON_TYPE.BUTTON}
@@ -400,6 +407,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                               <div className="col-12 text-center">
                                 <Botao
                                   texto="Adicionar Recorrência"
+                                  dataTestId="btn-adicionar-recorrencia"
                                   onClick={() => fields.push({})}
                                   type={BUTTON_TYPE.BUTTON}
                                   style={BUTTON_STYLE.GREEN_OUTLINE}
@@ -414,6 +422,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                       <div className="col-12 text-end">
                         <Botao
                           texto="Limpar"
+                          dataTestId="btn-limpar"
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           className="me-3"
@@ -425,6 +434,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                         />
                         <Botao
                           texto="Cancelar"
+                          dataTestId="btn-cancelar"
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           className="me-3"
@@ -433,6 +443,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                         />
                         <Botao
                           texto={submitting ? "" : "Salvar"}
+                          dataTestId="btn-salvar"
                           icon={submitting ? BUTTON_ICON.LOADING : undefined}
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN}
