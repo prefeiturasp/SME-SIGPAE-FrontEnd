@@ -8,14 +8,14 @@ import axios from "../_base";
 import { ErrorHandlerFunction } from "../service-helpers";
 
 export const cadastraClausulaParaDesconto = async (
-  payload: ClausulaPayload
+  payload: ClausulaPayload,
 ) => {
   return await axios.post("/medicao-inicial/clausulas-de-descontos/", payload);
 };
 
 export const getClausulasParaDescontos = async (
-  page: number,
-  filtros: FiltrosInterface
+  page?: number,
+  filtros?: FiltrosInterface,
 ) => {
   let url = "/medicao-inicial/clausulas-de-descontos/";
   const params = { page, ...filtros };
@@ -36,11 +36,11 @@ export const getClausulaParaDesconto = async (uuid: string) => {
 
 export const editaClausulaParaDesconto = async (
   uuid: string,
-  payload: Partial<ClausulaPayload>
+  payload: Partial<ClausulaPayload>,
 ) => {
   return await axios.patch(
     `/medicao-inicial/clausulas-de-descontos/${uuid}/`,
-    payload
+    payload,
   );
 };
 
