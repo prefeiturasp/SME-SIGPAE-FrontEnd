@@ -225,9 +225,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                 `tipos_unidades`,
                                 values_.map((value_) => value_.value),
                               );
-                              if (debounceUnidadesRef.current) {
-                                clearTimeout(debounceUnidadesRef.current);
-                              }
+                              clearTimeout(debounceUnidadesRef.current);
                               const lotes = values.lotes;
                               const tiposUnidades = values_.map((v) => v.value);
                               debounceUnidadesRef.current = setTimeout(() => {
@@ -238,10 +236,8 @@ export const EditarDiasLetivosSIGPAE = () => {
                               }, 3000);
                             }}
                             onBlur={() => {
-                              if (debounceUnidadesRef.current) {
-                                clearTimeout(debounceUnidadesRef.current);
-                                debounceUnidadesRef.current = null;
-                              }
+                              clearTimeout(debounceUnidadesRef.current);
+                              debounceUnidadesRef.current = null;
                               if (values.tipos_unidades?.length > 0) {
                                 getUnidadesEducacionaisAsync({
                                   lotes: values.lotes,
