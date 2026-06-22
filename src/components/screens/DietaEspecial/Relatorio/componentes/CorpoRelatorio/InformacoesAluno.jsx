@@ -35,13 +35,17 @@ const InformacoesAluno = ({
   tipoSolicitacao,
   dietaEspecial,
   card,
+  ehAutorizadaTemporariamente,
 }) => {
   const [fotoAlunoSrc, setFotoAlunoSrc] = useState(null);
   const [criadoRf, setCriadoRf] = useState(null);
   const [deletandoImagem, setDeletandoImagem] = useState(false);
   const [atualizandoImagem, setAtualizandoImagem] = useState(false);
   const inputRef = useRef(null);
-  const exibirPeriodo = card === "autorizadas" && aluno.periodo;
+  const exibirPeriodo =
+    ["autorizadas", "autorizado"].includes(card) &&
+    !ehAutorizadaTemporariamente &&
+    aluno.periodo;
 
   async function getFoto() {
     setAtualizandoImagem(true);
