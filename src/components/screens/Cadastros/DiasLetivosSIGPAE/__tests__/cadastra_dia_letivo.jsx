@@ -126,10 +126,39 @@ describe("Teste Cadastrar Dia Letivo do SIGPAE", () => {
   });
 
   it("Deve preencher todos os campos, adicionar recorrência e submeter com sucesso", async () => {
-    mock.onPost("/dias-letivos/").reply(201, {});
+    const payloadSpy = jest.fn();
+    mock.onPost("/dias-letivos/").reply((config) => {
+      payloadSpy(JSON.parse(config.data));
+      return [201, {}];
+    });
 
     await selecionarOpcao("select-lotes", "SA - 1");
+
+    const origSetTimeout = global.setTimeout;
+    jest.spyOn(global, "setTimeout").mockImplementation((cb, ms) => {
+      if (ms === 3000) {
+        cb();
+        return 1;
+      }
+      return origSetTimeout(cb, ms);
+    });
+
     await selecionarOpcao("select-tipos-unidades", "CCI/CIPS");
+
+    const selectUnidades = screen.getByTestId("select-unidades-educacionais");
+    const comboboxUnidades = within(selectUnidades).getByRole("combobox");
+    fireEvent.mouseDown(comboboxUnidades);
+    await waitFor(() => {
+      expect(
+        screen.getByText("000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA"),
+      ).toBeInTheDocument();
+    });
+
+    global.setTimeout.mockRestore();
+
+    fireEvent.click(
+      screen.getByText("000566 - EMEF TERESA MARGARIDA DA SILVA E ORTA"),
+    );
 
     preencherData("input-data-inicial-0", "01/01/2025");
     preencherData("input-data-final-0", "31/01/2025");
@@ -151,6 +180,12 @@ describe("Teste Cadastrar Dia Letivo do SIGPAE", () => {
         screen.getByText("Dias letivos cadastrados com sucesso"),
       ).toBeInTheDocument();
     });
+
+    expect(payloadSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        unidades_educacionais: ["b8f765e5-91dc-4dc4-99a0-eccf0ddaecd9"],
+      }),
+    );
   });
 
   it("Deve adicionar recorrência e removê-la com a lixeira", async () => {
