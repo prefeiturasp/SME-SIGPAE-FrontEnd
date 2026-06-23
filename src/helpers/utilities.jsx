@@ -1194,7 +1194,7 @@ export const exibirModuloMedicaoInicial = () => {
     case `"gestao_alimentacao_terceirizada"`:
     case `"codae_gabinete"`:
       return acessoModuloMedicaoInicialCODAE();
-    case `"pre_recebimento"`:
+    case `"dinutre"`:
       return usuarioEhDinutreDiretoria();
     case `"supervisao_nutricao"`:
       return (
