@@ -6,6 +6,7 @@ import {
   PayloadRelatorioFinanceiro,
   RelatorioFinanceiroResponse,
   DescontoFinanceiro,
+  DescontoFinanceiroResponse,
 } from "src/interfaces/relatorio_financeiro.interface";
 import axios from "../_base";
 import { ErrorHandlerFunction } from "../service-helpers";
@@ -92,4 +93,13 @@ export const cadastroDescontoFinanceiro = async (
     const data = { data: response.data, status: response.status };
     return data;
   }
+};
+
+export const getDescontoFinanceiro = async (params) => {
+  return await axios.get<DescontoFinanceiroResponse>(
+    "/medicao-inicial/desconto-financeiro/",
+    {
+      params: params,
+    },
+  );
 };

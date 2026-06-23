@@ -28,10 +28,12 @@ import Botao from "src/components/Shareable/Botao";
 import ModalEditarEmpenhos from "../components/ModalEditarEmpenhos";
 import {
   exportarPDFAsyncRelatorioAtesteFinanceiro,
+  getDescontoFinanceiro,
   getRelatorioDadosLiquidacao,
 } from "src/services/medicaoInicial/relatorioFinanceiro.service";
 import {
   DadosLiquidacaoEmpenho,
+  DescontoFinanceiro,
   Escola,
 } from "src/interfaces/relatorio_financeiro.interface";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
@@ -52,6 +54,7 @@ export function RelatorioFinanceiroConsolidado() {
   const [dadosLiquidacao, setDadosLiquidacao] = useState<
     DadosLiquidacaoEmpenho[]
   >([]);
+  const [descontos, setDescontos] = useState<DescontoFinanceiro[]>([]);
   const [totaisConsumo, setTotaisConsumo] = useState<any>([]);
   const [tiposAlimentacao, setTiposAlimentacao] = useState<any[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
@@ -179,8 +182,20 @@ export function RelatorioFinanceiroConsolidado() {
     else toastError("Erro ao carregar dados para liquidação.");
   };
 
+  const getDadosDescontos = async () => {
+    const response = await getDescontoFinanceiro({
+      relatorio_financeiro: uuidRelatorioFinanceiro,
+    });
+
+    if (response.status === HTTP_STATUS.OK) setDescontos(response.data.results);
+    else toastError("Erro ao carregar dados para liquidação.");
+  };
+
   useEffect(() => {
-    if (uuidRelatorioFinanceiro) getDadosLiquidacao();
+    if (uuidRelatorioFinanceiro) {
+      getDadosLiquidacao();
+      getDadosDescontos();
+    }
   }, [uuidRelatorioFinanceiro]);
 
   useEffect(() => {
@@ -357,6 +372,9 @@ export function RelatorioFinanceiroConsolidado() {
         setShowModal={setAplicarDesconto}
         unidadesEducacionais={unidadesEducacionais}
         faixasEtarias={faixasEtarias}
+        descontos={descontos}
+        relatorioConsolidado={relatorioConsolidado}
+        onSave={(e) => setDescontos(e)}
       />
     </div>
   );
