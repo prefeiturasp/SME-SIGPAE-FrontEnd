@@ -18,6 +18,7 @@ export const MultiselectRaw = (props) => {
     label,
     labelClassName,
     meta,
+    onBlur,
     onSelectedChanged,
     options,
     placeholder = "Selecione",
@@ -81,6 +82,7 @@ export const MultiselectRaw = (props) => {
         menuIsOpen={menuIsOpen}
         onMenuOpen={() => setMenuIsOpen(true)}
         onMenuClose={() => setMenuIsOpen(false)}
+        onBlur={onBlur || input?.onBlur}
         classNamePrefix={dataTestId}
         options={optionsComTodos}
         isDisabled={disabled}

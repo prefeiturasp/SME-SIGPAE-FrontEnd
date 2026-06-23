@@ -314,7 +314,7 @@ export const Recorrencia = ({
     tiposDeAlimentacao && (
       <div className="recorrencia-e-detalhes">
         <div className="card-title">Recorrência e detalhes</div>
-        <div className="row">
+        <div className="row table-titles">
           <div className="col-3">Repetir</div>
           <div className="col-3">Período</div>
           <div className="col-4">Tipo de Alimentação</div>
