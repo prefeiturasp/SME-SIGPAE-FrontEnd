@@ -31,6 +31,7 @@ import {
   stringDecimalToNumber,
 } from "src/helpers/parsers";
 import { capitalize } from "src/helpers/utilities";
+import ModalCancelar from "../ModalCancelar";
 
 const DEFAULT_EMPENHO: DescontoFinanceiro = {
   unidades_educacionais: [],
@@ -72,6 +73,7 @@ const ModalAplicarDesconto = ({
   relatorioConsolidado,
 }: Props) => {
   const [clausulas, setClausulas] = useState<any[]>([]);
+  const [cancelar, setCancelar] = useState<boolean>(false);
 
   const initialValues = useMemo(() => {
     return {
@@ -136,7 +138,7 @@ const ModalAplicarDesconto = ({
     );
 
     if (response.status === HTTP_STATUS.OK) {
-      toastSuccess("Descontos aplicados com sucesso");
+      toastSuccess("Descontos aplicados com sucesso.");
       if (typeof onSave === "function") onSave(response.data);
       setShowModal(false);
     } else {
@@ -424,9 +426,12 @@ const ModalAplicarDesconto = ({
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
                   className="ms-3"
-                  onClick={() => setShowModal(false)}
+                  onClick={() =>
+                    descontos?.length > 0
+                      ? setShowModal(false)
+                      : setCancelar(true)
+                  }
                 />
-
                 <Botao
                   dataTestId="botao-salvar"
                   texto="Salvar Empenhos"
@@ -438,6 +443,14 @@ const ModalAplicarDesconto = ({
               </Modal.Footer>
             </form>
           );
+        }}
+      />
+      <ModalCancelar
+        showModal={cancelar}
+        setShowModal={setCancelar}
+        onCancelar={() => {
+          setShowModal(false);
+          setCancelar(false);
         }}
       />
     </Modal>
