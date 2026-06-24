@@ -9,6 +9,7 @@ import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/C
 import "src/components/Shareable/Calendario/style.scss";
 import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
+import { ModalDadosObjeto } from "src/components/screens/Cadastros/DiasLetivosSIGPAE/components/ModalDadosObjeto";
 import { formataComoEventos } from "./helpers";
 moment.locale("pt-br");
 
@@ -24,13 +25,14 @@ export class CalendarioEdicaoExterna extends React.Component {
       objetos: undefined,
       loadingDiasCalendario: false,
       erroAPI: false,
+      currentEvent: undefined,
+      showModalDadosObjeto: false,
       mes: moment().month() + 1,
       ano: moment().year(),
       hasNavigatedOnce: false,
     };
 
     this.moveEvent = this.moveEvent.bind(this);
-    this.handleSelectSlot = this.handleSelectSlot.bind(this);
     this.handleEvent = this.handleEvent.bind(this);
     this.getObjetosAsync = this.getObjetosAsync.bind(this);
   }
@@ -56,15 +58,10 @@ export class CalendarioEdicaoExterna extends React.Component {
     }
   }
 
-  handleSelectSlot() {
+  handleEvent(event) {
     this.setState({
-      showModalCadastrar: true,
-    });
-  }
-
-  handleEvent() {
-    this.setState({
-      showModalEditar: true,
+      currentEvent: event,
+      showModalDadosObjeto: true,
     });
   }
 
@@ -134,10 +131,16 @@ export class CalendarioEdicaoExterna extends React.Component {
   }
 
   render() {
-    const { objetos, loadingDiasCalendario, erroAPI, hasNavigatedOnce } =
-      this.state;
+    const {
+      objetos,
+      loadingDiasCalendario,
+      erroAPI,
+      hasNavigatedOnce,
+      currentEvent,
+      showModalDadosObjeto,
+    } = this.state;
 
-    const { nomeObjeto } = this.props;
+    const { nomeObjeto, nomeObjetoMinusculo, setObjeto } = this.props;
 
     return (
       <div className="card calendario-sobremesa mt-3">
@@ -163,7 +166,6 @@ export class CalendarioEdicaoExterna extends React.Component {
                     events={objetos}
                     onSelectEvent={this.handleEvent}
                     onEventDrop={this.moveEvent}
-                    onSelectSlot={this.handleSelectSlot}
                     components={{
                       toolbar: CustomToolbar,
                     }}
@@ -191,6 +193,24 @@ export class CalendarioEdicaoExterna extends React.Component {
                     defaultView={Views.MONTH}
                   />
                 </Spin>
+                {currentEvent && (
+                  <>
+                    <ModalDadosObjeto
+                      showModal={showModalDadosObjeto}
+                      nomeObjetoNoCalendario={nomeObjeto}
+                      nomeObjetoNoCalendarioMinusculo={nomeObjetoMinusculo}
+                      closeModal={() =>
+                        this.setState({
+                          showModalDadosObjeto: false,
+                        })
+                      }
+                      objetos={objetos}
+                      event={currentEvent}
+                      getObjetosAsync={this.getObjetosAsync}
+                      setObjetoAsync={setObjeto}
+                    />
+                  </>
+                )}
               </>
             )}
           </Spin>
