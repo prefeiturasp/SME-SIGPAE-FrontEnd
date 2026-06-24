@@ -11,7 +11,10 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
-import { DescontoFinanceiro } from "src/interfaces/relatorio_financeiro.interface";
+import {
+  DescontoFinanceiro,
+  RelatorioFinanceiroConsolidado,
+} from "src/interfaces/relatorio_financeiro.interface";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import { FieldArray } from "react-final-form-arrays";
@@ -22,6 +25,12 @@ import { InputText } from "src/components/Shareable/Input/InputText";
 import { getClausulasParaDescontos } from "src/services/medicaoInicial/clausulasParaDescontos.service";
 import { FaixaEtaria } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { cadastroDescontoFinanceiro } from "src/services/medicaoInicial/relatorioFinanceiro.service";
+import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
+import {
+  numberToStringDecimalMonetario,
+  stringDecimalToNumber,
+} from "src/helpers/parsers";
+import { capitalize } from "src/helpers/utilities";
 
 const DEFAULT_EMPENHO: DescontoFinanceiro = {
   unidades_educacionais: [],
@@ -31,13 +40,14 @@ const DEFAULT_EMPENHO: DescontoFinanceiro = {
   quantidade: 0,
   valor_unitario: 0,
   total_desconto: 0,
+  periodo_escolar: "",
 };
 
 const TIPO_LANCAMENTO_OPTIONS = [
   { uuid: "", nome: "Selecione o tipo" },
   { uuid: "ALIMENTACOES", nome: "ALIMENTAÇÕES" },
-  { uuid: "DIETA_ESPECIAL_A", nome: "DIETA ESPECIAL TIPO A" },
-  { uuid: "DIETA_ESPECIAL_B", nome: "DIETA ESPECIAL TIPO B" },
+  { uuid: "DIETAS_TIPO_A", nome: "DIETA ESPECIAL TIPO A" },
+  { uuid: "DIETAS_TIPO_B", nome: "DIETA ESPECIAL TIPO B" },
 ];
 
 type Props = {
@@ -48,6 +58,7 @@ type Props = {
   unidadesEducacionais?: { label: string; value: string }[];
   descontos?: DescontoFinanceiro[];
   faixasEtarias: FaixaEtaria[];
+  relatorioConsolidado: RelatorioFinanceiroConsolidado;
 };
 
 const ModalAplicarDesconto = ({
@@ -58,13 +69,67 @@ const ModalAplicarDesconto = ({
   unidadesEducacionais,
   descontos,
   faixasEtarias,
+  relatorioConsolidado,
 }: Props) => {
   const [clausulas, setClausulas] = useState<any[]>([]);
+
+  const initialValues = useMemo(() => {
+    return {
+      cadastros_desconto:
+        descontos?.length > 0
+          ? descontos.map((desconto) => ({
+              ...desconto,
+              faixa_etaria: `${desconto.periodo_escolar}|${
+                typeof desconto.faixa_etaria === "string"
+                  ? desconto.faixa_etaria
+                  : desconto.faixa_etaria?.uuid
+              }`,
+              clausula_desconto:
+                typeof desconto.clausula_desconto === "string"
+                  ? desconto.clausula_desconto
+                  : desconto.clausula_desconto?.uuid,
+              unidades_educacionais: desconto.unidades_educacionais.map(
+                ({ uuid }) => uuid,
+              ),
+            }))
+          : [DEFAULT_EMPENHO],
+    };
+  }, [descontos]);
+
+  const faixasEtariasOptions = useMemo(() => {
+    return [
+      { uuid: "", nome: "Selecione as faixas" },
+      ...["INTEGRAL", "PARCIAL"].flatMap((tipo) =>
+        faixasEtarias.map((faixa) => ({
+          uuid: `${tipo}|${faixa.uuid}`,
+          nome: `${capitalize(tipo)} - ${faixa.__str__}`,
+        })),
+      ),
+    ];
+  }, [faixasEtarias]);
+
+  const formatarPayload = (
+    descontos: DescontoFinanceiro[],
+  ): DescontoFinanceiro[] => {
+    return descontos.map((desconto) => {
+      if (typeof desconto.faixa_etaria === "string") {
+        const [periodo, faixaUuid] = desconto.faixa_etaria?.split("|") || [
+          "",
+          "",
+        ];
+        return {
+          ...desconto,
+          periodo_escolar: periodo,
+          faixa_etaria: faixaUuid,
+        };
+      } else return { ...desconto, faixa_etaria: desconto.faixa_etaria?.uuid };
+    });
+  };
 
   const onSubmit = async (values: {
     cadastros_desconto: DescontoFinanceiro[];
   }) => {
-    const payload = values?.cadastros_desconto ?? [];
+    const payload = formatarPayload(values?.cadastros_desconto ?? []);
     const response = await cadastroDescontoFinanceiro(
       payload,
       relatorioFinanceiro,
@@ -89,19 +154,41 @@ const ModalAplicarDesconto = ({
     getClausulasParaDescontosAsync();
   }, []);
 
-  const initialValues = useMemo(() => {
-    return {
-      cadastros_desconto:
-        descontos?.length > 0
-          ? descontos.map((desconto) => ({
-              ...desconto,
-              unidades_educacionais: desconto.unidades_educacionais.map(
-                ({ uuid }) => uuid,
-              ),
-            }))
-          : [DEFAULT_EMPENHO],
-    };
-  }, [descontos]);
+  const getValorUnitario = (
+    tipoLancamento: string,
+    faixaSelecionada: string,
+  ) => {
+    if (!tipoLancamento || !faixaSelecionada) return 0;
+
+    const [periodo, faixaUuid] = faixaSelecionada.split("|");
+
+    const faixa = faixasEtarias.find((f) => f.uuid === faixaUuid);
+    if (!faixa) return 0;
+
+    const nomeFaixa = normalizar(faixa.__str__);
+
+    const tabela = relatorioConsolidado.tabelas?.find((tabela) => {
+      const nomeTabela = tabela.nome
+        ?.normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase();
+
+      return (
+        nomeTabela?.includes(
+          tipoLancamento.replaceAll("_", " ").toUpperCase(),
+        ) && tabela.periodo_escolar === periodo
+      );
+    });
+
+    if (!tabela) return 0;
+
+    const campo = tabela.valores?.find(
+      (item) =>
+        normalizar(item.nome_campo).replaceAll("_", " ") === nomeFaixa &&
+        item.tipo_valor === "UNITARIO",
+    );
+    return stringDecimalToNumber(campo?.valor) ?? 0;
+  };
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
@@ -114,6 +201,47 @@ const ModalAplicarDesconto = ({
         initialValues={initialValues}
         mutators={{ ...arrayMutators }}
         render={({ handleSubmit, submitting, values, form }) => {
+          useEffect(() => {
+            values.cadastros_desconto?.forEach((desconto, index) => {
+              const valorUnitario = getValorUnitario(
+                desconto.tipo_lancamento,
+                desconto.faixa_etaria,
+              );
+
+              const valorAtual = Number(
+                values.cadastros_desconto[index]?.valor_unitario || 0,
+              );
+
+              if (valorUnitario !== valorAtual) {
+                form.change(
+                  `cadastros_desconto.${index}.valor_unitario`,
+                  numberToStringDecimalMonetario(valorUnitario),
+                );
+
+                form.change(
+                  `cadastros_desconto.${index}.total_desconto`,
+                  numberToStringDecimalMonetario(
+                    Number(desconto.quantidade || 0) * valorUnitario,
+                  ),
+                );
+              }
+
+              const totalCalculado =
+                Number(desconto.quantidade || 0) * Number(valorUnitario || 0);
+
+              const totalAtual = Number(
+                values.cadastros_desconto[index]?.total_desconto || 0,
+              );
+
+              if (totalCalculado !== totalAtual) {
+                form.change(
+                  `cadastros_desconto.${index}.total_desconto`,
+                  numberToStringDecimalMonetario(totalCalculado),
+                );
+              }
+            });
+          }, [values.cadastros_desconto, form]);
+
           return (
             <form onSubmit={handleSubmit}>
               <Modal.Body>
@@ -188,13 +316,7 @@ const ModalAplicarDesconto = ({
                             <div className="col-4">
                               <Field
                                 component={Select}
-                                options={[
-                                  { uuid: "", nome: "Selecione as faixas" },
-                                  ...faixasEtarias.map((faixa) => ({
-                                    uuid: faixa.uuid,
-                                    nome: faixa.__str__,
-                                  })),
-                                ]}
+                                options={faixasEtariasOptions}
                                 label="Faixa Etária para Desconto"
                                 name={`${name}.faixa_etaria`}
                                 id="faixa_etaria"
@@ -237,9 +359,6 @@ const ModalAplicarDesconto = ({
                                 component={InputText}
                                 label="Valor Unitário"
                                 name={`${name}.valor_unitario`}
-                                validate={required}
-                                apenasNumeros
-                                agrupadorMilharComDecimal
                                 disabled
                                 prefix="R$"
                               />
@@ -249,9 +368,6 @@ const ModalAplicarDesconto = ({
                                 component={InputText}
                                 label="Total do Desconto"
                                 name={`${name}.total_desconto`}
-                                validate={required}
-                                apenasNumeros
-                                agrupadorMilharComDecimal
                                 disabled
                                 prefix="R$"
                               />
@@ -259,7 +375,6 @@ const ModalAplicarDesconto = ({
                           </div>
                         </div>
                       ))}
-
                       <div className="row mt-4 justify-content-center">
                         <div className="col-auto">
                           <Botao
