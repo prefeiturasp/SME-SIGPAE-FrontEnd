@@ -1,4 +1,8 @@
-import { TabelaParametrizacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import {
+  FaixaEtaria,
+  TabelaParametrizacao,
+} from "src/services/medicaoInicial/parametrizacao_financeira.interface";
+import { ClausulaInterface } from "./clausulas_para_descontos.interface";
 
 export interface FiltrosInterface {
   lote?: string[] | string;
@@ -96,3 +100,24 @@ export type Escola = {
   tipo_unidade: TipoUnidade;
   lote: Lote;
 };
+
+export type DescontoFinanceiro = {
+  uuid?: string;
+  relatorio_financeiro?: string | RelatorioFinanceiroInterface;
+  clausula_desconto: string | ClausulaInterface;
+  unidades_educacionais: any[];
+  faixa_etaria?: FaixaEtaria | string;
+  quantidade: number;
+  tipo_lancamento: string;
+  valor_unitario?: number;
+  total_desconto?: number;
+  periodo_escolar?: string;
+};
+
+export interface DescontoFinanceiroResponse {
+  next: string | null;
+  previous: string | null;
+  count: number;
+  page_size: number;
+  results: DescontoFinanceiro[];
+}
