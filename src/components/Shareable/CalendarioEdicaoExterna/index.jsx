@@ -5,36 +5,25 @@ import "moment/dist/locale/pt-br";
 import React from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import dragAndDropAddon from "react-big-calendar/lib/addons/dragAndDrop";
-import { ModalConfirmarExclusao } from "src/components/Shareable/Calendario/componentes//ModalConfirmarExclusao";
 import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar";
-import { ModalCadastrarNoCalendario } from "src/components/Shareable/Calendario/componentes/ModalCadastrarNoCalendario";
-import { ModalEditar } from "src/components/Shareable/Calendario/componentes/ModalEditar";
-import { formataComoEventos } from "src/components/Shareable/Calendario/helpers";
 import "src/components/Shareable/Calendario/style.scss";
 import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
-import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
-import { getNumerosEditais } from "src/services/edital.service";
+import { formataComoEventos } from "./helpers";
 moment.locale("pt-br");
 
-// O Vite 8 mantém a exportação padrão aninhada deste módulo CommonJS.
 const withDragAndDrop = dragAndDropAddon.default ?? dragAndDropAddon;
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 const localizer = momentLocalizer(moment);
-export class Calendario extends React.Component {
+
+export class CalendarioEdicaoExterna extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       objetos: undefined,
       loadingDiasCalendario: false,
-      tiposUnidades: undefined,
-      editais: [],
       erroAPI: false,
-      showModalCadastrar: false,
-      showModalEditar: false,
-      showModalConfirmarExclusao: false,
-      currentEvent: undefined,
       mes: moment().month() + 1,
       ano: moment().year(),
       hasNavigatedOnce: false,
@@ -44,15 +33,10 @@ export class Calendario extends React.Component {
     this.handleSelectSlot = this.handleSelectSlot.bind(this);
     this.handleEvent = this.handleEvent.bind(this);
     this.getObjetosAsync = this.getObjetosAsync.bind(this);
-    this.getEditaisAsync = this.getEditaisAsync.bind(this);
-    this.getTiposUnidadeEscolarAsync =
-      this.getTiposUnidadeEscolarAsync.bind(this);
   }
 
   componentDidMount() {
     this.getObjetosAsync();
-    this.getTiposUnidadeEscolarAsync();
-    this.getEditaisAsync();
   }
 
   async getObjetosAsync(params) {
@@ -72,25 +56,16 @@ export class Calendario extends React.Component {
     }
   }
 
-  async getTiposUnidadeEscolarAsync() {
-    const response = await getTiposUnidadeEscolar();
-    if (response.status === HTTP_STATUS.OK) {
-      this.setState({ tiposUnidades: response.data.results });
-    } else {
-      this.setState({ erroAPI: true });
-    }
+  handleSelectSlot() {
+    this.setState({
+      showModalCadastrar: true,
+    });
   }
 
-  async getEditaisAsync() {
-    const response = await getNumerosEditais({
-      excluir_encerrados: true,
-      excluir_parceira: true,
+  handleEvent() {
+    this.setState({
+      showModalEditar: true,
     });
-    if (response.status === HTTP_STATUS.OK) {
-      this.setState({ editais: response.data.results });
-    } else {
-      this.setState({ erroAPI: true });
-    }
   }
 
   async moveEvent({ event, start, end, isAllDay: droppedOnAllDaySlot }) {
@@ -158,62 +133,21 @@ export class Calendario extends React.Component {
     });
   }
 
-  handleSelectSlot(event) {
-    this.setState({
-      currentEvent: event,
-      showModalCadastrar: true,
-    });
-  }
-
-  handleEvent(event) {
-    this.setState({
-      currentEvent: event,
-      showModalEditar: true,
-    });
-  }
-
   render() {
-    const {
-      objetos,
-      loadingDiasCalendario,
-      tiposUnidades,
-      erroAPI,
-      currentEvent,
-      showModalCadastrar,
-      showModalEditar,
-      showModalConfirmarExclusao,
-      editais,
-      hasNavigatedOnce,
-    } = this.state;
-    const {
-      nomeObjeto,
-      nomeObjetoMinusculo,
-      setObjeto,
-      deleteObjeto,
-      podeEditar,
-    } = this.props;
+    const { objetos, loadingDiasCalendario, erroAPI, hasNavigatedOnce } =
+      this.state;
+
+    const { nomeObjeto } = this.props;
 
     return (
       <div className="card calendario-sobremesa mt-3">
         <div className="card-body">
-          <Spin
-            tip="Carregando calendário..."
-            spinning={(!editais || !tiposUnidades || !objetos) && !erroAPI}
-          >
-            {erroAPI && (
-              <div>
-                Erro ao carregar dados sobre tipos de unidades. Tente novamente
-                mais tarde.
-              </div>
-            )}
-            {editais && tiposUnidades && objetos && (
+          <Spin tip="Carregando calendário..." spinning={!objetos && !erroAPI}>
+            {erroAPI && <div>{erroAPI}</div>}
+            {objetos && (
               <>
-                <p>
-                  Para cadastrar um dia para {nomeObjetoMinusculo}, clique sobre
-                  o dia e selecione o tipo de unidade.
-                </p>
                 <Spin
-                  tip={`Carregando dias de ${nomeObjeto}...`}
+                  tip={`Carregando dias ${nomeObjeto}...`}
                   spinning={loadingDiasCalendario}
                 >
                   <DragAndDropCalendar
@@ -257,53 +191,6 @@ export class Calendario extends React.Component {
                     defaultView={Views.MONTH}
                   />
                 </Spin>
-                {currentEvent && podeEditar && (
-                  <>
-                    <ModalCadastrarNoCalendario
-                      showModal={showModalCadastrar}
-                      nomeObjetoNoCalendario={nomeObjeto}
-                      nomeObjetoNoCalendarioMinusculo={nomeObjetoMinusculo}
-                      closeModal={() =>
-                        this.setState({
-                          showModalCadastrar: false,
-                        })
-                      }
-                      objetos={objetos}
-                      tiposUnidades={tiposUnidades}
-                      editais={editais}
-                      event={currentEvent}
-                      getObjetosAsync={this.getObjetosAsync}
-                      setObjetoAsync={setObjeto}
-                    />
-                    {showModalEditar && (
-                      <ModalEditar
-                        showModal={showModalEditar}
-                        nomeObjetoNoCalendario={nomeObjeto}
-                        nomeObjetoNoCalendarioMinusculo={nomeObjetoMinusculo}
-                        closeModal={() =>
-                          this.setState({ showModalEditar: false })
-                        }
-                        event={currentEvent}
-                        setShowModalConfirmarExclusao={() =>
-                          this.setState({ showModalConfirmarExclusao: true })
-                        }
-                      />
-                    )}
-                    {showModalConfirmarExclusao && (
-                      <ModalConfirmarExclusao
-                        showModal={showModalConfirmarExclusao}
-                        nomeObjetoNoCalendario={nomeObjeto}
-                        nomeObjetoNoCalendarioMinusculo={nomeObjetoMinusculo}
-                        closeModal={() =>
-                          this.setState({ showModalConfirmarExclusao: false })
-                        }
-                        event={currentEvent}
-                        getObjetosAsync={this.getObjetosAsync}
-                        deleteObjetoAsync={deleteObjeto}
-                      />
-                    )}
-                  </>
-                )}
               </>
             )}
           </Spin>
