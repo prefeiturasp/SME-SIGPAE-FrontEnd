@@ -73,6 +73,22 @@ export const CalendarioEdicaoExterna = ({
     getFeriadosNoMesAsync(mes, ano);
   }, []);
 
+  const handleNavigate = useCallback(
+    (date) => {
+      if (!hasNavigatedOnce) {
+        setHasNavigatedOnce(true);
+        return;
+      }
+      const novoMes = date.getMonth() + 1;
+      const novoAno = date.getFullYear();
+      setMes(novoMes);
+      setAno(novoAno);
+      getObjetosAsync({ mes: novoMes, ano: novoAno });
+      getFeriadosNoMesAsync(novoMes, novoAno);
+    },
+    [hasNavigatedOnce, getObjetosAsync, getFeriadosNoMesAsync],
+  );
+
   const handleEvent = useCallback((event) => {
     if (event.title === "FERIADO") {
       setCurrentFeriado(event);
@@ -154,22 +170,7 @@ export const CalendarioEdicaoExterna = ({
                       </span>
                     ),
                   }}
-                  onNavigate={(date) => {
-                    if (!hasNavigatedOnce) {
-                      setHasNavigatedOnce(true);
-                      return;
-                    }
-                    setMes(date.getMonth() + 1);
-                    setAno(date.getFullYear());
-                    getObjetosAsync({
-                      mes: date.getMonth() + 1,
-                      ano: date.getFullYear(),
-                    });
-                    getFeriadosNoMesAsync(
-                      date.getMonth() + 1,
-                      date.getFullYear(),
-                    );
-                  }}
+                  onNavigate={handleNavigate}
                   defaultView={Views.MONTH}
                 />
               </Spin>
