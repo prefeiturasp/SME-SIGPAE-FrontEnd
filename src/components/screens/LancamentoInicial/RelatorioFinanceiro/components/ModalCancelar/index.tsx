@@ -8,7 +8,6 @@ import {
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
-  uuidParametrizacao: string | null;
   onCancelar: () => void;
 };
 
