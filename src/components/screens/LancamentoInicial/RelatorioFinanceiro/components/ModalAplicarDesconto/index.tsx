@@ -242,6 +242,16 @@ const ModalAplicarDesconto = ({
             });
           }, [values.cadastros_desconto, form]);
 
+          const totalDescontosItens =
+            values.cadastros_desconto?.reduce((acc, desconto) => {
+              return (
+                acc +
+                stringDecimalToNumber(
+                  desconto?.total_desconto?.toString() || "0",
+                )
+              );
+            }, 0) || 0;
+
           return (
             <form onSubmit={handleSubmit}>
               <Modal.Body>
@@ -375,6 +385,22 @@ const ModalAplicarDesconto = ({
                           </div>
                         </div>
                       ))}
+                      {fields.length > 1 && (
+                        <div className="row mt-4">
+                          <div className="col-12">
+                            <Field
+                              component={InputText}
+                              label="Total de Descontos dos Itens"
+                              name="total_descontos_itens"
+                              disabled
+                              prefix="R$"
+                              valorInicial={numberToStringDecimalMonetario(
+                                totalDescontosItens,
+                              )}
+                            />
+                          </div>
+                        </div>
+                      )}
                       <div className="row mt-4 justify-content-center">
                         <div className="col-auto">
                           <Botao
