@@ -5,11 +5,9 @@ import "moment/dist/locale/pt-br";
 import React from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import dragAndDropAddon from "react-big-calendar/lib/addons/dragAndDrop";
+import { ModalDadosObjeto } from "src/components/screens/Cadastros/DiasLetivosSIGPAE/components/ModalDadosObjeto";
 import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar";
 import "src/components/Shareable/Calendario/style.scss";
-import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
-import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
-import { ModalDadosObjeto } from "src/components/screens/Cadastros/DiasLetivosSIGPAE/components/ModalDadosObjeto";
 import { formataComoEventos } from "./helpers";
 moment.locale("pt-br");
 
@@ -32,7 +30,6 @@ export class CalendarioEdicaoExterna extends React.Component {
       hasNavigatedOnce: false,
     };
 
-    this.moveEvent = this.moveEvent.bind(this);
     this.handleEvent = this.handleEvent.bind(this);
     this.getObjetosAsync = this.getObjetosAsync.bind(this);
   }
@@ -62,71 +59,6 @@ export class CalendarioEdicaoExterna extends React.Component {
     this.setState({
       currentEvent: event,
       showModalDadosObjeto: true,
-    });
-  }
-
-  async moveEvent({ event, start, end, isAllDay: droppedOnAllDaySlot }) {
-    const { objetos } = this.state;
-    const { nomeObjeto, setObjeto, podeEditar } = this.props;
-    if (!podeEditar) return;
-
-    const idx = objetos.indexOf(event);
-    let allDay = event.allDay;
-
-    if (!event.allDay && droppedOnAllDaySlot) {
-      allDay = true;
-    } else if (event.allDay && !droppedOnAllDaySlot) {
-      allDay = false;
-    }
-
-    const updatedEvent = {
-      ...event,
-      data: getDDMMYYYfromDate(start),
-      start,
-      end,
-      allDay,
-    };
-
-    const nextEvents = [...objetos];
-    nextEvents.splice(idx, 1, updatedEvent);
-
-    const cadastros_calendario_payload = [];
-    nextEvents
-      .filter((e) => e.data === getDDMMYYYfromDate(event.start))
-      .forEach((evento) =>
-        cadastros_calendario_payload.push({
-          editais: evento.editais_uuids,
-          tipo_unidades: [evento.tipo_unidade.uuid],
-        }),
-      );
-    const payload = {
-      cadastros_calendario: cadastros_calendario_payload,
-      data: getYYYYMMDDfromDate(event.start),
-    };
-
-    await setObjeto(payload);
-
-    const cadastros_calendario_payload2 = [];
-    nextEvents
-      .filter((e) => e.data === getDDMMYYYfromDate(start))
-      .forEach((evento) =>
-        cadastros_calendario_payload2.push({
-          editais: evento.editais_uuids,
-          tipo_unidades: [evento.tipo_unidade.uuid],
-        }),
-      );
-    const payload2 = {
-      cadastros_calendario: cadastros_calendario_payload2,
-      data: getYYYYMMDDfromDate(start),
-    };
-
-    const response2 = await setObjeto(payload2);
-    if (response2.status === HTTP_STATUS.CREATED) {
-      toastSuccess(`Dia de ${nomeObjeto} atualizado com sucesso`);
-    }
-
-    this.setState({
-      objetos: nextEvents,
     });
   }
 
@@ -165,7 +97,6 @@ export class CalendarioEdicaoExterna extends React.Component {
                     localizer={localizer}
                     events={objetos}
                     onSelectEvent={this.handleEvent}
-                    onEventDrop={this.moveEvent}
                     components={{
                       toolbar: CustomToolbar,
                     }}
