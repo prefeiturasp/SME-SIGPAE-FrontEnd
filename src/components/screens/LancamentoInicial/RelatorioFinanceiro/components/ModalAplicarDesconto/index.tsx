@@ -210,6 +210,13 @@ const ModalAplicarDesconto = ({
                 desconto.faixa_etaria,
               );
 
+              const clausula = clausulas.find(
+                (c) => c.uuid === desconto.clausula_desconto,
+              );
+
+              const percentualDesconto =
+                Number(clausula?.porcentagem_desconto || 0) / 100;
+
               const valorAtual = Number(
                 values.cadastros_desconto[index]?.valor_unitario || 0,
               );
@@ -219,20 +226,16 @@ const ModalAplicarDesconto = ({
                   `cadastros_desconto.${index}.valor_unitario`,
                   numberToStringDecimalMonetario(valorUnitario),
                 );
-
-                form.change(
-                  `cadastros_desconto.${index}.total_desconto`,
-                  numberToStringDecimalMonetario(
-                    Number(desconto.quantidade || 0) * valorUnitario,
-                  ),
-                );
               }
 
-              const totalCalculado =
+              const valorBase =
                 Number(desconto.quantidade || 0) * Number(valorUnitario || 0);
 
-              const totalAtual = Number(
-                values.cadastros_desconto[index]?.total_desconto || 0,
+              const totalCalculado = valorBase * percentualDesconto;
+
+              const totalAtual = stringDecimalToNumber(
+                values.cadastros_desconto[index]?.total_desconto?.toString() ||
+                  "0",
               );
 
               if (totalCalculado !== totalAtual) {
@@ -242,7 +245,7 @@ const ModalAplicarDesconto = ({
                 );
               }
             });
-          }, [values.cadastros_desconto, form]);
+          }, [values.cadastros_desconto, form, clausulas]);
 
           const totalDescontosItens =
             values.cadastros_desconto?.reduce((acc, desconto) => {
