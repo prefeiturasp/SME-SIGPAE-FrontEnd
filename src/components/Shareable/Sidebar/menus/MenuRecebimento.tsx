@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu, LeafItem, SubMenu } from "./shared";
 import {
+  AJUSTE_SALDO_LAUDO,
   RECEBIMENTO,
   QUESTOES_POR_PRODUTO,
   FICHA_RECEBIMENTO,
@@ -15,9 +16,14 @@ const MenuRecebimento = ({ activeMenu, onSubmenuClick }) => {
   return (
     <Menu id="Recebimento" icon="fa-clipboard-list" title={"Recebimento"}>
       {usuarioEhRecebimento() && (
-        <LeafItem to={`/${RECEBIMENTO}/${QUESTOES_POR_PRODUTO}`}>
-          Questões por Produto
-        </LeafItem>
+        <>
+          <LeafItem to={`/${RECEBIMENTO}/${QUESTOES_POR_PRODUTO}`}>
+            Questões por Produto
+          </LeafItem>
+          <LeafItem to={`/${RECEBIMENTO}/${AJUSTE_SALDO_LAUDO}`}>
+            Ajuste de Saldo do Laudo
+          </LeafItem>
+        </>
       )}
       <LeafItem to={`/${RECEBIMENTO}/${FICHA_RECEBIMENTO}`}>
         Ficha de Recebimento

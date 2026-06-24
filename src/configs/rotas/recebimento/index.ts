@@ -14,6 +14,8 @@ import AtribuirQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/Atrib
 import CopiarAtribuicaoQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/CopiarAtribuicaoQuestoesPage";
 import EditarAtribuicaoQuestoesPage from "src/pages/Recebimento/QuestoesPorProduto/EditarAtribuicaoQuestoesPage";
 import QuestoesPorProdutoPage from "src/pages/Recebimento/QuestoesPorProduto/QuestoesPorProdutoPage";
+import AjusteSaldoLaudoPage from "src/pages/Recebimento/AjusteSaldoLaudo/AjusteSaldoLaudoPage";
+import CadastroAjusteSaldoPage from "src/pages/Recebimento/AjusteSaldoLaudo/CadastroAjusteSaldoPage";
 import RelatorioDocumentosRecebimentoPage from "src/pages/Recebimento/Relatorios/RelatorioDocumentosRecebimentoPage";
 
 import * as constants from "../../constants";
@@ -69,6 +71,16 @@ export const rotasRecebimento: Array<RotaInterface> = [
       usuarioEhDilogAbastecimento() ||
       usuarioEhCodaeDilog() ||
       usuarioEhDilogDiretoria(),
+  },
+  {
+    path: `/${constants.RECEBIMENTO}/${constants.AJUSTE_SALDO_LAUDO}`,
+    component: AjusteSaldoLaudoPage,
+    tipoUsuario: usuarioEhRecebimento(),
+  },
+  {
+    path: `/${constants.RECEBIMENTO}/${constants.CADASTRO_SALDO_LAUDO}`,
+    component: CadastroAjusteSaldoPage,
+    tipoUsuario: usuarioEhRecebimento(),
   },
   {
     path: `/${constants.RECEBIMENTO}/${constants.RELATORIO_DOCUMENTOS_RECEBIMENTO}`,
