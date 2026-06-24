@@ -7,32 +7,33 @@ import { CardCronograma } from "../../CardCronograma/CardCronograma";
 afterEach(() => cleanup());
 
 describe("CardCronograma", () => {
-  const solicitacaoFLV = {
-    text: "Solicitação FLV",
+  const solicitacaoPontoAPonto = {
+    text: "Solicitação Ponto a Ponto",
     date: "2024-05-23",
     link: "/mock-link",
-    fullText: "Texto completo FLV",
+    fullText: "Texto completo Ponto a Ponto",
     programa_leve_leite: false,
-    categoria: "FLV",
+    categoria: "PERECIVEIS",
     tipo_entrega: "PONTO_A_PONTO",
   };
 
-  const solicitacaoNaoFLV = {
-    text: "Solicitação Normal",
+  const solicitacaoArmazem = {
+    text: "Solicitação Armazém",
     date: "2024-05-23",
     link: "/mock-link",
-    fullText: "Texto completo Normal",
+    fullText: "Texto completo Armazém",
     programa_leve_leite: false,
-    categoria: "OUTRO",
+    categoria: "FLV",
+    tipo_entrega: "ARMAZEM",
   };
 
-  test("Deve aplicar a classe 'categoria-flv' quando a categoria for FLV", () => {
+  test("Deve aplicar a classe 'point-to-point' quando o tipo de entrega for Ponto a Ponto", () => {
     render(
       <MemoryRouter>
         <CardCronograma
           cardTitle="Cronograma"
           cardType="tipo-mock"
-          solicitations={[solicitacaoFLV]}
+          solicitations={[solicitacaoPontoAPonto]}
           icon="fa-calendar"
           loading={false}
           href="/mock-href"
@@ -41,17 +42,20 @@ describe("CardCronograma", () => {
       </MemoryRouter>,
     );
 
-    const paragraph = screen.getByText("Solicitação FLV").closest("p");
-    expect(paragraph).toHaveClass("categoria-flv");
+    const paragraph = screen
+      .getByText("Solicitação Ponto a Ponto")
+      .closest("p");
+
+    expect(paragraph).toHaveClass("point-to-point");
   });
 
-  test("Não deve aplicar a classe 'categoria-flv' quando a categoria não for FLV", () => {
+  test("Não deve aplicar a classe 'point-to-point' quando o tipo de entrega for Armazém", () => {
     render(
       <MemoryRouter>
         <CardCronograma
           cardTitle="Cronograma"
           cardType="tipo-mock"
-          solicitations={[solicitacaoNaoFLV]}
+          solicitations={[solicitacaoArmazem]}
           icon="fa-calendar"
           loading={false}
           href="/mock-href"
@@ -60,7 +64,8 @@ describe("CardCronograma", () => {
       </MemoryRouter>,
     );
 
-    const paragraph = screen.getByText("Solicitação Normal").closest("p");
-    expect(paragraph).not.toHaveClass("categoria-flv");
+    const paragraph = screen.getByText("Solicitação Armazém").closest("p");
+
+    expect(paragraph).not.toHaveClass("point-to-point");
   });
 });
