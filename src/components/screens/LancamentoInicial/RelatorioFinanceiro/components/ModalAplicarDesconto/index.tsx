@@ -349,7 +349,7 @@ const ModalAplicarDesconto = ({
                                     nome: `${clausula.numero_clausula}. ${clausula.item_clausula} - (${clausula.porcentagem_desconto}%)`,
                                   })),
                                 ]}
-                                label="Cláusula do Desconto"
+                                label="Cláusula de Desconto"
                                 name={`${name}.clausula_desconto`}
                                 id="clausula_desconto"
                                 required
@@ -409,6 +409,7 @@ const ModalAplicarDesconto = ({
                       <div className="row mt-4 justify-content-center">
                         <div className="col-auto">
                           <Botao
+                            dataTestId="botao-adicionar"
                             texto="Adicionar mais descontos"
                             icon={BUTTON_ICON.PLUS}
                             type={BUTTON_TYPE.BUTTON}
