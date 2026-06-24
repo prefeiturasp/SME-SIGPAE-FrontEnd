@@ -40,7 +40,7 @@ export default ({
   unidadeMedida,
   ehAlteracao = false,
   form,
-  flv_ponto_a_ponto = false,
+  ponto_a_ponto = false,
 }) => {
   const [etapasOptions, setEtapasOptions] = useState([{}]);
   const [desabilitar, setDesabilitar] = useState([]);
@@ -132,7 +132,7 @@ export default ({
 
   const desativaAdicionarEtapa = () => {
     let index = etapas.length - 1;
-    const camposObrigatorios = flv_ponto_a_ponto
+    const camposObrigatorios = ponto_a_ponto
       ? [`etapa_${index}`, `data_programada_${index}`, `quantidade_${index}`]
       : [
           `empenho_${index}`,
@@ -205,7 +205,7 @@ export default ({
                 </div>
               </>
             )}
-            {!flv_ponto_a_ponto ? (
+            {!ponto_a_ponto ? (
               <>
                 <div className="row">
                   {(usuarioEhCronograma() || usuarioEhCodaeDilog()) && (

@@ -116,8 +116,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
         </div>
 
         {objetos.map((objeto) => {
-          const classNameVerde = objeto.flv_ponto_a_ponto ? "green" : "";
-
+          const classNameVerde = objeto.ponto_a_ponto ? "green" : "";
           return (
             <>
               <div key={objeto.uuid} className="grid-table body-table">

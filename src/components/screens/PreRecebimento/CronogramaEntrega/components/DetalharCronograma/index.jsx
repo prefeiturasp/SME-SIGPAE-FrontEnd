@@ -116,7 +116,7 @@ export default () => {
 
               <hr className="hr-detalhar" />
 
-              {!cronograma.ficha_tecnica?.flv_ponto_a_ponto && (
+              {!cronograma.ficha_tecnica?.ponto_a_ponto && (
                 <>
                   <div className="row mt-3">
                     <div className="col">
