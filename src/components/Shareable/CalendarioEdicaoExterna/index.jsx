@@ -2,12 +2,14 @@ import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
 import "moment/dist/locale/pt-br";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import dragAndDropAddon from "react-big-calendar/lib/addons/dragAndDrop";
 import { ModalDadosObjeto } from "src/components/screens/Cadastros/DiasLetivosSIGPAE/components/ModalDadosObjeto";
+import { ModalFeriado } from "src/components/screens/Cadastros/DiasLetivosSIGPAE/components/ModalFeriado";
 import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar";
 import "src/components/Shareable/Calendario/style.scss";
+import { getFeriadosNoMesComNome } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { formataComoEventos } from "./helpers";
 moment.locale("pt-br");
 
@@ -24,10 +26,13 @@ export const CalendarioEdicaoExterna = ({
 }) => {
   const [objetos, setObjetos] = useState();
   const [loadingDiasCalendario, setLoadingDiasCalendario] = useState(false);
-  const [erroAPI] = useState(false);
+  const [erroAPI, setErroAPI] = useState(false);
   const [currentEvent, setCurrentEvent] = useState();
   const [showModalDadosObjeto, setShowModalDadosObjeto] = useState(false);
   const [hasNavigatedOnce, setHasNavigatedOnce] = useState(false);
+  const [feriadosNoMes, setFeriadosNoMes] = useState();
+  const [currentFeriado, setCurrentFeriado] = useState();
+  const [showModalFeriado, setShowModalFeriado] = useState(false);
 
   const [mes, setMes] = useState(moment().month() + 1);
   const [ano, setAno] = useState(moment().year());
@@ -48,14 +53,71 @@ export const CalendarioEdicaoExterna = ({
     [getObjetos, mes, ano],
   );
 
+  const getFeriadosNoMesAsync = async (mes, ano) => {
+    const params_feriados_no_mes = {
+      mes: mes,
+      ano: ano,
+    };
+    const response = await getFeriadosNoMesComNome(params_feriados_no_mes);
+    if (response.status === HTTP_STATUS.OK) {
+      setFeriadosNoMes(response.data.results);
+    } else {
+      setErroAPI(
+        "Erro ao carregar feriados do mês para esta escola. Tente novamente mais tarde.",
+      );
+    }
+  };
+
   useEffect(() => {
     getObjetosAsync();
+    getFeriadosNoMesAsync(mes, ano);
   }, []);
 
   const handleEvent = useCallback((event) => {
-    setCurrentEvent(event);
-    setShowModalDadosObjeto(true);
+    if (event.title === "FERIADO") {
+      setCurrentFeriado(event);
+      setShowModalFeriado(true);
+    } else {
+      setCurrentEvent(event);
+      setShowModalDadosObjeto(true);
+    }
   }, []);
+
+  const feriadoDias = useMemo(
+    () => new Set((feriadosNoMes || []).map((f) => Number(f.dia))),
+    [feriadosNoMes],
+  );
+
+  const eventosComFeriados = useMemo(() => {
+    const feriadoEvents = (feriadosNoMes || []).map((item) => {
+      const diaNum = Number(item.dia);
+      return {
+        title: "FERIADO",
+        feriado: item.feriado,
+        start: new Date(ano, mes - 1, diaNum, 0),
+        end: new Date(ano, mes - 1, diaNum, 1),
+        allDay: true,
+      };
+    });
+    return [...(objetos || []), ...feriadoEvents];
+  }, [objetos, feriadosNoMes, mes, ano]);
+
+  const eventPropGetter = useCallback((event) => {
+    if (event.title === "FERIADO") {
+      return { className: "rbc-event-feriado" };
+    }
+    return {};
+  }, []);
+
+  const dayPropGetter = useCallback(
+    (date) => {
+      if (feriadoDias.has(date.getDate())) {
+        return { style: { backgroundColor: "#e6e6e6" } };
+      }
+      return {};
+    },
+    [feriadoDias],
+  );
 
   return (
     <div className="card calendario-sobremesa mt-3">
@@ -78,7 +140,9 @@ export const CalendarioEdicaoExterna = ({
                   selectable
                   resizable={false}
                   localizer={localizer}
-                  events={objetos}
+                  events={eventosComFeriados}
+                  eventPropGetter={eventPropGetter}
+                  dayPropGetter={dayPropGetter}
                   onSelectEvent={handleEvent}
                   components={{
                     toolbar: CustomToolbar,
@@ -101,6 +165,10 @@ export const CalendarioEdicaoExterna = ({
                       mes: date.getMonth() + 1,
                       ano: date.getFullYear(),
                     });
+                    getFeriadosNoMesAsync(
+                      date.getMonth() + 1,
+                      date.getFullYear(),
+                    );
                   }}
                   defaultView={Views.MONTH}
                 />
@@ -115,6 +183,13 @@ export const CalendarioEdicaoExterna = ({
                   event={currentEvent}
                   getObjetosAsync={getObjetosAsync}
                   setObjetoAsync={setObjeto}
+                />
+              )}
+              {currentFeriado && (
+                <ModalFeriado
+                  showModal={showModalFeriado}
+                  closeModal={() => setShowModalFeriado(false)}
+                  event={currentFeriado}
                 />
               )}
             </>
