@@ -144,4 +144,45 @@ describe("Testes da interface de Listagem - Parametrização Financeira", () => 
       expect(screen.getAllByText("04").length).toBeGreaterThanOrEqual(1);
     });
   });
+
+  it("deve carregar opções dos selects de filtro", async () => {
+    await waitFor(() => {
+      const editalSelect = screen
+        .getByTestId("edital-select")
+        .querySelector("select");
+      expect(editalSelect).not.toBeNull();
+      expect(editalSelect.options.length).toBeGreaterThan(1);
+      expect(editalSelect.options[1].text).toBe("1");
+
+      const loteSelect = screen
+        .getByTestId("lote-select")
+        .querySelector("select");
+      expect(loteSelect).not.toBeNull();
+      expect(loteSelect.options.length).toBeGreaterThan(1);
+
+      const grupoSelect = screen
+        .getByTestId("grupo-unidade-select")
+        .querySelector("select");
+      expect(grupoSelect).not.toBeNull();
+      expect(grupoSelect.options.length).toBeGreaterThan(1);
+    });
+  });
+
+  it("ao selecionar edital, deve resetar campo lote", async () => {
+    await waitFor(() => {
+      const editalSelect = screen
+        .getByTestId("edital-select")
+        .querySelector("select");
+      expect(editalSelect.options.length).toBeGreaterThan(1);
+    });
+
+    setSelect("edital-select", "752c11a3-b4fe-4f1c-b9af-61d42f0a6b56");
+
+    await waitFor(() => {
+      const loteSelect = screen
+        .getByTestId("lote-select")
+        .querySelector("select");
+      expect(loteSelect.value).toBe("");
+    });
+  });
 });

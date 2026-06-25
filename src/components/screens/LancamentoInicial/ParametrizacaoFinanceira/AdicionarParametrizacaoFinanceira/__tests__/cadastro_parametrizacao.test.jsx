@@ -429,4 +429,15 @@ describe("Testes formulário de cadastro - Parametrização Financeira", () => {
       ).toBeInTheDocument();
     });
   });
+
+  it("ao selecionar edital, deve limpar o campo lote", async () => {
+    setSelect("edital-select", "557d1c87-ea6c-4911-8876-2a133f754ea1");
+
+    await waitFor(() => {
+      const loteSelect = screen
+        .getByTestId("lote-select")
+        .querySelector("select");
+      expect(loteSelect.value).toBe("");
+    });
+  });
 });
