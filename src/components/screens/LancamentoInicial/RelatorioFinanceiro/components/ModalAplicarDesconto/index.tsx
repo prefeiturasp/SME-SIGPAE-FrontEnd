@@ -36,6 +36,7 @@ import {
 import { capitalize } from "src/helpers/utilities";
 import ModalCancelar from "../ModalCancelar";
 import { getUuid } from "../../helpers";
+import { ClausulaInterface } from "src/interfaces/clausulas_para_descontos.interface";
 
 const DEFAULT_EMPENHO: DescontoFinanceiro = {
   unidades_educacionais: [],
@@ -78,7 +79,7 @@ const ModalAplicarDesconto = ({
   relatorioConsolidado,
   tiposAlimentacao,
 }: Props) => {
-  const [clausulas, setClausulas] = useState<any[]>([]);
+  const [clausulas, setClausulas] = useState<ClausulaInterface[]>([]);
   const [cancelar, setCancelar] = useState<boolean>(false);
 
   const grupoNome =
@@ -96,7 +97,7 @@ const ModalAplicarDesconto = ({
     ["LANCHE", "LANCHE 4H"].includes(normalizar(item.nome).toUpperCase()),
   );
 
-  const getValoresDescontos = (desconto: any) => ({
+  const getValoresDescontos = (desconto: DescontoFinanceiro) => ({
     ...desconto,
     faixa_etaria:
       desconto.faixa_etaria && desconto.periodo_escolar
