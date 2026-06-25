@@ -102,7 +102,10 @@ const ModalAplicarDesconto = ({
       desconto.faixa_etaria && desconto.periodo_escolar
         ? `${desconto.periodo_escolar}|${getUuid(desconto.faixa_etaria)}`
         : null,
-    tipo_alimentacao: getUuid(desconto.tipo_alimentacao),
+    tipo_alimentacao:
+      !desconto.tipo_alimentacao && !desconto.faixa_etaria
+        ? "kit_lanche"
+        : getUuid(desconto.tipo_alimentacao),
     clausula_desconto: getUuid(desconto.clausula_desconto),
     unidades_educacionais: desconto.unidades_educacionais?.map(getUuid) ?? [],
   });
@@ -131,7 +134,10 @@ const ModalAplicarDesconto = ({
   const getOpcoesAlimentacao = (tipoLancamento: string) => {
     switch (tipoLancamento) {
       case "ALIMENTACOES":
-        return tiposAlimentacao;
+        return [
+          ...tiposAlimentacao,
+          { uuid: "kit_lanche", nome: "Kit Lanche" },
+        ];
 
       case "DIETAS_TIPO_A":
         return alimentacoesDietaA;
@@ -228,11 +234,15 @@ const ModalAplicarDesconto = ({
           item.tipo_valor === "UNITARIO",
       );
     } else if (alimentacaoSelecionada) {
-      const tipo = tiposAlimentacao.find(
-        (t) => t.uuid === alimentacaoSelecionada,
-      );
+      let nomeTipo = "";
 
-      const nomeTipo = normalizar(tipo.nome);
+      if (alimentacaoSelecionada === "kit_lanche") nomeTipo = "kit lanche";
+      else {
+        const tipo = tiposAlimentacao.find(
+          (t) => t.uuid === alimentacaoSelecionada,
+        );
+        nomeTipo = normalizar(tipo.nome);
+      }
 
       const tabela = relatorioConsolidado.tabelas?.find((tabela) => {
         const nomeTabela = tabela.nome
