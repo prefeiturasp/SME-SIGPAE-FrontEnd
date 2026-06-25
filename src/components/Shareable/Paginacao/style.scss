@@ -6,13 +6,15 @@
   align-items: center;
 
   .ant-pagination-item {
-    width: 32px;
+    min-width: 32px;
     height: 32px;
+    padding: 0 6px;
     color: #999;
     font-weight: 600;
     background-color: $white;
     border: 1px solid #dadada;
     border-radius: 3px;
+    white-space: nowrap;
 
     &:hover {
       border: 1px solid $green;

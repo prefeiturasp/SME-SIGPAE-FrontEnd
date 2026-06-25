@@ -66,6 +66,9 @@ export const ListagemDietas = ({ ...props }) => {
           </div>
           {values.status_selecionado === "AUTORIZADAS" &&
             !usuarioEhEmpresaTerceirizada() && <div>Protocolo</div>}
+          {values.status_selecionado === "AUTORIZADAS" && (
+            <div>Data da autorização</div>
+          )}
           {values.status_selecionado === "CANCELADAS" && (
             <div>Data de cancelamento</div>
           )}
@@ -106,6 +109,9 @@ export const ListagemDietas = ({ ...props }) => {
                           dietaEspecial.protocolo_padrao.nome_protocolo)}
                     </div>
                   )}
+                {values.status_selecionado === "AUTORIZADAS" && (
+                  <div>{dietaEspecial.data_autorizacao}</div>
+                )}
                 {values.status_selecionado === "CANCELADAS" && (
                   <div>{dietaEspecial.data_ultimo_log}</div>
                 )}
