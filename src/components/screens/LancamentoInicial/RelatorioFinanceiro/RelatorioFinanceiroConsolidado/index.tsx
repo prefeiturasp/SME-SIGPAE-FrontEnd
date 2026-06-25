@@ -375,6 +375,7 @@ export function RelatorioFinanceiroConsolidado() {
         descontos={descontos}
         relatorioConsolidado={relatorioConsolidado}
         onSave={(e) => setDescontos(e)}
+        tiposAlimentacao={tiposAlimentacao}
       />
     </div>
   );
