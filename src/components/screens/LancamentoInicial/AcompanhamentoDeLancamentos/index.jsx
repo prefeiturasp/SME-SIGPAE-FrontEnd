@@ -1377,6 +1377,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                 }
                                 nomeRelatorio="Relatório Consolidado"
                                 mesAnoSelecionado={mesAno}
+                                recreioNasFerias={recreioNasFerias !== null}
                               />
                             </>
                           )}
