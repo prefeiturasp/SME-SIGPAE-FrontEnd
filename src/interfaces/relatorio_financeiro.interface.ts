@@ -1,6 +1,7 @@
 import {
   FaixaEtaria,
   TabelaParametrizacao,
+  TipoAlimentacao,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { ClausulaInterface } from "./clausulas_para_descontos.interface";
 
@@ -112,6 +113,7 @@ export type DescontoFinanceiro = {
   valor_unitario?: number;
   total_desconto?: number;
   periodo_escolar?: string;
+  tipo_alimentacao?: string | TipoAlimentacao;
 };
 
 export interface DescontoFinanceiroResponse {
