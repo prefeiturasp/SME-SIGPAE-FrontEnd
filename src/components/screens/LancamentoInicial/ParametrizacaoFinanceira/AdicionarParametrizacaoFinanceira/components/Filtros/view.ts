@@ -314,7 +314,7 @@ export default ({
   const onChangeTiposUnidades = (grupo: string) => {
     form?.change("grupo_unidade_escolar", grupo);
     const selecionado = gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome;
-    setGrupoSelecionado(selecionado);
+    setGrupoSelecionado?.(selecionado);
 
     const conteudoParenteses = extrairConteudoEntreParenteses(selecionado);
     const unidades = conteudoParenteses
@@ -326,7 +326,7 @@ export default ({
       tiposUnidades,
     );
 
-    setTiposAlimentacao(tiposAlimentacao);
+    setTiposAlimentacao?.(tiposAlimentacao);
   };
 
   const inicializouRef = useRef(false);
