@@ -5,6 +5,8 @@ import {
   RelatorioFinanceiroConsolidado,
   PayloadRelatorioFinanceiro,
   RelatorioFinanceiroResponse,
+  DescontoFinanceiro,
+  DescontoFinanceiroResponse,
 } from "src/interfaces/relatorio_financeiro.interface";
 import axios from "../_base";
 import { ErrorHandlerFunction } from "../service-helpers";
@@ -75,4 +77,29 @@ export const exportarPDFAsyncRelatorioAtesteFinanceiro = async (
     const data = { data: response.data, status: response.status };
     return data;
   }
+};
+
+export const cadastroDescontoFinanceiro = async (
+  payload: Partial<DescontoFinanceiro[]>,
+  relatorioFinanceiro: string,
+) => {
+  const response = await axios
+    .put(
+      `/medicao-inicial/desconto-financeiro/aplicar-descontos/${relatorioFinanceiro}/`,
+      payload,
+    )
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+export const getDescontoFinanceiro = async (params) => {
+  return await axios.get<DescontoFinanceiroResponse>(
+    "/medicao-inicial/desconto-financeiro/",
+    {
+      params: params,
+    },
+  );
 };

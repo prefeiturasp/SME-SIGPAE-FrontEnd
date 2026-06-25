@@ -1,7 +1,11 @@
-import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Spin } from "antd";
+import HTTP_STATUS from "http-status-codes";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { Field } from "react-final-form";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { InputComData } from "src/components/Shareable/DatePicker";
+import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import Select from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { required } from "src/helpers/fieldValidators";
@@ -12,10 +16,6 @@ import {
   usuarioEhEmpresaTerceirizada,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
 } from "src/helpers/utilities";
-import HTTP_STATUS from "http-status-codes";
-import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { Field } from "react-final-form";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import {
   getEscolaSimples,
@@ -229,7 +229,7 @@ export const Filtros = ({ ...props }) => {
                   />
                 </div>
                 <div className="col-4">
-                  <label>Lote</label>
+                  <label className="col-form-label">Lote</label>
                   <Field
                     component={StatefulMultiSelect}
                     name="lotes"
@@ -255,7 +255,7 @@ export const Filtros = ({ ...props }) => {
                   />
                 </div>
                 <div className="col-lg-5 col-xl-4">
-                  <label>Tipo de Solicitação</label>
+                  <label className="col-form-label">Tipo de Solicitação</label>
                   <Field
                     component={StatefulMultiSelect}
                     name="tipos_solicitacao"
@@ -277,7 +277,7 @@ export const Filtros = ({ ...props }) => {
               {values.status !== "EM_ANDAMENTO" && (
                 <div className="row mt-3">
                   <div className="col-4">
-                    <label>Tipo de Unidade</label>
+                    <label className="col-form-label">Tipo de Unidade</label>
                     <Field
                       component={StatefulMultiSelect}
                       name="tipos_unidade"
@@ -305,7 +305,9 @@ export const Filtros = ({ ...props }) => {
                     />
                   </div>
                   <div className="col-8">
-                    <label>Unidades Educacionais</label>
+                    <label className="col-form-label">
+                      Unidades Educacionais
+                    </label>
                     <Field
                       component={StatefulMultiSelect}
                       name="unidades_educacionais"
@@ -352,7 +354,7 @@ export const Filtros = ({ ...props }) => {
                 )}
                 <div className="col-6">
                   <div>
-                    <label>Período do Evento</label>
+                    <label className="col-form-label">Período do Evento</label>
                   </div>
                   <div className="row">
                     <div className="col-6 ps-0">

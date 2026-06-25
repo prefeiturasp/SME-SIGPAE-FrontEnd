@@ -47,6 +47,8 @@ import UnidadesMedidaPage from "src/pages/Cadastros/UnidadesMedidaPage";
 import RecreioFeriasPage from "src/pages/Cadastros/RecreioFeriasPage";
 import RecreioFeriasCadastradosPage from "src/pages/Cadastros/RecreioFeriasCadastradosPage";
 import EdicaoRecreioFeriasPage from "src/pages/Cadastros/EdicaoRecreioFeriasPage";
+import { CadastroDiasLetivosPage } from "src/pages/Cadastros/CadastroDiasLetivosSIGPAEPage";
+import { EditarDiasLetivosPage } from "src/pages/Cadastros/EditarDiasLetivosSIGPAEPage";
 
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
@@ -250,5 +252,15 @@ export const rotasCadastros: Array<RotaInterface> = [
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.FABRICANTES}`,
     component: CadastroFabricantePage,
     tipoUsuario: usuarioEhEmpresaFornecedor() || usuarioEhCodaeDilog(),
+  },
+  {
+    path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.DIAS_LETIVOS}`,
+    component: CadastroDiasLetivosPage,
+    tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
+  },
+  {
+    path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.DIAS_LETIVOS}/editar`,
+    component: EditarDiasLetivosPage,
+    tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
   },
 ];

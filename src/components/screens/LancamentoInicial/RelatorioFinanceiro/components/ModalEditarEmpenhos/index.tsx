@@ -13,13 +13,9 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { required } from "src/helpers/fieldValidators";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
-import {
-  DadosLiquidacaoEmpenho,
-  Escola,
-} from "src/interfaces/relatorio_financeiro.interface";
+import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
 import { cadastroDadosEmpenho } from "src/services/medicaoInicial/relatorioFinanceiro.service";
-import { useEffect, useMemo, useState } from "react";
-import { getEscolasParaFiltros } from "src/services/escola.service";
+import { useMemo } from "react";
 import InputText from "src/components/Shareable/Input/InputText";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
@@ -34,28 +30,19 @@ type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
   empenhos?: DadosLiquidacaoEmpenho[];
-  lote: string;
   relatorioFinanceiro: string;
   onSave?: (_e: DadosLiquidacaoEmpenho[]) => void;
-  tiposUnidades: string[];
+  unidadesEducacionais?: { label: string; value: string }[];
 };
 
 const ModalEditarEmpenhos = ({
   showModal,
   setShowModal,
   empenhos,
-  lote,
   relatorioFinanceiro,
   onSave,
-  tiposUnidades,
+  unidadesEducacionais,
 }: Props) => {
-  const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
-
-  const unidadesUuid = useMemo(
-    () => tiposUnidades.join(","),
-    [JSON.stringify(tiposUnidades)],
-  );
-
   const onSubmit = async (values: {
     cadastros_empenho: DadosLiquidacaoEmpenho[];
   }) => {
@@ -70,27 +57,6 @@ const ModalEditarEmpenhos = ({
       toastError("Falha ao registrar empenhos.");
     }
   };
-
-  const getEscolasAsync = async (): Promise<void> => {
-    const response = await getEscolasParaFiltros({
-      lote__uid: lote,
-      tipo_unidade__uuid__in: unidadesUuid,
-    });
-
-    if (response.status === HTTP_STATUS.OK) {
-      setUnidadesEducacionais(
-        response.data.map((escola: Escola) => ({
-          label: escola.nome,
-          value: escola.uuid,
-        })),
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (!lote || !unidadesUuid) return;
-    getEscolasAsync();
-  }, [lote, unidadesUuid]);
 
   const initialValues = useMemo(() => {
     return {
