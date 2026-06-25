@@ -7,25 +7,8 @@ import { mockDadosLiquidacao } from "src/mocks/services/relatorioFinanceiro.serv
 describe("Testes de comportamentos formulário de Edição de Empenhos", () => {
   const setShowModal = jest.fn();
   const onSave = jest.fn();
-  const unidadesEducacionais = [
-    {
-      uuid: "73005fcf-e02b-48ed-8542-3d1e623a63a5",
-      nome: "CEI TESTE",
-      codigo_eol: "535353",
-      diretoria_regional: {
-        uuid: "33b950cd-d8a2-4331-9f11-893cd48b5cd7",
-        nome: "GUAIANASES",
-      },
-      tipo_unidade: {
-        uuid: "1f43b785-006e-41ba-87db-8e44a5fc1ed0",
-        iniciais: "CEI",
-      },
-      lote: null,
-    },
-  ];
 
   beforeEach(async () => {
-    mock.onGet("/escolas-para-filtros/").reply(200, unidadesEducacionais);
     mock
       .onPut("/medicao-inicial/dados-liquidacao/registrar-empenhos/rel-1/")
       .reply(200, {});
@@ -42,6 +25,12 @@ describe("Testes de comportamentos formulário de Edição de Empenhos", () => {
           relatorioFinanceiro="rel-1"
           onSave={onSave}
           tiposUnidades={["1f43b785-006e-41ba-87db-8e44a5fc1ed0"]}
+          unidadesEducacionais={[
+            {
+              value: "73005fcf-e02b-48ed-8542-3d1e623a63a5",
+              label: "CEI TESTE",
+            },
+          ]}
           {...props}
         />
         <ToastContainer />

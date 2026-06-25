@@ -14,6 +14,7 @@ import { mockRelatorioFinanceiroFaixaEtaria } from "src/mocks/services/relatorio
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MemoryRouter } from "react-router-dom";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { mockClausulasDeDesconto } from "src/mocks/LancamentoInicial/CadastroDeClausulas/clausulasDeDescontos";
 import mock from "src/services/_mock";
 
 describe("Testes da interface em caso de Visualização do Relatório Financeiro - Relatorio Financeiro", () => {
@@ -54,6 +55,10 @@ describe("Testes da interface em caso de Visualização do Relatório Financeiro
     mock
       .onPost(`/medicao-inicial/relatorio-financeiro/exportar-pdf/123/`)
       .reply(200, {});
+    mock
+      .onGet("/medicao-inicial/clausulas-de-descontos/")
+      .reply(200, mockClausulasDeDesconto);
+    mock.onGet("/medicao-inicial/desconto-financeiro/").reply(200, []);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
 

@@ -154,6 +154,15 @@ describe("Verifica comportamentos do relatório de dietas autorizadas", () => {
     });
   });
 
+  it("Verifica coluna Data da autorização nos resultados", async () => {
+    setSelect("tipo-gestao-select", TIPO_GESTAO);
+    filtrar();
+    await waitFor(() => {
+      expect(screen.getByText("Data da autorização")).toBeInTheDocument();
+      expect(screen.getAllByText("30/01/2024").length).toBe(10);
+    });
+  });
+
   it("Filtra, clica para visualizar em gráfico e verifica se foi alterado", async () => {
     preencheFiltros();
     filtrar();
