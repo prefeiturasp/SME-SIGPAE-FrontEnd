@@ -168,10 +168,17 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
     return true;
   };
 
+  function parseFloatPersonalizado(str) {
+    const cleaned = str.replace(/\./g, "").replace(",", ".");
+    return parseFloat(cleaned);
+  }
+
   const formataPayload = (values: FormValues) => {
     return {
       documento_recebimento: documentoSelecionado.uuid,
-      quantidade_descontada: parseFloat(values.quantidade_descontada),
+      quantidade_descontada: parseFloatPersonalizado(
+        values.quantidade_descontada,
+      ),
     };
   };
 
