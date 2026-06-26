@@ -13,40 +13,44 @@ type Props = {
 
 const ModalCancelar = ({ showModal, setShowModal, onCancelar }: Props) => {
   return (
-    <Modal
-      show={showModal}
-      onHide={() => {
-        setShowModal(false);
-      }}
-    >
-      <Modal.Header closeButton>
-        <Modal.Title>Cancelar Aplicação de descontos</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <label className="mt-2">
-          Deseja cancelar a aplicação de desconto nas Unidades? Ao cancelar
-          todas as informações serão perdidas
-        </label>
-      </Modal.Body>
-      <Modal.Footer>
-        <Botao
-          texto="Não"
-          type={BUTTON_TYPE.BUTTON}
-          onClick={() => {
-            setShowModal(false);
-          }}
-          style={BUTTON_STYLE.GREEN_OUTLINE}
-          className="ms-3"
-        />
-        <Botao
-          texto="Sim"
-          type={BUTTON_TYPE.BUTTON}
-          onClick={() => onCancelar()}
-          style={BUTTON_STYLE.GREEN}
-          className="ms-3"
-        />
-      </Modal.Footer>
-    </Modal>
+    <>
+      {showModal && <div className="modal-backdrop show" />}
+      <Modal
+        show={showModal}
+        onHide={() => {
+          setShowModal(false);
+        }}
+        backdrop="static"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Cancelar Aplicação de descontos</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <label className="mt-2">
+            Deseja cancelar a aplicação de desconto nas unidades? Ao cancelar
+            todas as informações serão perdidas.
+          </label>
+        </Modal.Body>
+        <Modal.Footer>
+          <Botao
+            texto="Não"
+            type={BUTTON_TYPE.BUTTON}
+            onClick={() => {
+              setShowModal(false);
+            }}
+            style={BUTTON_STYLE.GREEN_OUTLINE}
+            className="ms-3"
+          />
+          <Botao
+            texto="Sim"
+            type={BUTTON_TYPE.BUTTON}
+            onClick={() => onCancelar()}
+            style={BUTTON_STYLE.GREEN}
+            className="ms-3"
+          />
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 

@@ -25,6 +25,7 @@ describe("Testes de comportamento formulário - ModalAplicarDesconto", () => {
     }),
     faixasEtarias: mockFaixasEtarias.results,
     relatorioConsolidado: mockRelatorioFinanceiroFaixaEtaria,
+    tiposAlimentacao: [],
   };
 
   const setup = (props = {}) =>
