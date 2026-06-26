@@ -8,3 +8,11 @@ export const cadastrarDiasLetivos = async (payload) => {
     return { data: response.data, status: response.status };
   }
 };
+
+export const listDiasLetivos = async (params) => {
+  const url = "/dias-letivos/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    return { data: response.data, status: response.status };
+  }
+};

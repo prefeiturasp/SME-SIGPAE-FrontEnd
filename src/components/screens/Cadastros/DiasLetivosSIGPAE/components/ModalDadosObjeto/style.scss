@@ -1,0 +1,20 @@
+div.modal-dados-objeto-dia-letivo {
+  div.modal-content {
+    margin-top: 25%;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+  }
+  div.modal-body {
+    overflow-y: auto;
+    flex: 1;
+  }
+  div.footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1em;
+  }
+  .btn-footer-modal {
+    min-width: 130px;
+  }
+}

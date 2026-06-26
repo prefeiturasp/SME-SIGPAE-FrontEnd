@@ -4,12 +4,15 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { CalendarioEdicaoExterna } from "src/components/Shareable/CalendarioEdicaoExterna";
 import {
   CADASTROS,
   CONFIGURACOES,
   DIAS_LETIVOS,
   EDITAR,
 } from "src/configs/constants";
+import { usuarioEhCODAEGestaoAlimentacao } from "src/helpers/utilities";
+import { listDiasLetivos } from "src/services/diasLetivos";
 
 export const DiasLetivosSIGPAE = () => {
   return (
@@ -31,6 +34,14 @@ export const DiasLetivosSIGPAE = () => {
               className="btn-cadastrar"
             />
           </Link>
+          <CalendarioEdicaoExterna
+            getObjetos={listDiasLetivos}
+            nomeObjeto="letivos"
+            nomeObjetoMinusculo="letivo"
+            setObjeto={() => {}}
+            deleteObjeto={() => {}}
+            podeEditar={usuarioEhCODAEGestaoAlimentacao()}
+          />
         </div>
       </div>
     </div>
