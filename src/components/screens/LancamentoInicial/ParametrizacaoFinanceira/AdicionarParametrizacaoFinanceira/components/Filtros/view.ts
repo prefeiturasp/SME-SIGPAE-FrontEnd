@@ -32,14 +32,14 @@ import {
 } from "src/configs/constants";
 
 type Props = {
-  setGrupoSelecionado: Dispatch<SetStateAction<string>>;
-  setEditalSelecionado: Dispatch<SetStateAction<string>>;
-  setLoteSelecionado: Dispatch<SetStateAction<string>>;
-  setFaixasEtarias: Dispatch<SetStateAction<Array<any>>>;
-  setTiposAlimentacao: Dispatch<SetStateAction<Array<any>>>;
-  setParametrizacao: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
-  uuidParametrizacao: string | null;
-  form: FormApi<any, any>;
+  setGrupoSelecionado?: Dispatch<SetStateAction<string>>;
+  setEditalSelecionado?: Dispatch<SetStateAction<string>>;
+  setLoteSelecionado?: Dispatch<SetStateAction<string>>;
+  setFaixasEtarias?: Dispatch<SetStateAction<Array<any>>>;
+  setTiposAlimentacao?: Dispatch<SetStateAction<Array<any>>>;
+  setParametrizacao?: Dispatch<SetStateAction<ParametrizacaoFinanceiraPayload>>;
+  uuidParametrizacao?: string | null;
+  form?: FormApi<any, any>;
 };
 
 export default ({
@@ -82,9 +82,12 @@ export default ({
     }
   };
 
-  const getLotesAsync = async () => {
+  const getLotesAsync = async (editalUuid?: string) => {
     try {
-      const { data } = await getLotesSimples();
+      const params = editalUuid
+        ? { contratos_do_lote__edital__uuid: editalUuid }
+        : null;
+      const { data } = await getLotesSimples(params);
       const lotes = data.results;
       const lotesOrdenados = lotes.sort((loteA, loteB) => {
         return loteA.diretoria_regional.nome < loteB.diretoria_regional.nome;
@@ -139,7 +142,7 @@ export default ({
   const getFaixasEtariasAsync = async () => {
     try {
       const { data } = await getFaixasEtarias();
-      setFaixasEtarias(data.results);
+      setFaixasEtarias?.(data.results);
     } catch {
       toastError(
         "Erro ao carregar faixas etárias. Tente novamente mais tarde.",
@@ -191,7 +194,7 @@ export default ({
         tabelas: dadosTabelas,
       };
 
-      setParametrizacao(parametrizacao);
+      setParametrizacao?.(parametrizacao);
     } catch {
       toastError(
         "Erro ao carregar parametrização financeira. Tente novamente mais tarde.",
@@ -204,13 +207,21 @@ export default ({
   }, []);
 
   const onChangeEdital = (edital: string) => {
-    form.change("edital", edital);
-    setEditalSelecionado(editais.find((e) => e.uuid === edital).nome);
+    form?.change("edital", edital);
+    form?.change("lote", null);
+    setLoteSelecionado?.("");
+    if (edital) {
+      setEditalSelecionado?.(editais.find((e) => e.uuid === edital).nome);
+      getLotesAsync(edital);
+    } else {
+      setEditalSelecionado?.("");
+      getLotesAsync();
+    }
   };
 
   const onChangeLote = (lote: string) => {
-    form.change("lote", lote);
-    setLoteSelecionado(lotes.find((e) => e.uuid === lote).nome);
+    form?.change("lote", lote);
+    setLoteSelecionado?.(lotes.find((e) => e.uuid === lote).nome);
   };
 
   const getGruposPendentes = async (carregamento = true) => {
@@ -301,9 +312,9 @@ export default ({
   };
 
   const onChangeTiposUnidades = (grupo: string) => {
-    form.change("grupo_unidade_escolar", grupo);
+    form?.change("grupo_unidade_escolar", grupo);
     const selecionado = gruposUnidadesOpcoes.find((e) => e.uuid === grupo).nome;
-    setGrupoSelecionado(selecionado);
+    setGrupoSelecionado?.(selecionado);
 
     const conteudoParenteses = extrairConteudoEntreParenteses(selecionado);
     const unidades = conteudoParenteses
@@ -315,12 +326,12 @@ export default ({
       tiposUnidades,
     );
 
-    setTiposAlimentacao(tiposAlimentacao);
+    setTiposAlimentacao?.(tiposAlimentacao);
   };
 
   const inicializouRef = useRef(false);
   useEffect(() => {
-    if (!uuidParametrizacao || carregando || !form) return;
+    if (!uuidParametrizacao || carregando) return;
     if (inicializouRef.current) return;
 
     const values = form.getState().values;

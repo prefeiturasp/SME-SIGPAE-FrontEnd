@@ -1,6 +1,6 @@
 import moment from "moment";
 import { ChangeEvent, Dispatch, SetStateAction, useState } from "react";
-import { Field, FormSpy } from "react-final-form";
+import { Field, FormSpy, useForm } from "react-final-form";
 import { FormApi } from "final-form";
 import { required } from "src/helpers/fieldValidators";
 import { Select } from "src/components/Shareable/Select";
@@ -35,6 +35,9 @@ export default (props: Props) => {
   const [showCopiar, setShowCopiar] = useState(false);
 
   const ehCadastro = props.ehCadastro === true;
+  const formContext = useForm();
+  const filterView = useView({ form: formContext });
+  const view = ehCadastro ? (props as Cadastro).view : filterView;
 
   const onChangeCopiar = async () => {
     if (!ehCadastro) return;
@@ -59,8 +62,6 @@ export default (props: Props) => {
     <div className="row">
       <FormSpy subscription={{ values: true }}>
         {({ values }) => {
-          const view = ehCadastro ? props.view : undefined;
-          const form = ehCadastro ? props.form : undefined;
           const uuidParametrizacao = ehCadastro
             ? props.uuidParametrizacao
             : null;
@@ -79,7 +80,7 @@ export default (props: Props) => {
                   required={ehCadastro}
                   disabled={!!uuidParametrizacao}
                   onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (ehCadastro && form) view.onChangeEdital(e.target.value);
+                    view.onChangeEdital(e.target.value);
                   }}
                 />
               </div>
@@ -96,7 +97,7 @@ export default (props: Props) => {
                   required={ehCadastro}
                   disabled={!!uuidParametrizacao}
                   onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (ehCadastro && form) view.onChangeLote(e.target.value);
+                    view.onChangeLote(e.target.value);
                   }}
                 />
               </div>
@@ -112,8 +113,7 @@ export default (props: Props) => {
                   validate={ehCadastro ? required : undefined}
                   required={ehCadastro}
                   onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-                    if (ehCadastro && form)
-                      view.onChangeTiposUnidades(e.target.value);
+                    view.onChangeTiposUnidades(e.target.value);
                   }}
                   disabled={!!uuidParametrizacao}
                 />
