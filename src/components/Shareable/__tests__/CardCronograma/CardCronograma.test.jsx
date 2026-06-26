@@ -34,7 +34,7 @@ describe("CardCronograma", () => {
     programa_leve_leite: true,
   };
 
-  test("Deve aplicar a classe 'point-to-point' quando o tipo de entrega for Ponto a Ponto", () => {
+  test("Deve aplicar a classe 'ponto-a-ponto' quando o tipo de entrega for Ponto a Ponto", () => {
     render(
       <MemoryRouter>
         <CardCronograma
@@ -53,11 +53,11 @@ describe("CardCronograma", () => {
       .getByText("Solicitação Ponto a Ponto")
       .closest("p");
 
-    expect(paragraph).toHaveClass("point-to-point");
+    expect(paragraph).toHaveClass("ponto-a-ponto");
     expect(paragraph).not.toHaveClass("programa-leve-leite");
   });
 
-  test("Não deve aplicar a classe 'point-to-point' quando o tipo de entrega for Armazém", () => {
+  test("Não deve aplicar a classe 'ponto-a-ponto' quando o tipo de entrega for Armazém", () => {
     render(
       <MemoryRouter>
         <CardCronograma
@@ -74,7 +74,7 @@ describe("CardCronograma", () => {
 
     const paragraph = screen.getByText("Solicitação Armazém").closest("p");
 
-    expect(paragraph).not.toHaveClass("point-to-point");
+    expect(paragraph).not.toHaveClass("ponto-a-ponto");
     expect(paragraph).not.toHaveClass("programa-leve-leite");
   });
 
@@ -98,6 +98,6 @@ describe("CardCronograma", () => {
       .closest("p");
 
     expect(paragraph).toHaveClass("programa-leve-leite");
-    expect(paragraph).toHaveClass("point-to-point");
+    expect(paragraph).toHaveClass("ponto-a-ponto");
   });
 });
