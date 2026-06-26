@@ -21,11 +21,11 @@ export const geraOptionsFichasTecnicas = (
       const nomeFormatado = formatarNumeroEProdutoFichaTecnica(ficha);
       return {
         uuid: ficha.uuid,
-        nome: ficha.flv_ponto_a_ponto
+        nome: ficha.ponto_a_ponto
           ? `${nomeFormatado} (PONTO A PONTO)`
           : nomeFormatado,
         programa: ficha.programa,
-        flv_ponto_a_ponto: ficha.flv_ponto_a_ponto,
+        ponto_a_ponto: ficha.ponto_a_ponto,
       };
     });
 
@@ -52,7 +52,7 @@ export const formataPayload = (
   etapas,
   recebimentos,
 ) => {
-  const isPontoAPonto = fichaTecnicaSelecionada?.flv_ponto_a_ponto;
+  const isPontoAPonto = fichaTecnicaSelecionada?.ponto_a_ponto;
   let payload = {};
   payload.cadastro_finalizado = !rascunho;
   payload.ponto_a_ponto = isPontoAPonto;

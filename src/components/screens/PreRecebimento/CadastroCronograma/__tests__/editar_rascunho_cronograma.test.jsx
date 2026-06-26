@@ -28,7 +28,7 @@ describe("Testes da interface de Cadastro de Cronograma - Edição", () => {
           uuid: "pp-uuid-123",
           numero: "FT-PP-01",
           produto: { nome: "LARANJA" },
-          flv_ponto_a_ponto: true,
+          ponto_a_ponto: true,
           uuid_empresa: mockListaEmpresas.results[7].uuid,
         },
       ],

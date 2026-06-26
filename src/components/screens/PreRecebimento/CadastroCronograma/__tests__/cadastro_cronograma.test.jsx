@@ -28,7 +28,18 @@ describe("Testes da interface de Cadastro de Cronograma", () => {
           uuid: "pp-uuid-123",
           numero: "FT-PP-01",
           produto: { nome: "LARANJA" },
-          flv_ponto_a_ponto: true,
+          categoria: "NAO_PERECIVEIS",
+          tipo_entrega: "PONTO_A_PONTO",
+          ponto_a_ponto: true,
+          uuid_empresa: mockListaEmpresas.results[7].uuid,
+        },
+        {
+          uuid: "armazem-uuid-123",
+          numero: "FT-ARMAZEM-01",
+          produto: { nome: "BATATA" },
+          categoria: "FLV",
+          tipo_entrega: "ARMAZEM",
+          ponto_a_ponto: false,
           uuid_empresa: mockListaEmpresas.results[7].uuid,
         },
       ],
@@ -308,7 +319,9 @@ describe("Testes da interface de Cadastro de Cronograma", () => {
       uuid: "pp-uuid-123",
       numero: "FT-PP-01",
       produto: { nome: "LARANJA" },
-      flv_ponto_a_ponto: true,
+      categoria: "NAO_PERECIVEIS",
+      tipo_entrega: "PONTO_A_PONTO",
+      ponto_a_ponto: true,
       marca: { nome: "Marca X" },
     };
 
@@ -362,5 +375,129 @@ describe("Testes da interface de Cadastro de Cronograma", () => {
         screen.queryByText("Programação de Recebimento"),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it("deve exibir campos de Armazém e Embalagem Secundária quando a ficha FLV não for Ponto a Ponto", async () => {
+    const user = userEvent.setup();
+
+    const fichaArmazem = {
+      uuid: "armazem-uuid-123",
+      numero: "FT-ARMAZEM-01",
+      produto: { nome: "BATATA" },
+      categoria: "FLV",
+      tipo_entrega: "ARMAZEM",
+      ponto_a_ponto: false,
+      marca: { nome: "Marca Armazém" },
+    };
+
+    mock
+      .onGet("/ficha-tecnica/armazem-uuid-123/dados-cronograma/")
+      .reply(200, fichaArmazem);
+
+    const empresa = screen.getByTestId("input-empresa").querySelector("input");
+
+    await user.type(empresa, "Empresa do Luis Zimmermann");
+
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-contrato")
+          .querySelector(".ant-select-selection-search-input"),
+      );
+    });
+
+    const opcaoContrato = await screen.findByText(/LEVE LEITE - PLL/i);
+    await user.click(opcaoContrato);
+
+    const botaoExpandir = screen
+      .getByText("Dados do Produto")
+      .closest(".card-header")
+      .querySelector("button");
+
+    await user.click(botaoExpandir);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ficha Técnica e Produto")).toBeInTheDocument();
+    });
+
+    const selectFichaTecnica = screen
+      .getByTestId("select-div")
+      .querySelector(".ant-select-selection-search-input");
+
+    await act(async () => {
+      fireEvent.mouseDown(selectFichaTecnica);
+    });
+
+    const inputFichaTecnica = screen
+      .getByTestId("select-div")
+      .querySelector("input");
+
+    await user.type(inputFichaTecnica, "FT-ARMAZEM-01");
+
+    const opcoesFichaTecnica = await screen.findAllByText(/FT-ARMAZEM-01/i);
+
+    await user.click(opcoesFichaTecnica[1]);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("marca")).toHaveValue("Marca Armazém");
+      expect(screen.getByText("Armazém")).toBeInTheDocument();
+      expect(
+        screen.getByText("Tipo de Embalagem Secundária"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deve destacar a ficha Ponto a Ponto independentemente da categoria", async () => {
+    const user = userEvent.setup();
+
+    const empresa = screen.getByTestId("input-empresa").querySelector("input");
+
+    await user.type(empresa, "Empresa do Luis Zimmermann");
+
+    await act(async () => {
+      fireEvent.mouseDown(
+        screen
+          .getByTestId("select-contrato")
+          .querySelector(".ant-select-selection-search-input"),
+      );
+    });
+
+    const opcaoContrato = await screen.findByText(/LEVE LEITE - PLL/i);
+    await user.click(opcaoContrato);
+
+    const botaoExpandir = screen
+      .getByText("Dados do Produto")
+      .closest(".card-header")
+      .querySelector("button");
+
+    await user.click(botaoExpandir);
+
+    await waitFor(() => {
+      expect(screen.getByText("Ficha Técnica e Produto")).toBeInTheDocument();
+    });
+
+    const selectFichaTecnica = screen
+      .getByTestId("select-div")
+      .querySelector(".ant-select-selection-search-input");
+
+    await act(async () => {
+      fireEvent.mouseDown(selectFichaTecnica);
+    });
+
+    const inputFichaTecnica = screen
+      .getByTestId("select-div")
+      .querySelector("input");
+
+    await user.type(inputFichaTecnica, "FT-PP-01");
+
+    const elementosFicha = await screen.findAllByText(/FT-PP-01/i);
+
+    const opcaoFicha = elementosFicha
+      .map((elemento) => elemento.closest(".ant-select-item-option"))
+      .find(Boolean);
+
+    expect(opcaoFicha).toBeInTheDocument();
+    expect(opcaoFicha).toHaveClass("verde");
+    expect(opcaoFicha).toHaveClass("font-weight-bold");
   });
 });

@@ -588,7 +588,7 @@ export default () => {
                                 </label>
                                 <Field
                                   className={`input-cronograma ${
-                                    fichaTecnicaSelecionada?.flv_ponto_a_ponto
+                                    fichaTecnicaSelecionada?.ponto_a_ponto
                                       ? "select-flv"
                                       : ""
                                   }`}
@@ -614,7 +614,7 @@ export default () => {
                                       value={e.nome}
                                       key={e.uuid}
                                       className={
-                                        e.flv_ponto_a_ponto
+                                        e.ponto_a_ponto
                                           ? "verde font-weight-bold"
                                           : ""
                                       }
@@ -641,7 +641,7 @@ export default () => {
                                 />
                               </div>
 
-                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
+                              {!fichaTecnicaSelecionada?.ponto_a_ponto && (
                                 <>
                                   <div className="row mt-3">
                                     <div className="row">
@@ -726,7 +726,7 @@ export default () => {
                                 </>
                               )}
 
-                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto ? (
+                              {!fichaTecnicaSelecionada?.ponto_a_ponto ? (
                                 <>
                                   <div className="col-3">
                                     <Field
@@ -764,7 +764,7 @@ export default () => {
                             </div>
 
                             <div className="row mt-3">
-                              {!fichaTecnicaSelecionada?.flv_ponto_a_ponto ? (
+                              {!fichaTecnicaSelecionada?.ponto_a_ponto ? (
                                 <>
                                   <div className="col-4">
                                     <Field
@@ -886,7 +886,7 @@ export default () => {
                               )}
                             </div>
 
-                            {fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
+                            {fichaTecnicaSelecionada?.ponto_a_ponto && (
                               <div className="row mt-3">
                                 <div className="col-4">
                                   <Field
@@ -934,15 +934,15 @@ export default () => {
                               duplicados={duplicados}
                               restante={restante}
                               unidadeMedida={unidadeSelecionada}
-                              flv_ponto_a_ponto={
-                                fichaTecnicaSelecionada?.flv_ponto_a_ponto
+                              ponto_a_ponto={
+                                fichaTecnicaSelecionada?.ponto_a_ponto
                               }
                             />
                           </div>
                         </div>
                       </div>
 
-                      {!fichaTecnicaSelecionada?.flv_ponto_a_ponto && (
+                      {!fichaTecnicaSelecionada?.ponto_a_ponto && (
                         <FormRecebimento
                           values={values}
                           form={form}
