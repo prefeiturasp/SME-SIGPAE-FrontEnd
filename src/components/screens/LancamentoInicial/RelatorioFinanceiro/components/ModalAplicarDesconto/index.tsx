@@ -395,6 +395,7 @@ const ModalAplicarDesconto = ({
                           <div className="row mt-2">
                             <div className="col-4">
                               <Field
+                                dataTestId={`tipo_lancamento_${index}`}
                                 component={Select}
                                 options={TIPO_LANCAMENTO_OPTIONS}
                                 label="Tipo de Lançamento"
@@ -418,6 +419,7 @@ const ModalAplicarDesconto = ({
                                 />
                               ) : (
                                 <Field
+                                  dataTestId={`tipo_alimentacao_${index}`}
                                   component={Select}
                                   options={[
                                     {
@@ -439,6 +441,7 @@ const ModalAplicarDesconto = ({
                             </div>
                             <div className="col-4">
                               <Field
+                                dataTestId={`clausula_desconto_${index}`}
                                 component={Select}
                                 options={[
                                   { uuid: "", nome: "Selecione a cláusula" },
@@ -458,6 +461,7 @@ const ModalAplicarDesconto = ({
                           <div className="row mt-2">
                             <div className="col-4">
                               <Field
+                                dataTestId={`quantidade_${index}`}
                                 component={InputText}
                                 label="Quantidade"
                                 name={`${name}.quantidade`}
@@ -469,6 +473,7 @@ const ModalAplicarDesconto = ({
                             </div>
                             <div className="col-4">
                               <Field
+                                dataTestId={`valor_unitario_${index}`}
                                 component={InputText}
                                 label="Valor Unitário"
                                 name={`${name}.valor_unitario`}
@@ -478,6 +483,7 @@ const ModalAplicarDesconto = ({
                             </div>
                             <div className="col-4">
                               <Field
+                                dataTestId={`total_desconto_${index}`}
                                 component={InputText}
                                 label="Total do Desconto"
                                 name={`${name}.total_desconto`}

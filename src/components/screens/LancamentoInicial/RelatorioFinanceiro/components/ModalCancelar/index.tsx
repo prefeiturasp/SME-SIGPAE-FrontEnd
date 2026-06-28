@@ -33,6 +33,7 @@ const ModalCancelar = ({ showModal, setShowModal, onCancelar }: Props) => {
         </Modal.Body>
         <Modal.Footer>
           <Botao
+            dataTestId="botao-nao"
             texto="Não"
             type={BUTTON_TYPE.BUTTON}
             onClick={() => {
