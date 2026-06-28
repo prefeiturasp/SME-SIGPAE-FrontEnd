@@ -528,15 +528,11 @@ const ModalAplicarDesconto = ({
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
                   className="ms-3"
-                  onClick={() =>
-                    descontos?.length > 0
-                      ? setShowModal(false)
-                      : setCancelar(true)
-                  }
+                  onClick={() => setCancelar(true)}
                 />
                 <Botao
                   dataTestId="botao-salvar"
-                  texto="Salvar Empenhos"
+                  texto="Salvar Descontos"
                   type={BUTTON_TYPE.SUBMIT}
                   style={BUTTON_STYLE.GREEN}
                   className="ms-3"
