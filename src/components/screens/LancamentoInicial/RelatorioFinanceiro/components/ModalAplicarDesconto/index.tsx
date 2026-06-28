@@ -269,7 +269,7 @@ const ModalAplicarDesconto = ({
   };
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+    <Modal show={showModal} onHide={() => setCancelar(true)} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Aplicar Descontos</Modal.Title>
       </Modal.Header>
