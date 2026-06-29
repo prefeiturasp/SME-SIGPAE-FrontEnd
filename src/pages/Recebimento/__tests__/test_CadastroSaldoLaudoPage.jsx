@@ -12,6 +12,8 @@ import CadastroAjusteSaldoPage from "src/pages/Recebimento/AjusteSaldoLaudo/Cada
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosDilogQualidade } from "src/mocks/meusDados/dilog-qualidade";
 
+import { agruparMilharDecimalModificado } from "src/components/Shareable/Input/InputText/helpers";
+
 import { mockGetCronogramasComDocs } from "src/mocks/services/ajusteSaldo.service/mockGetCronogramasComDocs";
 import { mockGetDocumentosCronograma } from "src/mocks/services/ajusteSaldo.service/mockGetDocumentosCronograma";
 
@@ -93,7 +95,9 @@ describe("Testar Cadastro de Ajustes de Saldo do Laudo", () => {
     fireEvent.blur(inputQuantidade);
 
     const expectedSaldo = (parseFloat(documento.saldo_atual) - 10).toFixed(2);
-    const saldoAtualInput = await screen.findByDisplayValue(expectedSaldo);
+    const saldoAtualInput = await screen.findByDisplayValue(
+      `${agruparMilharDecimalModificado(expectedSaldo)} ${documento.unidade_medida}`,
+    );
     expect(saldoAtualInput).toBeInTheDocument();
   });
 });
