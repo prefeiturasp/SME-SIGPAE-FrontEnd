@@ -188,7 +188,9 @@ const ModalAplicarDesconto = ({
   };
 
   const getClausulasParaDescontosAsync = async () => {
-    const response = await getClausulasParaDescontos();
+    const response = await getClausulasParaDescontos(undefined, {
+      edital: relatorioConsolidado?.edital?.uuid,
+    });
     if (response.status === HTTP_STATUS.OK) setClausulas(response.data.results);
     else toastError("Erro ao carregar cláusulas para descontos.");
   };
