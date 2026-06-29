@@ -20,10 +20,10 @@ import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEt
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import { mockGetDadosParametrizacaoFinanceira } from "src/mocks/services/parametrizacao_financeira.service/mockGetDadosParametrizacaoFinanceira";
 import { mockParametrizacoesFinanceiras } from "src/mocks/services/parametrizacao_financeira.service/mockGetParametrizacoesFinanceiras";
-import AdicionarParametrizacaoFinanceira from "../index";
+import { EditarParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/EditarParametrizacaoFinanceiraPage";
 import mock from "src/services/_mock";
 
-describe("Testes formulário de edição - Parametrização Financeira", () => {
+describe("Testes formulário de edição - Editar Parametrização Financeira Page", () => {
   const faixasEtarias = mockFaixasEtarias.results;
   const uuid = mockGetDadosParametrizacaoFinanceira.uuid;
 
@@ -70,7 +70,7 @@ describe("Testes formulário de edição - Parametrização Financeira", () => {
               setMeusDados: jest.fn(),
             }}
           >
-            <AdicionarParametrizacaoFinanceira />
+            <EditarParametrizacaoFinanceiraPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>,

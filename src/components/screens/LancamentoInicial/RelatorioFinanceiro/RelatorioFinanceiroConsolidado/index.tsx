@@ -207,7 +207,7 @@ export function RelatorioFinanceiroConsolidado() {
     if (!unidadesUuid) return;
 
     const response = await getEscolasParaFiltros({
-      lote__uid: state?.lote[0],
+      lote__uuid: state?.lote[0],
       tipo_unidade__uuid__in: unidadesUuid,
     });
 
