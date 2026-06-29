@@ -1,3 +1,4 @@
+import "./styles.scss";
 import { Select as SelectAntd, Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
@@ -32,7 +33,6 @@ import {
   getClausulaParaDesconto,
 } from "src/services/medicaoInicial/clausulasParaDescontos.service";
 import { formataValorDecimal, parserValorDecimal } from "../../helper.jsx";
-import "./styles.scss";
 
 const VALORES_INICIAIS: ClausulaPayload = {
   edital: null,
@@ -84,7 +84,7 @@ export function CadastroDeClausulas() {
 
   const editarClausulaParaDesconto = async (
     uuid: string,
-    values: ClausulaPayload
+    values: ClausulaPayload,
   ) => {
     setCarregando(true);
     const response = await editaClausulaParaDesconto(uuid, values);
@@ -113,7 +113,7 @@ export function CadastroDeClausulas() {
       setValoresInicias(dadosClausula);
     } else {
       setErroAPI(
-        "Erro ao carregar dados da cláusula. Tente novamente mais tarde."
+        "Erro ao carregar dados da cláusula. Tente novamente mais tarde.",
       );
     }
     setCarregando(false);
@@ -152,6 +152,7 @@ export function CadastroDeClausulas() {
                         <div className="col-3 d-flex">
                           <span className="required-asterisk">*</span>
                           <Field
+                            dataTestId="select-edital"
                             name="edital"
                             label="Nº do Edital"
                             component={ASelect}
@@ -182,6 +183,7 @@ export function CadastroDeClausulas() {
                         <div className="col-3 d-flex">
                           <span className="required-asterisk">*</span>
                           <Field
+                            dataTestId="edital"
                             name="numero_clausula"
                             label="Nº da Cláusula"
                             placeholder="Ex. 7.1.1"
@@ -194,6 +196,7 @@ export function CadastroDeClausulas() {
                         <div className="col-3 d-flex">
                           <span className="required-asterisk">*</span>
                           <Field
+                            dataTestId="item_clausula"
                             name="item_clausula"
                             label="Item da Cláusula"
                             placeholder="Ex. a"
@@ -206,6 +209,7 @@ export function CadastroDeClausulas() {
                         <div className="col-3 d-flex">
                           <span className="required-asterisk">*</span>
                           <Field
+                            dataTestId="porcentagem_desconto"
                             name="porcentagem_desconto"
                             label="% de Desconto"
                             placeholder="Apenas números"
@@ -224,6 +228,7 @@ export function CadastroDeClausulas() {
 
                         <div className="col-12 d-flex">
                           <Field
+                            dataTestId="descricao"
                             name="descricao"
                             label="Descrição"
                             placeholder="Texto da cláusula"
