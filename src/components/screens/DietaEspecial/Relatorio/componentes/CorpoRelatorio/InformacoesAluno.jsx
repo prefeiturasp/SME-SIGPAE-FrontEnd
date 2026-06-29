@@ -34,12 +34,18 @@ const InformacoesAluno = ({
   statusSolicitacao,
   tipoSolicitacao,
   dietaEspecial,
+  card,
+  ehAutorizadaTemporariamente,
 }) => {
   const [fotoAlunoSrc, setFotoAlunoSrc] = useState(null);
   const [criadoRf, setCriadoRf] = useState(null);
   const [deletandoImagem, setDeletandoImagem] = useState(false);
   const [atualizandoImagem, setAtualizandoImagem] = useState(false);
   const inputRef = useRef(null);
+  const exibirPeriodo =
+    ["autorizadas", "autorizado"].includes(card) &&
+    !ehAutorizadaTemporariamente &&
+    aluno.periodo;
 
   async function getFoto() {
     setAtualizandoImagem(true);
@@ -186,13 +192,31 @@ const InformacoesAluno = ({
           <div className="col-12 mb-3 p-0">
             <label className="sectionName">Dados do aluno</label>
           </div>
-          <div className="row col-3 mb-3 p-0">
-            <Field
-              component={InputText}
-              name="aluno.codigo_eol"
-              label="Código EOL do Aluno"
-              disabled={true}
-            />
+          <div className="row mb-3 p-0">
+            <div className="col-2">
+              <Field
+                component={InputText}
+                name="aluno.codigo_eol"
+                label="Código EOL do Aluno"
+                disabled={true}
+              />
+            </div>
+            {exibirPeriodo && (
+              <div className="col-2">
+                <Field
+                  component={InputText}
+                  name="aluno.periodo"
+                  label="Período"
+                  disabled={true}
+                  format={(value) =>
+                    value
+                      ? value.charAt(0).toUpperCase() +
+                        value.slice(1).toLowerCase()
+                      : value
+                  }
+                />
+              </div>
+            )}
           </div>
           <div className="row">
             <div className="col-xl-1 col-lg-2 my-auto foto-aluno">

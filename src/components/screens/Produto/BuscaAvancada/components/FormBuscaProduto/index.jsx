@@ -181,6 +181,8 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
                         ? moment(values.data_final, "DD/MM/YYYY")._d
                         : moment()._d
                     }
+                    showMonthDropdown={true}
+                    showYearDropdown={true}
                   />
                 </div>
                 <div className="col mt-1">
@@ -196,6 +198,8 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
                         : null
                     }
                     maxDate={moment()._d}
+                    showMonthDropdown={true}
+                    showYearDropdown={true}
                   />
                 </div>
               </div>

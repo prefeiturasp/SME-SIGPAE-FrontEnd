@@ -23,9 +23,13 @@ export default ({
           <div className="card-listagem-solicitacoes">
             {solicitacoes &&
               solicitacoes.map((value, key) => {
-                const ehFLV =
-                  value.categoria === "FLV" &&
-                  value.tipo_entrega === "PONTO_A_PONTO";
+                const ehPontoAPonto = value.tipo_entrega === "PONTO_A_PONTO";
+
+                const classeDestaque = ehPontoAPonto
+                  ? "categoria-ponto-a-ponto"
+                  : value.programa_leve_leite
+                    ? "programa-leve-leite"
+                    : "";
 
                 return (
                   <div key={key} className="row">
@@ -33,25 +37,24 @@ export default ({
                       {exibirTooltip ? (
                         <Tooltip
                           placement="topLeft"
-                          key={key}
                           title={value.textoCompleto}
                         >
-                          <NavLink key={key} to={value.link}>
-                            <p
-                              className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
-                            >{`${value.texto}`}</p>
+                          <NavLink to={value.link}>
+                            <p className={`data ms-4 ${classeDestaque}`}>
+                              {value.texto}
+                            </p>
                           </NavLink>
                         </Tooltip>
                       ) : (
-                        <NavLink key={key} to={value.link}>
-                          <p
-                            className={`data ms-4 ${value.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
-                          >{`${value.texto}`}</p>
+                        <NavLink to={value.link}>
+                          <p className={`data ms-4 ${classeDestaque}`}>
+                            {value.texto}
+                          </p>
                         </NavLink>
                       )}
                     </div>
                     <span
-                      className={`date-time col-3 text-end ${value.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
+                      className={`date-time col-3 text-end ${classeDestaque}`}
                     >
                       {value.data}
                     </span>

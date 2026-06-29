@@ -192,6 +192,8 @@ export default ({ onSubmit, loading, setLoading }) => {
                   }
                   required
                   validate={required}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="col-3">
@@ -208,6 +210,8 @@ export default ({ onSubmit, loading, setLoading }) => {
                   }
                   maxDate={moment()._d}
                   validate={required}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
             </div>

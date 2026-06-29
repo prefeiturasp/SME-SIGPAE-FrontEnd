@@ -733,6 +733,7 @@ export const AcompanhamentoDeLancamentos = () => {
       lotes,
       data_inicial: dataInicialFormatada,
       data_final: dataFinalFormatada,
+      recreio_uuid: recreioNasFerias,
     };
 
     const funcExportarRelatorio = {
@@ -1376,6 +1377,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                 }
                                 nomeRelatorio="Relatório Consolidado"
                                 mesAnoSelecionado={mesAno}
+                                recreioNasFerias={recreioNasFerias !== null}
                               />
                             </>
                           )}

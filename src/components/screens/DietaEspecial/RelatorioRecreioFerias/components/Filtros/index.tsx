@@ -63,7 +63,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
         resposta.data.map(({ id, descricao }) => ({
           value: id,
           label: descricao,
-        }))
+        })),
       );
     } else setErro("Erro ao carregar diagnósticos.");
   };
@@ -87,8 +87,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
           resposta.data.results.map(({ uuid, nome, diretoria_regional }) => ({
             nome: `${nome} - ${diretoria_regional.nome}`,
             uuid: uuid,
-          }))
-        )
+          })),
+        ),
       );
     } else setErro("Erro ao carregar lotes.");
   };
@@ -100,7 +100,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
         resposta.data.map(({ id, nome }) => ({
           value: id,
           label: nome,
-        }))
+        })),
       );
     } else setErro("Erro ao carregar classificações de dieta.");
   };
@@ -134,7 +134,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
           resposta.data.map(({ uuid, codigo_eol_escola }) => ({
             value: uuid,
             label: codigo_eol_escola,
-          }))
+          })),
         );
       }
     } else toastError("Erro ao carregar unidades educacionais.");
@@ -151,7 +151,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
       setValuesForm(values);
       await carregaDietas(values);
     },
-    [setValuesForm, carregaDietas]
+    [setValuesForm, carregaDietas],
   );
 
   const onClear = useCallback(() => {
@@ -182,7 +182,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   options={lotes}
                   naoDesabilitarPrimeiraOpcao
                   onChangeEffect={async (
-                    e: React.ChangeEvent<HTMLSelectElement>
+                    e: React.ChangeEvent<HTMLSelectElement>,
                   ) => {
                     const value = e.target.value;
                     form.change("unidades_educacionais_selecionadas", []);
@@ -206,7 +206,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   onSelectedChanged={(values: opcaoMultiSelect[]) => {
                     form.change(
                       `unidades_educacionais_selecionadas`,
-                      values.map(({ value }) => value)
+                      values.map(({ value }) => value),
                     );
                   }}
                   disabled={unidadesEducacionais?.length === 0}
@@ -227,7 +227,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   onSelectedChanged={(values: opcaoMultiSelect[]) => {
                     form.change(
                       `classificacoes_selecionadas`,
-                      values.map(({ value }) => value)
+                      values.map(({ value }) => value),
                     );
                   }}
                 />
@@ -246,6 +246,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
                       ? moment(values.data_fim, "DD/MM/YYYY").toDate()
                       : null
                   }
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="col-4">
@@ -262,6 +264,8 @@ export const Filtros: React.FC<FiltrosProps> = ({
                       ? moment(values.data_inicio, "DD/MM/YYYY").toDate()
                       : null
                   }
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="col-8">
@@ -279,7 +283,7 @@ export const Filtros: React.FC<FiltrosProps> = ({
                   onSelectedChanged={(values: opcaoMultiSelect[]) => {
                     form.change(
                       "alergias_intolerancias_selecionadas",
-                      values.map(({ value }) => value)
+                      values.map(({ value }) => value),
                     );
                   }}
                 />

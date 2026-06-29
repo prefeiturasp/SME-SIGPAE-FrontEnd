@@ -183,6 +183,8 @@ const CardBody = (props) => {
                             props.updateDataEventoAlimentacao(value);
                             props.onChange(values_);
                           }}
+                          showMonthDropdown={true}
+                          showYearDropdown={true}
                         />
                       </div>
                     </>

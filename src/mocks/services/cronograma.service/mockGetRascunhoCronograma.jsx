@@ -85,7 +85,7 @@ export const mockGetRascunhoCronograma = {
     uuid_empresa: "d0630b2b-8e45-472c-b9c6-90451b60b081",
     pregao_chamada_publica: "643653",
     programa: "ALIMENTACAO_ESCOLAR",
-    flv_ponto_a_ponto: false,
+    ponto_a_ponto: false,
     marca: {
       uuid: "3b36df9d-184b-4be3-a6d9-d56d1e6096c3",
       nome: "KIKO HORTIFRUTI",

@@ -115,6 +115,8 @@ export function Filtros({
                   value && formataData(value, "DD/MM/YYYY", "YYYY-MM-DD")
                 }
                 disabled={!values.mes_ano}
+                showMonthDropdown={true}
+                showYearDropdown={true}
               />
             </div>
 
@@ -136,6 +138,8 @@ export function Filtros({
                   value && formataData(value, "DD/MM/YYYY", "YYYY-MM-DD")
                 }
                 disabled={!values.mes_ano}
+                showMonthDropdown={true}
+                showYearDropdown={true}
               />
             </div>
           </div>

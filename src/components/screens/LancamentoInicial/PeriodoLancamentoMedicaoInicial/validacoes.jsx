@@ -882,6 +882,7 @@ export const validacoesTabelaAlimentacao = (
   );
 
   if (
+    location.state.grupo === "Programas e Projetos" &&
     `${rowName}__dia_${dia}__categoria_${categoria}` in
       dadosValoresInclusoesAutorizadasState &&
     Number(allValues[`${rowName}__dia_${dia}__categoria_${categoria}`]) >
@@ -946,6 +947,10 @@ export const validacoesTabelaAlimentacao = (
       return `Número apontado de alimentação é maior que número de alunos frequentes. Ajuste o apontamento. `;
     } else if (
       validacaoDiaLetivo(dia) &&
+      !(
+        `${rowName}__dia_${dia}__categoria_${categoria}` in
+        dadosValoresInclusoesAutorizadasState
+      ) &&
       allValues[inputName] > maxFrequencia
     ) {
       return `Lançamento maior que a frequência de alunos no dia.`;

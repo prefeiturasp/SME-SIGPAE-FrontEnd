@@ -27,6 +27,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "123 LOCK",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 156,
@@ -64,6 +65,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "ALERGIA A CAMARÃO",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 4,
@@ -97,6 +99,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "ALERGIA A CAMARÃO",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 5,
@@ -130,6 +133,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "123 LOCK",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 3,
@@ -163,6 +167,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "ABCDE 3 TESTE",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 3,
@@ -200,6 +205,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "123 LOCK",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 3,
@@ -233,6 +239,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "DIETA DA SOPA",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 411,
@@ -270,6 +277,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "ABCDE 3 TESTE",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 127,
@@ -303,6 +311,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "ALERGIA A CAMARÃO",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 156,
@@ -336,6 +345,7 @@ export const mockRelatorioDietasEpeciais = {
       },
       nome_protocolo: "ALERGIA A CAMARÃO",
       data_ultimo_log: null,
+      data_autorizacao: "30/01/2024",
       alergias_intolerancias: [
         {
           id: 127,

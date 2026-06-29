@@ -356,11 +356,13 @@ export const exportarPDFAsyncSolicitacoesRelatorioHistoricoDietas = async (
   }
 };
 
-export const getUnidadesEducacionaisComCodEol = async (parametros) => {
-  return await axios.post(
-    `/escolas-simplissima-com-eol/escolas-com-cod-eol/`,
-    parametros,
-  );
+export const getUnidadesEducacionaisComCodEol = async (params) => {
+  const url = `/escolas-simplissima-com-eol/escolas-com-cod-eol/`;
+  const response = await axios.post(url, params).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
 };
 
 export const getUnidadesEducacionaisTercTotal = async (parametros) => {

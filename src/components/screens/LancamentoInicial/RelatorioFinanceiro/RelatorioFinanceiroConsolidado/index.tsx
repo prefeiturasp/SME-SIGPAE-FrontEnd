@@ -28,10 +28,17 @@ import Botao from "src/components/Shareable/Botao";
 import ModalEditarEmpenhos from "../components/ModalEditarEmpenhos";
 import {
   exportarPDFAsyncRelatorioAtesteFinanceiro,
+  getDescontoFinanceiro,
   getRelatorioDadosLiquidacao,
 } from "src/services/medicaoInicial/relatorioFinanceiro.service";
-import { DadosLiquidacaoEmpenho } from "src/interfaces/relatorio_financeiro.interface";
+import {
+  DadosLiquidacaoEmpenho,
+  DescontoFinanceiro,
+  Escola,
+} from "src/interfaces/relatorio_financeiro.interface";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import ModalAplicarDesconto from "../components/ModalAplicarDesconto";
+import { getEscolasParaFiltros } from "src/services/escola.service";
 
 type TotaisParams = {
   mes: string;
@@ -47,13 +54,16 @@ export function RelatorioFinanceiroConsolidado() {
   const [dadosLiquidacao, setDadosLiquidacao] = useState<
     DadosLiquidacaoEmpenho[]
   >([]);
+  const [descontos, setDescontos] = useState<DescontoFinanceiro[]>([]);
   const [totaisConsumo, setTotaisConsumo] = useState<any>([]);
   const [tiposAlimentacao, setTiposAlimentacao] = useState<any[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
   const [editarEmpenhos, setEditarEmpenhos] = useState<boolean>(false);
+  const [aplicarDesconto, setAplicarDesconto] = useState<boolean>(false);
   const [exportando, setExportando] = useState<boolean>(false);
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState<boolean>(false);
+  const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
 
   const [searchParams] = useSearchParams();
   const uuidRelatorioFinanceiro = searchParams.get("uuid");
@@ -172,19 +182,55 @@ export function RelatorioFinanceiroConsolidado() {
     else toastError("Erro ao carregar dados para liquidação.");
   };
 
+  const getDadosDescontos = async () => {
+    const response = await getDescontoFinanceiro({
+      relatorio_financeiro: uuidRelatorioFinanceiro,
+    });
+
+    if (response.status === HTTP_STATUS.OK) setDescontos(response.data.results);
+    else toastError("Erro ao carregar dados para liquidação.");
+  };
+
   useEffect(() => {
-    if (uuidRelatorioFinanceiro) getDadosLiquidacao();
+    if (uuidRelatorioFinanceiro) {
+      getDadosLiquidacao();
+      getDadosDescontos();
+    }
   }, [uuidRelatorioFinanceiro]);
 
   useEffect(() => {
     getTodasFaixasEtarias();
   }, []);
 
+  const getEscolasAsync = async (): Promise<void> => {
+    const unidadesUuid = getTiposUuid().join(",");
+    if (!unidadesUuid) return;
+
+    const response = await getEscolasParaFiltros({
+      lote__uuid: state?.lote[0],
+      tipo_unidade__uuid__in: unidadesUuid,
+    });
+
+    if (response.status === HTTP_STATUS.OK) {
+      setUnidadesEducacionais(
+        response.data.map((escola: Escola) => ({
+          label: escola.nome,
+          value: escola.uuid,
+        })),
+      );
+    }
+  };
+
   useEffect(() => {
-    if (!state?.grupo_unidade_escolar?.length || !gruposUnidadeEscolar?.length)
+    if (
+      !state?.grupo_unidade_escolar?.length ||
+      !gruposUnidadeEscolar?.length ||
+      !state?.lote?.length
+    )
       return;
     getTiposUnidades();
     getTotaisConsumo();
+    getEscolasAsync();
   }, [state, gruposUnidadeEscolar]);
 
   const grupo =
@@ -270,7 +316,7 @@ export function RelatorioFinanceiroConsolidado() {
                     texto="Aplicar Descontos"
                     type={BUTTON_TYPE.BUTTON}
                     style={BUTTON_STYLE.GREEN_OUTLINE}
-                    disabled
+                    onClick={() => setAplicarDesconto(true)}
                   />
                 </div>
               )}
@@ -311,15 +357,25 @@ export function RelatorioFinanceiroConsolidado() {
         showModal={editarEmpenhos}
         setShowModal={setEditarEmpenhos}
         empenhos={dadosLiquidacao}
-        lote={state?.lote[0]}
         relatorioFinanceiro={uuidRelatorioFinanceiro}
         onSave={(e) => setDadosLiquidacao(e)}
-        tiposUnidades={getTiposUuid()}
+        unidadesEducacionais={unidadesEducacionais}
       />
       <ModalSolicitacaoDownload
         show={exibirModalCentralDownloads}
         setShow={setExibirModalCentralDownloads}
         callbackClose={() => ""}
+      />
+      <ModalAplicarDesconto
+        relatorioFinanceiro={uuidRelatorioFinanceiro}
+        showModal={aplicarDesconto}
+        setShowModal={setAplicarDesconto}
+        unidadesEducacionais={unidadesEducacionais}
+        faixasEtarias={faixasEtarias}
+        descontos={descontos}
+        relatorioConsolidado={relatorioConsolidado}
+        onSave={(e) => setDescontos(e)}
+        tiposAlimentacao={tiposAlimentacao}
       />
     </div>
   );

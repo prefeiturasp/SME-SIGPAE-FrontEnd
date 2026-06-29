@@ -7,7 +7,7 @@ import CronogramaSemanalFLV from "src/components/screens/PreRecebimento/Cronogra
 
 const atual = {
   href: `/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`,
-  titulo: "Cronograma Semanal FLV",
+  titulo: "Cronograma Semanal",
 };
 
 const anteriores = [

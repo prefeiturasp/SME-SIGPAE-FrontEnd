@@ -13,8 +13,15 @@ export const filtraPrioritarios = (pedidos, filtro = null) => {
     const prioridade = filtro
       ? pedido[filtro]["prioridade"]
       : pedido["prioridade"];
+    const motivo = filtro ? pedido[filtro]["motivo"] : pedido["motivo"];
+    // motivo pode ser string (paineis_consolidados) ou objeto {nome} (endpoints diretos)
+    const motivoNome = typeof motivo === "string" ? motivo : motivo?.nome;
 
-    return prioridade === "PRIORITARIO";
+    if (prioridade === "PRIORITARIO") return true;
+    // Lanche Emergencial vencido é tratado como prioritário
+    if (prioridade === "VENCIDO" && motivoNome === "Lanche Emergencial")
+      return true;
+    return false;
   });
 };
 
@@ -42,12 +49,12 @@ export const ordenarPedidosDataMaisRecente = (pedidos) => {
     const dataMaisProxima = obj.inclusoes
       ? obj.inclusoes[0].data
       : obj.dias_motivos_da_inclusao_cemei
-      ? obj.dias_motivos_da_inclusao_cemei[0].data
-      : obj.dias_motivos_da_inclusao_cei
-      ? obj.dias_motivos_da_inclusao_cei[0].data
-      : obj.solicitacao_kit_lanche
-      ? obj.solicitacao_kit_lanche.data
-      : obj.data;
+        ? obj.dias_motivos_da_inclusao_cemei[0].data
+        : obj.dias_motivos_da_inclusao_cei
+          ? obj.dias_motivos_da_inclusao_cei[0].data
+          : obj.solicitacao_kit_lanche
+            ? obj.solicitacao_kit_lanche.data
+            : obj.data;
     const arrayData = (
       obj.data_inicial ||
       obj.alterar_dia ||
@@ -60,7 +67,7 @@ export const ordenarPedidosDataMaisRecente = (pedidos) => {
   });
 
   const pedidosOrdenados = pedidosFiltradosCopy.sort(
-    (objA, objB) => Number(objA.date) - Number(objB.date)
+    (objA, objB) => Number(objA.date) - Number(objB.date),
   );
 
   return pedidosOrdenados;

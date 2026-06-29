@@ -158,7 +158,7 @@ describe("Testes no componente de FormEtapa - PreRecebimento", () => {
       duplicados: [],
       ehAlteracao: false,
       unidadeMedida: { nome: "UN" },
-      flv_ponto_a_ponto: true,
+      ponto_a_ponto: true,
     };
 
     beforeEach(async () => {

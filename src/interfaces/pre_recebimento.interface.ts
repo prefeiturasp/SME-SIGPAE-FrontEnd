@@ -173,7 +173,7 @@ export interface FichaTecnica {
   criado_em: string;
   status: string;
   programa: ProgramaChoices;
-  flv_ponto_a_ponto: boolean;
+  ponto_a_ponto: boolean;
 }
 
 export interface InformacoesNutricionaisFichaTecnica {
