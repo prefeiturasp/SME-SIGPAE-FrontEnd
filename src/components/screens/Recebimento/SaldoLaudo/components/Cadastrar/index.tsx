@@ -146,13 +146,17 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
       const saldoAtual =
         parseFloat(documentoSelecionado?.saldo_atual?.toFixed(2)) || 0;
       const saldoFinal = parseFloat((saldoAtual - valorDesconto).toFixed(2));
+      const saldo_final_str =
+        formataMilharDecimal(saldoFinal) +
+        " " +
+        documentoSelecionado.unidade_medida;
 
       if (saldoFinal < 0) {
-        form.change("saldo_atual", saldoAtual.toFixed(2));
+        form.change("saldo_atual", formataMilharDecimal(saldoAtual));
         return;
       }
 
-      form.change("saldo_atual", saldoFinal.toFixed(2));
+      form.change("saldo_atual", saldo_final_str);
     } catch {
       toastError("Erro ao calcular diferença");
     } finally {
