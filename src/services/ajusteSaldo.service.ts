@@ -26,3 +26,8 @@ export const getDocumentosDoCronograma = async (cronograma_uuid: string) => {
     toastError(getMensagemDeErro(error.response?.status));
   }
 };
+
+export const getListagemAjustesSaldo = async (params) => {
+  const url = `/ajuste-saldo-laudo/`;
+  return await axios.get(url, { params });
+};
