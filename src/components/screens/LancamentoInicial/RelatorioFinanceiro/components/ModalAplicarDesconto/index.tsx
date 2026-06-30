@@ -196,8 +196,8 @@ const ModalAplicarDesconto = ({
   };
 
   useEffect(() => {
-    getClausulasParaDescontosAsync();
-  }, []);
+    if (relatorioConsolidado) getClausulasParaDescontosAsync();
+  }, [relatorioConsolidado]);
 
   const getValorUnitario = (
     tipoLancamento: string,
