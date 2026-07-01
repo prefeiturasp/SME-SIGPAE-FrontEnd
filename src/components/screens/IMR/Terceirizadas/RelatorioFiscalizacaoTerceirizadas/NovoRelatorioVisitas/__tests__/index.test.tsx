@@ -1,5 +1,9 @@
+import HTTP_STATUS from "http-status-codes";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   validarFormulariosParaCategoriasDeNotificacao,
   validarFormulariosTiposOcorrencia,
@@ -13,6 +17,7 @@ import {
   createRascunhoFormularioSupervisao,
   updateRascunhoFormularioSupervisao,
 } from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
+import { formataPayloadUpdate } from "../helpers";
 
 let mockFormValues: Record<string, unknown> = {};
 let mockHasValidationErrors = false;
@@ -232,6 +237,25 @@ jest.mock("../components/ModalBaixarNotificacoes", () => ({
 
 jest.mock("../styles.scss", () => ({}));
 
+jest.mock("../components/ModalSalvarRascunho", () => {
+  const React = require("react");
+
+  return {
+    ModalSalvarRascunho: ({ show, values, salvarRascunho }) =>
+      show
+        ? React.createElement(
+            "button",
+            {
+              type: "button",
+              "data-testid": "modal-salvar-rascunho",
+              onClick: () => salvarRascunho(values),
+            },
+            "Confirmar salvamento do rascunho",
+          )
+        : null,
+  };
+});
+
 const mockGetFormularioSupervisao =
   getFormularioSupervisao as jest.MockedFunction<
     typeof getFormularioSupervisao
@@ -282,6 +306,20 @@ const mockUpdateRascunhoFormularioSupervisao =
   updateRascunhoFormularioSupervisao as jest.MockedFunction<
     typeof updateRascunhoFormularioSupervisao
   >;
+
+const mockToastSuccess = toastSuccess as jest.MockedFunction<
+  typeof toastSuccess
+>;
+
+const mockFormataPayloadUpdate = formataPayloadUpdate as jest.MockedFunction<
+  typeof formataPayloadUpdate
+>;
+
+const payloadUpdateMock = {
+  uuid: formularioUuid,
+  escola: escolaUuid,
+  data: "2026-07-01",
+};
 
 describe("NovoRelatorioVisitas", () => {
   window.history.pushState({}, "", "/");
@@ -503,5 +541,86 @@ describe("NovoRelatorioVisitas", () => {
     expect(mockCreateRascunhoFormularioSupervisao).not.toHaveBeenCalled();
 
     expect(mockUpdateRascunhoFormularioSupervisao).not.toHaveBeenCalled();
+  });
+
+  it("atualiza um rascunho existente após a confirmação", async () => {
+    mockFormValues = {
+      uuid: formularioUuid,
+      escola: escolaUuid,
+      data: "2026-07-01",
+    };
+
+    mockFormataPayloadUpdate.mockReturnValue(payloadUpdateMock as any);
+
+    mockUpdateRascunhoFormularioSupervisao.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: {},
+    } as any);
+
+    render(<NovoRelatorioVisitas />);
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Salvar rascunho",
+      }),
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Confirmar salvamento do rascunho",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockUpdateRascunhoFormularioSupervisao).toHaveBeenCalledWith(
+        payloadUpdateMock,
+      );
+    });
+
+    expect(mockFormataPayloadUpdate).toHaveBeenCalled();
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Rascunho do Relatório de Fiscalização salvo com sucesso!",
+    );
+
+    expect(mockNavigate).toHaveBeenCalled();
+  });
+
+  it("exibe erro quando não consegue atualizar o rascunho", async () => {
+    mockFormValues = {
+      uuid: formularioUuid,
+      escola: escolaUuid,
+      data: "2026-07-01",
+    };
+
+    mockFormataPayloadUpdate.mockReturnValue(payloadUpdateMock as any);
+
+    mockUpdateRascunhoFormularioSupervisao.mockResolvedValue({
+      status: HTTP_STATUS.BAD_REQUEST,
+      data: {},
+    } as any);
+
+    render(<NovoRelatorioVisitas />);
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Salvar rascunho",
+      }),
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Confirmar salvamento do rascunho",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Erro ao atualizar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
+      );
+    });
+
+    expect(mockToastSuccess).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
