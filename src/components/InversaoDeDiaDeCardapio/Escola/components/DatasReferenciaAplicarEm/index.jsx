@@ -38,7 +38,7 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
-        proximosCincoDiasUteis
+        proximosCincoDiasUteis,
       )
     ) {
       setShowModalDataPrioritaria(true);
@@ -75,6 +75,8 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
               ? fimDoCalendario()
               : dateDelta(60)
           }
+          showMonthDropdown={true}
+          showYearDropdown={true}
         />
       </div>
       <div className={`col-md-12 col-lg-1 for-span`}>
@@ -104,6 +106,8 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
               ? fimDoCalendario()
               : dateDelta(60)
           }
+          showMonthDropdown={true}
+          showYearDropdown={true}
         />
       </div>
       {escolaEhCEMEI() && (
@@ -124,7 +128,7 @@ export const DatasReferenciaAplicarEm = ({ ...props }) => {
             onSelectedChanged={(values_) => {
               form.change(
                 name_alunos,
-                values_.map((value_) => value_.value)
+                values_.map((value_) => value_.value),
               );
             }}
           />

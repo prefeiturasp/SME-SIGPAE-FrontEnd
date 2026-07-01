@@ -22,6 +22,7 @@ const ModalRelatorio = ({
   nomeRelatorio,
   gruposHabilitadosPorDre,
   mesAnoSelecionado,
+  recreioNasFerias,
 }) => {
   const [gruposUnidadeEscolar, setGruposUnidadeEscolar] = useState([]);
   const [grupoSelecionado, setGrupoSelecionado] = useState(null);
@@ -81,6 +82,9 @@ const ModalRelatorio = ({
 
   function desabilitaRadioButton(grupo) {
     if (nomeRelatorio === "Relatório Consolidado") {
+      if (recreioNasFerias && grupo !== "Grupo 3") {
+        return true;
+      }
       return false;
     }
     const desabilitadoPorDre =

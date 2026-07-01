@@ -43,3 +43,6 @@ export const buscarCampoEMEF = (
     valor.tipo_valor === tipo_valor
   );
 };
+
+export const getUuid = (obj: any) =>
+  typeof obj === "string" ? obj : obj?.uuid;

@@ -1,21 +1,21 @@
-import React from "react";
+import { Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
-import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar";
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import moment from "moment";
 import "moment/dist/locale/pt-br";
-moment.locale("pt-br");
+import React from "react";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import dragAndDropAddon from "react-big-calendar/lib/addons/dragAndDrop";
-import { formataComoEventos } from "src/components/Shareable/Calendario/helpers";
-import { Spin } from "antd";
-import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
+import { ModalConfirmarExclusao } from "src/components/Shareable/Calendario/componentes//ModalConfirmarExclusao";
+import { CustomToolbar } from "src/components/Shareable/Calendario/componentes/CustomToolbar";
 import { ModalCadastrarNoCalendario } from "src/components/Shareable/Calendario/componentes/ModalCadastrarNoCalendario";
 import { ModalEditar } from "src/components/Shareable/Calendario/componentes/ModalEditar";
-import { ModalConfirmarExclusao } from "src/components/Shareable/Calendario/componentes//ModalConfirmarExclusao";
-import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
-import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+import { formataComoEventos } from "src/components/Shareable/Calendario/helpers";
 import "src/components/Shareable/Calendario/style.scss";
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
+import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { getNumerosEditais } from "src/services/edital.service";
+moment.locale("pt-br");
 
 // O Vite 8 mantém a exportação padrão aninhada deste módulo CommonJS.
 const withDragAndDrop = dragAndDropAddon.default ?? dragAndDropAddon;

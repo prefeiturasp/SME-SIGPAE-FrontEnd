@@ -160,6 +160,7 @@ export const SOBREMESA_DOCE = "sobremesa-doce";
 export const SUSPENSAO_ATIVIDADES = "suspensao-atividades";
 export const RECREIO_NAS_FERIAS = "recreio-nas-ferias";
 export const RECREIO_NAS_FERIAS_CADASTRADOS = "recreio-nas-ferias-cadastrados";
+export const DIAS_LETIVOS = "dias-letivos";
 export const CONSULTA_KITS = "consulta-kits";
 export const KITS = "kits";
 export const LOTE = "lote";
@@ -341,6 +342,9 @@ export const FICHA_RECEBIMENTO = "ficha-recebimento";
 export const CADASTRO_FICHA_RECEBIMENTO = "cadastro-ficha-recebimento";
 export const EDITAR_FICHA_RECEBIMENTO = "editar-ficha-recebimento";
 export const DETALHAR_FICHA_RECEBIMENTO = "detalhar-ficha-recebimento";
+
+export const AJUSTE_SALDO_LAUDO = "ajuste-saldo-laudo";
+export const CADASTRO_SALDO_LAUDO = "cadastro-saldo-laudo";
 // Status dos pedidos
 
 export const STATUS_DRE_A_VALIDAR = "DRE_A_VALIDAR";

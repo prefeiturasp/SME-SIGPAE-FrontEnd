@@ -40,7 +40,7 @@ export default ({ onSubmit, loading, setLoading }) => {
       const promiseDreEscolas = formFiltrosObtemDreEEscolasNovo(
         setEscolas,
         setDiretoriasRegionais,
-        dadosUsuario
+        dadosUsuario,
       );
       const promiseDadosIniciais = getDadosIniciais(dadosUsuario);
       const [, dadosIniciaisObtidos] = await Promise.all([
@@ -162,6 +162,8 @@ export default ({ onSubmit, loading, setLoading }) => {
                   }
                   required
                   validate={required}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="col-3">
@@ -178,6 +180,8 @@ export default ({ onSubmit, loading, setLoading }) => {
                   }
                   maxDate={moment()._d}
                   validate={required}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
             </div>

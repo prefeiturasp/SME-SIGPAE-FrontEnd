@@ -42,7 +42,7 @@ export const RecreioFeriasForm = ({
   const [showModalRemover, setShowModalRemover] = useState(false);
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
   const [selectedUnidadeId, setSelectedUnidadeId] = useState<string | null>(
-    null
+    null,
   );
   const [page, setPage] = useState(1);
 
@@ -54,7 +54,7 @@ export const RecreioFeriasForm = ({
     if (!selectedUnidadeId) return;
 
     const indexToRemove = fields.value.findIndex(
-      (u) => u.id === selectedUnidadeId
+      (u) => u.id === selectedUnidadeId,
     );
 
     if (indexToRemove > -1) {
@@ -92,7 +92,7 @@ export const RecreioFeriasForm = ({
     } catch (error) {
       toastError(
         mode === "create" ? "Erro ao criar:" : "Erro ao atualizar:",
-        error
+        error,
       );
     }
   };
@@ -104,7 +104,7 @@ export const RecreioFeriasForm = ({
 
     if (unidades.length === 0) {
       toastError(
-        "Não é possível salvar o Recreio nas Férias sem Unidades Participantes. Adicione pelo menos uma unidade."
+        "Não é possível salvar o Recreio nas Férias sem Unidades Participantes. Adicione pelo menos uma unidade.",
       );
       return;
     }
@@ -160,6 +160,8 @@ export const RecreioFeriasForm = ({
                   maxDate={moment(values.periodo_realizacao_ate, "DD/MM/YYYY")}
                   required
                   validate={required}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
               <div className="calendario esconde-asterisco">
@@ -173,6 +175,8 @@ export const RecreioFeriasForm = ({
                   maxDate={null}
                   required
                   validate={required}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
                 />
               </div>
             </div>
@@ -225,7 +229,7 @@ export const RecreioFeriasForm = ({
                   className="me-2"
                   onClick={() =>
                     navigate(
-                      "/configuracoes/cadastros/recreio-nas-ferias-cadastrados"
+                      "/configuracoes/cadastros/recreio-nas-ferias-cadastrados",
                     )
                   }
                 />

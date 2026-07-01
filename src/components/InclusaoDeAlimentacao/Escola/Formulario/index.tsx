@@ -591,7 +591,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
             </div>
             <div className="card solicitation mt-2">
               <div className="card-body">
-                <div className="card-title fw-bold">
+                <div className="card-title fw-bold ms-3">
                   Descrição da Inclusão de Alimentação
                 </div>
                 <FieldArray name="inclusoes">
@@ -731,7 +731,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                 </FieldArray>
                 {motivoSimplesSelecionado(values) && (
                   <>
-                    <div className="mt-3">
+                    <div className="col-12 mt-3">
                       <AdicionarDia push={push} />
                     </div>
                     {values.quantidades_periodo && (

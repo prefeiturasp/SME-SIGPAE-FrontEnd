@@ -68,7 +68,7 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
             marcas: marcas.data.results.map((el) => el.nome),
             fabricantes: fabricantes.data.results.map((el) => el.nome),
             terceirizadas: terceirizadas.data.results.map(
-              (el) => el.nome_fantasia
+              (el) => el.nome_fantasia,
             ),
             tipos: ["Comum", "Dieta especial"],
             editais: editais.data.results,
@@ -171,6 +171,8 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
                 minDate={false}
                 maxDate={dateDelta(0)}
                 popperPlacement="bottom-end"
+                showMonthDropdown={true}
+                showYearDropdown={true}
               />
             </div>
           </div>

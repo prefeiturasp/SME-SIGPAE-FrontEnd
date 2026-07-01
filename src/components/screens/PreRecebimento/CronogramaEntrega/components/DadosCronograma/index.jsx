@@ -13,7 +13,7 @@ export default ({
   esconderInformacoesAdicionais,
   solicitacaoAlteracaoCronograma,
 }) => {
-  const ehFLVPontoAPonto = cronograma.ficha_tecnica?.flv_ponto_a_ponto;
+  const ehFLVPontoAPonto = cronograma.ficha_tecnica?.ponto_a_ponto;
 
   const enderecoFormatado = (armazem) =>
     armazem?.endereco

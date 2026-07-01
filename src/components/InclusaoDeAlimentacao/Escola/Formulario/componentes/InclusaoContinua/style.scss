@@ -1,6 +1,10 @@
 @use "src/styles/variables.scss" as *;
 
 div.recorrencia-e-detalhes {
+  .table-titles {
+    font-size: 14px;
+    color: $gray;
+  }
   .wrapper-class {
     height: 100px !important;
   }

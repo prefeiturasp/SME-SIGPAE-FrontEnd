@@ -21,6 +21,7 @@ import {
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MemoryRouter } from "react-router-dom";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { mockClausulasDeDesconto } from "src/mocks/LancamentoInicial/CadastroDeClausulas/clausulasDeDescontos";
 import mock from "src/services/_mock";
 
 const TOTAIS_NORMAL = ["TOTAL (A)", "TOTAL (B)", "TOTAL (C)"];
@@ -58,6 +59,10 @@ describe("Testes da interface de Análise do Relatório Financeiro - Relatorio F
     mock
       .onGet("/medicao-inicial/dados-liquidacao/")
       .reply(200, mockDadosLiquidacao);
+    mock
+      .onGet("/medicao-inicial/clausulas-de-descontos/")
+      .reply(200, mockClausulasDeDesconto);
+    mock.onGet("/medicao-inicial/desconto-financeiro/").reply(200, []);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
 

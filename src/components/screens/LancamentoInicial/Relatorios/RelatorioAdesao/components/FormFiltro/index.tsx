@@ -84,11 +84,11 @@ export default (props: Props) => {
               selected={values.lotes || []}
               options={view.lotesOpcoes}
               onSelectedChanged={(
-                values_: Array<{ label: string; value: string }>
+                values_: Array<{ label: string; value: string }>,
               ) => {
                 form.change(
                   `lotes`,
-                  values_.map((value_) => value_.value)
+                  values_.map((value_) => value_.value),
                 );
                 view.onChangeLotes(values_.map((value_) => value_.value));
               }}
@@ -127,11 +127,11 @@ export default (props: Props) => {
               selected={values.periodos || []}
               options={view.periodosEscolaresOpcoes}
               onSelectedChanged={(
-                values_: Array<{ label: string; value: string }>
+                values_: Array<{ label: string; value: string }>,
               ) => {
                 form.change(
                   `periodos`,
-                  values_.map((value_) => value_.value)
+                  values_.map((value_) => value_.value),
                 );
               }}
               placeholder="Selecione os períodos"
@@ -150,11 +150,11 @@ export default (props: Props) => {
               selected={values.tipos_alimentacao || []}
               options={view.tiposAlimentacaoOpcoes}
               onSelectedChanged={(
-                values_: Array<{ label: string; value: string }>
+                values_: Array<{ label: string; value: string }>,
               ) => {
                 form.change(
                   `tipos_alimentacao`,
-                  values_.map((value_) => value_.value)
+                  values_.map((value_) => value_.value),
                 );
               }}
               placeholder="Selecione os períodos"
@@ -177,6 +177,8 @@ export default (props: Props) => {
               inputOnChange={(value: string) => {
                 view.onChangePeriodoLancamentoDe(value);
               }}
+              showMonthDropdown={true}
+              showYearDropdown={true}
             />
           )}
         </div>
@@ -196,6 +198,8 @@ export default (props: Props) => {
               inputOnChange={(value: string) => {
                 view.onChangePeriodoLancamentoAte(value);
               }}
+              showMonthDropdown={true}
+              showYearDropdown={true}
             />
           )}
         </div>

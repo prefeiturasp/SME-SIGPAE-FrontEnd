@@ -914,7 +914,7 @@ export const getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync = async (
   params["ano"] = ano;
   params["eh_lanche_emergencial"] = ehLancheEmergencial;
   params["recreio_nas_ferias"] = recreioNasFerias;
-  if (nomePeriodoEscolar) {
+  if (nomePeriodoEscolar && !recreioNasFerias) {
     params["nome_periodo_escolar"] = nomePeriodoEscolar;
   }
   const responseAlteracoesAlimentacaoAutorizadas =

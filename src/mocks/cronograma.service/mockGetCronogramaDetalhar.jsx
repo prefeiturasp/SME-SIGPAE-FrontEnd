@@ -1014,7 +1014,7 @@ export const mockCronogramaFLVPontoAPonto = {
     uuid_empresa: "d0630b2b-8e45-472c-b9c6-90451b60b081",
     pregao_chamada_publica: "123123",
     programa: "ALIMENTACAO_ESCOLAR",
-    flv_ponto_a_ponto: true,
+    ponto_a_ponto: true,
     marca: {
       uuid: "f2921e66-f9b0-4814-ba0a-eba266d5a128",
       nome: "MILANI",

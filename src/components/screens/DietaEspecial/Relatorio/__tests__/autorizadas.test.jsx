@@ -19,9 +19,15 @@ import mock from "src/services/_mock";
 import { VISAO, PERFIL } from "src/constants/shared";
 import { MemoryRouter } from "react-router-dom";
 
+const resposta = respostaApiCancelamentoporDataTermino();
+
 const payload = {
-  ...respostaApiCancelamentoporDataTermino(),
+  ...resposta,
   status_solicitacao: "CODAE_AUTORIZADO",
+  aluno: {
+    ...resposta.aluno,
+    periodo: "INTEGRAL",
+  },
 };
 
 const server = setupServer(
@@ -202,6 +208,8 @@ test("Relatório Autorizada - visão CODAE NUTRI MANIFESTAÇÃO", async () => {
 
     const textoConferencia = screen.queryAllByText("Marcar Conferência");
     expect(textoConferencia).toHaveLength(0);
+    expect(screen.getByText(/^Período$/i)).toBeInTheDocument();
+    expect(screen.getByDisplayValue("Integral")).toBeInTheDocument();
   });
 });
 

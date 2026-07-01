@@ -15,9 +15,7 @@ export const CardCronograma = ({
   const renderSolicitations = (solicitations, exibirTooltip) => {
     return exibirTooltip
       ? solicitations.slice(0, 5).map((solicitation, key) => {
-          const ehFLV =
-            solicitation.categoria === "FLV" &&
-            solicitation.tipo_entrega === "PONTO_A_PONTO";
+          const EPontoAPonto = solicitation.tipo_entrega === "PONTO_A_PONTO";
           return (
             <Tooltip
               placement="topLeft"
@@ -27,7 +25,7 @@ export const CardCronograma = ({
               <NavLink key={key} to={solicitation.link}>
                 <p
                   key={key}
-                  className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
+                  className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""} ${EPontoAPonto ? "ponto-a-ponto" : ""}`}
                 >
                   {solicitation.text}
                   <span className="float-end">{solicitation.date}</span>
@@ -37,14 +35,12 @@ export const CardCronograma = ({
           );
         })
       : solicitations.slice(0, 5).map((solicitation, key) => {
-          const ehFLV =
-            solicitation.categoria === "FLV" &&
-            solicitation.tipo_entrega === "PONTO_A_PONTO";
+          const EPontoAPonto = solicitation.tipo_entrega === "PONTO_A_PONTO";
           return (
             <NavLink key={key} to={solicitation.link}>
               <p
                 key={key}
-                className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""} ${ehFLV && "categoria-flv"}`}
+                className={`data ${solicitation.programa_leve_leite ? "programa-leve-leite" : ""} ${EPontoAPonto ? "ponto-a-ponto" : ""}`}
               >
                 {solicitation.text}
                 <span className="float-end">{solicitation.date}</span>
