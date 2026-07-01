@@ -290,17 +290,22 @@ export const NovoRelatorioVisitas = ({
     // TODO: implementar
   };
 
-  const formularioValido = (form: FormApi<any, Partial<any>>) => {
-    const _validarFormulariosTiposOcorrencia =
-      validarFormulariosTiposOcorrencia(
-        form.getState().values,
-        tiposOcorrencia,
-      );
-    return (
-      !form.getState().hasValidationErrors &&
-      _validarFormulariosTiposOcorrencia.formulariosValidos &&
-      notificacoesAssinadas.length > 0
+  const formularioValido = (form: FormApi<any, Partial<any>>): boolean => {
+    const { values, hasValidationErrors } = form.getState();
+    const validacaoFormulario = validarFormulariosTiposOcorrencia(
+      values,
+      tiposOcorrencia,
     );
+    if (hasValidationErrors || !validacaoFormulario.formulariosValidos) {
+      return false;
+    }
+    const validacaoNotificacoes = validarFormulariosParaCategoriasDeNotificacao(
+      values,
+      tiposOcorrencia,
+    );
+    const exigeNotificacaoAssinada =
+      validacaoNotificacoes.listaValidacaoPorTipoOcorrencia.length > 0;
+    return !exigeNotificacaoAssinada || notificacoesAssinadas.length > 0;
   };
 
   const showNotificacoesComponent = (
