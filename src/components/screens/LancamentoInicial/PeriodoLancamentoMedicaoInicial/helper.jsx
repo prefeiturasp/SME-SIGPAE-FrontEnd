@@ -817,7 +817,10 @@ export const getSolicitacoesInclusaoAutorizadasAsync = async (
     params["excluir_inclusoes_continuas"] = true;
   }
   if (usuarioEhEscolaCEMEI()) {
-    if (location.state.periodo.includes("Infantil")) {
+    if (
+      location.state.periodo.includes("Infantil") ||
+      location.state.periodo.includes("Programas e Projetos")
+    ) {
       params["cemei_emei"] = true;
     } else {
       params["cemei_cei"] = true;
