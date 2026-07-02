@@ -1,11 +1,18 @@
 import moment from "moment";
 import React from "react";
+import { Link } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import {
+  CADASTROS,
+  CONFIGURACOES,
+  DIAS_LETIVOS,
+  EDITAR,
+} from "src/configs/constants";
 import "./style.scss";
 
 interface ModalDadosObjetoProps {
@@ -79,13 +86,17 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
         <hr />
       </Modal.Body>
       <div className="footer">
-        <Botao
-          texto="Editar"
-          type={BUTTON_TYPE.BUTTON}
-          disabled
-          style={BUTTON_STYLE.GREEN_OUTLINE}
-          className="ms-3 btn-footer-modal"
-        />
+        <Link
+          to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}/${EDITAR}?uuid=${event.uuid}`}
+          style={{ display: "contents" }}
+        >
+          <Botao
+            texto="Editar"
+            type={BUTTON_TYPE.BUTTON}
+            style={BUTTON_STYLE.GREEN_OUTLINE}
+            className="ms-3 btn-footer-modal"
+          />
+        </Link>
         <Botao
           texto="Manter"
           onClick={closeModal}
