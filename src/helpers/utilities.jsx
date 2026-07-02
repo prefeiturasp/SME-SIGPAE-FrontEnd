@@ -1396,5 +1396,5 @@ export const ehFimDeSemanaUTC = (date) => {
 };
 
 export const usuarioComAcessoAosCalendarios = () => {
-  return usuarioEhCODAEGabinete() || usuarioEhDinutreDiretoria();
+  return usuarioEhCODAEGabinete();
 };
