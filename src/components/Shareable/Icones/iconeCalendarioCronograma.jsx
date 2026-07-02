@@ -86,6 +86,14 @@ export const IconeCalendarioCronograma = () => {
           strokeLinecap="round"
           style={{ fill: "none" }}
         />
+
+        <path
+          d="M96.5 76.75V82.5"
+          stroke={color}
+          strokeWidth="3.2"
+          strokeLinecap="round"
+          style={{ fill: "none" }}
+        />
       </g>
     </svg>
   );
