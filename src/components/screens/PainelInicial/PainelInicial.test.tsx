@@ -1,7 +1,10 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ACOMPANHAMENTO_DE_LANCAMENTOS } from "src/configs/constants";
+import {
+  ACOMPANHAMENTO_DE_LANCAMENTOS,
+  PRE_RECEBIMENTO,
+} from "src/configs/constants";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import PainelInicial from "../PainelInicial";
@@ -11,6 +14,17 @@ jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => mockNavigate,
 }));
+
+const perfisComAcessoAosCalendarios = [
+  {
+    nome: "CODAE_GABINETE",
+    perfil: PERFIL.ADMINISTRADOR_CODAE_GABINETE,
+  },
+  {
+    nome: "DINUTRE_DIRETORIA",
+    perfil: PERFIL.DINUTRE_DIRETORIA,
+  },
+];
 
 describe("PainelInicial - Navegação por perfil", () => {
   const perfis = [
@@ -43,6 +57,7 @@ describe("PainelInicial - Navegação por perfil", () => {
 
   beforeEach(() => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.clear();
     mockNavigate.mockClear();
   });
 
@@ -144,3 +159,52 @@ describe("PainelInicial - Perfil Fornecedor", () => {
     expect(screen.queryByText("Medição Inicial")).not.toBeInTheDocument();
   });
 });
+
+describe.each(perfisComAcessoAosCalendarios)(
+  "PainelInicial - Atalhos de calendários - Perfil $nome",
+  ({ perfil }) => {
+    beforeEach(() => {
+      Object.defineProperty(global, "localStorage", {
+        value: localStorageMock,
+      });
+
+      localStorage.clear();
+      mockNavigate.mockClear();
+      localStorage.setItem("perfil", perfil);
+
+      render(
+        <MemoryRouter>
+          <PainelInicial />
+        </MemoryRouter>,
+      );
+    });
+
+    it("exibe e navega para o Calendário de Cronogramas", () => {
+      const calendarioCronogramas = screen.getByText(
+        "Calendário de Cronogramas",
+      );
+
+      expect(calendarioCronogramas).toBeInTheDocument();
+
+      fireEvent.click(calendarioCronogramas);
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `${PRE_RECEBIMENTO}/calendario-cronograma`,
+      );
+    });
+
+    it("exibe e navega para o Calendário Ponto a Ponto", () => {
+      const calendarioPontoAPonto = screen.getByText(
+        "Calendário Ponto a Ponto",
+      );
+
+      expect(calendarioPontoAPonto).toBeInTheDocument();
+
+      fireEvent.click(calendarioPontoAPonto);
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `${PRE_RECEBIMENTO}/calendario-cronograma-ponto-a-ponto-semanal`,
+      );
+    });
+  },
+);
