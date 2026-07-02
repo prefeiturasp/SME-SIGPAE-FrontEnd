@@ -152,14 +152,24 @@ const PainelInicial = () => {
       )}
       {usuarioComAcessoAosCalendarios() && (
         <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-          <CardLogo titulo={"Calendário de Cronograma"}>
+          <CardLogo
+            titulo={"Calendário de Cronogramas"}
+            onClick={() => navigate(`${PRE_RECEBIMENTO}/calendario-cronograma`)}
+          >
             <IconeCalendarioCronograma />
           </CardLogo>
         </Col>
       )}
       {usuarioComAcessoAosCalendarios() && (
         <Col xs={24} sm={24} md={12} lg={8} xl={8}>
-          <CardLogo titulo={"Calendário Ponto a Ponto"}>
+          <CardLogo
+            titulo={"Calendário Ponto a Ponto"}
+            onClick={() =>
+              navigate(
+                `${PRE_RECEBIMENTO}/calendario-cronograma-ponto-a-ponto-semanal`,
+              )
+            }
+          >
             <IconeCalendarioPontoaPonto />
           </CardLogo>
         </Col>
