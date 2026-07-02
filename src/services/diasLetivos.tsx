@@ -36,3 +36,11 @@ export const editarDiaLetivo = async (
     return { data: response.data, status: response.status };
   }
 };
+
+export const excluirDiaLetivo = async (uuid: string) => {
+  const url = `/dias-letivos/${uuid}/`;
+  const response = await axios.delete(url).catch(ErrorHandlerFunction);
+  if (response) {
+    return { data: response.data, status: response.status };
+  }
+};
