@@ -3,7 +3,7 @@ import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Field, Form } from "react-final-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FieldArray } from "react-final-form-arrays";
 import { lotesToOptions } from "src/components/screens/Relatorios/SolicitacoesAlimentacao/helpers";
 import Botao from "src/components/Shareable/Botao";
@@ -24,7 +24,11 @@ import { getDataObj, getError } from "src/helpers/utilities";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { getUnidadesEducacionaisComCodEol } from "src/services/dietaEspecial.service";
 import { buscaPeriodosEscolares } from "src/services/escola.service";
-import { cadastrarDiasLetivos } from "src/services/diasLetivos";
+import {
+  cadastrarDiasLetivos,
+  getDiaLetivo,
+  editarDiaLetivo,
+} from "src/services/diasLetivos";
 import { getLotesSimples } from "src/services/lote.service";
 import {
   DiasLetivosFormInterface,
@@ -36,6 +40,10 @@ import {
 } from "./interfaces";
 
 export const EditarDiasLetivosSIGPAE = () => {
+  const [searchParams] = useSearchParams();
+  const uuid = searchParams.get("uuid");
+  const isEdicao = !!uuid;
+
   const [lotes, setLotes] = useState<OpcaoMultiselectInterface[]>([]);
   const [tiposUnidades, setTiposUnidades] = useState<
     TipoUnidadeEscolarInterface[]
@@ -46,15 +54,18 @@ export const EditarDiasLetivosSIGPAE = () => {
   const [periodosEscolares, setPeriodosEscolares] = useState<
     OpcaoMultiselectInterface[]
   >([]);
+  const [dadosEdicao, setDadosEdicao] =
+    useState<Partial<DiasLetivosFormInterface> | null>(null);
 
   const navigate = useNavigate();
-  const initialValues = useMemo(
-    () =>
-      ({
-        recorrencias: [{ data_inicial: undefined }],
-      }) as unknown as Partial<DiasLetivosFormInterface>,
-    [],
-  );
+  const initialValues = useMemo(() => {
+    if (isEdicao && dadosEdicao) {
+      return dadosEdicao;
+    }
+    return {
+      recorrencias: [{ data_inicial: undefined }],
+    } as unknown as Partial<DiasLetivosFormInterface>;
+  }, [isEdicao, dadosEdicao]);
   const debounceUnidadesRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -133,9 +144,51 @@ export const EditarDiasLetivosSIGPAE = () => {
     }
   };
 
+  const getDiaLetivoAsync = async () => {
+    const response = await getDiaLetivo(uuid as string);
+    if (response?.status === HTTP_STATUS.OK) {
+      const { data } = response;
+      setDadosEdicao({
+        lotes: data.lotes,
+        tipos_unidades: data.tipos_unidades,
+        unidades_educacionais: data.unidades_educacionais,
+        recorrencias: [
+          {
+            periodos_escolares: data.periodos_escolares,
+          },
+        ],
+      } as unknown as Partial<DiasLetivosFormInterface>);
+
+      if (data.lotes?.length && data.tipos_unidades?.length) {
+        getUnidadesEducacionaisAsync({
+          lotes: data.lotes,
+          tipos_unidades: data.tipos_unidades,
+        });
+      }
+    } else {
+      setErroAPI("Erro ao carregar o dia letivo. Tente novamente mais tarde.");
+    }
+  };
+
   const onSubmit = async (values: DiasLetivosFormInterface) => {
-    const response = await cadastrarDiasLetivos(values);
-    if (response?.status === HTTP_STATUS.CREATED) {
+    let response;
+
+    if (isEdicao) {
+      const payload = {
+        lotes: values.lotes,
+        tipos_unidades: values.tipos_unidades,
+        unidades_educacionais: values.unidades_educacionais || [],
+        periodos_escolares: values.recorrencias?.[0]?.periodos_escolares || [],
+      };
+      response = await editarDiaLetivo(uuid as string, payload);
+    } else {
+      response = await cadastrarDiasLetivos(values);
+    }
+
+    if (
+      response?.status === HTTP_STATUS.CREATED ||
+      response?.status === HTTP_STATUS.OK
+    ) {
       toastSuccess("Dias letivos cadastrados com sucesso");
     } else {
       toastError(getError(response?.data));
@@ -147,6 +200,7 @@ export const EditarDiasLetivosSIGPAE = () => {
       getLotesSimplesAsync(),
       getTiposUnidadesUEAsync(),
       getPeriodosAsync(),
+      ...(isEdicao ? [getDiaLetivoAsync()] : []),
     ]).finally(() => setCarregandoInicial(false));
   }, []);
 
@@ -169,6 +223,7 @@ export const EditarDiasLetivosSIGPAE = () => {
             style={{ minHeight: "calc(100vh - 200px)" }}
           >
             <Form<DiasLetivosFormInterface>
+              key={carregandoInicial ? "loading" : "ready"}
               initialValues={initialValues}
               onSubmit={onSubmit}
               mutators={{ ...arrayMutators }}
@@ -299,7 +354,8 @@ export const EditarDiasLetivosSIGPAE = () => {
                                         placeholder="De"
                                         name={`${name}.data_inicial`}
                                         dataTestId={`input-data-inicial-${index}`}
-                                        required
+                                        required={!isEdicao}
+                                        disabled={isEdicao}
                                         maxDate={
                                           values.recorrencias?.[index]
                                             ?.data_final
@@ -309,7 +365,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                                               )
                                             : undefined
                                         }
-                                        validate={required}
+                                        validate={
+                                          !isEdicao ? required : undefined
+                                        }
                                       />
                                     </div>
                                     <div className="col-6">
@@ -318,7 +376,8 @@ export const EditarDiasLetivosSIGPAE = () => {
                                         placeholder="Até"
                                         name={`${name}.data_final`}
                                         dataTestId={`input-data-final-${index}`}
-                                        required
+                                        required={!isEdicao}
+                                        disabled={isEdicao}
                                         minDate={
                                           values.recorrencias?.[index]
                                             ?.data_inicial
@@ -328,7 +387,9 @@ export const EditarDiasLetivosSIGPAE = () => {
                                               )
                                             : undefined
                                         }
-                                        validate={required}
+                                        validate={
+                                          !isEdicao ? required : undefined
+                                        }
                                       />
                                     </div>
                                   </div>
@@ -365,8 +426,13 @@ export const EditarDiasLetivosSIGPAE = () => {
                                     component={Weekly}
                                     name={`${name}.dias_semana`}
                                     label="Repetir"
-                                    required
-                                    validate={requiredMultiselect}
+                                    required={!isEdicao}
+                                    disabled={isEdicao}
+                                    validate={
+                                      !isEdicao
+                                        ? requiredMultiselect
+                                        : undefined
+                                    }
                                     dataTestId={`weekly-dias-semana-${index}`}
                                     arrayDiasSemana={
                                       values.recorrencias?.[index]
@@ -399,17 +465,19 @@ export const EditarDiasLetivosSIGPAE = () => {
                                 )}
                               </div>
                             ))}
-                            <div className="row mt-3">
-                              <div className="col-12 text-center">
-                                <Botao
-                                  texto="Adicionar Recorrência"
-                                  dataTestId="btn-adicionar-recorrencia"
-                                  onClick={() => fields.push({})}
-                                  type={BUTTON_TYPE.BUTTON}
-                                  style={BUTTON_STYLE.GREEN_OUTLINE}
-                                />
+                            {!isEdicao && (
+                              <div className="row mt-3">
+                                <div className="col-12 text-center">
+                                  <Botao
+                                    texto="Adicionar Recorrência"
+                                    dataTestId="btn-adicionar-recorrencia"
+                                    onClick={() => fields.push({})}
+                                    type={BUTTON_TYPE.BUTTON}
+                                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                                  />
+                                </div>
                               </div>
-                            </div>
+                            )}
                           </>
                         )}
                       </FieldArray>
