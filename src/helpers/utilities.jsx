@@ -1394,3 +1394,7 @@ export const ehFimDeSemanaUTC = (date) => {
   const dia = date.getUTCDay();
   return dia === 0 || dia === 6;
 };
+
+export const usuarioComAcessoAosCalendarios = () => {
+  return usuarioEhCODAEGabinete() || usuarioEhDinutreDiretoria();
+};
