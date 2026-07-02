@@ -4,8 +4,16 @@ import { MemoryRouter } from "react-router-dom";
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
   PRE_RECEBIMENTO,
+  PAINEL_RELATORIOS_FISCALIZACAO,
+  SUPERVISAO,
+  TERCEIRIZADAS,
 } from "src/configs/constants";
-import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
+import {
+  PERFIL,
+  TIPO_PERFIL,
+  TIPO_SERVICO,
+  MODULO_GESTAO,
+} from "src/constants/shared";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import PainelInicial from "../PainelInicial";
 
@@ -25,6 +33,11 @@ const perfisComAcessoAosCalendarios = [
     perfil: PERFIL.DINUTRE_DIRETORIA,
   },
 ];
+
+jest.mock("src/constants/config", () => ({
+  ...jest.requireActual("src/constants/config"),
+  ENVIRONMENT: "development",
+}));
 
 describe("PainelInicial - Navegação por perfil", () => {
   const perfis = [
@@ -100,6 +113,7 @@ describe("PainelInicial - Navegação por perfil", () => {
 describe("PainelInicial - Perfil Fornecedor", () => {
   beforeEach(() => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.clear();
     mockNavigate.mockClear();
     localStorage.setItem("perfil", PERFIL.USUARIO_EMPRESA);
     localStorage.setItem("tipo_servico", TIPO_SERVICO.FORNECEDOR);
@@ -208,3 +222,107 @@ describe.each(perfisComAcessoAosCalendarios)(
     });
   },
 );
+
+describe("PainelInicial - Redirecionamentos dos demais cards", () => {
+  const renderPainelInicial = () => {
+    render(
+      <MemoryRouter>
+        <PainelInicial />
+      </MemoryRouter>,
+    );
+  };
+
+  beforeEach(() => {
+    Object.defineProperty(global, "localStorage", {
+      value: localStorageMock,
+    });
+
+    localStorage.clear();
+    mockNavigate.mockClear();
+  });
+
+  it("navega para o painel de Gestão de Alimentação", () => {
+    localStorage.setItem(
+      "perfil",
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+
+    renderPainelInicial();
+
+    fireEvent.click(screen.getByText("Gestão de Alimentação"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/painel-gestao-alimentacao");
+  });
+
+  it("navega para o painel de Dieta Especial", () => {
+    localStorage.setItem(
+      "perfil",
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+
+    renderPainelInicial();
+
+    fireEvent.click(screen.getByText("Dieta Especial"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/painel-dieta-especial");
+  });
+
+  it("navega para o painel de Gestão de Produto", () => {
+    localStorage.setItem(
+      "perfil",
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+
+    renderPainelInicial();
+
+    fireEvent.click(screen.getByText("Gestão de Produto"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/painel-gestao-produto");
+  });
+
+  it("navega para as entregas da DRE", () => {
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+
+    renderPainelInicial();
+
+    fireEvent.click(screen.getByText("Abastecimento"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/logistica/entregas-dre");
+  });
+
+  it("navega para a conferência de entrega da escola", () => {
+    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.ABASTECIMENTO);
+
+    renderPainelInicial();
+
+    fireEvent.click(screen.getByText("Abastecimento"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/logistica/conferir-entrega");
+  });
+
+  it("navega para o painel de relatórios de fiscalização", () => {
+    localStorage.setItem("perfil", PERFIL.COORDENADOR_SUPERVISAO_NUTRICAO);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.SUPERVISAO_NUTRICAO);
+
+    renderPainelInicial();
+
+    fireEvent.click(screen.getByText("Supervisão Terceirizadas"));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
+    );
+  });
+});
