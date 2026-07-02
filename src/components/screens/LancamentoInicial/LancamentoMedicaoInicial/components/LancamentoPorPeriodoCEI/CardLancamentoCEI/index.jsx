@@ -36,6 +36,7 @@ export const CardLancamentoCEI = ({
   errosAoSalvar,
   periodosInclusaoContinua,
   periodosPermissoesLancamentosEspeciais,
+  inclusoesEventoEspecificoAutorizadas,
 }) => {
   const navigate = useNavigate();
 
@@ -177,6 +178,8 @@ export const CardLancamentoCEI = ({
           uuidPeriodoEscolar: uuidPeriodoEscolar,
           tiposAlimentacao: tiposAlimentacao,
           periodosInclusaoContinua: periodosInclusaoContinua,
+          inclusoesEventoEspecificoAutorizadas:
+            inclusoesEventoEspecificoAutorizadas,
           grupo,
           solicitacaoMedicaoInicial: solicitacaoMedicaoInicial,
           recreioNasFerias: solicitacaoMedicaoInicial.recreio_nas_ferias?.uuid,
