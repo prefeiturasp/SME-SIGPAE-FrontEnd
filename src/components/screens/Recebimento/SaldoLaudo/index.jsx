@@ -51,7 +51,11 @@ export default () => {
       <div className="card mt-3 card-saldo-laudo">
         <div className="card-body">
           <Filtros setFiltros={setFiltros} setAjustes={setAjustes} />
-          <Listagem objetos={ajustes} />
+          <Listagem
+            objetos={ajustes}
+            aposExcluir={() => preencheAjustes(page)}
+            setCarregando={setCarregando}
+          />
           <div className="row">
             <div className="col">
               <Paginacao

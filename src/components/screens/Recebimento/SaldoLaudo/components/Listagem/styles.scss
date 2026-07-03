@@ -53,6 +53,11 @@
         color: $green;
       }
 
+      i.red {
+        cursor: pointer;
+        color: $red;
+      }
+
       .link-acoes {
         cursor: pointer;
         text-decoration: underline;
@@ -89,6 +94,11 @@
         &:last-child {
           border-right: 0px solid #e9eaea;
         }
+      }
+
+      .acoes {
+        border-bottom: none;
+        border-right: none;
       }
     }
   }

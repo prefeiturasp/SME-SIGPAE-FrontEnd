@@ -345,6 +345,7 @@ export const DETALHAR_FICHA_RECEBIMENTO = "detalhar-ficha-recebimento";
 
 export const AJUSTE_SALDO_LAUDO = "ajuste-saldo-laudo";
 export const CADASTRO_SALDO_LAUDO = "cadastro-saldo-laudo";
+export const EDITAR_SALDO_LAUDO = "editar-saldo-laudo";
 // Status dos pedidos
 
 export const STATUS_DRE_A_VALIDAR = "DRE_A_VALIDAR";
