@@ -388,19 +388,9 @@ const CadastrarAjusteSaldo: React.FC<{
                           required
                           disabled={editar}
                           validate={required}
-                          onSelect={(value: string) => {
-                            const doc = documentos.find(
-                              (doc) => doc.numero_laudo === value,
-                            );
-                            setDocumentoSelecionado(doc || null);
-                          }}
-                          validate={required}
-                          onSelect={(value: string) => {
-                            const doc = documentos.find(
-                              (doc) => doc.numero_laudo === value,
-                            );
-                            setDocumentoSelecionado(doc || null);
-                          }}
+                          onSelect={(value: string) =>
+                            selecionaDocumentoPorNumero(value)
+                          }
                         />
                       </div>
                       <div className="col-4">
