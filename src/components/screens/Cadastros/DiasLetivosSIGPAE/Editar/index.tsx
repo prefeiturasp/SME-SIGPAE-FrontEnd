@@ -32,7 +32,6 @@ import {
 } from "src/services/diasLetivos";
 import { getLotesSimples } from "src/services/lote.service";
 import {
-  DiaLetivoEdicaoDelecaoType,
   DiasLetivosFormInterface,
   FiltroUnidadesEducacionaisInterface,
   OpcaoMultiselectInterface,
@@ -58,7 +57,7 @@ export const EditarDiasLetivosSIGPAE = () => {
     OpcaoMultiselectInterface[]
   >([]);
   const [dadosEdicao, setDadosEdicao] =
-    useState<Partial<DiaLetivoEdicaoDelecaoType> | null>(null);
+    useState<DiasLetivosFormInterface | null>(null);
   const [showModalExcluir, setShowModalExcluir] = useState(false);
 
   const navigate = useNavigate();
@@ -153,16 +152,17 @@ export const EditarDiasLetivosSIGPAE = () => {
     if (response?.status === HTTP_STATUS.OK) {
       const { data } = response;
       setDadosEdicao({
-        dia_letivo: data.data,
         lotes: data.lotes,
         tipos_unidades: data.tipos_unidades,
         unidades_educacionais: data.unidades_educacionais,
         recorrencias: [
           {
             periodos_escolares: data.periodos_escolares,
+            data_inicial: data.data,
+            data_final: data.data,
           },
         ],
-      } as unknown as Partial<DiaLetivoEdicaoDelecaoType>);
+      } as unknown as DiasLetivosFormInterface);
 
       if (data.lotes?.length && data.tipos_unidades?.length) {
         getUnidadesEducacionaisAsync({

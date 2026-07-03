@@ -48,10 +48,6 @@ export interface DiasLetivosUpdateInterface
   periodos_escolares: string[];
 }
 
-export type DiaLetivoEdicaoDelecaoType = DiasLetivosFormInterface & {
-  dia_letivo: string;
-};
-
 export interface TipoAlimentacaoInterface {
   nome: string;
   uuid: string;

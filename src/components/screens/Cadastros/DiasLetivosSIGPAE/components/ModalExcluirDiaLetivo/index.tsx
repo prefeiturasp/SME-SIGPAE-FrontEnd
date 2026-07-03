@@ -5,10 +5,10 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { DiaLetivoEdicaoDelecaoType } from "../../Editar/interfaces";
+import { DiasLetivosFormInterface } from "../../Editar/interfaces";
 
 interface ModalExcluirDiaLetivoProps {
-  event: DiaLetivoEdicaoDelecaoType;
+  event: DiasLetivosFormInterface;
   showModal: boolean;
   closeModal: () => void;
   onConfirm: () => void;
@@ -34,7 +34,9 @@ export const ModalExcluirDiaLetivo: React.FC<ModalExcluirDiaLetivoProps> = ({
       <Modal.Body>
         <p>
           <strong>Deseja excluir o cadastro do </strong>
-          <span className="fw-bold">dia letivo: {event.dia_letivo}</span>
+          <span className="fw-bold">
+            dia letivo: {event.recorrencias[0].data_inicial}
+          </span>
         </p>
         <hr />
       </Modal.Body>
