@@ -409,12 +409,13 @@ describe("Testes de comportamento para componente - ModalRelatorio Consolidado d
     expect(screen.getByText("Grupo 6 (CIEJA, CMCT)")).toBeInTheDocument();
   });
 
-  it("não permite selecionar um grupo 1 e não habilita o botão de gerar relatório", () => {
+  it("Permite selecionar um grupo 1 e habilita o botão de gerar relatório", () => {
     const radio = screen.getByLabelText("Grupo 1 (CCI, CEI, CEI CEU)");
-    expect(radio).toBeDisabled();
+    expect(radio).not.toBeDisabled();
+    fireEvent.click(radio);
 
     const botaoGerar = screen.getByRole("button", { name: "Gerar Relatório" });
-    expect(botaoGerar).toBeDisabled();
+    expect(botaoGerar).not.toBeDisabled();
   });
 
   it("nao permite selecionar um grupo 2 e não habilita o botão de gerar relatório", () => {
