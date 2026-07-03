@@ -1,5 +1,18 @@
 @use "src/styles/variables.scss" as *;
 
+.weekly-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+
+  .week-circle {
+    background-color: #b0bec5;
+    color: #fff;
+    border-color: #90a4ae;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
 .weekly {
   span.required-asterisk {
     color: $red;
