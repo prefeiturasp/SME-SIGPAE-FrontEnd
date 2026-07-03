@@ -13,6 +13,8 @@ import { IconeFichaTecnica } from "src/components/Shareable/Icones/IconeFichaTec
 import { IconeDocumentosRecebimento } from "src/components/Shareable/Icones/IconeDocumentosRecebimento";
 import { IconeAlteracoesCronograma } from "src/components/Shareable/Icones/IconeAlteracoesCronograma";
 import { IconeLayoutEmbalagem } from "src/components/Shareable/Icones/IconeLayoutEmbalagem";
+import { IconeCalendarioCronograma } from "src/components/Shareable/Icones/iconeCalendarioCronograma";
+import { IconeCalendarioPontoaPonto } from "src/components/Shareable/Icones/IconeCalendarioPontoaPonto";
 
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
@@ -50,6 +52,7 @@ import {
   usuarioEscolaEhGestaoParceira,
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhAdministradorNutriSupervisao,
+  usuarioComAcessoAosCalendarios,
 } from "src/helpers/utilities";
 
 const PainelInicial = () => {
@@ -144,6 +147,30 @@ const PainelInicial = () => {
             }}
           >
             <IconeMedicaoInicial />
+          </CardLogo>
+        </Col>
+      )}
+      {usuarioComAcessoAosCalendarios() && (
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+          <CardLogo
+            titulo={"Calendário de Cronogramas"}
+            onClick={() => navigate(`${PRE_RECEBIMENTO}/calendario-cronograma`)}
+          >
+            <IconeCalendarioCronograma />
+          </CardLogo>
+        </Col>
+      )}
+      {usuarioComAcessoAosCalendarios() && (
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+          <CardLogo
+            titulo={"Calendário Ponto a Ponto"}
+            onClick={() =>
+              navigate(
+                `${PRE_RECEBIMENTO}/calendario-cronograma-ponto-a-ponto-semanal`,
+              )
+            }
+          >
+            <IconeCalendarioPontoaPonto />
           </CardLogo>
         </Col>
       )}
