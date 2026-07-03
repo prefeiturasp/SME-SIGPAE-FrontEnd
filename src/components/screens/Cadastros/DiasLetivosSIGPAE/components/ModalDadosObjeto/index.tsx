@@ -1,5 +1,5 @@
 import moment from "moment";
-import React from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Botao from "src/components/Shareable/Botao";
@@ -50,6 +50,15 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
 }) => {
   if (!event) return null;
 
+  const isDiaPassado = useMemo(() => {
+    if (!event?.start) return false;
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataEvento = new Date(event.start);
+    dataEvento.setHours(0, 0, 0, 0);
+    return dataEvento < hoje;
+  }, [event]);
+
   const unidades = formatarUnidades(event.unidades_escolares);
 
   return (
@@ -89,12 +98,14 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
         <Link
           to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}/${EDITAR}?uuid=${event.uuid}`}
           style={{ display: "contents" }}
+          onClick={isDiaPassado ? (e) => e.preventDefault() : undefined}
         >
           <Botao
             texto="Editar"
             type={BUTTON_TYPE.BUTTON}
             style={BUTTON_STYLE.GREEN_OUTLINE}
             className="ms-3 btn-footer-modal"
+            disabled={isDiaPassado}
           />
         </Link>
         <Botao
