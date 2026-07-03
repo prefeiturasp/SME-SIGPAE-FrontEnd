@@ -16,6 +16,7 @@ import EditarAtribuicaoQuestoesPage from "src/pages/Recebimento/QuestoesPorProdu
 import QuestoesPorProdutoPage from "src/pages/Recebimento/QuestoesPorProduto/QuestoesPorProdutoPage";
 import AjusteSaldoLaudoPage from "src/pages/Recebimento/AjusteSaldoLaudo/AjusteSaldoLaudoPage";
 import CadastroAjusteSaldoPage from "src/pages/Recebimento/AjusteSaldoLaudo/CadastroAjusteSaldoPage";
+import EditarAjusteSaldoPage from "src/pages/Recebimento/AjusteSaldoLaudo/EditarAjusteSaldoPage";
 import RelatorioDocumentosRecebimentoPage from "src/pages/Recebimento/Relatorios/RelatorioDocumentosRecebimentoPage";
 
 import * as constants from "../../constants";
@@ -80,6 +81,11 @@ export const rotasRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.RECEBIMENTO}/${constants.CADASTRO_SALDO_LAUDO}`,
     component: CadastroAjusteSaldoPage,
+    tipoUsuario: usuarioEhRecebimento(),
+  },
+  {
+    path: `/${constants.RECEBIMENTO}/${constants.EDITAR_SALDO_LAUDO}`,
+    component: EditarAjusteSaldoPage,
     tipoUsuario: usuarioEhRecebimento(),
   },
   {
