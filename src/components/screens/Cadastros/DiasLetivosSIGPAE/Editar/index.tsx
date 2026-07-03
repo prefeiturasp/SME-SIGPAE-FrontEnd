@@ -28,9 +28,11 @@ import {
   cadastrarDiasLetivos,
   getDiaLetivo,
   editarDiaLetivo,
+  excluirDiaLetivo,
 } from "src/services/diasLetivos";
 import { getLotesSimples } from "src/services/lote.service";
 import {
+  DiaLetivoEdicaoDelecaoType,
   DiasLetivosFormInterface,
   FiltroUnidadesEducacionaisInterface,
   OpcaoMultiselectInterface,
@@ -38,6 +40,7 @@ import {
   TipoUnidadeEscolarInterface,
   UnidadeEducacionalInterface,
 } from "./interfaces";
+import { ModalExcluirDiaLetivo } from "../components/ModalExcluirDiaLetivo";
 
 export const EditarDiasLetivosSIGPAE = () => {
   const [searchParams] = useSearchParams();
@@ -55,7 +58,8 @@ export const EditarDiasLetivosSIGPAE = () => {
     OpcaoMultiselectInterface[]
   >([]);
   const [dadosEdicao, setDadosEdicao] =
-    useState<Partial<DiasLetivosFormInterface> | null>(null);
+    useState<Partial<DiaLetivoEdicaoDelecaoType> | null>(null);
+  const [showModalExcluir, setShowModalExcluir] = useState(false);
 
   const navigate = useNavigate();
   const initialValues = useMemo(() => {
@@ -149,6 +153,7 @@ export const EditarDiasLetivosSIGPAE = () => {
     if (response?.status === HTTP_STATUS.OK) {
       const { data } = response;
       setDadosEdicao({
+        dia_letivo: data.data,
         lotes: data.lotes,
         tipos_unidades: data.tipos_unidades,
         unidades_educacionais: data.unidades_educacionais,
@@ -157,7 +162,7 @@ export const EditarDiasLetivosSIGPAE = () => {
             periodos_escolares: data.periodos_escolares,
           },
         ],
-      } as unknown as Partial<DiasLetivosFormInterface>);
+      } as unknown as Partial<DiaLetivoEdicaoDelecaoType>);
 
       if (data.lotes?.length && data.tipos_unidades?.length) {
         getUnidadesEducacionaisAsync({
@@ -189,7 +194,23 @@ export const EditarDiasLetivosSIGPAE = () => {
       response?.status === HTTP_STATUS.CREATED ||
       response?.status === HTTP_STATUS.OK
     ) {
-      toastSuccess("Dias letivos cadastrados com sucesso");
+      toastSuccess(
+        isEdicao
+          ? "Dia letivo atualizado com sucesso"
+          : "Dias letivos cadastrados com sucesso",
+      );
+    } else {
+      toastError(getError(response?.data));
+    }
+  };
+
+  const handleExcluirDiaLetivo = async () => {
+    const response = await excluirDiaLetivo(uuid as string);
+
+    if (response?.status === HTTP_STATUS.NO_CONTENT) {
+      toastSuccess("Dia letivo excluído com sucesso");
+      setShowModalExcluir(false);
+      navigate(-1);
     } else {
       toastError(getError(response?.data));
     }
@@ -428,6 +449,7 @@ export const EditarDiasLetivosSIGPAE = () => {
                                     label="Repetir"
                                     required={!isEdicao}
                                     disabled={isEdicao}
+                                    classNameArgs={`${isEdicao && "weekly-disabled"}`}
                                     validate={
                                       !isEdicao
                                         ? requiredMultiselect
@@ -484,18 +506,20 @@ export const EditarDiasLetivosSIGPAE = () => {
                     </div>
                     <div className="row mt-4">
                       <div className="col-12 text-end">
-                        <Botao
-                          texto="Limpar"
-                          dataTestId="btn-limpar"
-                          type={BUTTON_TYPE.BUTTON}
-                          style={BUTTON_STYLE.GREEN_OUTLINE}
-                          className="me-3"
-                          disabled={submitting}
-                          onClick={() => {
-                            form.reset();
-                            setUnidadesEducacionais([]);
-                          }}
-                        />
+                        {!isEdicao && (
+                          <Botao
+                            texto="Limpar"
+                            dataTestId="btn-limpar"
+                            type={BUTTON_TYPE.BUTTON}
+                            style={BUTTON_STYLE.GREEN_OUTLINE}
+                            className="me-3"
+                            disabled={submitting}
+                            onClick={() => {
+                              form.reset();
+                              setUnidadesEducacionais([]);
+                            }}
+                          />
+                        )}
                         <Botao
                           texto="Cancelar"
                           dataTestId="btn-cancelar"
@@ -505,8 +529,26 @@ export const EditarDiasLetivosSIGPAE = () => {
                           disabled={submitting}
                           onClick={() => navigate(-1)}
                         />
+                        {isEdicao && (
+                          <Botao
+                            texto="Excluir Cadastro"
+                            dataTestId="btn-excluir"
+                            type={BUTTON_TYPE.BUTTON}
+                            style={BUTTON_STYLE.RED_OUTLINE}
+                            icon="fas fa-trash"
+                            className="me-3"
+                            disabled={submitting}
+                            onClick={() => setShowModalExcluir(true)}
+                          />
+                        )}
                         <Botao
-                          texto={submitting ? "" : "Salvar"}
+                          texto={
+                            submitting
+                              ? ""
+                              : isEdicao
+                                ? "Salvar Alterações"
+                                : "Salvar"
+                          }
                           dataTestId="btn-salvar"
                           icon={submitting ? BUTTON_ICON.LOADING : undefined}
                           type={BUTTON_TYPE.BUTTON}
@@ -521,6 +563,15 @@ export const EditarDiasLetivosSIGPAE = () => {
             </Form>
           </div>
         </Spin>
+      )}
+
+      {isEdicao && (
+        <ModalExcluirDiaLetivo
+          event={dadosEdicao}
+          showModal={showModalExcluir}
+          closeModal={() => setShowModalExcluir(false)}
+          onConfirm={handleExcluirDiaLetivo}
+        />
       )}
     </div>
   );
