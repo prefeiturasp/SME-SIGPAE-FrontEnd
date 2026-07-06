@@ -17,4 +17,7 @@ div.modal-dados-objeto-dia-letivo {
   .btn-footer-modal {
     min-width: 130px;
   }
+  .btn-footer-modal.disabled {
+    cursor: default;
+  }
 }

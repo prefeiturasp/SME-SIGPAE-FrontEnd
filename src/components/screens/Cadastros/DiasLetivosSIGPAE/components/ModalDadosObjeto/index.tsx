@@ -104,7 +104,7 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
             texto="Editar"
             type={BUTTON_TYPE.BUTTON}
             style={BUTTON_STYLE.GREEN_OUTLINE}
-            className={`ms-3 btn-footer-modal ${ehDiaPassado}`}
+            className={`ms-3 btn-footer-modal ${ehDiaPassado && "disabled"}`}
             disabled={ehDiaPassado}
           />
         </Link>
