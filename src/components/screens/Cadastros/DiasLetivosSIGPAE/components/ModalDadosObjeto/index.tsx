@@ -50,7 +50,7 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
 }) => {
   if (!event) return null;
 
-  const isDiaPassado = useMemo(() => {
+  const ehDiaPassado = useMemo(() => {
     if (!event?.start) return false;
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
@@ -98,14 +98,14 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
         <Link
           to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}/${EDITAR}?uuid=${event.uuid}`}
           style={{ display: "contents" }}
-          onClick={isDiaPassado ? (e) => e.preventDefault() : undefined}
+          onClick={ehDiaPassado ? (e) => e.preventDefault() : undefined}
         >
           <Botao
             texto="Editar"
             type={BUTTON_TYPE.BUTTON}
             style={BUTTON_STYLE.GREEN_OUTLINE}
-            className="ms-3 btn-footer-modal"
-            disabled={isDiaPassado}
+            className={`ms-3 btn-footer-modal ${ehDiaPassado}`}
+            disabled={ehDiaPassado}
           />
         </Link>
         <Botao
