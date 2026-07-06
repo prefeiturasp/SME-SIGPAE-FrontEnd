@@ -89,10 +89,6 @@ export default () => {
     useState<TerceirizadaComEnderecoInterface>(
       {} as TerceirizadaComEnderecoInterface,
     );
-  const [desabilitaEndereco, setDesabilitaEndereco] = useState<Array<boolean>>([
-    true,
-    true,
-  ]);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhada>(
     {} as FichaTecnicaDetalhada,
@@ -149,7 +145,7 @@ export default () => {
           <Form
             onSubmit={() => {}}
             initialValues={initialValues}
-            decorators={[cepCalculator(setDesabilitaEndereco)]}
+            decorators={[cepCalculator()]}
             render={({ handleSubmit, values, errors }) => (
               <form onSubmit={handleSubmit}>
                 <StepsSigpae current={stepAtual} items={ITENS_STEPS} />
@@ -337,7 +333,6 @@ export default () => {
                           setFabricantesCount={setFabricantesCount}
                           fabricantesOptions={fabricantesOptions}
                           values={values}
-                          desabilitaEndereco={desabilitaEndereco}
                           gerenciaModalCadastroExterno={() => {
                             gerenciaModalCadastroExterno(
                               "FABRICANTE",
