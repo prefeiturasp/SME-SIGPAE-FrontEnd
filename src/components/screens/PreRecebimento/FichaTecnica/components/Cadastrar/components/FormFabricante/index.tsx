@@ -22,7 +22,6 @@ interface Props {
   setFabricantesCount?: (_count: number) => void;
   fabricantesOptions?: OptionsGenerico[];
   values: Record<string, any>;
-  desabilitaEndereco?: Array<boolean>;
   gerenciaModalCadastroExterno?: () => void;
   somenteLeitura?: boolean;
   ocultarBotaoCadastroFabricante?: boolean;
@@ -33,7 +32,6 @@ const FormFabricante: React.FC<Props> = ({
   setFabricantesCount,
   fabricantesOptions,
   values,
-  desabilitaEndereco,
   somenteLeitura,
   gerenciaModalCadastroExterno,
   ocultarBotaoCadastroFabricante = false,
@@ -145,7 +143,7 @@ const FormFabricante: React.FC<Props> = ({
                 name={`endereco_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o endereço"}
                 className="input-ficha-tecnica"
-                disabled={somenteLeitura || desabilitaEndereco[idx]}
+                disabled={somenteLeitura}
               />
             </div>
           </div>
@@ -177,7 +175,7 @@ const FormFabricante: React.FC<Props> = ({
                 name={`bairro_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o Bairro"}
                 className="input-ficha-tecnica"
-                disabled={somenteLeitura || desabilitaEndereco[idx]}
+                disabled={somenteLeitura}
               />
             </div>
           </div>
@@ -189,7 +187,7 @@ const FormFabricante: React.FC<Props> = ({
                 name={`cidade_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite a Cidade"}
                 className="input-ficha-tecnica"
-                disabled={somenteLeitura || desabilitaEndereco[idx]}
+                disabled={somenteLeitura}
               />
             </div>
             <div className="col-4">
@@ -199,7 +197,7 @@ const FormFabricante: React.FC<Props> = ({
                 name={`estado_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o Estado"}
                 className="input-ficha-tecnica"
-                disabled={somenteLeitura || desabilitaEndereco[idx]}
+                disabled={somenteLeitura}
               />
             </div>
           </div>
