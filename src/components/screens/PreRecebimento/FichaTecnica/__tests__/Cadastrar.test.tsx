@@ -18,13 +18,29 @@ import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockM
 import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
 import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
 import mock from "src/services/_mock";
+import { getEnderecoPorCEP } from "src/services/cep.service";
 import {
   CATEGORIA_OPTIONS,
   PROGRAMA_OPTIONS,
   TIPO_ENTREGA_OPTIONS,
 } from "../constants";
 
+jest.mock("src/services/cep.service.jsx");
+
+const mockCEP = {
+  cep: "00000-000",
+  logradouro: "Rua Falsa",
+  bairro: "Sumaré",
+  localidade: "São Paulo",
+  uf: "SP",
+};
+
 beforeEach(() => {
+  (getEnderecoPorCEP as jest.Mock).mockResolvedValue({
+    data: mockCEP,
+    status: 200,
+  });
+
   mock
     .onGet(`/cadastro-produtos-edital/lista-completa-logistica/`)
     .reply(200, mockListaProdutosLogistica);
@@ -526,6 +542,55 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       const componentesProduto = screen.getByTestId("componentes_produto");
       expect(componentesProduto).toBeInTheDocument();
       expect(componentesProduto.tagName).toBe("TEXTAREA");
+    });
+  });
+
+  describe("Campos de endereço do fabricante", () => {
+    const placeholdersEndereco = [
+      "Digite o endereço",
+      "Digite o Bairro",
+      "Digite a Cidade",
+      "Digite o Estado",
+    ];
+
+    it("não deixa os campos de endereço desabilitados ao carregar o formulário", async () => {
+      await setup();
+
+      placeholdersEndereco.forEach((placeholder) => {
+        const inputs = screen.getAllByPlaceholderText(placeholder);
+        expect(inputs.length).toBeGreaterThan(0);
+        inputs.forEach((input) => expect(input).not.toBeDisabled());
+      });
+    });
+
+    it("permite editar manualmente os campos de endereço", async () => {
+      await setup();
+
+      const inputEndereco =
+        screen.getAllByPlaceholderText("Digite o endereço")[0];
+      fireEvent.change(inputEndereco, {
+        target: { value: "Rua Digitada Manualmente" },
+      });
+      expect(inputEndereco).toHaveValue("Rua Digitada Manualmente");
+    });
+
+    it("mantém os campos de endereço habilitados após a consulta de CEP", async () => {
+      await setup();
+
+      const inputCEP = screen.getAllByPlaceholderText("Digite o CEP")[0];
+      await act(async () => {
+        fireEvent.change(inputCEP, { target: { value: "00000000" } });
+      });
+
+      await waitFor(() => {
+        expect(getEnderecoPorCEP).toHaveBeenCalled();
+      });
+
+      placeholdersEndereco.forEach((placeholder) => {
+        screen
+          .getAllByPlaceholderText(placeholder)
+          .forEach((input) => expect(input).not.toBeDisabled());
+      });
     });
   });
 });
