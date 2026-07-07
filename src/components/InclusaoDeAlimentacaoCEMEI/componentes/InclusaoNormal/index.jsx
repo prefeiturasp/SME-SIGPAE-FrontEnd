@@ -28,6 +28,24 @@ export const PeriodosCEIeouEMEI = ({
     return values.quantidades_periodo[indice];
   };
 
+  const ehCEI = ["CEI", "TODOS"].includes(values.alunos_cei_e_ou_emei);
+  const ehEMEI = ["EMEI", "TODOS"].includes(values.alunos_cei_e_ou_emei);
+
+  const exibirErroTotalCEI = (indice) => {
+    const faixas = values.quantidades_periodo[indice]?.faixas;
+    if (!faixas) return false;
+
+    const valores = Object.values(faixas);
+
+    const possuiAlgumValor = valores.some(
+      (valor) => valor !== "" && valor !== null && valor !== undefined,
+    );
+    if (!possuiAlgumValor) return false;
+
+    const possuiMaiorQueZero = valores.some((valor) => Number(valor) > 0);
+    return !possuiMaiorQueZero;
+  };
+
   return (
     <FieldArray name="quantidades_periodo">
       {({ fields }) =>
@@ -48,7 +66,7 @@ export const PeriodosCEIeouEMEI = ({
                     onClick={async () => {
                       await form.change(
                         `${name}.checked`,
-                        !values.quantidades_periodo[indice][`checked`]
+                        !values.quantidades_periodo[indice][`checked`],
                       );
                     }}
                     className="checkbox-custom"
@@ -72,13 +90,13 @@ export const PeriodosCEIeouEMEI = ({
                           []
                         }
                         options={formatarParaMultiselect(
-                          getPeriodo(indice).tipos_alimentacao
+                          getPeriodo(indice).tipos_alimentacao,
                         )}
                         onSelectedChanged={(values_) => {
                           form.change(
                             `quantidades_periodo[
           ${indice}].tipos_alimentacao_selecionados`,
-                            values_.map((value_) => value_.value)
+                            values_.map((value_) => value_.value),
                           );
                         }}
                         placeholder="Selecione tipos de alimentação"
@@ -124,7 +142,7 @@ export const PeriodosCEIeouEMEI = ({
                     onClick={async () => {
                       await form.change(
                         `${name}.checked`,
-                        !values.quantidades_periodo[indice][`checked`]
+                        !values.quantidades_periodo[indice][`checked`],
                       );
                     }}
                     className="checkbox-custom"
@@ -137,9 +155,10 @@ export const PeriodosCEIeouEMEI = ({
                 <>
                   {possuiAlunosCEIporPeriodo(
                     getPeriodo(indice).nome,
-                    periodos
+                    periodos,
                   ) &&
-                    !motivoEspecifico && (
+                    !motivoEspecifico &&
+                    ehCEI && (
                       <>
                         <div className="ms-5 me-5">
                           <div className="alunos-label mt-3">Alunos CEI</div>
@@ -150,7 +169,7 @@ export const PeriodosCEIeouEMEI = ({
                               {tiposAlimentacaoPorPeriodoETipoUnidade(
                                 vinculos,
                                 getPeriodo(indice).nome,
-                                "CEI"
+                                "CEI",
                               )}
                             </span>
                           </div>
@@ -184,28 +203,34 @@ export const PeriodosCEIeouEMEI = ({
                                           validate={
                                             getPeriodo(indice).checked &&
                                             composeValidators(
-                                              naoPodeSerZero,
-                                              maxValue(faixa.quantidade_alunos)
+                                              maxValue(faixa.quantidade_alunos),
                                             )
                                           }
                                         />
                                       </td>
                                     </tr>
                                   );
-                                }
+                                },
                               )}
                               <tr className="row">
                                 <td className="col-8 fw-bold">Total</td>
                                 <td className="col-2 text-center">
                                   {totalAlunosPorPeriodoCEI(
                                     periodos,
-                                    getPeriodo(indice).nome
+                                    getPeriodo(indice).nome,
                                   )}
                                 </td>
                                 <td className="col-2 text-center">
                                   {totalAlunosInputPorPeriodoCEI(
                                     values,
-                                    getPeriodo(indice).nome
+                                    getPeriodo(indice).nome,
+                                  )}
+
+                                  {exibirErroTotalCEI(indice) && (
+                                    <div className="text-danger mt-1">
+                                      Pelo menos uma das faixas deve possuir
+                                      quantidade maior que 0.
+                                    </div>
                                   )}
                                 </td>
                               </tr>
@@ -215,94 +240,95 @@ export const PeriodosCEIeouEMEI = ({
                       </>
                     )}
                   {alunosEMEIporPeriodo(getPeriodo(indice).nome, periodos) >
-                    0 && (
-                    <>
-                      <div className="ms-5 me-5">
-                        <div className="alunos-label mt-3">Alunos EMEI</div>
-                        <div className="tipos-alimentacao mt-3 mb-3 row">
-                          Tipos de alimentação do período{" "}
-                          {getPeriodo(indice).nome}:{" "}
-                          <div className="col-4">
-                            <Field
-                              component={MultiselectRaw}
-                              name="tipos_alimentacao"
-                              dataTestId={`select-tipos-alimentacao`}
-                              selected={
-                                getPeriodo(indice)
-                                  .tipos_alimentacao_selecionados || []
-                              }
-                              options={formatarParaMultiselect(
-                                arrTiposAlimentacaoPorPeriodoETipoUnidade(
-                                  vinculos,
-                                  getPeriodo(indice).nome,
-                                  "EMEI"
-                                )
-                              )}
-                              onSelectedChanged={(values_) => {
-                                form.change(
-                                  `quantidades_periodo[
+                    0 &&
+                    ehEMEI && (
+                      <>
+                        <div className="ms-5 me-5">
+                          <div className="alunos-label mt-3">Alunos EMEI</div>
+                          <div className="tipos-alimentacao mt-3 mb-3 row">
+                            Tipos de alimentação do período{" "}
+                            {getPeriodo(indice).nome}:{" "}
+                            <div className="col-4">
+                              <Field
+                                component={MultiselectRaw}
+                                name="tipos_alimentacao"
+                                dataTestId={`select-tipos-alimentacao`}
+                                selected={
+                                  getPeriodo(indice)
+                                    .tipos_alimentacao_selecionados || []
+                                }
+                                options={formatarParaMultiselect(
+                                  arrTiposAlimentacaoPorPeriodoETipoUnidade(
+                                    vinculos,
+                                    getPeriodo(indice).nome,
+                                    "EMEI",
+                                  ),
+                                )}
+                                onSelectedChanged={(values_) => {
+                                  form.change(
+                                    `quantidades_periodo[
           ${indice}].tipos_alimentacao_selecionados`,
-                                  values_.map((value_) => value_.value)
-                                );
-                              }}
-                              placeholder="Selecione tipos de alimentação"
-                            />
+                                    values_.map((value_) => value_.value),
+                                  );
+                                }}
+                                placeholder="Selecione tipos de alimentação"
+                              />
+                            </div>
                           </div>
-                        </div>
-                        <table
-                          className={`faixas-etarias-cei ${
-                            motivoEspecifico ? "w-50" : ""
-                          }`}
-                        >
-                          <thead>
-                            <tr className="row">
-                              {!motivoEspecifico && (
-                                <th className="col-8 my-auto">
-                                  Alunos matriculados:{" "}
-                                  <span className="fw-normal">
-                                    {alunosEMEIporPeriodo(
-                                      getPeriodo(indice).nome,
-                                      periodos
-                                    )}
-                                  </span>
-                                </th>
-                              )}
-                              <th
-                                className={`${
-                                  motivoEspecifico ? "col-6" : "col-4"
-                                } d-flex justify-content-center`}
-                              >
-                                <span className="my-auto">Quantidade</span>
-                                <Field
-                                  className="ms-3"
-                                  component={InputText}
-                                  dataTestIdDiv={`${name}.alunos_emei`}
-                                  type="number"
-                                  name={`${name}.alunos_emei`}
-                                  validate={
-                                    getPeriodo(indice).checked &&
-                                    composeValidators(
-                                      naoPodeSerZero,
-                                      maxValue(
-                                        alunosEMEIporPeriodo(
-                                          getPeriodo(indice).nome,
-                                          periodos
-                                        )
+                          <table
+                            className={`faixas-etarias-cei ${
+                              motivoEspecifico ? "w-50" : ""
+                            }`}
+                          >
+                            <thead>
+                              <tr className="row">
+                                {!motivoEspecifico && (
+                                  <th className="col-8 my-auto">
+                                    Alunos matriculados:{" "}
+                                    <span className="fw-normal">
+                                      {alunosEMEIporPeriodo(
+                                        getPeriodo(indice).nome,
+                                        periodos,
+                                      )}
+                                    </span>
+                                  </th>
+                                )}
+                                <th
+                                  className={`${
+                                    motivoEspecifico ? "col-6" : "col-4"
+                                  } d-flex justify-content-center`}
+                                >
+                                  <span className="my-auto">Quantidade</span>
+                                  <Field
+                                    className="ms-3"
+                                    component={InputText}
+                                    dataTestIdDiv={`${name}.alunos_emei`}
+                                    type="number"
+                                    name={`${name}.alunos_emei`}
+                                    validate={
+                                      getPeriodo(indice).checked &&
+                                      composeValidators(
+                                        naoPodeSerZero,
+                                        maxValue(
+                                          alunosEMEIporPeriodo(
+                                            getPeriodo(indice).nome,
+                                            periodos,
+                                          ),
+                                        ),
                                       )
-                                    )
-                                  }
-                                />
-                              </th>
-                            </tr>
-                          </thead>
-                        </table>
-                      </div>
-                    </>
-                  )}
+                                    }
+                                  />
+                                </th>
+                              </tr>
+                            </thead>
+                          </table>
+                        </div>
+                      </>
+                    )}
                 </>
               )}
             </div>
-          )
+          ),
         )
       }
     </FieldArray>
