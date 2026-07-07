@@ -43,6 +43,11 @@ export interface DiasLetivosFormInterface {
   unidades_educacionais: string[];
 }
 
+export interface DiasLetivosUpdateInterface
+  extends Omit<DiasLetivosFormInterface, "recorrencias"> {
+  periodos_escolares: string[];
+}
+
 export interface TipoAlimentacaoInterface {
   nome: string;
   uuid: string;

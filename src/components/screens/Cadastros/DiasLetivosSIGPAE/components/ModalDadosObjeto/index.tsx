@@ -1,11 +1,18 @@
 import moment from "moment";
-import React from "react";
+import React, { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { Modal } from "react-bootstrap";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import {
+  CADASTROS,
+  CONFIGURACOES,
+  DIAS_LETIVOS,
+  EDITAR,
+} from "src/configs/constants";
 import "./style.scss";
 
 interface ModalDadosObjetoProps {
@@ -43,6 +50,15 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
 }) => {
   if (!event) return null;
 
+  const ehDiaPassado = useMemo(() => {
+    if (!event?.start) return false;
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataEvento = new Date(event.start);
+    dataEvento.setHours(0, 0, 0, 0);
+    return dataEvento < hoje;
+  }, [event]);
+
   const unidades = formatarUnidades(event.unidades_escolares);
 
   return (
@@ -79,13 +95,19 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
         <hr />
       </Modal.Body>
       <div className="footer">
-        <Botao
-          texto="Editar"
-          type={BUTTON_TYPE.BUTTON}
-          disabled
-          style={BUTTON_STYLE.GREEN_OUTLINE}
-          className="ms-3 btn-footer-modal"
-        />
+        <Link
+          to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}/${EDITAR}?uuid=${event.uuid}`}
+          style={{ display: "contents" }}
+          onClick={ehDiaPassado ? (e) => e.preventDefault() : undefined}
+        >
+          <Botao
+            texto="Editar"
+            type={BUTTON_TYPE.BUTTON}
+            style={BUTTON_STYLE.GREEN_OUTLINE}
+            className={`ms-3 btn-footer-modal ${ehDiaPassado && "disabled"}`}
+            disabled={ehDiaPassado}
+          />
+        </Link>
         <Botao
           texto="Manter"
           onClick={closeModal}
