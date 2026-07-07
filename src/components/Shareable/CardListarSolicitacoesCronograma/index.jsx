@@ -23,7 +23,9 @@ export default ({
           <div className="card-listagem-solicitacoes">
             {solicitacoes &&
               solicitacoes.map((value, key) => {
-                const ehPontoAPonto = value.tipo_entrega === "PONTO_A_PONTO";
+                const ehPontoAPonto =
+                  Boolean(value.ponto_a_ponto) ||
+                  value.tipo_entrega === "PONTO_A_PONTO";
 
                 const classeDestaque = ehPontoAPonto
                   ? "categoria-ponto-a-ponto"
