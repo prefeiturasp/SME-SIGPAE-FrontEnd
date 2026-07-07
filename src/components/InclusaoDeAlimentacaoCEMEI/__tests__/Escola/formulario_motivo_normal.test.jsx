@@ -42,7 +42,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock.onGet("/dias-uteis/").reply(200, {
@@ -51,7 +51,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     });
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
     mock
@@ -85,7 +85,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
             <InclusaoDeAlimentacaoCEMEIPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -106,19 +106,19 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
 
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # 00FA3")
+      screen.getByText("Inclusão de Alimentação # 00FA3"),
     ).toBeInTheDocument();
     expect(screen.getByText("1 dia(s)")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 08/07/2025 16:02:27")
+      screen.getByText("Criado em: 08/07/2025 16:02:27"),
     ).toBeInTheDocument();
   });
 
@@ -126,10 +126,20 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     const selectMotivo = screen.getByTestId("select-motivo-0");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Reposição de aula"
+      (motivo) => motivo.nome === "Reposição de aula",
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoReposicaoDeAula },
+    });
+  };
+
+  const selecionaAlunos = (valor) => {
+    const selectAlunosDiv = screen.getByTestId(
+      "div-select-alunos-cei-e-ou-emei",
+    );
+    const selectElementAlunos = selectAlunosDiv.querySelector("select");
+    fireEvent.change(selectElementAlunos, {
+      target: { value: valor },
     });
   };
 
@@ -141,6 +151,8 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     fireEvent.change(inputElement, {
       target: { value: "31/07/2025" },
     });
+
+    selecionaAlunos("TODOS");
 
     expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
 
@@ -156,7 +168,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     expect(screen.getByText("01 ano a 03 anos e 11 meses")).toBeInTheDocument();
 
     const divInputFaixaEtaria0 = screen.getByTestId(
-      "quantidades_periodo[0].faixas.0"
+      "quantidades_periodo[0].faixas.0",
     );
     const inputElementQuantidade0 = divInputFaixaEtaria0.querySelector("input");
     fireEvent.change(inputElementQuantidade0, {
@@ -164,7 +176,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     });
 
     const divInputFaixaEtaria1 = screen.getByTestId(
-      "quantidades_periodo[0].faixas.1"
+      "quantidades_periodo[0].faixas.1",
     );
     const inputElementQuantidade1 = divInputFaixaEtaria1.querySelector("input");
     fireEvent.change(inputElementQuantidade1, {
@@ -172,10 +184,10 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     });
 
     const selectTiposAlimentacaoEMEI = screen.getByTestId(
-      "select-tipos-alimentacao"
+      "select-tipos-alimentacao",
     );
     const selectControl = within(selectTiposAlimentacaoEMEI).getByRole(
-      "combobox"
+      "combobox",
     );
     fireEvent.mouseDown(selectControl);
 
@@ -183,7 +195,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     fireEvent.click(optionLanche);
 
     const divInputAlunosEMEI = screen.getByTestId(
-      "quantidades_periodo[0].alunos_emei"
+      "quantidades_periodo[0].alunos_emei",
     );
     const inputElementAlunosEMEI = divInputAlunosEMEI.querySelector("input");
     fireEvent.change(inputElementAlunosEMEI, {
@@ -201,7 +213,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação Rascunho criada com sucesso!")
+        screen.getByText("Solicitação Rascunho criada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -224,12 +236,12 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
 
     mock
       .onPut(
-        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`,
       )
       .reply(200, {});
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/inicio-pedido/`
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
 
@@ -238,7 +250,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Inclusão de Alimentação enviada com sucesso!")
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -246,7 +258,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
   it("Exclui rascunho", async () => {
     mock
       .onDelete(
-        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`,
       )
       .reply(204, {});
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -257,8 +269,8 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          `Rascunho # ${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].id_externo} excluído com sucesso`
-        )
+          `Rascunho # ${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].id_externo} excluído com sucesso`,
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -266,7 +278,7 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
-        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`,
       )
       .reply(400, { detail: "Erro ao excluir rascunho" });
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -277,8 +289,8 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          `Houve um erro ao excluir o rascunho: Erro ao excluir rascunho`
-        )
+          `Houve um erro ao excluir o rascunho: Erro ao excluir rascunho`,
+        ),
       ).toBeInTheDocument();
     });
   });
