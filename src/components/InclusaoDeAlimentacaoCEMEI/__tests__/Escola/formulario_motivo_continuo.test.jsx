@@ -42,7 +42,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock.onGet("/dias-uteis/").reply(200, {
@@ -51,7 +51,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
     });
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
     mock
@@ -86,7 +86,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
             <InclusaoDeAlimentacaoCEMEIPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -107,23 +107,23 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
 
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # CC1E6")
+      screen.getByText("Inclusão de Alimentação # CC1E6"),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Programas/Projetos Contínuos - (29/07/2025 - 01/08/2025)"
-      )
+        "Programas/Projetos Contínuos - (29/07/2025 - 01/08/2025)",
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 10/07/2025 14:56:52")
+      screen.getByText("Criado em: 10/07/2025 14:56:52"),
     ).toBeInTheDocument();
   });
 
@@ -132,7 +132,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoProgramasProjetos =
       mockMotivosInclusaoContinua.results.find(
-        (motivo) => motivo.nome === "Programas/Projetos Contínuos"
+        (motivo) => motivo.nome === "Programas/Projetos Contínuos",
       ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoProgramasProjetos },
@@ -180,7 +180,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
     });
 
     const selectTipoAlimentacaoDiv = screen.getByTestId(
-      "div-select-tipo-alimentacao"
+      "div-select-tipo-alimentacao",
     );
     const selectElementTipoAlimentacao =
       selectTipoAlimentacaoDiv.querySelector("select");
@@ -195,7 +195,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
     });
 
     const botaoAdicionarRecorrencia = screen.getByTestId(
-      "botao-adicionar-recorrencia"
+      "botao-adicionar-recorrencia",
     );
     await act(async () => {
       fireEvent.click(botaoAdicionarRecorrencia);
@@ -205,6 +205,11 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
   it("Salva rascunho inclusão de alimentação contínua CEMEI com sucesso", async () => {
     mock.onPost("/inclusoes-alimentacao-continua/").reply(201, {});
     await setupInclusaoContinua();
+
+    expect(
+      screen.queryByTestId("div-select-alunos-cei-e-ou-emei"),
+    ).not.toBeInTheDocument();
+
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
       .closest("button");
@@ -212,7 +217,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação Rascunho criada com sucesso!")
+        screen.getByText("Solicitação Rascunho criada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -231,12 +236,12 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
 
     mock
       .onPut(
-        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`,
       )
       .reply(200, {});
     mock
       .onPatch(
-        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/inicio-pedido/`
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
 
@@ -245,7 +250,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
 
     await waitFor(() => {
       expect(
-        screen.getByText("Inclusão de Alimentação enviada com sucesso!")
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -253,7 +258,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
   it("Exclui rascunho", async () => {
     mock
       .onDelete(
-        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`,
       )
       .reply(204, {});
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -264,8 +269,8 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
     await waitFor(() => {
       expect(
         screen.getByText(
-          `Rascunho # ${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].id_externo} excluído com sucesso`
-        )
+          `Rascunho # ${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].id_externo} excluído com sucesso`,
+        ),
       ).toBeInTheDocument();
     });
   });
