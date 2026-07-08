@@ -2078,20 +2078,25 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         ].includes(rowName)
       ) {
         const ehRecreio = ehRecreioNasFerias();
-        const faixaData = valoresMatriculadosFaixaEtariaDia?.find((entry) => {
-          const mesmoDia = String(entry.dia) === String(dia);
-          const temAlunos = Number(entry.quantidade) > 0;
-          if (ehRecreio) {
-            return mesmoDia && temAlunos;
-          }
-          return (
-            entry.faixa_etaria?.uuid === uuidFaixaEtaria &&
-            mesmoDia &&
-            temAlunos
-          );
-        });
+        const ehDieta = nomeCategoria.includes("DIETA");
+
+        const prefixo = ehDieta
+          ? "dietas_autorizadas"
+          : ehRecreio
+            ? "participantes"
+            : "matriculados";
+
+        const idCatLog = ehDieta
+          ? categoria.id
+          : (categoriasDeMedicao.find((cat) => cat.nome === "ALIMENTAÇÃO")
+              ?.id ?? categoria.id);
+
+        const chaveLog = `${prefixo}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${idCatLog}`;
+        const temAlunosNoSlot =
+          allValues[chaveLog] && Number(allValues[chaveLog]) > 0;
+
         if (
-          faixaData &&
+          temAlunosNoSlot &&
           (value === "" || value === null || value === undefined)
         ) {
           return "Preenchimento obrigatório.";
@@ -2146,7 +2151,28 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           "participantes",
         ].includes(rowName)
       ) {
-        if (value === "" || value === null || value === undefined) {
+        const ehRecreio = ehRecreioNasFerias();
+        const ehDieta = nomeCategoria.includes("DIETA");
+
+        const prefixo = ehDieta
+          ? "dietas_autorizadas"
+          : ehRecreio
+            ? "participantes"
+            : "matriculados";
+
+        const idCatLog = ehDieta
+          ? idCategoria
+          : (categoriasDeMedicao.find((cat) => cat.nome === "ALIMENTAÇÃO")
+              ?.id ?? idCategoria);
+
+        const chaveLog = `${prefixo}__dia_${dia}__categoria_${idCatLog}`;
+        const temAlunosNoDia =
+          allValues[chaveLog] && Number(allValues[chaveLog]) > 0;
+
+        if (
+          temAlunosNoDia &&
+          (value === "" || value === null || value === undefined)
+        ) {
           return "Preenchimento obrigatório.";
         }
       }

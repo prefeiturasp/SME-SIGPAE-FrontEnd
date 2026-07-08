@@ -22,7 +22,7 @@ const validaCorrecaoCampoVazioCEI = ({
   value,
   diasParaCorrecao,
   uuidFaixaEtaria = null,
-  valoresMatriculadosFaixaEtariaDia = [],
+  allValues = {},
   usaFaixa = true,
   ehRecreio = false,
 }) => {
@@ -36,17 +36,10 @@ const validaCorrecaoCampoVazioCEI = ({
   if (READ_ONLY_ROWS.includes(rowName)) return undefined;
 
   if (usaFaixa && uuidFaixaEtaria) {
-    const faixaData = valoresMatriculadosFaixaEtariaDia.find((entry) => {
-      const mesmoDia = String(entry.dia) === String(dia);
-      const temAlunos = Number(entry.quantidade) > 0;
-      if (ehRecreio) {
-        return mesmoDia && temAlunos;
-      }
-      return (
-        entry.faixa_etaria?.uuid === uuidFaixaEtaria && mesmoDia && temAlunos
-      );
-    });
-    if (!faixaData) return undefined;
+    const prefixo = ehRecreio ? "participantes" : "matriculados";
+    const chave = `${prefixo}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${idCategoria}`;
+    const temAlunos = allValues[chave] && Number(allValues[chave]) > 0;
+    if (!temAlunos) return undefined;
   }
 
   if (value === "" || value === null || value === undefined) {
@@ -63,6 +56,8 @@ const validaCorrecaoCampoVazioEmeiCemei = ({
   idCategoria,
   value,
   diasParaCorrecao,
+  allValues = {},
+  ehRecreio = false,
 }) => {
   const isInCorrectionMode =
     statusPeriodo && CORRECTION_STATUSES.includes(statusPeriodo);
@@ -72,6 +67,12 @@ const validaCorrecaoCampoVazioEmeiCemei = ({
   if (!isCorrectionDay) return undefined;
 
   if (READ_ONLY_ROWS.includes(rowName)) return undefined;
+
+  const prefixo = ehRecreio ? "participantes" : "matriculados";
+  const chaveMatriculados = `${prefixo}__dia_${dia}__categoria_${idCategoria}`;
+  const temAlunos =
+    allValues[chaveMatriculados] && Number(allValues[chaveMatriculados]) > 0;
+  if (!temAlunos) return undefined;
 
   if (value === "" || value === null || value === undefined) {
     return "Preenchimento obrigatório.";
@@ -89,18 +90,14 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
   const faixaUuid = "94750736-ca74-44bb-bcc8-7e7c236d5052";
   const otraFaixaUuid = "2fc92a3d-bed7-490b-8ae9-405f9e3f2ca5";
 
-  const matriculadosComAlunos = [
-    {
-      faixa_etaria: { uuid: faixaUuid },
-      dia: "01",
-      quantidade: 20,
-    },
-    {
-      faixa_etaria: { uuid: otraFaixaUuid },
-      dia: "01",
-      quantidade: 0,
-    },
-  ];
+  const allValuesComAlunos = {
+    [`matriculados__faixa_${faixaUuid}__dia_01__categoria_1`]: "20",
+    [`matriculados__faixa_${otraFaixaUuid}__dia_01__categoria_1`]: "0",
+  };
+
+  const allValuesRecreio = {
+    [`participantes__faixa_${faixaUuid}__dia_01__categoria_1`]: "15",
+  };
 
   describe("faixa etária com alunos > 0", () => {
     it('retorna "Preenchimento obrigatório." quando campo vazio e faixa tem alunos', () => {
@@ -112,7 +109,7 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: faixaUuid,
-        valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+        allValues: allValuesComAlunos,
       });
       expect(result).toBe("Preenchimento obrigatório.");
     });
@@ -126,7 +123,7 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "5",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: faixaUuid,
-        valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+        allValues: allValuesComAlunos,
       });
       expect(result).toBeUndefined();
     });
@@ -140,14 +137,14 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "0",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: faixaUuid,
-        valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+        allValues: allValuesComAlunos,
       });
       expect(result).toBeUndefined();
     });
   });
 
-  describe("faixa etária sem alunos (quantidade_alunos = 0)", () => {
-    it("NÃO retorna erro quando faixa tem quantidade_alunos = 0", () => {
+  describe("faixa etária sem alunos (matriculados = 0)", () => {
+    it("NÃO retorna erro quando faixa tem matriculados = 0", () => {
       const result = validaCorrecaoCampoVazioCEI({
         statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
         rowName: "frequencia",
@@ -156,12 +153,12 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: otraFaixaUuid,
-        valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+        allValues: allValuesComAlunos,
       });
       expect(result).toBeUndefined();
     });
 
-    it("NÃO retorna erro quando faixa não está no log de matriculados", () => {
+    it("NÃO retorna erro quando faixa não está no allValues", () => {
       const result = validaCorrecaoCampoVazioCEI({
         statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
         rowName: "frequencia",
@@ -170,12 +167,12 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: "faixa-inexistente",
-        valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+        allValues: allValuesComAlunos,
       });
       expect(result).toBeUndefined();
     });
 
-    it("NÃO retorna erro quando valoresMatriculadosFaixaEtariaDia é vazio", () => {
+    it("NÃO retorna erro quando allValues está vazio", () => {
       const result = validaCorrecaoCampoVazioCEI({
         statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
         rowName: "frequencia",
@@ -184,22 +181,14 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: faixaUuid,
-        valoresMatriculadosFaixaEtariaDia: [],
+        allValues: {},
       });
       expect(result).toBeUndefined();
     });
   });
 
-  describe("recreio nas férias (usa 'quantidade' em vez de 'quantidade_alunos')", () => {
-    const matriculadosRecreio = [
-      {
-        faixa_etaria: { uuid: faixaUuid },
-        dia: "01",
-        quantidade: 15,
-      },
-    ];
-
-    it("retorna erro quando campo vazio e faixa tem quantidade > 0 no recreio", () => {
+  describe("recreio nas férias (usa 'participantes')", () => {
+    it("retorna erro quando campo vazio e faixa tem participantes > 0 no recreio", () => {
       const result = validaCorrecaoCampoVazioCEI({
         statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
         rowName: "frequencia",
@@ -208,7 +197,7 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: faixaUuid,
-        valoresMatriculadosFaixaEtariaDia: matriculadosRecreio,
+        allValues: allValuesRecreio,
         ehRecreio: true,
       });
       expect(result).toBe("Preenchimento obrigatório.");
@@ -242,7 +231,7 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
           value: "",
           diasParaCorrecao: defaultDiasParaCorrecao,
           uuidFaixaEtaria: faixaUuid,
-          valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+          allValues: allValuesComAlunos,
         });
         expect(result).toBeUndefined();
       },
@@ -259,7 +248,7 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
         value: "",
         diasParaCorrecao: defaultDiasParaCorrecao,
         uuidFaixaEtaria: faixaUuid,
-        valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+        allValues: allValuesComAlunos,
       });
       expect(result).toBeUndefined();
     });
@@ -277,7 +266,7 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
           value: "",
           diasParaCorrecao: defaultDiasParaCorrecao,
           uuidFaixaEtaria: faixaUuid,
-          valoresMatriculadosFaixaEtariaDia: matriculadosComAlunos,
+          allValues: allValuesComAlunos,
         });
         expect(result).toBe("Preenchimento obrigatório.");
       },
@@ -290,7 +279,16 @@ describe("validaCorrecaoCampoVazio - EMEI da CEMEI (sem faixa)", () => {
     { dia: "01", categoria_medicao: 1, habilitado_correcao: true },
   ];
 
-  it('retorna "Preenchimento obrigatório." quando campo vazio em dia de correção', () => {
+  const allValuesComAlunos = {
+    matriculados__dia_01__categoria_1: "20",
+    matriculados__dia_02__categoria_1: "0",
+  };
+
+  const allValuesRecreio = {
+    participantes__dia_01__categoria_1: "15",
+  };
+
+  it('retorna "Preenchimento obrigatório." quando campo vazio em dia de correção com alunos > 0', () => {
     const result = validaCorrecaoCampoVazioEmeiCemei({
       statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
       rowName: "frequencia",
@@ -298,8 +296,39 @@ describe("validaCorrecaoCampoVazio - EMEI da CEMEI (sem faixa)", () => {
       idCategoria: 1,
       value: "",
       diasParaCorrecao: defaultDiasParaCorrecao,
+      allValues: allValuesComAlunos,
     });
     expect(result).toBe("Preenchimento obrigatório.");
+  });
+
+  it("NÃO retorna erro quando campo vazio em dia com log zerado (matriculados = 0)", () => {
+    const result = validaCorrecaoCampoVazioEmeiCemei({
+      statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
+      rowName: "frequencia",
+      dia: "02",
+      idCategoria: 1,
+      value: "",
+      diasParaCorrecao: [
+        { dia: "02", categoria_medicao: 1, habilitado_correcao: true },
+      ],
+      allValues: allValuesComAlunos,
+    });
+    expect(result).toBeUndefined();
+  });
+
+  it("NÃO retorna erro quando não há matriculados para o dia no allValues", () => {
+    const result = validaCorrecaoCampoVazioEmeiCemei({
+      statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
+      rowName: "frequencia",
+      dia: "99",
+      idCategoria: 1,
+      value: "",
+      diasParaCorrecao: [
+        { dia: "99", categoria_medicao: 1, habilitado_correcao: true },
+      ],
+      allValues: allValuesComAlunos,
+    });
+    expect(result).toBeUndefined();
   });
 
   it("NÃO retorna erro quando campo está preenchido", () => {
@@ -310,6 +339,7 @@ describe("validaCorrecaoCampoVazio - EMEI da CEMEI (sem faixa)", () => {
       idCategoria: 1,
       value: "10",
       diasParaCorrecao: defaultDiasParaCorrecao,
+      allValues: allValuesComAlunos,
     });
     expect(result).toBeUndefined();
   });
@@ -322,8 +352,23 @@ describe("validaCorrecaoCampoVazio - EMEI da CEMEI (sem faixa)", () => {
       idCategoria: 1,
       value: "0",
       diasParaCorrecao: defaultDiasParaCorrecao,
+      allValues: allValuesComAlunos,
     });
     expect(result).toBeUndefined();
+  });
+
+  it("retorna erro no recreio com participantes > 0", () => {
+    const result = validaCorrecaoCampoVazioEmeiCemei({
+      statusPeriodo: "MEDICAO_CORRECAO_SOLICITADA",
+      rowName: "frequencia",
+      dia: "01",
+      idCategoria: 1,
+      value: "",
+      diasParaCorrecao: defaultDiasParaCorrecao,
+      allValues: allValuesRecreio,
+      ehRecreio: true,
+    });
+    expect(result).toBe("Preenchimento obrigatório.");
   });
 
   it("NÃO retorna erro fora do modo correção", () => {
@@ -346,6 +391,7 @@ describe("validaCorrecaoCampoVazio - EMEI da CEMEI (sem faixa)", () => {
       idCategoria: 1,
       value: "",
       diasParaCorrecao: defaultDiasParaCorrecao,
+      allValues: allValuesComAlunos,
     });
     expect(result).toBeUndefined();
   });
