@@ -36,15 +36,16 @@ const validaCorrecaoCampoVazioCEI = ({
   if (READ_ONLY_ROWS.includes(rowName)) return undefined;
 
   if (usaFaixa && uuidFaixaEtaria) {
-    const propriedadeQuantidade = ehRecreio
-      ? "quantidade"
-      : "quantidade_alunos";
-    const faixaData = valoresMatriculadosFaixaEtariaDia.find(
-      (entry) =>
-        entry.faixa_etaria?.uuid === uuidFaixaEtaria &&
-        entry.dia === dia &&
-        entry[propriedadeQuantidade] > 0,
-    );
+    const faixaData = valoresMatriculadosFaixaEtariaDia.find((entry) => {
+      const mesmoDia = String(entry.dia) === String(dia);
+      const temAlunos = Number(entry.quantidade) > 0;
+      if (ehRecreio) {
+        return mesmoDia && temAlunos;
+      }
+      return (
+        entry.faixa_etaria?.uuid === uuidFaixaEtaria && mesmoDia && temAlunos
+      );
+    });
     if (!faixaData) return undefined;
   }
 
@@ -92,12 +93,12 @@ describe("validaCorrecaoCampoVazio - CEI (com faixa etária)", () => {
     {
       faixa_etaria: { uuid: faixaUuid },
       dia: "01",
-      quantidade_alunos: 20,
+      quantidade: 20,
     },
     {
       faixa_etaria: { uuid: otraFaixaUuid },
       dia: "01",
-      quantidade_alunos: 0,
+      quantidade: 0,
     },
   ];
 

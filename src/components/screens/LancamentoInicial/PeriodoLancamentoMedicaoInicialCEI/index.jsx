@@ -2078,15 +2078,18 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         ].includes(rowName)
       ) {
         const ehRecreio = ehRecreioNasFerias();
-        const propriedadeQuantidade = ehRecreio
-          ? "quantidade"
-          : "quantidade_alunos";
-        const faixaData = valoresMatriculadosFaixaEtariaDia?.find(
-          (entry) =>
+        const faixaData = valoresMatriculadosFaixaEtariaDia?.find((entry) => {
+          const mesmoDia = String(entry.dia) === String(dia);
+          const temAlunos = Number(entry.quantidade) > 0;
+          if (ehRecreio) {
+            return mesmoDia && temAlunos;
+          }
+          return (
             entry.faixa_etaria?.uuid === uuidFaixaEtaria &&
-            entry.dia === dia &&
-            entry[propriedadeQuantidade] > 0,
-        );
+            mesmoDia &&
+            temAlunos
+          );
+        });
         if (
           faixaData &&
           (value === "" || value === null || value === undefined)
