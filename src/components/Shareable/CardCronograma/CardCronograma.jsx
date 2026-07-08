@@ -16,6 +16,9 @@ export const CardCronograma = ({
     Boolean(solicitation.ponto_a_ponto) ||
     solicitation.tipo_entrega === "PONTO_A_PONTO";
 
+  const ehFichaTecnicaFlv = (solicitation) =>
+    Boolean(solicitation.eh_ficha_tecnica_flv);
+
   const getClasseSolicitacao = (solicitation) => {
     const classes = ["data"];
 
@@ -27,6 +30,9 @@ export const CardCronograma = ({
       classes.push("ponto-a-ponto");
     }
 
+    if (ehFichaTecnicaFlv(solicitation)) {
+      classes.push("eh-ficha-tecnica-flv");
+    }
     return classes.join(" ");
   };
 

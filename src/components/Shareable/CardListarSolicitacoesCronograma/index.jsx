@@ -23,12 +23,13 @@ export default ({
           <div className="card-listagem-solicitacoes">
             {solicitacoes &&
               solicitacoes.map((value, key) => {
-                const ehPontoAPonto =
+                const ehPontoAPontoOuFlv =
                   Boolean(value.ponto_a_ponto) ||
-                  value.tipo_entrega === "PONTO_A_PONTO";
+                  value.tipo_entrega === "PONTO_A_PONTO" ||
+                  value.eh_ficha_tecnica_flv;
 
-                const classeDestaque = ehPontoAPonto
-                  ? "categoria-ponto-a-ponto"
+                const classeDestaque = ehPontoAPontoOuFlv
+                  ? "categoria-na-cor-verde"
                   : value.programa_leve_leite
                     ? "programa-leve-leite"
                     : "";
