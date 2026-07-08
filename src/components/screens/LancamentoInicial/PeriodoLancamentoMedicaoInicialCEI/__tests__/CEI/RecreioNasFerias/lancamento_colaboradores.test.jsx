@@ -936,6 +936,12 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para correção do Grupo Co
     fireEvent.change(screen.getByTestId("frequencia__dia_14__categoria_1"), {
       target: { value: "12" },
     });
+    fireEvent.change(screen.getByTestId("lanche_4h__dia_14__categoria_1"), {
+      target: { value: "0" },
+    });
+    fireEvent.change(screen.getByTestId("lanche__dia_14__categoria_1"), {
+      target: { value: "0" },
+    });
 
     const botaoSalvarCorrecoes = screen
       .getByText("Salvar Correções")
