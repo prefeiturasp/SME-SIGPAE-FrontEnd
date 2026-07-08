@@ -46,7 +46,7 @@ div.input {
       color: $grayPlaceholder;
       font-weight: normal;
     }
-    &.invalid-field:not(:focus):invalid {
+    &.invalid-field:not(:focus) {
       box-shadow: none;
       border-color: $red;
     }
