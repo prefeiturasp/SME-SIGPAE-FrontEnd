@@ -278,6 +278,7 @@ export default () => {
       mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
       ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
       escola: escola_uuid,
+      periodo_escolar: location.state ? location.state.periodo : "INTEGRAL",
     };
     const response = await listDiasLetivosCalendario(params);
     const dias = new Set(
