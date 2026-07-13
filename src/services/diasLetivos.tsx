@@ -18,6 +18,14 @@ export const listDiasLetivos = async (params) => {
   }
 };
 
+export const listDiasLetivosCalendario = async (params) => {
+  const url = "/dias-letivos/calendario/";
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  if (response) {
+    return { data: response.data, status: response.status };
+  }
+};
+
 export const getDiaLetivo = async (uuid: string) => {
   const url = `/dias-letivos/${uuid}/`;
   const response = await axios.get(url).catch(ErrorHandlerFunction);
