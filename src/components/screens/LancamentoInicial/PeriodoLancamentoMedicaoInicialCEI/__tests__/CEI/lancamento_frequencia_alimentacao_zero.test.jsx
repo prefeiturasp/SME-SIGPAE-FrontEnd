@@ -16,6 +16,7 @@ import mock from "src/services/_mock";
 
 describe("Teste de validação para frequência de alimentação zero e frequência de dietas maior que zero sem observação", () => {
   beforeEach(async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCEI);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock

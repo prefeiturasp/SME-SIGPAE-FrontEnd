@@ -31,11 +31,13 @@ import {
   updateValoresPeriodosLancamentos,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -50,11 +52,16 @@ const awaitServices = async () => {
     ).toHaveBeenCalled();
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
+    expect(listDiasLetivosCalendario).toHaveBeenCalled();
   });
 };
 
 describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Colaboradores - CEMEI", () => {
   beforeEach(async () => {
+    listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEMEI,
       status: 200,

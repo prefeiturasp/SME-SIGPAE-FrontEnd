@@ -200,6 +200,7 @@ describe("Teste Refeições Simultâneas período NOITE - EMEBS", () => {
 
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet(
         `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,

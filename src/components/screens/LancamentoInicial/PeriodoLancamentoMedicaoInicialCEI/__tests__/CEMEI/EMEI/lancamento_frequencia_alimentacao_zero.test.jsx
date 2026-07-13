@@ -85,6 +85,7 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
   beforeEach(async () => {
     alteracoesAlimentacaoParams.length = 0;
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")

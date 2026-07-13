@@ -19,6 +19,7 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
     alteracoesAlimentacaoParams.length = 0;
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
       .reply(200, []);

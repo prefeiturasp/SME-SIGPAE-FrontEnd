@@ -15,6 +15,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Solicitações de Alimentaç
   const escolaUuid = mockMeusDadosEscolaEMEBS.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
     mock
       .onGet(
