@@ -36,6 +36,7 @@ export const SolicitacoesLayoutStatusGenerico = ({ ...props }) => {
       data: item.log_mais_recente.slice(0, 10),
       link: `${urlBaseItem}?uuid=${item.uuid}`,
       programa_leve_leite: item.programa_leve_leite,
+      eh_ficha_tecnica_flv: item.eh_ficha_tecnica_flv,
     }));
   };
 

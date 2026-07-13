@@ -26,7 +26,7 @@ describe("CardListarSolicitacoesCronograma", () => {
           solicitacoes={solicitacoesMock}
           exibirTooltip={false}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Cronograma")).toBeInTheDocument();
@@ -48,12 +48,40 @@ describe("CardListarSolicitacoesCronograma", () => {
           solicitacoes={solicitacoesMock}
           exibirTooltip={true}
         />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
 
     expect(screen.getByText("Solicitação 1")).toBeInTheDocument();
 
     const tooltipSpan = screen.getByText("Solicitação 1");
     expect(tooltipSpan.closest("div")?.getAttribute("title")).toBeNull();
+  });
+  test("Aplica classe verde quando solicitação é de ficha técnica FLV", () => {
+    const solicitacoesFlvMock = [
+      {
+        ...solicitacoesMock[0],
+        eh_ficha_tecnica_flv: true,
+      },
+    ];
+
+    render(
+      <MemoryRouter>
+        <CardListarSolicitacoesCronograma
+          titulo="Cronograma"
+          tipo="azul"
+          icone="fa-clock"
+          solicitacoes={solicitacoesFlvMock}
+          exibirTooltip={false}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Solicitação 1")).toHaveClass(
+      "categoria-na-cor-verde",
+    );
+
+    expect(screen.getByText("2024-05-23 14:00")).toHaveClass(
+      "categoria-na-cor-verde",
+    );
   });
 });
