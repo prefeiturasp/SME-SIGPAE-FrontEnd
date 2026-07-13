@@ -1,16 +1,15 @@
 import "@testing-library/jest-dom";
-import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
 import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
-import { MemoryRouter } from "react-router-dom";
+import { mockSalvarObservacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockSalvarObservacaoDiasZerados.jsx";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import * as periodoLancamentoMedicaoService from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import { PeriodoLancamentoMedicaoInicialCEI } from "../..";
-import { mockSalvarObservacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockSalvarObservacaoDiasZerados.jsx";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
@@ -34,15 +33,18 @@ jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());
+
   await waitFor(() =>
     expect(
       periodoLancamentoMedicaoService.getSolicitacoesInclusoesAutorizadasEscola,
     ).toHaveBeenCalled(),
   );
+
   await waitFor(() =>
     expect(periodoLancamentoMedicaoService.getFeriadosNoMes).toHaveBeenCalled(),
   );
-  expect(listDiasLetivosCalendario).toHaveBeenCalled();
+
+  await waitFor(() => expect(listDiasLetivosCalendario).toHaveBeenCalled());
 };
 
 function formatarData(dia) {
@@ -65,7 +67,8 @@ function criarRegistro(dia, faixaEtaria) {
 
 const ehDiaLetivo = (dia) => {
   const data = new Date(2025, 3, dia);
-  const diaSemana = data.getDay(); // 0 = domingo, 6 = sábado
+  const diaSemana = data.getDay();
+
   return diaSemana !== 0 && diaSemana !== 6;
 };
 
@@ -119,6 +122,7 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
 
   const mockLogsMatriculadosCEI = (() => {
     const resultado = [];
+
     for (let dia = 1; dia <= 30; dia += 1) {
       for (const faixa of mockFaixasEtariasCEI) {
         if (![11, 12, 13].includes(dia)) {
@@ -126,11 +130,12 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
         }
       }
     }
+
     return resultado;
   })();
 
-  const criarDietas = (dias, base) => {
-    return dias.map((dia) => {
+  const criarDietas = (dias, base) =>
+    dias.map((dia) => {
       const diaStr = String(dia).padStart(2, "0");
 
       return {
@@ -139,7 +144,6 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
         data: `${diaStr}/04/2025`,
       };
     });
-  };
 
   const baseDieta = {
     escola: "CEI DIRET JOAQUIM GOUVEIA FRANCO JR., VER",
@@ -157,6 +161,19 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
 
   const dietaespecial = criarDietas([7, 8, 9, 10, 11], baseDieta);
 
+  const renderizarTela = () =>
+    render(
+      <MemoryRouter
+        initialEntries={[{ pathname: "/", state: mockLocationState }]}
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <PeriodoLancamentoMedicaoInicialCEI />
+      </MemoryRouter>,
+    );
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -164,38 +181,58 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
       data: [],
       status: 200,
     });
+
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEI,
       status: 200,
     });
+
     getFaixasEtarias.mockResolvedValue({
       data: { results: mockFaixasEtariasCEI },
       status: 200,
     });
-    getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });
+
+    getListaDiasSobremesaDoce.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+
     periodoLancamentoMedicaoService.getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue(
       {
         data: { results: [] },
         status: 200,
       },
     );
+
     periodoLancamentoMedicaoService.getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola.mockResolvedValue(
-      { results: [] },
+      {
+        results: [],
+      },
     );
+
     periodoLancamentoMedicaoService.getSolicitacoesSuspensoesAutorizadasEscola.mockResolvedValue(
-      { results: [] },
+      {
+        results: [],
+      },
     );
+
     periodoLancamentoMedicaoService.getCategoriasDeMedicao.mockResolvedValue({
       data: mockCategoriasMedicaoCEI,
       status: 200,
     });
+
     periodoLancamentoMedicaoService.getDiasCalendario.mockResolvedValue({
       data: mockDiasCalendarioCEI,
       status: 200,
     });
+
     periodoLancamentoMedicaoService.getLogDietasAutorizadasCEIPeriodo.mockResolvedValue(
-      { data: dietaespecial, status: 200 },
+      {
+        data: dietaespecial,
+        status: 200,
+      },
     );
+
     periodoLancamentoMedicaoService.getLogMatriculadosPorFaixaEtariaDia.mockResolvedValue(
       {
         data: mockLogsMatriculadosCEI,
@@ -209,6 +246,7 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
         status: 200,
       },
     );
+
     periodoLancamentoMedicaoService.getDiasParaCorrecao.mockResolvedValue({
       data: [],
       status: 200,
@@ -223,27 +261,20 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
       data: mockSalvarObservacao,
       status: 200,
     });
-
-    render(
-      <MemoryRouter
-        initialEntries={[{ pathname: "/", state: mockLocationState }]}
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        <PeriodoLancamentoMedicaoInicialCEI />
-      </MemoryRouter>,
-    );
   });
 
   describe("Testa conteúdo básico da tela", () => {
-    it("renderiza label `Mês do Lançamento`", async () => {
+    beforeEach(() => {
+      renderizarTela();
+    });
+
+    it("renderiza label `Mês do Lançamento`", () => {
       expect(screen.getByText("Mês do Lançamento")).toBeInTheDocument();
     });
 
     it("renderiza valor `Abril / 2025` no input `Mês do Lançamento`", () => {
       const inputElement = screen.getByTestId("input-mes-lancamento");
+
       expect(inputElement).toHaveAttribute("value", "Abril / 2025");
     });
 
@@ -253,6 +284,7 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
 
     it("renderiza valor `INTEGRAL` no input `Período de Lançamento`", () => {
       const inputElement = screen.getByTestId("input-periodo-lancamento");
+
       expect(inputElement).toHaveAttribute("value", "INTEGRAL");
     });
 
@@ -264,8 +296,9 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
       ).toBeInTheDocument();
     });
 
-    it("renderiza as labels `Semana 1`, `Semana 2`, `Semana 3`, `Semana 4` e `Semana 5`", async () => {
+    it("renderiza as labels das semanas", async () => {
       await awaitServices();
+
       expect(screen.getByText("Semana 1")).toBeInTheDocument();
       expect(screen.getByText("Semana 2")).toBeInTheDocument();
       expect(screen.getByText("Semana 3")).toBeInTheDocument();
@@ -275,21 +308,26 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
 
     it("renderiza label `ALIMENTAÇÃO`", async () => {
       await awaitServices();
+
       expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
     });
 
     it("renderiza label `DIETA ESPECIAL - TIPO B`", async () => {
       await awaitServices();
+
       expect(screen.getByText("DIETA ESPECIAL - TIPO B")).toBeInTheDocument();
     });
   });
 
-  describe("Testa boqueio de dietas", () => {
+  describe("Testa bloqueio de dietas", () => {
     const faixaDieta = "381aecc2-e1b2-4d26-a156-1834eec7f1dd";
 
     const obterCampo = (campo, dia, faixa, categoria) =>
       screen.findByTestId(
-        `${campo}__faixa_${faixa}__dia_${String(dia).padStart(2, "0")}__categoria_${categoria}`,
+        `${campo}__faixa_${faixa}__dia_${String(dia).padStart(
+          2,
+          "0",
+        )}__categoria_${categoria}`,
       );
 
     const assertCampos = async (
@@ -301,18 +339,26 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
     ) => {
       for (const campo of campos) {
         const input = await obterCampo(campo, dia, faixa, categoria);
-        habilitado
-          ? expect(input).not.toBeDisabled()
-          : expect(input).toBeDisabled();
+
+        if (habilitado) {
+          expect(input).not.toBeDisabled();
+        } else {
+          expect(input).toBeDisabled();
+        }
       }
     };
 
+    beforeEach(() => {
+      renderizarTela();
+    });
+
     it("deve habilitar campos dos dias 7 a 10 exceto matriculados e dietas_autorizadas", async () => {
       await awaitServices();
-      const semana2Element = screen.getByText("Semana 2");
-      fireEvent.click(semana2Element);
-      for (let dia = 7; dia <= 10; dia++) {
-        for (let faixa of mockFaixasEtariasCEI) {
+
+      fireEvent.click(screen.getByText("Semana 2"));
+
+      for (let dia = 7; dia <= 10; dia += 1) {
+        for (const faixa of mockFaixasEtariasCEI) {
           await assertCampos(["matriculados"], dia, faixa.uuid, 1, false);
           await assertCampos(["frequencia"], dia, faixa.uuid, 1, true);
         }
@@ -323,33 +369,86 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
     });
 
     it("deve desabilitar campos de ALIMENTAÇÃO e de DIETA do dia 11 quando não existe log de matriculados", async () => {
-      // Dia 11 não possui log de matriculados (excluído do mock) → sem log em ALIMENTAÇÃO
-      // → campos de DIETA devem permanecer bloqueados mesmo com dietas_autorizadas > 0
       await awaitServices();
-      const semana2Element = screen.getByText("Semana 2");
-      fireEvent.click(semana2Element);
+
+      fireEvent.click(screen.getByText("Semana 2"));
 
       const dia = 11;
       const diaStr = String(dia).padStart(2, "0");
 
-      for (let faixa of mockFaixasEtariasCEI) {
+      for (const faixa of mockFaixasEtariasCEI) {
         await assertCampos(["matriculados"], dia, faixa.uuid, 1, false);
+
         const matriculados = await screen.findByTestId(
           `matriculados__faixa_${faixa.uuid}__dia_${diaStr}__categoria_1`,
         );
+
         expect(matriculados).toHaveValue("");
 
         await assertCampos(["frequencia"], dia, faixa.uuid, 1, false);
       }
 
       await assertCampos(["dietas_autorizadas"], dia, faixaDieta, 4, false);
+
       const dieta = await screen.findByTestId(
         `dietas_autorizadas__faixa_${faixaDieta}__dia_${diaStr}__categoria_4`,
       );
+
       expect(dieta).toHaveValue("4");
 
-      // frequencia de DIETA bloqueada: sem log de ALIMENTAÇÃO para esse dia
       await assertCampos(["frequencia"], dia, faixaDieta, 4, false);
+    });
+  });
+
+  describe("Testa desbloqueio de campo por dia letivo no calendário", () => {
+    const faixaDieta = "381aecc2-e1b2-4d26-a156-1834eec7f1dd";
+
+    const obterCampo = (campo, dia, faixa, categoria) =>
+      screen.findByTestId(
+        `${campo}__faixa_${faixa}__dia_${String(dia).padStart(
+          2,
+          "0",
+        )}__categoria_${categoria}`,
+      );
+
+    beforeEach(() => {
+      /*
+       * O dia 11 precisa possuir log de matriculados neste cenário.
+       * Caso contrário, ele continuará bloqueado pela regra de ausência
+       * de matrícula, independentemente da resposta do calendário.
+       */
+      const logsComMatriculadosNoDia11 = [
+        ...mockLogsMatriculadosCEI,
+        ...mockFaixasEtariasCEI.map((faixa) => criarRegistro(11, faixa)),
+      ];
+
+      periodoLancamentoMedicaoService.getLogMatriculadosPorFaixaEtariaDia.mockResolvedValue(
+        {
+          data: logsComMatriculadosNoDia11,
+          status: 200,
+        },
+      );
+
+      listDiasLetivosCalendario.mockResolvedValue({
+        data: [
+          {
+            data: "11/04/2025",
+          },
+        ],
+        status: 200,
+      });
+
+      renderizarTela();
+    });
+
+    it("deve desbloquear o campo de frequência de DIETA do dia 11 quando ele é letivo e possui log de matriculados", async () => {
+      await awaitServices();
+
+      fireEvent.click(screen.getByText("Semana 2"));
+
+      const input = await obterCampo("frequencia", 11, faixaDieta, 4);
+
+      expect(input).not.toBeDisabled();
     });
   });
 });
