@@ -236,6 +236,7 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);

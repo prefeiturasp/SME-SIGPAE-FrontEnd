@@ -20,6 +20,7 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
 
   beforeEach(async () => {
     alteracoesAlimentacaoParams.length = 0;
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);

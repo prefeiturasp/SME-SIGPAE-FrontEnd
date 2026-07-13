@@ -46,11 +46,13 @@ import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
 import { ToastContainer } from "react-toastify";
 import { mockLogQuantidadeDietasAutorizadasRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockDietasEspeciais";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -67,6 +69,7 @@ const awaitServices = async () => {
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(getLogDietasAutorizadasRecreioNasFerias).toHaveBeenCalled();
+    expect(listDiasLetivosCalendario).toHaveBeenCalled();
   });
 };
 
@@ -104,6 +107,10 @@ describe("Teste Grupo Recreio Nas F√©rias DEZEMBRO/2025 - EMEF: Regra de libera√
     jest.setSystemTime(new Date("2025-12-05T10:00:00"));
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaEMEFPericles,
+      status: 200,
+    });
+    listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
       status: 200,
     });
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });

@@ -10,6 +10,7 @@ import * as periodoLancamentoMedicaoService from "src/services/medicaoInicial/pe
 import { getMeusDados } from "src/services/perfil.service";
 import { PeriodoLancamentoMedicaoInicialCEI } from "../..";
 import { mockSalvarObservacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockSalvarObservacaoDiasZerados.jsx";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
@@ -29,6 +30,7 @@ jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/faixaEtaria.service.jsx");
+jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());
@@ -40,6 +42,7 @@ const awaitServices = async () => {
   await waitFor(() =>
     expect(periodoLancamentoMedicaoService.getFeriadosNoMes).toHaveBeenCalled(),
   );
+  expect(listDiasLetivosCalendario).toHaveBeenCalled();
 };
 
 function formatarData(dia) {
@@ -157,6 +160,10 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEI,
       status: 200,
