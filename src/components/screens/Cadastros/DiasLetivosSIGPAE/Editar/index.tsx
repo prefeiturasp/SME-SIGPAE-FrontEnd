@@ -241,7 +241,7 @@ export const EditarDiasLetivosSIGPAE = () => {
         <Spin spinning={carregandoInicial} tip="Carregando...">
           <div
             className="card mt-3 flex-grow-1 d-flex flex-column"
-            style={{ minHeight: "calc(66vh - 200px)" }}
+            style={{ minHeight: "calc(68vh - 200px)" }}
           >
             <Form<DiasLetivosFormInterface>
               key={carregandoInicial ? "loading" : "ready"}
