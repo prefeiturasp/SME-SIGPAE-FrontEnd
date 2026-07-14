@@ -3,8 +3,14 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
-  PRE_RECEBIMENTO,
+  CRONOGRAMA_ENTREGA,
+  FICHA_RECEBIMENTO,
+  PAINEL_DOCUMENTOS_RECEBIMENTO,
+  PAINEL_FICHAS_TECNICAS,
+  PAINEL_LAYOUT_EMBALAGEM,
   PAINEL_RELATORIOS_FISCALIZACAO,
+  PRE_RECEBIMENTO,
+  RECEBIMENTO,
   SUPERVISAO,
   TERCEIRIZADAS,
 } from "src/configs/constants";
@@ -163,7 +169,44 @@ describe("PainelInicial - Perfil Fornecedor", () => {
   });
 });
 
-describe("PainelInicial - Atalhos de calendários", () => {
+describe("PainelInicial - Atalhos por perfil", () => {
+  const atalhosDilogQualidade = [
+    {
+      titulo: "Cronograma de Entrega",
+      rota: `${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`,
+    },
+    {
+      titulo: "Calendário de Cronogramas",
+      rota: `${PRE_RECEBIMENTO}/calendario-cronograma`,
+    },
+    {
+      titulo: "Layout de Embalagem",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_LAYOUT_EMBALAGEM}`,
+    },
+    {
+      titulo: "Documentos de Recebimento",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_DOCUMENTOS_RECEBIMENTO}`,
+    },
+    {
+      titulo: "Ficha Técnica",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_FICHAS_TECNICAS}`,
+    },
+    {
+      titulo: "Ficha de Recebimento",
+      rota: `${RECEBIMENTO}/${FICHA_RECEBIMENTO}`,
+    },
+  ];
+
+  const renderPainelInicial = (perfil) => {
+    localStorage.setItem("perfil", perfil);
+
+    render(
+      <MemoryRouter>
+        <PainelInicial />
+      </MemoryRouter>,
+    );
+  };
+
   beforeEach(() => {
     Object.defineProperty(global, "localStorage", {
       value: localStorageMock,
@@ -171,16 +214,11 @@ describe("PainelInicial - Atalhos de calendários", () => {
 
     localStorage.clear();
     mockNavigate.mockClear();
-    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_CODAE_GABINETE);
-
-    render(
-      <MemoryRouter>
-        <PainelInicial />
-      </MemoryRouter>,
-    );
   });
 
   it("exibe e navega para o Calendário de Cronogramas", () => {
+    renderPainelInicial(PERFIL.ADMINISTRADOR_CODAE_GABINETE);
+
     const calendarioCronogramas = screen.getByText("Calendário de Cronogramas");
 
     expect(calendarioCronogramas).toBeInTheDocument();
@@ -193,6 +231,8 @@ describe("PainelInicial - Atalhos de calendários", () => {
   });
 
   it("exibe e navega para o Calendário Ponto a Ponto", () => {
+    renderPainelInicial(PERFIL.ADMINISTRADOR_CODAE_GABINETE);
+
     const calendarioPontoAPonto = screen.getByText("Calendário Ponto a Ponto");
 
     expect(calendarioPontoAPonto).toBeInTheDocument();
@@ -203,6 +243,25 @@ describe("PainelInicial - Atalhos de calendários", () => {
       `${PRE_RECEBIMENTO}/calendario-cronograma-ponto-a-ponto-semanal`,
     );
   });
+
+  it("exibe os atalhos da DILOG Qualidade", () => {
+    renderPainelInicial(PERFIL.DILOG_QUALIDADE);
+
+    atalhosDilogQualidade.forEach(({ titulo }) => {
+      expect(screen.getByText(titulo)).toBeInTheDocument();
+    });
+  });
+
+  it.each(atalhosDilogQualidade)(
+    "navega para a rota correta ao clicar em $titulo",
+    ({ titulo, rota }) => {
+      renderPainelInicial(PERFIL.DILOG_QUALIDADE);
+
+      fireEvent.click(screen.getByText(titulo));
+
+      expect(mockNavigate).toHaveBeenCalledWith(rota);
+    },
+  );
 });
 
 describe("PainelInicial - Redirecionamentos dos demais cards", () => {
