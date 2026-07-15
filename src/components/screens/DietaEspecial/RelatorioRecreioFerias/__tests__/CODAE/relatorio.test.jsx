@@ -25,7 +25,7 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/")
+      .onPost("/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/")
       .reply(200, mockRelatorioRecreioNasFerias);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
     mock.onGet("/classificacoes-dieta/").reply(200, mockGetClassificacaoDieta);
@@ -37,11 +37,11 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -61,14 +61,14 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
             <RelatorioRecreioFeriasPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Renderiza título e breadcrumb `Relatório de Dietas para Recreio nas Férias`", () => {
     expect(
-      screen.queryAllByText("Relatório de Dietas para Recreio nas Férias")
+      screen.queryAllByText("Relatório de Dietas para Recreio nas Férias"),
     ).toHaveLength(2);
   });
 
@@ -125,7 +125,7 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
 
     mock
       .onGet(
-        `/solicitacoes-dieta-especial/${mockRelatorioRecreioNasFerias.results[0].uuid}/protocolo/`
+        `/solicitacoes-dieta-especial/${mockRelatorioRecreioNasFerias.results[0].uuid}/protocolo/`,
       )
       .reply(200, new Blob(["conteúdo do PDF"], { type: "application/pdf" }));
 
@@ -145,8 +145,8 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
     });
 
     mock
-      .onGet(
-        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-pdf/"
+      .onPost(
+        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-pdf/",
       )
       .reply(200, {
         detail: "Solicitação de geração de arquivo recebida com sucesso.",
@@ -158,7 +158,7 @@ describe("Teste Relatório Recreio Férias - Usuário CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Geração solicitada com sucesso.")
+        screen.getByText("Geração solicitada com sucesso."),
       ).toBeInTheDocument();
     });
   });

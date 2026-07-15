@@ -24,7 +24,7 @@ describe("Teste Relatório Recreio Férias - Usuário Escola CEMEI", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/")
+      .onPost("/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/")
       .reply(200, mockRelatorioRecreioNasFerias);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
     mock.onGet("/classificacoes-dieta/").reply(200, mockGetClassificacaoDieta);
@@ -57,14 +57,14 @@ describe("Teste Relatório Recreio Férias - Usuário Escola CEMEI", () => {
             <RelatorioRecreioFeriasPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Renderiza título e breadcrumb `Relatório de Dietas para Recreio nas Férias`", () => {
     expect(
-      screen.queryAllByText("Relatório de Dietas para Recreio nas Férias")
+      screen.queryAllByText("Relatório de Dietas para Recreio nas Férias"),
     ).toHaveLength(2);
   });
 
@@ -91,8 +91,8 @@ describe("Teste Relatório Recreio Férias - Usuário Escola CEMEI", () => {
     });
 
     mock
-      .onGet(
-        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-excel/"
+      .onPost(
+        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-excel/",
       )
       .reply(200, {
         detail: "Solicitação de geração de arquivo recebida com sucesso.",
@@ -104,7 +104,7 @@ describe("Teste Relatório Recreio Férias - Usuário Escola CEMEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Geração solicitada com sucesso.")
+        screen.getByText("Geração solicitada com sucesso."),
       ).toBeInTheDocument();
     });
   });
