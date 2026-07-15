@@ -17,6 +17,8 @@ import { IconeCalendarioCronograma } from "src/components/Shareable/Icones/icone
 import { IconeCalendarioPontoaPonto } from "src/components/Shareable/Icones/IconeCalendarioPontoaPonto";
 import { IconeFichaDeRecebimento } from "src/components/Shareable/Icones/IconeFichaDeRecebimento";
 import { IconeDocumentoDeRecebimento } from "src/components/Shareable/Icones/IconeDocumentoDeRecebimento";
+import { IconeVerificarAlteracoesDeCronograma } from "src/components/Shareable/Icones/IconeVerificarAlteracoesDeCronograma";
+import { IconePainelDeAprovacoes } from "src/components/Shareable/Icones/IconePainelDeAprovacoes";
 
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
@@ -34,6 +36,8 @@ import {
   PAINEL_FICHAS_TECNICAS,
   FICHA_RECEBIMENTO,
   RECEBIMENTO,
+  PAINEL_APROVACOES,
+  SOLICITACAO_ALTERACAO_CRONOGRAMA,
 } from "src/configs/constants";
 import { ENVIRONMENT } from "src/constants/config";
 import {
@@ -61,6 +65,7 @@ import {
   usuarioEhAdministradorNutriSupervisao,
   usuarioComAcessoAosCalendarios,
   usuarioEhDilogQualidade,
+  usuarioEhDilogDiretoria,
 } from "src/helpers/utilities";
 
 const PainelInicial = () => {
@@ -317,7 +322,71 @@ const PainelInicial = () => {
           </Col>
           <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <CardLogo
-              titulo={"Ficha Técnica"}
+              titulo={"Fichas Técnicas"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${PAINEL_FICHAS_TECNICAS}`)
+              }
+            >
+              <IconeFichaTecnica />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Ficha de Recebimento"}
+              onClick={() => navigate(`${RECEBIMENTO}/${FICHA_RECEBIMENTO}`)}
+            >
+              <IconeFichaDeRecebimento />
+            </CardLogo>
+          </Col>
+        </>
+      )}
+      {usuarioEhDilogDiretoria() && (
+        <>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Painel de Aprovações"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${PAINEL_APROVACOES}`)
+              }
+            >
+              <IconePainelDeAprovacoes />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Cronograma de Entrega"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`)
+              }
+            >
+              <IconeCronogramaEntrega />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Verificar Alterações de Cronograma"}
+              onClick={() =>
+                navigate(
+                  `${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,
+                )
+              }
+            >
+              <IconeVerificarAlteracoesDeCronograma />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Calendário de Cronogramas"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/calendario-cronograma`)
+              }
+            >
+              <IconeCalendarioCronograma />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Fichas Técnicas"}
               onClick={() =>
                 navigate(`${PRE_RECEBIMENTO}/${PAINEL_FICHAS_TECNICAS}`)
               }
