@@ -328,11 +328,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const getDiasLetivosSIGPAE = async (escola_uuid) => {
+    const periodo = location.state?.periodo ?? "INTEGRAL";
+    const periodo_escolar = periodo.includes(" ")
+      ? periodo.split(" ").pop()
+      : periodo;
+
     const params = {
       mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
       ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
       escola: escola_uuid,
-      periodo_escolar: location.state ? location.state.periodo : "INTEGRAL",
+      periodo_escolar,
     };
 
     const response = await listDiasLetivosCalendario(params);
@@ -1755,7 +1760,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
 
     const ehDiaLetivoSIGPAE = diasLetivosSIGPAE.has(Number(dia));
-    if (ehDiaLetivoSIGPAE) {
+    if (ehDiaLetivoSIGPAE && !ehRecreioNasFerias()) {
       return true;
     }
 
