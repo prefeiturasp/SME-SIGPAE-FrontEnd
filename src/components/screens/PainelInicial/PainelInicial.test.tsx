@@ -13,6 +13,8 @@ import {
   RECEBIMENTO,
   SUPERVISAO,
   TERCEIRIZADAS,
+  PAINEL_APROVACOES,
+  SOLICITACAO_ALTERACAO_CRONOGRAMA,
 } from "src/configs/constants";
 import {
   PERFIL,
@@ -188,7 +190,34 @@ describe("PainelInicial - Atalhos por perfil", () => {
       rota: `${PRE_RECEBIMENTO}/${PAINEL_DOCUMENTOS_RECEBIMENTO}`,
     },
     {
-      titulo: "Ficha Técnica",
+      titulo: "Fichas Técnicas",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_FICHAS_TECNICAS}`,
+    },
+    {
+      titulo: "Ficha de Recebimento",
+      rota: `${RECEBIMENTO}/${FICHA_RECEBIMENTO}`,
+    },
+  ];
+
+  const atalhosDilogDiretoria = [
+    {
+      titulo: "Painel de Aprovações",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_APROVACOES}`,
+    },
+    {
+      titulo: "Cronograma de Entrega",
+      rota: `${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`,
+    },
+    {
+      titulo: "Verificar Alterações de Cronograma",
+      rota: `${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,
+    },
+    {
+      titulo: "Calendário de Cronogramas",
+      rota: `${PRE_RECEBIMENTO}/calendario-cronograma`,
+    },
+    {
+      titulo: "Fichas Técnicas",
       rota: `${PRE_RECEBIMENTO}/${PAINEL_FICHAS_TECNICAS}`,
     },
     {
@@ -205,6 +234,12 @@ describe("PainelInicial - Atalhos por perfil", () => {
         <PainelInicial />
       </MemoryRouter>,
     );
+  };
+
+  const getAtalhoPorTitulo = (titulo) => {
+    const atalhos = screen.getAllByText(titulo);
+
+    return atalhos[atalhos.length - 1];
   };
 
   beforeEach(() => {
@@ -248,7 +283,7 @@ describe("PainelInicial - Atalhos por perfil", () => {
     renderPainelInicial(PERFIL.DILOG_QUALIDADE);
 
     atalhosDilogQualidade.forEach(({ titulo }) => {
-      expect(screen.getByText(titulo)).toBeInTheDocument();
+      expect(getAtalhoPorTitulo(titulo)).toBeInTheDocument();
     });
   });
 
@@ -257,7 +292,26 @@ describe("PainelInicial - Atalhos por perfil", () => {
     ({ titulo, rota }) => {
       renderPainelInicial(PERFIL.DILOG_QUALIDADE);
 
-      fireEvent.click(screen.getByText(titulo));
+      fireEvent.click(getAtalhoPorTitulo(titulo));
+
+      expect(mockNavigate).toHaveBeenCalledWith(rota);
+    },
+  );
+
+  it("exibe os atalhos da DILOG Diretoria", () => {
+    renderPainelInicial(PERFIL.DILOG_DIRETORIA);
+
+    atalhosDilogDiretoria.forEach(({ titulo }) => {
+      expect(getAtalhoPorTitulo(titulo)).toBeInTheDocument();
+    });
+  });
+
+  it.each(atalhosDilogDiretoria)(
+    "navega para a rota correta da DILOG Diretoria ao clicar em $titulo",
+    ({ titulo, rota }) => {
+      renderPainelInicial(PERFIL.DILOG_DIRETORIA);
+
+      fireEvent.click(getAtalhoPorTitulo(titulo));
 
       expect(mockNavigate).toHaveBeenCalledWith(rota);
     },
