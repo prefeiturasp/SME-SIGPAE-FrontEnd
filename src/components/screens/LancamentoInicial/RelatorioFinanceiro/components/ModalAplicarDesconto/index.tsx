@@ -86,6 +86,7 @@ const ModalAplicarDesconto = ({
     relatorioConsolidado?.grupo_unidade_escolar?.nome.toUpperCase();
 
   const ehCei = grupoNome?.includes("GRUPO 1");
+  const ehEmef = grupoNome?.includes("GRUPO 4");
 
   const alimentacoesDietaA = tiposAlimentacao.filter((item) =>
     ["REFEICAO", "LANCHE", "LANCHE 4H"].includes(
@@ -106,7 +107,9 @@ const ModalAplicarDesconto = ({
     tipo_alimentacao:
       !desconto.tipo_alimentacao && !desconto.faixa_etaria
         ? "kit_lanche"
-        : getUuid(desconto.tipo_alimentacao),
+        : !ehEmef || !desconto.periodo_escolar
+          ? getUuid(desconto.tipo_alimentacao)
+          : `${desconto.periodo_escolar}|${getUuid(desconto.tipo_alimentacao)}`,
     clausula_desconto: getUuid(desconto.clausula_desconto),
     unidades_educacionais: desconto.unidades_educacionais?.map(getUuid) ?? [],
   });
@@ -132,16 +135,37 @@ const ModalAplicarDesconto = ({
     ];
   }, [faixasEtarias]);
 
+  const adicionarOpcaoRefeicaoEJA = (opcoes: TipoAlimentacao[]) => {
+    if (!ehEmef) return opcoes;
+
+    return opcoes.flatMap((item) => {
+      const ehRefeicao = normalizar(item.nome).toUpperCase() === "REFEICAO";
+
+      if (!ehRefeicao) {
+        return [item];
+      }
+
+      return [
+        item,
+        {
+          ...item,
+          uuid: `NOITE|${item.uuid}`,
+          nome: "Refeição - EJA",
+        },
+      ];
+    });
+  };
+
   const getOpcoesAlimentacao = (tipoLancamento: string) => {
     switch (tipoLancamento) {
       case "ALIMENTACOES":
         return [
-          ...tiposAlimentacao,
+          ...adicionarOpcaoRefeicaoEJA(tiposAlimentacao),
           { uuid: "kit_lanche", nome: "Kit Lanche" },
         ];
 
       case "DIETAS_TIPO_A":
-        return alimentacoesDietaA;
+        return adicionarOpcaoRefeicaoEJA(alimentacoesDietaA);
 
       case "DIETAS_TIPO_B":
         return alimentacoesDietaB;
@@ -155,7 +179,7 @@ const ModalAplicarDesconto = ({
     descontos: DescontoFinanceiro[],
   ): DescontoFinanceiro[] => {
     return descontos.map((desconto) => {
-      if (typeof desconto.faixa_etaria === "string") {
+      if (desconto.faixa_etaria && typeof desconto.faixa_etaria === "string") {
         const [periodo, faixaUuid] = desconto.faixa_etaria?.split("|") || [
           "",
           "",
@@ -165,7 +189,21 @@ const ModalAplicarDesconto = ({
           periodo_escolar: periodo,
           faixa_etaria: faixaUuid,
         };
-      } else return { ...desconto, faixa_etaria: desconto.faixa_etaria?.uuid };
+      } else if (
+        ehEmef &&
+        typeof desconto.tipo_alimentacao === "string" &&
+        desconto.tipo_alimentacao.includes("NOITE")
+      ) {
+        const [periodo, tipoAlimentacaoUuid] = desconto.tipo_alimentacao?.split(
+          "|",
+        ) || ["", ""];
+        return {
+          ...desconto,
+          periodo_escolar: periodo,
+          tipo_alimentacao: tipoAlimentacaoUuid,
+        };
+      }
+      return { ...desconto, periodo_escolar: null };
     });
   };
 
@@ -238,13 +276,18 @@ const ModalAplicarDesconto = ({
       );
     } else if (alimentacaoSelecionada) {
       let nomeTipo = "";
+      const ehRefeicaoEja = alimentacaoSelecionada.includes("NOITE");
 
       if (alimentacaoSelecionada === "kit_lanche") nomeTipo = "kit lanche";
       else {
         const tipo = tiposAlimentacao.find(
-          (t) => t.uuid === alimentacaoSelecionada,
+          (t) =>
+            t.uuid ===
+            (ehRefeicaoEja
+              ? alimentacaoSelecionada.replace("NOITE|", "")
+              : alimentacaoSelecionada),
         );
-        nomeTipo = normalizar(tipo.nome);
+        nomeTipo = normalizar(tipo?.nome);
       }
 
       const tabela = relatorioConsolidado.tabelas?.find((tabela) => {
@@ -260,11 +303,22 @@ const ModalAplicarDesconto = ({
 
       if (!tabela) return 0;
 
-      campo = tabela.valores?.find(
-        (item) =>
-          normalizar(item.nome_campo).replaceAll("_", " ") === nomeTipo &&
-          item.tipo_valor === "UNITARIO",
-      );
+      if (!ehEmef || !nomeTipo.includes("refeicao"))
+        campo = tabela.valores?.find(
+          (item) =>
+            normalizar(item.nome_campo).replaceAll("_", " ") === nomeTipo &&
+            item.tipo_valor === "UNITARIO",
+        );
+      else {
+        const tipoRefeicao = ehRefeicaoEja ? "eja" : "emef";
+
+        campo = tabela.valores?.find(
+          (item) =>
+            normalizar(item.nome_campo)
+              .replaceAll("_", " ")
+              .includes(tipoRefeicao) && item.tipo_valor === "UNITARIO",
+        );
+      }
     }
 
     return stringDecimalToNumber(campo?.valor) ?? 0;
