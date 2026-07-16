@@ -23,7 +23,7 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
-      .onGet("/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/")
+      .onPost("/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/")
       .reply(200, mockRelatorioRecreioNasFerias);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
     mock.onGet("/classificacoes-dieta/").reply(200, mockGetClassificacaoDieta);
@@ -33,11 +33,11 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
       .reply(200, mockGetUnidadeEducacional);
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -57,7 +57,7 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
             <RelatorioRecreioFeriasPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -78,8 +78,8 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
     });
 
     mock
-      .onGet(
-        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-excel/"
+      .onPost(
+        "/solicitacoes-dieta-especial/relatorio-recreio-nas-ferias/exportar-excel/",
       )
       .reply(400, {});
 
@@ -89,7 +89,7 @@ describe("Verifica comportamento da interface ao receber retorno de erro na expo
 
     await waitFor(() => {
       expect(
-        screen.getByText("Erro ao baixar Excel, tente novamente mais tarde.")
+        screen.getByText("Erro ao baixar Excel, tente novamente mais tarde."),
       ).toBeInTheDocument();
     });
   });
