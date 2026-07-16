@@ -103,6 +103,7 @@ export default () => {
       link: gerarLinkCronograma(item, alteracao),
       status: item.status,
       programa_leve_leite: item.programa_leve_leite,
+      ponto_a_ponto: item.ponto_a_ponto,
     }));
   };
 

@@ -17,15 +17,20 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { composeValidators, required } from "src/helpers/fieldValidators";
 import { formataMilharDecimal } from "src/helpers/utilities";
+import { validarQuantidadeDescontada } from "../../helpers";
 import { CronogramaMensalSimples } from "src/interfaces/cronograma_semanal.interface";
 import {
+  atualizaAjusteSaldo,
   cadastraAjusteSaldo,
+  getAjusteSaldo,
   getCronogramasMensalComDocs,
   getDocumentosDoCronograma,
 } from "src/services/ajusteSaldo.service";
 import { AJUSTE_SALDO_LAUDO, RECEBIMENTO } from "src/configs/constants";
+import HTTP_STATUS from "http-status-codes";
 
 import "./styles.scss";
+import { AjusteSaldoLaudoDetalhar } from "../../interfaces";
 
 interface FormValues {
   cronograma?: string;
@@ -38,11 +43,9 @@ interface FormValues {
   saldo_atual?: string;
 }
 
-interface CadastrarAjusteSaldoProps {
-  uuid_ajuste?: string;
-}
-
-const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
+const CadastrarAjusteSaldo: React.FC<{
+  editar?: boolean;
+}> = ({ editar = false }) => {
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState(false);
   const [cronogramas, setCronogramas] = useState<CronogramaMensalSimples[]>([]);
@@ -53,6 +56,7 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
     null,
   );
   const [quantidadeDescontada, setQuantidadeDescontada] = useState<string>("");
+  const [dadosAjuste, setDadosAjuste] = useState<any>(null);
   const formRef = useRef<any>(null);
 
   const preencheDadosCronograma = async () => {
@@ -110,21 +114,17 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
     }
   };
 
-  const validarQuantidadeDescontada = (value: any) => {
-    if (value === undefined || value === null || value === "") return undefined;
-    try {
-      const valorLimpo = String(value).replace(/\./g, "").replace(/,/g, ".");
-      const valorDesconto = parseFloat(parseFloat(valorLimpo).toFixed(2)) || 0;
-      const saldoLaudo =
-        parseFloat(documentoSelecionado?.saldo_atual?.toFixed(2)) || 0;
-      if (valorDesconto > saldoLaudo) {
-        return "O desconto não pode ser maior que o saldo do laudo.";
-      }
-    } catch {
-      return "Valor inválido";
+  const saldoDisponivelParaDesconto = () => {
+    const saldoAtual =
+      parseFloat(documentoSelecionado?.saldo_atual?.toFixed(2)) || 0;
+
+    if (editar && dadosAjuste) {
+      const quantidadeOriginal =
+        parseFloat(dadosAjuste.quantidade_descontada) || 0;
+      return parseFloat((saldoAtual + quantidadeOriginal).toFixed(2));
     }
 
-    return undefined;
+    return saldoAtual;
   };
 
   const preencheDadosQuantidadeDescontada = async () => {
@@ -143,8 +143,7 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
         .replace(",", ".");
       const valorDesconto = parseFloat(parseFloat(valorLimpo).toFixed(2)) || 0;
 
-      const saldoAtual =
-        parseFloat(documentoSelecionado?.saldo_atual?.toFixed(2)) || 0;
+      const saldoAtual = saldoDisponivelParaDesconto();
       const saldoFinal = parseFloat((saldoAtual - valorDesconto).toFixed(2));
       const saldo_final_str =
         formataMilharDecimal(saldoFinal) +
@@ -152,7 +151,10 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
         documentoSelecionado.unidade_medida;
 
       if (saldoFinal < 0) {
-        form.change("saldo_atual", formataMilharDecimal(saldoAtual));
+        form.change(
+          "saldo_atual",
+          formataMilharDecimal(documentoSelecionado?.saldo_atual),
+        );
         return;
       }
 
@@ -163,6 +165,45 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
       setCarregando(false);
     }
   };
+
+  const selecionaCronogramaPorNumero = (value: string) => {
+    const cron = cronogramas.find((cronograma) => cronograma.numero === value);
+    setCronogramaSelecionado(cron || null);
+  };
+
+  const selecionaDocumentoPorNumero = (value: string) => {
+    const doc = documentos.find(
+      (documento) => documento.numero_laudo === value,
+    );
+    setDocumentoSelecionado(doc || null);
+  };
+
+  const preencheFormularioParaEdicao = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const uuid = urlParams.get("uuid");
+    if (!uuid) return;
+
+    const form = formRef.current;
+    if (!form) return;
+
+    let dados: AjusteSaldoLaudoDetalhar;
+    try {
+      const response = await getAjusteSaldo(uuid);
+      if (response.status === HTTP_STATUS.OK) {
+        dados = response.data;
+        setDadosAjuste(dados);
+      }
+    } catch {
+      toastError("Erro ao carregar dados do laudo.");
+    }
+
+    form.change("cronograma", dados.numero_cronograma);
+    selecionaCronogramaPorNumero(dados.numero_cronograma);
+  };
+
+  useEffect(() => {
+    if (editar && cronogramas.length > 0) preencheFormularioParaEdicao();
+  }, [cronogramas]);
 
   const formularioValido = (values: FormValues, errors: any): boolean => {
     if (errors && Object.keys(errors).length > 0) {
@@ -186,28 +227,14 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
     };
   };
 
-  const onSubmit = async (values: FormValues) => {
-    if (!formularioValido(values, {})) {
-      return;
-    }
-
-    setCarregando(true);
-
-    const payload = formataPayload(values);
-
-    const response = await cadastraAjusteSaldo(payload);
-
-    if (response && response.status === 201) {
-      toastSuccess("Ajuste de saldo cadastrado com sucesso!");
-      navigate(`/${RECEBIMENTO}/${AJUSTE_SALDO_LAUDO}`);
-    }
-
-    setCarregando(false);
+  const formataPayloadEdicao = (values: FormValues) => {
+    return {
+      uuid: dadosAjuste.uuid,
+      quantidade_descontada: parseFloatPersonalizado(
+        values.quantidade_descontada,
+      ),
+    };
   };
-
-  useEffect(() => {
-    buscaCronogramas();
-  }, []);
 
   const optionsCronograma = (values: Record<string, any>) => {
     return getListaFiltradaAutoCompleteSelect(
@@ -238,16 +265,66 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
   };
 
   useEffect(() => {
+    buscaCronogramas();
+  }, []);
+
+  useEffect(() => {
+    const form = formRef.current;
+    if (!editar || !form || documentos.length === 0) return;
+
+    form.change("numero_laudo", dadosAjuste.numero_laudo);
+    selecionaDocumentoPorNumero(dadosAjuste.numero_laudo);
+  }, [documentos]);
+
+  useEffect(() => {
     preencheDadosCronograma();
   }, [cronogramaSelecionado]);
 
   useEffect(() => {
     preencheDadosDocumento();
+
+    // Caso seja uma edição
+    const form = formRef.current;
+    if (!editar || !dadosAjuste || !form) return;
+
+    form.change(
+      "quantidade_descontada",
+      formataMilharDecimal(dadosAjuste.quantidade_descontada),
+    );
+    setQuantidadeDescontada(String(dadosAjuste.quantidade_descontada));
   }, [documentoSelecionado]);
 
   useEffect(() => {
     preencheDadosQuantidadeDescontada();
   }, [quantidadeDescontada]);
+
+  const onSubmit = async (values: FormValues) => {
+    if (!formularioValido(values, {})) {
+      return;
+    }
+
+    setCarregando(true);
+
+    if (editar) {
+      const payload = formataPayloadEdicao(values);
+      const response = await atualizaAjusteSaldo(payload);
+
+      if (response && response.status === 200) {
+        toastSuccess("Ajuste de saldo atualizado com sucesso!");
+        navigate(`/${RECEBIMENTO}/${AJUSTE_SALDO_LAUDO}`);
+      }
+    } else {
+      const payload = formataPayload(values);
+      const response = await cadastraAjusteSaldo(payload);
+
+      if (response && response.status === 201) {
+        toastSuccess("Ajuste de saldo cadastrado com sucesso!");
+        navigate(`/${RECEBIMENTO}/${AJUSTE_SALDO_LAUDO}`);
+      }
+    }
+
+    setCarregando(false);
+  };
 
   return (
     <>
@@ -273,13 +350,11 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
                           name={`cronograma`}
                           placeholder="Digite o Nº do Cronograma"
                           required
+                          disabled={editar}
                           validate={required}
-                          onSelect={(value) => {
-                            const cron = cronogramas.find(
-                              (cronograma) => cronograma.numero === value,
-                            );
-                            setCronogramaSelecionado(cron || null);
-                          }}
+                          onSelect={(value) =>
+                            selecionaCronogramaPorNumero(value)
+                          }
                         />
                       </div>
                       <div className="col-4">
@@ -311,13 +386,11 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
                           name={`numero_laudo`}
                           placeholder="Selecione o Nº do Laudo"
                           required
+                          disabled={editar}
                           validate={required}
-                          onSelect={(value: string) => {
-                            const doc = documentos.find(
-                              (doc) => doc.numero_laudo === value,
-                            );
-                            setDocumentoSelecionado(doc || null);
-                          }}
+                          onSelect={(value: string) =>
+                            selecionaDocumentoPorNumero(value)
+                          }
                         />
                       </div>
                       <div className="col-4">
@@ -349,9 +422,11 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
                           name={`quantidade_descontada`}
                           placeholder="Digite a Quantidade"
                           required
-                          validate={composeValidators(
-                            required,
-                            validarQuantidadeDescontada,
+                          validate={composeValidators(required, (value) =>
+                            validarQuantidadeDescontada(
+                              value,
+                              saldoDisponivelParaDesconto,
+                            ),
                           )}
                           agrupadorMilharComDecimal
                           inputOnChange={(e) => {
@@ -373,7 +448,7 @@ const CadastrarAjusteSaldo: React.FC<CadastrarAjusteSaldoProps> = () => {
 
                     <div className="mt-4 mb-4">
                       <Botao
-                        texto="Cadastrar"
+                        texto={editar ? "Salvar" : "Cadastrar"}
                         type={BUTTON_TYPE.SUBMIT}
                         style={BUTTON_STYLE.GREEN}
                         className="float-end ms-3"

@@ -27,6 +27,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);

@@ -138,7 +138,7 @@ export const ConferenciaDosLancamentos = () => {
   };
 
   const carregarTodosDiasCalendario = async () => {
-    if (!periodosSimples || !periodosSimples.length || !periodosGruposMedicao)
+    if (!periodosSimples || !periodosSimples?.length || !periodosGruposMedicao)
       return;
 
     const escolaUuid = location.state.escolaUuid;
@@ -206,10 +206,15 @@ export const ConferenciaDosLancamentos = () => {
   };
 
   useEffect(() => {
-    if (periodosSimples && mesSolicitacao && anoSolicitacao) {
+    if (
+      periodosSimples &&
+      mesSolicitacao &&
+      anoSolicitacao &&
+      periodosGruposMedicao
+    ) {
       carregarTodosDiasCalendario();
     }
-  }, [periodosSimples, mesSolicitacao, anoSolicitacao]);
+  }, [periodosSimples, mesSolicitacao, anoSolicitacao, periodosGruposMedicao]);
 
   const getPeriodosGruposMedicaoAsync = async () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -988,6 +993,7 @@ export const ConferenciaDosLancamentos = () => {
                                         type={BUTTON_TYPE.BUTTON}
                                         style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
                                         disabled={
+                                          !usuarioEhCODAENutriManifestacao() ||
                                           (ocorrencia?.status ===
                                             "MEDICAO_CORRECAO_SOLICITADA" &&
                                             !solicitacao?.com_ocorrencias) ||
@@ -1010,6 +1016,7 @@ export const ConferenciaDosLancamentos = () => {
                                           type={BUTTON_TYPE.BUTTON}
                                           style={BUTTON_STYLE.GREEN}
                                           disabled={
+                                            !usuarioEhCODAENutriManifestacao() ||
                                             desabilitarAprovarOcorrenciaCODAE ||
                                             desabilitarAprovarOcorrenciaDRE
                                           }

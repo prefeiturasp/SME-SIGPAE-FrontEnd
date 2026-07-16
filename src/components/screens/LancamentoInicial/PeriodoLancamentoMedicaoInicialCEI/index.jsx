@@ -149,8 +149,8 @@ import {
   verificarMesAnteriorOuPosterior,
   validacoesFaixasZeradasAlimentacao,
 } from "./validacoes";
-
 import { ORDEM_CAMPOS_DIETAS_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const initialStateWeekColumns = [
@@ -224,6 +224,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   ] = useState(false);
   const [disableBotaoSalvarLancamentos, setDisableBotaoSalvarLancamentos] =
     useState(true);
+  const [correcaoPossuiCampoVazio, setCorrecaoPossuiCampoVazio] =
+    useState(true);
   const [exibirTooltip, setExibirTooltip] = useState(false);
   const [showDiaObservacaoDiaria, setDiaObservacaoDiaria] = useState(null);
   const [showCategoriaObservacaoDiaria, setCategoriaObservacaoDiaria] =
@@ -254,6 +256,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [faixasAtivasPorTipo, setFaixasAtivasPorTipo] = useState({});
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
+  const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -324,6 +327,26 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return tiposAlimentacao;
   };
 
+  const getDiasLetivosSIGPAE = async (escola_uuid) => {
+    const periodo = location.state?.periodo ?? "INTEGRAL";
+    const periodo_escolar = periodo.includes(" ")
+      ? periodo.split(" ").pop()
+      : periodo;
+
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+      periodo_escolar,
+    };
+
+    const response = await listDiasLetivosCalendario(params);
+    const dias = new Set(
+      response.data.map(({ data }) => Number(data.substring(0, 2))),
+    );
+    setDiaLetivosSIGPAE(dias);
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === "string"
@@ -355,6 +378,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const mes = format(mesAnoSelecionado, "MM");
       const ano = getYear(mesAnoSelecionado);
 
+      getDiasLetivosSIGPAE(escola.uuid);
       const response_faixas_etarias = await getFaixasEtarias();
       if (response_faixas_etarias.status === HTTP_STATUS.OK) {
         setFaixasEtarias(response_faixas_etarias.data.results);
@@ -1735,6 +1759,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       (item) => Number(item.dia) === Number(dia),
     );
 
+    const ehDiaLetivoSIGPAE = diasLetivosSIGPAE.has(Number(dia));
+    if (ehDiaLetivoSIGPAE && !ehRecreioNasFerias()) {
+      return true;
+    }
+
     const ehDiaLetivo = diaCalendario?.dia_letivo === true;
     if (!ehDiaLetivo && !ehRecreioNasFerias()) return false;
 
@@ -1852,6 +1881,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     }
     desabilitaTooltip(formValuesAtualizados);
+    setCorrecaoPossuiCampoVazio(
+      form.getRegisteredFields().some((fieldName) => {
+        const fieldState = form.getFieldState(fieldName);
+        return fieldState?.error === "Preenchimento obrigatório.";
+      }),
+    );
     const existeWarningLancheEmergencial =
       existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
         formValuesAtualizados,
@@ -2054,6 +2089,47 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const fieldValidationsTabelasCEI =
     (rowName, dia, categoria, nomeCategoria, uuidFaixaEtaria) =>
     (value, allValues) => {
+      if (
+        [
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+          "MEDICAO_CORRIGIDA_PELA_UE",
+          "MEDICAO_CORRIGIDA_PARA_CODAE",
+        ].includes(location.state?.status_periodo) &&
+        ehDiaParaCorrigir(dia, categoria.id, diasParaCorrecao) &&
+        ![
+          "matriculados",
+          "numero_de_alunos",
+          "dietas_autorizadas",
+          "participantes",
+        ].includes(rowName)
+      ) {
+        const ehRecreio = ehRecreioNasFerias();
+        const ehDieta = nomeCategoria.includes("DIETA");
+
+        const prefixo = ehDieta
+          ? "dietas_autorizadas"
+          : ehRecreio
+            ? "participantes"
+            : "matriculados";
+
+        const idCatLog = ehDieta
+          ? categoria.id
+          : (categoriasDeMedicao.find((cat) => cat.nome === "ALIMENTAÇÃO")
+              ?.id ?? categoria.id);
+
+        const chaveLog = `${prefixo}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${idCatLog}`;
+        const temAlunosNoSlot =
+          allValues[chaveLog] && Number(allValues[chaveLog]) > 0;
+
+        if (
+          temAlunosNoSlot &&
+          (value === "" || value === null || value === undefined)
+        ) {
+          return "Preenchimento obrigatório.";
+        }
+      }
+
       const idCategoria = categoria.id;
       if (nomeCategoria === "ALIMENTAÇÃO") {
         if (ehRecreioNasFerias()) {
@@ -2087,6 +2163,47 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const fieldValidationsTabelasEmeidaCemei =
     (rowName, dia, idCategoria, nomeCategoria) => (value, allValues) => {
+      if (
+        [
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+          "MEDICAO_CORRIGIDA_PELA_UE",
+          "MEDICAO_CORRIGIDA_PARA_CODAE",
+        ].includes(location.state?.status_periodo) &&
+        ehDiaParaCorrigir(dia, idCategoria, diasParaCorrecao) &&
+        ![
+          "matriculados",
+          "numero_de_alunos",
+          "dietas_autorizadas",
+          "participantes",
+        ].includes(rowName)
+      ) {
+        const ehRecreio = ehRecreioNasFerias();
+        const ehDieta = nomeCategoria.includes("DIETA");
+
+        const prefixo = ehDieta
+          ? "dietas_autorizadas"
+          : ehRecreio
+            ? "participantes"
+            : "matriculados";
+
+        const idCatLog = ehDieta
+          ? idCategoria
+          : (categoriasDeMedicao.find((cat) => cat.nome === "ALIMENTAÇÃO")
+              ?.id ?? idCategoria);
+
+        const chaveLog = `${prefixo}__dia_${dia}__categoria_${idCatLog}`;
+        const temAlunosNoDia =
+          allValues[chaveLog] && Number(allValues[chaveLog]) > 0;
+
+        if (
+          temAlunosNoDia &&
+          (value === "" || value === null || value === undefined)
+        ) {
+          return "Preenchimento obrigatório.";
+        }
+      }
+
       if (nomeCategoria.includes("SOLICITAÇÕES")) {
         if (
           rowName === "kit_lanche" &&
@@ -2794,6 +2911,10 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                       ...changes.values,
                     });
                     setFormErrorsAtualizados(changes.errors || {});
+                    const temErroPreenchimento = Object.values(
+                      changes.errors || {},
+                    ).some((erro) => erro === "Preenchimento obrigatório.");
+                    setCorrecaoPossuiCampoVazio(temErroPreenchimento);
                   }}
                 />
                 <div className="card mt-3">
@@ -3624,7 +3745,9 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                         type={BUTTON_TYPE.BUTTON}
                         style={`${BUTTON_STYLE.GREEN}`}
                         onClick={() => setShowModalSalvarCorrecoes(true)}
-                        disabled={!calendarioMesConsiderado}
+                        disabled={
+                          !calendarioMesConsiderado || correcaoPossuiCampoVazio
+                        }
                       />
                     ) : (
                       <Botao

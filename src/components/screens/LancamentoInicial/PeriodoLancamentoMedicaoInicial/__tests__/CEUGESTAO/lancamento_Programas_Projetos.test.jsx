@@ -16,6 +16,7 @@ import { mockTipoAlimentacao } from "src/mocks/medicaoInicial/PeriodoLancamentoM
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEUGESTAO);

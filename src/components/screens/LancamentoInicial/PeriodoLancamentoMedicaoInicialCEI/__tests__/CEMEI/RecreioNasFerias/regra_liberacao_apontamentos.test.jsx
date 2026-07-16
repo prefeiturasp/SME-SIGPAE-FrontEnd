@@ -52,11 +52,13 @@ import {
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import mock from "src/services/_mock";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/medicaoInicial/permissaoLancamentosEspeciais.service");
+jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -71,6 +73,7 @@ const awaitServices = async () => {
     ).toHaveBeenCalled();
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
+    expect(listDiasLetivosCalendario).toHaveBeenCalled();
   });
 };
 
@@ -88,6 +91,10 @@ describe("Teste Grupo Recreio nas Férias - de 0 a 3 anos e 11 meses JANEIRO/202
 
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
       data: { results: [] },
+      status: 200,
+    });
+    listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
       status: 200,
     });
 

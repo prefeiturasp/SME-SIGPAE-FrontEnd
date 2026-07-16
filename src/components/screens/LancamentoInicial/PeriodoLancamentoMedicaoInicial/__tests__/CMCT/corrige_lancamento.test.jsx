@@ -24,6 +24,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
   const escolaUuid = mockMeusDadosEscolaCMCT.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCMCT);
     mock
       .onGet(

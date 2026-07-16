@@ -48,11 +48,13 @@ import {
 import { getMeusDados } from "src/services/perfil.service";
 import mock from "src/services/_mock";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
+jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -68,6 +70,7 @@ const awaitServices = async () => {
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(getLogDietasAutorizadasRecreioNasFeriasCEI).toHaveBeenCalled;
+    expect(listDiasLetivosCalendario).toHaveBeenCalled();
   });
 };
 
@@ -86,6 +89,10 @@ describe("Teste Grupo Recreio Nas Férias OUTUBRO/2025 - CEI: Regra de liberaç�
     jest.setSystemTime(new Date("2025-10-03T10:00:00"));
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEI,
+      status: 200,
+    });
+    listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
       status: 200,
     });
     getListaDiasSobremesaDoce.mockResolvedValue({ data: [], status: 200 });

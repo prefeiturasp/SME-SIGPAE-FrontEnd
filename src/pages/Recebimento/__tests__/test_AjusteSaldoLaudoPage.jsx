@@ -20,11 +20,14 @@ import {
 } from "../../../mocks/services/ajusteSaldo.service/mockGetListagemAjustes";
 
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { EDITAR_SALDO_LAUDO, RECEBIMENTO } from "src/configs/constants";
 
 import { debug } from "jest-preview";
 
 describe("Testar Listagem dos Ajustes de Saldo", () => {
   beforeEach(async () => {
+    mock.resetHistory();
+
     localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
 
@@ -96,5 +99,85 @@ describe("Testar Listagem dos Ajustes de Saldo", () => {
       expect(screen.getByText("039/2023")).toBeInTheDocument();
       expect(screen.queryByText("156/2024A")).not.toBeInTheDocument();
     });
+  });
+
+  it("Testa os botões de ação (editar e excluir) na listagem", async () => {
+    const primeiroAjuste = mockGetListagemAjustes.results[0];
+
+    const linksEditar = screen.getAllByTitle("Editar");
+    expect(linksEditar.length).toBe(mockGetListagemAjustes.results.length);
+
+    const linkEditar = linksEditar[0].closest("a");
+    expect(linkEditar).toHaveAttribute(
+      "href",
+      `/${RECEBIMENTO}/${EDITAR_SALDO_LAUDO}?uuid=${primeiroAjuste.uuid}`,
+    );
+
+    const botoesExcluir = screen.getAllByRole("button", { name: "Excluir" });
+    expect(botoesExcluir.length).toBe(mockGetListagemAjustes.results.length);
+  });
+
+  it("Abre o modal de confirmação ao clicar em excluir e chama o service ao confirmar", async () => {
+    const primeiroAjuste = mockGetListagemAjustes.results[0];
+    mock.onDelete(`/ajuste-saldo-laudo/${primeiroAjuste.uuid}/`).reply(204);
+    mock.onGet(`/ajuste-saldo-laudo/`).reply(200, {
+      ...mockGetListagemAjustes,
+      results: mockGetListagemAjustes.results.slice(1),
+    });
+
+    const botoesExcluir = screen.getAllByRole("button", { name: "Excluir" });
+    fireEvent.click(botoesExcluir[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Excluir Ajuste de Saldo do Laudo"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Deseja realmente excluir o Ajuste de Saldo do Laudo?",
+        ),
+      ).toBeInTheDocument();
+    });
+
+    const botaoConfirmar = screen.getByText("Excluir").closest("button");
+    await act(async () => {
+      fireEvent.click(botaoConfirmar);
+    });
+
+    await waitFor(() => {
+      expect(
+        mock.history.delete.some((call) =>
+          call.url.includes(`/ajuste-saldo-laudo/${primeiroAjuste.uuid}/`),
+        ),
+      ).toBe(true);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Excluir Ajuste de Saldo do Laudo"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("Fecha o modal de exclusão sem chamar o service ao clicar em Não", async () => {
+    const botoesExcluir = screen.getAllByRole("button", { name: "Excluir" });
+    fireEvent.click(botoesExcluir[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Excluir Ajuste de Saldo do Laudo"),
+      ).toBeInTheDocument();
+    });
+
+    const botaoNao = screen.getByText("Não").closest("button");
+    fireEvent.click(botaoNao);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Excluir Ajuste de Saldo do Laudo"),
+      ).not.toBeInTheDocument();
+    });
+
+    expect(mock.history.delete.length).toBe(0);
   });
 });

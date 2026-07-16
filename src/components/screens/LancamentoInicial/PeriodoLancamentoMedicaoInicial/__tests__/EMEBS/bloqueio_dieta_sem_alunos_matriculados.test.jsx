@@ -62,6 +62,7 @@ describe("Bloqueio de dietas sem log de matriculados - EMEBS", () => {
   });
 
   beforeEach(async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
     mock
       .onGet(

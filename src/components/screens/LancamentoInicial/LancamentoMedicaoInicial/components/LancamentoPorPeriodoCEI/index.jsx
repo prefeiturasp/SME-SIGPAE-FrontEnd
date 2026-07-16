@@ -25,6 +25,7 @@ import {
   getPeriodosInclusaoContinua,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesAutorizadasEscola,
+  getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola,
   getSolicitacoesKitLanchesAutorizadasEscola,
   getMatriculadosPeriodo,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -94,6 +95,10 @@ export const LancamentoPorPeriodoCEI = ({
     useState(undefined);
   const [inclusoesAutorizadasPP, setInclusoesAutorizadasPP] =
     useState(undefined);
+  const [
+    inclusoesEventoEspecificoAutorizadas,
+    setInclusoesEventoEspecificoAutorizadas,
+  ] = useState(undefined);
   const [
     solicitacoesKitLanchesAutorizadas,
     setSolicitacoesKitLanchesAutorizadas,
@@ -369,11 +374,30 @@ export const LancamentoPorPeriodoCEI = ({
     }
   };
 
+  const getSolicitacoesInclusoesComEventoEspecificoAsync = async () => {
+    if (!ehEscolaTipoCEMEI(escolaInstituicao)) {
+      return;
+    }
+    const escola_uuid = escolaInstituicao.uuid;
+    const tipo_solicitacao = "Inclusão de";
+    const response =
+      await getSolicitacoesInclusoesEventoEspecificoAutorizadasEscola({
+        escola_uuid,
+        mes,
+        ano,
+        tipo_solicitacao,
+      });
+    if (response.status === HTTP_STATUS.OK) {
+      setInclusoesEventoEspecificoAutorizadas(response.data);
+    }
+  };
+
   useEffect(() => {
     if (ehEscolaTipoCEMEI(escolaInstituicao)) {
       getPeriodosInclusaoContinuaAsync();
       getSolicitacoesKitLanchesAutorizadasAsync();
       getSolicitacoesAlteracaoLancheEmergencialAutorizadasAsync();
+      getSolicitacoesInclusoesComEventoEspecificoAsync();
     }
     solicitacaoMedicaoInicial &&
       getQuantidadeAlimentacoesLancadasPeriodoGrupoAsync();
@@ -462,6 +486,16 @@ export const LancamentoPorPeriodoCEI = ({
         ) {
           tiposAlimentacao.push({ nome: nomeExibicao, uuid: null });
         }
+      });
+    }
+
+    if (inclusoesEventoEspecificoAutorizadas?.length > 0) {
+      inclusoesEventoEspecificoAutorizadas.forEach((vinculo) => {
+        vinculo.tipos_alimentacao.forEach((tipo) => {
+          if (!tiposAlimentacao.find((t) => t.nome === tipo.nome)) {
+            tiposAlimentacao.push(tipo);
+          }
+        });
       });
     }
 
@@ -562,6 +596,9 @@ export const LancamentoPorPeriodoCEI = ({
                     tiposAlimentacao={tiposAlimentacaoProgramasEProjetos()}
                     errosAoSalvar={errosAoSalvar}
                     periodosInclusaoContinua={periodosInclusaoContinua}
+                    inclusoesEventoEspecificoAutorizadas={
+                      inclusoesEventoEspecificoAutorizadas
+                    }
                   />
                 )}
                 {((solicitacoesKitLanchesAutorizadas &&

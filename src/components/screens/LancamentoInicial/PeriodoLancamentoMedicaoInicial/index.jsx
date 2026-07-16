@@ -135,6 +135,7 @@ import {
   verificaFeriadoProgramasProjetos,
   obrigarAdiocionarFeriadoProgramasProjetos,
 } from "./validacoes";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 export default () => {
   const initialStateWeekColumns = [
@@ -216,6 +217,8 @@ export default () => {
   ] = useState(false);
   const [disableBotaoSalvarLancamentos, setDisableBotaoSalvarLancamentos] =
     useState(true);
+  const [correcaoPossuiCampoVazio, setCorrecaoPossuiCampoVazio] =
+    useState(true);
   const [exibirTooltip, setExibirTooltip] = useState(false);
   const [showDiaObservacaoDiaria, setDiaObservacaoDiaria] = useState(null);
   const [showCategoriaObservacaoDiaria, setCategoriaObservacaoDiaria] =
@@ -244,6 +247,7 @@ export default () => {
   const [previousValue, setPreviousValue] = useState(null);
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
+  const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -269,6 +273,26 @@ export default () => {
     } else {
       toastError("Erro ao carregar dias de sobremesa doce");
     }
+  };
+
+  const getDiasLetivosSIGPAE = async (escola_uuid) => {
+    const periodo = location.state?.periodo ?? "INTEGRAL";
+    const periodo_escolar = periodo.includes(" ")
+      ? periodo.split(" ").pop()
+      : periodo;
+
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+      periodo_escolar,
+    };
+
+    const response = await listDiasLetivosCalendario(params);
+    const dias = new Set(
+      response.data.map(({ data }) => Number(data.substring(0, 2))),
+    );
+    setDiaLetivosSIGPAE(dias);
   };
 
   const getTiposAlimentacaoInclusoesContinuas = (inclusoesAutorizadas) => {
@@ -505,6 +529,7 @@ export default () => {
       );
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
+      getDiasLetivosSIGPAE(escola.uuid);
 
       const response_get_tipos_alimentacao = await getTiposDeAlimentacao();
       if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
@@ -2215,6 +2240,12 @@ export default () => {
     const objDia = calendarioMesConsiderado.find(
       (objDia) => Number(objDia.dia) === Number(dia),
     );
+
+    const ehDiaLetivoSIGPAE = diasLetivosSIGPAE.has(Number(dia));
+    if (ehDiaLetivoSIGPAE && !ehRecreioNasFerias()) {
+      return true;
+    }
+
     const ehDiaLetivo = objDia && objDia.dia_letivo;
     if (!ehDiaLetivo) return false;
 
@@ -2403,6 +2434,12 @@ export default () => {
       }
     }
     desabilitaTooltip(values);
+    setCorrecaoPossuiCampoVazio(
+      form.getRegisteredFields().some((fieldName) => {
+        const fieldState = form.getFieldState(fieldName);
+        return fieldState?.error === "Preenchimento obrigatório.";
+      }),
+    );
     const existeWarningLancheEmergencial =
       existeWarningLancheEmergencialAutorizadoTipoAlimentacao(values);
 
@@ -2552,6 +2589,46 @@ export default () => {
 
   const fieldValidationsTabelaAlimentacao =
     (rowName, dia, idCategoria, nomeCategoria) => (value, allValues) => {
+      if (
+        [
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+          "MEDICAO_CORRIGIDA_PELA_UE",
+          "MEDICAO_CORRIGIDA_PARA_CODAE",
+        ].includes(location.state?.status_periodo) &&
+        ehDiaParaCorrigir(
+          dia,
+          idCategoria,
+          valoresPeriodosLancamentos,
+          diasParaCorrecao,
+        ) &&
+        ![
+          "matriculados",
+          "numero_de_alunos",
+          "dietas_autorizadas",
+          "participantes",
+        ].includes(rowName)
+      ) {
+        const temCorrecaoParaTabAtual =
+          !escolaEhEMEBS() ||
+          !alunosTabSelecionada ||
+          diasParaCorrecao?.some(
+            (d) =>
+              String(d.dia) === String(dia) &&
+              String(d.categoria_medicao) === String(idCategoria) &&
+              d.habilitado_correcao &&
+              (!d.infantil_ou_fundamental ||
+                d.infantil_ou_fundamental === alunosTabSelecionada ||
+                d.infantil_ou_fundamental === "INFANTIL OU FUNDAMENTAL"),
+          );
+        if (
+          temCorrecaoParaTabAtual &&
+          (value === "" || value === null || value === undefined)
+        ) {
+          return "Preenchimento obrigatório.";
+        }
+      }
+
       if (nomeCategoria.includes("SOLICITAÇÕES")) {
         if (
           rowName === "kit_lanche" &&
@@ -2594,6 +2671,46 @@ export default () => {
 
   const fieldValidationsTabelasDietas =
     (rowName, dia, categoria) => (value, allValues) => {
+      if (
+        [
+          "MEDICAO_CORRECAO_SOLICITADA",
+          "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+          "MEDICAO_CORRIGIDA_PELA_UE",
+          "MEDICAO_CORRIGIDA_PARA_CODAE",
+        ].includes(location.state?.status_periodo) &&
+        ehDiaParaCorrigir(
+          dia,
+          categoria,
+          valoresPeriodosLancamentos,
+          diasParaCorrecao,
+        ) &&
+        ![
+          "matriculados",
+          "numero_de_alunos",
+          "dietas_autorizadas",
+          "participantes",
+        ].includes(rowName)
+      ) {
+        const temCorrecaoParaTabAtual =
+          !escolaEhEMEBS() ||
+          !alunosTabSelecionada ||
+          diasParaCorrecao?.some(
+            (d) =>
+              String(d.dia) === String(dia) &&
+              String(d.categoria_medicao) === String(categoria) &&
+              d.habilitado_correcao &&
+              (!d.infantil_ou_fundamental ||
+                d.infantil_ou_fundamental === alunosTabSelecionada ||
+                d.infantil_ou_fundamental === "INFANTIL OU FUNDAMENTAL"),
+          );
+        if (
+          temCorrecaoParaTabAtual &&
+          (value === "" || value === null || value === undefined)
+        ) {
+          return "Preenchimento obrigatório.";
+        }
+      }
+
       return validacoesTabelasDietas(
         categoriasDeMedicao,
         rowName,
@@ -3301,6 +3418,10 @@ export default () => {
                       ...changes.values,
                     });
                     setFormErrorsAtualizados(changes.errors || {});
+                    const temErroPreenchimento = Object.values(
+                      changes.errors || {},
+                    ).some((erro) => erro === "Preenchimento obrigatório.");
+                    setCorrecaoPossuiCampoVazio(temErroPreenchimento);
                   }}
                 />
                 <div className="card mt-3">
@@ -4160,7 +4281,9 @@ export default () => {
                         type={BUTTON_TYPE.BUTTON}
                         style={`${BUTTON_STYLE.GREEN}`}
                         onClick={() => setShowModalSalvarCorrecoes(true)}
-                        disabled={!calendarioMesConsiderado}
+                        disabled={
+                          !calendarioMesConsiderado || correcaoPossuiCampoVazio
+                        }
                       />
                     ) : (
                       <Botao

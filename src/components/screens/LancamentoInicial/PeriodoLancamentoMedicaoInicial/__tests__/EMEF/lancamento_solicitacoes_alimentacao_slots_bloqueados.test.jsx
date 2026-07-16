@@ -20,6 +20,7 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
 
   beforeEach(async () => {
     alteracoesAlimentacaoParams.length = 0;
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -196,5 +197,17 @@ describe("Lancamento de Solicitações de Alimentação com Slots Bloqueados - E
         (params) => !("nome_periodo_escolar" in params),
       ),
     ).toBe(true);
+  });
+
+  it("deve manter o campo desbloqueado quando o dia é considerado letivo pelo endpoint de calendário", async () => {
+    mock
+      .onGet("/dias-letivos/calendario/")
+      .reply(200, [{ data: "2025-12-05", letivo: true }]);
+
+    const inputLancheEmergencialDia05 = screen.getByTestId(
+      "lanche_emergencial__dia_05__categoria_5",
+    );
+
+    expect(inputLancheEmergencialDia05).not.toBeDisabled();
   });
 });

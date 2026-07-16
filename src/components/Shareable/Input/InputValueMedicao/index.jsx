@@ -107,6 +107,10 @@ export const InputText = (props) => {
     return false;
   };
 
+  const validacaoPreenchimentoObrigatorio = () => {
+    return meta?.error === "Preenchimento obrigatório.";
+  };
+
   const exibirTooltipAlimentacoesAutorizadasDiaNaoLetivo = () => {
     return (
       exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo &&
@@ -461,7 +465,9 @@ export const InputText = (props) => {
         {...input}
         {...inputProps}
         className={`form-control ${className} ${
-          validacaoFrequencia() || validacaoLancheRefeicaoSobremesa1Oferta()
+          validacaoFrequencia() ||
+          validacaoLancheRefeicaoSobremesa1Oferta() ||
+          validacaoPreenchimentoObrigatorio()
             ? "invalid-field"
             : ""
         } ${exibeBorderWarning() ? "border-warning" : ""}`}
