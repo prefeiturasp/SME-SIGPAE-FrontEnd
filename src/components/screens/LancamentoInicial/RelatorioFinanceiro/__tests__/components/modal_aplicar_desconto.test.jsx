@@ -16,6 +16,7 @@ import {
   mockRelatorioFinanceiroTipoAlimentacao,
 } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatorioFinanceiroConsolidado";
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
+import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 
 describe("Testes de comportamento do componente ModalAplicarDesconto", () => {
   describe("Testes de formulário Grupo 1 (CEI)", () => {
@@ -193,6 +194,10 @@ describe("Testes de comportamento do componente ModalAplicarDesconto", () => {
         label: nome,
       }));
 
+    const grupoEMEI = mockGetGrupoUnidadeEscolar.results.find((grupo) =>
+      grupo.nome.includes("Grupo 3"),
+    );
+
     const defaultProps = {
       showModal: true,
       setShowModal,
@@ -201,7 +206,10 @@ describe("Testes de comportamento do componente ModalAplicarDesconto", () => {
       descontos: [],
       unidadesEducacionais: unidadesEducacionais,
       faixasEtarias: [],
-      relatorioConsolidado: mockRelatorioFinanceiroTipoAlimentacao,
+      relatorioConsolidado: {
+        ...mockRelatorioFinanceiroTipoAlimentacao,
+        grupo_unidade_escolar: grupoEMEI,
+      },
       tiposAlimentacao: tiposAlimentacao,
     };
 
@@ -299,6 +307,81 @@ describe("Testes de comportamento do componente ModalAplicarDesconto", () => {
         expect(screen.getByTestId("valor_unitario_0")).toHaveValue("6,00");
         expect(screen.getByTestId("total_desconto_0")).toHaveValue("13,20");
       });
+    });
+  });
+
+  describe("Testes de formulário Grupo 4 (EMEF)", () => {
+    const setShowModal = jest.fn();
+    const onSave = jest.fn();
+    const tiposAlimentacao =
+      mockGetTiposUnidadeEscolarTiposAlimentacao.results.find(
+        (e) => e.iniciais === "EMEF",
+      ).periodos_escolares[0].tipos_alimentacao;
+    const unidadesEducacionais = mockEscolasParaFiltros
+      .filter(({ nome }) => nome.includes("EMEF"))
+      .slice(0, 3)
+      .map(({ uuid, nome }) => ({
+        value: uuid,
+        label: nome,
+      }));
+
+    const defaultProps = {
+      showModal: true,
+      setShowModal,
+      relatorioFinanceiro: mockRelatorioFinanceiroTipoAlimentacao.uuid,
+      onSave,
+      descontos: [],
+      unidadesEducacionais: unidadesEducacionais,
+      faixasEtarias: [],
+      relatorioConsolidado: mockRelatorioFinanceiroTipoAlimentacao,
+      tiposAlimentacao: tiposAlimentacao,
+    };
+
+    const setup = async (props = {}) => {
+      render(
+        <MemoryRouter>
+          <ModalAplicarDesconto {...defaultProps} {...props} />
+        </MemoryRouter>,
+      );
+
+      await waitFor(() => expect(mock.history.get.length).toBeGreaterThan(0));
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+
+      mock
+        .onGet("/medicao-inicial/clausulas-de-descontos/")
+        .reply(200, mockClausulasDeDesconto);
+    });
+
+    it("deve carregar opção de refeição EJA", async () => {
+      setup();
+
+      await setMultiSelect(
+        "unidades_educacionais_0",
+        unidadesEducacionais[0].label,
+      );
+
+      setSelect("tipo_lancamento_0", "ALIMENTACOES");
+
+      const alimentacoes = screen.getByTestId("tipo_alimentacao_0");
+
+      let options = within(alimentacoes).getAllByRole("option");
+      let optionTexts = options.map((option) => option.textContent);
+
+      expect(optionTexts).toEqual(
+        expect.arrayContaining(["Refeição", "Refeição - EJA"]),
+      );
+
+      setSelect("tipo_lancamento_0", "DIETAS_TIPO_A");
+
+      options = within(alimentacoes).getAllByRole("option");
+      optionTexts = options.map((option) => option.textContent);
+
+      expect(optionTexts).toEqual(
+        expect.arrayContaining(["Refeição", "Refeição - EJA"]),
+      );
     });
   });
 });
