@@ -779,6 +779,17 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                     uuid: null,
                   };
                 }
+                const indexNumeroDeAlunos =
+                  tiposAlimentacaoFormatadas.findIndex(
+                    (row) => row.name === "numero_de_alunos",
+                  );
+                if (indexNumeroDeAlunos !== -1) {
+                  tiposAlimentacaoFormatadas[indexNumeroDeAlunos] = {
+                    nome: "Participantes",
+                    name: "participantes",
+                    uuid: null,
+                  };
+                }
                 setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
                 const linhasTabelasDietas = formatarLinhasTabelasDietas(
                   tiposAlimentacaoRecreio,
