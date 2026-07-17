@@ -53,7 +53,7 @@ describe("Teste de comportamentos do componente - ModalCancelarHomologacaoProdut
     idHomologacao: "123",
   };
 
-  const renderComponent = async (props = {}) => {
+  const setup = async (props = {}) => {
     await act(async () => {
       render(
         <>
@@ -69,7 +69,7 @@ describe("Teste de comportamentos do componente - ModalCancelarHomologacaoProdut
   });
 
   it("deve renderizar o modal com os dados do produto", async () => {
-    await renderComponent();
+    await setup();
 
     expect(
       screen.getByText("Envio de Cancelamento da Solicitação de Homologação"),
@@ -84,7 +84,7 @@ describe("Teste de comportamentos do componente - ModalCancelarHomologacaoProdut
   });
 
   it("deve chamar closeModal ao clicar em Voltar", async () => {
-    await renderComponent();
+    await setup();
 
     fireEvent.click(screen.getByText("Voltar"));
 
@@ -96,7 +96,7 @@ describe("Teste de comportamentos do componente - ModalCancelarHomologacaoProdut
       status: HTTP_STATUS.OK,
     });
 
-    await renderComponent();
+    await setup();
 
     fireEvent.change(screen.getByTestId("justificativa"), {
       target: {
@@ -127,7 +127,7 @@ describe("Teste de comportamentos do componente - ModalCancelarHomologacaoProdut
       status: HTTP_STATUS.BAD_REQUEST,
     });
 
-    await renderComponent();
+    await setup();
 
     fireEvent.change(screen.getByTestId("justificativa"), {
       target: {
@@ -154,7 +154,7 @@ describe("Teste de comportamentos do componente - ModalCancelarHomologacaoProdut
   });
 
   it("não deve renderizar o modal quando showModal for false", async () => {
-    await renderComponent({
+    await setup({
       showModal: false,
     });
 
@@ -164,7 +164,7 @@ describe("Teste de comportamentos do componente - ModalCancelarHomologacaoProdut
   });
 
   it("deve renderizar sem dados quando produto não existir", async () => {
-    await renderComponent({
+    await setup({
       produto: null,
     });
 

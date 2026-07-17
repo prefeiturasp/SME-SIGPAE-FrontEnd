@@ -54,6 +54,7 @@ describe("Teste de comportamentos do componente - ModalCancelaDietaEspecial", ()
 
     global.fetch = jest.fn();
   });
+
   it("deve renderizar o modal", async () => {
     await setup();
 
