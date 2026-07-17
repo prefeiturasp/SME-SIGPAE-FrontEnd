@@ -291,7 +291,9 @@ const CadastrarAjusteSaldo: React.FC<{
       "quantidade_descontada",
       formataMilharDecimal(dadosAjuste.quantidade_descontada),
     );
-    setQuantidadeDescontada(String(dadosAjuste.quantidade_descontada));
+    setQuantidadeDescontada(
+      formataMilharDecimal(dadosAjuste.quantidade_descontada),
+    );
   }, [documentoSelecionado]);
 
   useEffect(() => {
