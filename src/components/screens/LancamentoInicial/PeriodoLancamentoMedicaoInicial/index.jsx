@@ -255,9 +255,8 @@ export default () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const ehGrupoSolicitacoesDeAlimentacaoUrlParam =
-    urlParams.get("ehGrupoSolicitacoesDeAlimentacao") === "true" ? true : false;
-  const ehGrupoETECUrlParam =
-    urlParams.get("ehGrupoETEC") === "true" ? true : false;
+    urlParams.get("ehGrupoSolicitacoesDeAlimentacao") === "true";
+  const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
   const grupoLocation = location && location.state && location.state.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
 
@@ -546,7 +545,7 @@ export default () => {
 
       let periodo = periodos_escolares[0];
       const ehPeriodoEspecifico =
-        urlParams.get("ehPeriodoEspecifico") === "true" ? true : false;
+        urlParams.get("ehPeriodoEspecifico") === "true";
       if (ehPeriodoEspecifico) {
         periodo = location.state
           ? location.state.periodoEspecifico
