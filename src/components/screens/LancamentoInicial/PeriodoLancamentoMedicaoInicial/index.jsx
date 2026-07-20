@@ -257,7 +257,7 @@ export default () => {
   const ehGrupoSolicitacoesDeAlimentacaoUrlParam =
     urlParams.get("ehGrupoSolicitacoesDeAlimentacao") === "true";
   const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
-  const grupoLocation = location && location.state && location.state.grupo;
+  const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
 
   const getListaDiasSobremesaDoceAsync = async (escola_uuid) => {
