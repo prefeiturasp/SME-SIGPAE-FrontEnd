@@ -149,8 +149,8 @@ import {
   verificarMesAnteriorOuPosterior,
   validacoesFaixasZeradasAlimentacao,
 } from "./validacoes";
-
 import { ORDEM_CAMPOS_DIETAS_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const initialStateWeekColumns = [
@@ -256,6 +256,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [faixasAtivasPorTipo, setFaixasAtivasPorTipo] = useState({});
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
+  const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -326,6 +327,26 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return tiposAlimentacao;
   };
 
+  const getDiasLetivosSIGPAE = async (escola_uuid) => {
+    const periodo = location.state?.periodo ?? "INTEGRAL";
+    const periodo_escolar = periodo.includes(" ")
+      ? periodo.split(" ").pop()
+      : periodo;
+
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+      periodo_escolar,
+    };
+
+    const response = await listDiasLetivosCalendario(params);
+    const dias = new Set(
+      response.data.map(({ data }) => Number(data.substring(0, 2))),
+    );
+    setDiaLetivosSIGPAE(dias);
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === "string"
@@ -357,6 +378,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const mes = format(mesAnoSelecionado, "MM");
       const ano = getYear(mesAnoSelecionado);
 
+      getDiasLetivosSIGPAE(escola.uuid);
       const response_faixas_etarias = await getFaixasEtarias();
       if (response_faixas_etarias.status === HTTP_STATUS.OK) {
         setFaixasEtarias(response_faixas_etarias.data.results);
@@ -1736,6 +1758,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     const diaCalendario = calendarioMesConsiderado.find(
       (item) => Number(item.dia) === Number(dia),
     );
+
+    const ehDiaLetivoSIGPAE = diasLetivosSIGPAE.has(Number(dia));
+    if (ehDiaLetivoSIGPAE && !ehRecreioNasFerias()) {
+      return true;
+    }
 
     const ehDiaLetivo = diaCalendario?.dia_letivo === true;
     if (!ehDiaLetivo && !ehRecreioNasFerias()) return false;

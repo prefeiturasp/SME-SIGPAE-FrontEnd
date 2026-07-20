@@ -42,6 +42,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
       data: item.log_mais_recente,
       link: `/${PRE_RECEBIMENTO}/${DETALHE_CRONOGRAMA}?uuid=${item.uuid}`,
       programa_leve_leite: item.programa_leve_leite,
+      ponto_a_ponto: item.ponto_a_ponto,
     }));
   };
 
@@ -51,6 +52,7 @@ export const SolicitacoesCronogramaStatusGenerico = ({ ...props }) => {
       data: item.log_mais_recente,
       link: `/${PRE_RECEBIMENTO}/${DETALHAR_ALTERACAO_CRONOGRAMA}?uuid=${item.uuid}`,
       programa_leve_leite: item.programa_leve_leite,
+      ponto_a_ponto: item.ponto_a_ponto,
     }));
   };
 

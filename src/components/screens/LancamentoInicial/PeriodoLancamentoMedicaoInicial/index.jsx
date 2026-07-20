@@ -135,6 +135,7 @@ import {
   verificaFeriadoProgramasProjetos,
   obrigarAdiocionarFeriadoProgramasProjetos,
 } from "./validacoes";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 export default () => {
   const initialStateWeekColumns = [
@@ -246,6 +247,7 @@ export default () => {
   const [previousValue, setPreviousValue] = useState(null);
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
+  const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -271,6 +273,26 @@ export default () => {
     } else {
       toastError("Erro ao carregar dias de sobremesa doce");
     }
+  };
+
+  const getDiasLetivosSIGPAE = async (escola_uuid) => {
+    const periodo = location.state?.periodo ?? "INTEGRAL";
+    const periodo_escolar = periodo.includes(" ")
+      ? periodo.split(" ").pop()
+      : periodo;
+
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+      periodo_escolar,
+    };
+
+    const response = await listDiasLetivosCalendario(params);
+    const dias = new Set(
+      response.data.map(({ data }) => Number(data.substring(0, 2))),
+    );
+    setDiaLetivosSIGPAE(dias);
   };
 
   const getTiposAlimentacaoInclusoesContinuas = (inclusoesAutorizadas) => {
@@ -507,6 +529,7 @@ export default () => {
       );
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
+      getDiasLetivosSIGPAE(escola.uuid);
 
       const response_get_tipos_alimentacao = await getTiposDeAlimentacao();
       if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
@@ -2217,6 +2240,12 @@ export default () => {
     const objDia = calendarioMesConsiderado.find(
       (objDia) => Number(objDia.dia) === Number(dia),
     );
+
+    const ehDiaLetivoSIGPAE = diasLetivosSIGPAE.has(Number(dia));
+    if (ehDiaLetivoSIGPAE && !ehRecreioNasFerias()) {
+      return true;
+    }
+
     const ehDiaLetivo = objDia && objDia.dia_letivo;
     if (!ehDiaLetivo) return false;
 

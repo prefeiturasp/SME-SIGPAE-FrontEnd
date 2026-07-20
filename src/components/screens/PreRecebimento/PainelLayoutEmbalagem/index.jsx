@@ -68,6 +68,7 @@ export default () => {
       link: gerarLinkLayout(item),
       status: item.status,
       programa_leve_leite: item.programa_leve_leite,
+      eh_ficha_tecnica_flv: item.eh_ficha_tecnica_flv,
     }));
   };
 

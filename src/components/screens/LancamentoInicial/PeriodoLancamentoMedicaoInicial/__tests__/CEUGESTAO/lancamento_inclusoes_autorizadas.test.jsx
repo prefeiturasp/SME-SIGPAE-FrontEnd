@@ -22,6 +22,7 @@ import mock from "src/services/_mock";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - TARDE - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEUGESTAO);

@@ -389,10 +389,10 @@ export default ({
           <div className="col">
             <Field
               component={TextArea}
-              label="Descrever o Material e o Sistema de Vedação da Embalagem Secundária:"
+              label="Especificar o Material utilizado na Embalagem Secundária e qual será o Sistema de Vedação:"
               name={`sistema_vedacao_embalagem_secundaria`}
               className="textarea-ficha-tecnica"
-              placeholder="Digite as informações da embalagem secundária"
+              placeholder="Ex: Material da embalagem secundária: Caixa de Papelão e Sistema de vedação: Fita Adesiva"
               required
               validate={required}
             />

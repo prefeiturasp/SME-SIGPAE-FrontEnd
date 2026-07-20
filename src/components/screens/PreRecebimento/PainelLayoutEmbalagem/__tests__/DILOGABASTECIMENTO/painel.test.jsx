@@ -15,6 +15,17 @@ import { mockDashboardLayoutDeEmbalagemDILOGABASTECIMENTO } from "src/mocks/serv
 import { mockDashboardLayoutDeEmbalagemFiltradoDILOGABASTECIMENTO } from "src/mocks/services/layoutDeEmbalagem.service/DILOGABASTECIMENTO/dashboardFiltrado";
 import { PainelLayoutEmbalagemPage } from "src/pages/PreRecebimento/PainelLayoutEmbalagemPage";
 import mock from "src/services/_mock";
+import {
+  ANALISAR_LAYOUT_EMBALAGEM,
+  DETALHAR_LAYOUT_EMBALAGEM,
+  DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO,
+} from "src/configs/constants";
+import { usuarioPodeAnalisarLayoutEmbalagem } from "src/helpers/utilities";
+
+jest.mock("src/helpers/utilities", () => ({
+  ...jest.requireActual("src/helpers/utilities"),
+  usuarioPodeAnalisarLayoutEmbalagem: jest.fn(),
+}));
 
 describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () => {
   beforeEach(async () => {
@@ -24,7 +35,7 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
     mock
       .onGet("/layouts-de-embalagem/dashboard/")
       .reply(200, mockDashboardLayoutDeEmbalagemDILOGABASTECIMENTO);
-
+    usuarioPodeAnalisarLayoutEmbalagem.mockReturnValue(false);
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
     localStorage.setItem("perfil", PERFIL.DILOG_ABASTECIMENTO);
@@ -46,7 +57,7 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
           >
             <PainelLayoutEmbalagemPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -60,17 +71,17 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
   it("Renderiza paineis", () => {
     expect(screen.getByText("Pendentes de Aprovação")).toBeInTheDocument();
     expect(
-      screen.getByText("FT015 / CAJUINA / JP Alimentos LTDA")
+      screen.getByText("FT015 / CAJUINA / JP Alimentos LTDA"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("Aprovados")).toBeInTheDocument();
     expect(
-      screen.getByText("FT040 / FORMIGA / JP Alimentos LTDA")
+      screen.getByText("FT040 / FORMIGA / JP Alimentos LTDA"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("Enviados para Correção")).toBeInTheDocument();
     expect(
-      screen.getByText("FT039 / ARROZ TIPO I / Empresa do Luis Zimm...")
+      screen.getByText("FT039 / ARROZ TIPO I / Empresa do Luis Zimm..."),
     ).toBeInTheDocument();
   });
 
@@ -80,7 +91,7 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
     });
     expect(linkPendenteAprovacao).toHaveAttribute(
       "href",
-      expect.stringContaining("detalhe-layout-embalagem")
+      expect.stringContaining("detalhe-layout-embalagem"),
     );
 
     const linkAprovados = screen.getByRole("link", {
@@ -88,7 +99,7 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
     });
     expect(linkAprovados).toHaveAttribute(
       "href",
-      expect.stringContaining("detalhe-layout-embalagem")
+      expect.stringContaining("detalhe-layout-embalagem"),
     );
 
     const linkEnviadosParaCorrecao = screen.getByRole("link", {
@@ -96,13 +107,13 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
     });
     expect(linkEnviadosParaCorrecao).toHaveAttribute(
       "href",
-      expect.stringContaining("detalhe-layout-embalagem")
+      expect.stringContaining("detalhe-layout-embalagem"),
     );
   });
 
   it("testa busca por nº do cronograma", async () => {
     const divInputBuscaPorNumeroCronograma = screen.getByTestId(
-      "div-input-numero-cronograma"
+      "div-input-numero-cronograma",
     );
     const inputElement =
       divInputBuscaPorNumeroCronograma.querySelector("input");
@@ -117,14 +128,14 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
 
     await waitFor(() => {
       expect(
-        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos")
+        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos"),
       ).not.toBeInTheDocument();
     });
   });
 
   it("testa busca por nome do produto", async () => {
     const divInputBuscaPorNomeProduto = screen.getByTestId(
-      "div-input-nome-produto"
+      "div-input-nome-produto",
     );
     const inputElement = divInputBuscaPorNomeProduto.querySelector("input");
     await waitFor(() => {
@@ -138,14 +149,14 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
 
     await waitFor(() => {
       expect(
-        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos")
+        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos"),
       ).not.toBeInTheDocument();
     });
   });
 
   it("testa busca por nome do fornecedor", async () => {
     const divInputBuscaPorNomeFornecedor = screen.getByTestId(
-      "div-input-nome-fornecedor"
+      "div-input-nome-fornecedor",
     );
     const inputElement = divInputBuscaPorNomeFornecedor.querySelector("input");
     await waitFor(() => {
@@ -159,8 +170,93 @@ describe("Teste Painel Layout de Embalagens - Usuário DILOG_ABASTECIMENTO", () 
 
     await waitFor(() => {
       expect(
-        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos")
+        screen.queryByText("FT006 - BOLO INDIVIDUAL - JP Alimentos"),
       ).not.toBeInTheDocument();
+    });
+  });
+
+  it("Renderiza hrefs de análise, solicitação de alteração e detalhe quando usuário pode analisar", async () => {
+    usuarioPodeAnalisarLayoutEmbalagem.mockReturnValue(true);
+
+    const divInputBuscaPorNomeProduto = screen.getByTestId(
+      "div-input-nome-produto",
+    );
+    const inputElement = divInputBuscaPorNomeProduto.querySelector("input");
+
+    fireEvent.change(inputElement, {
+      target: { value: "CAJUINA" },
+    });
+
+    await waitFor(() => {
+      const linkPendenteAprovacao = screen.getByRole("link", {
+        name: /FT015\s*\/\s*CAJUINA\s*\/\s*JP Alimentos LTDA/i,
+      });
+
+      expect(linkPendenteAprovacao).toHaveAttribute(
+        "href",
+        expect.stringContaining(ANALISAR_LAYOUT_EMBALAGEM),
+      );
+    });
+
+    const linkEnviadosParaCorrecao = screen.getByRole("link", {
+      name: /FT039\s*\/\s*ARROZ TIPO I\s*\/\s*Empresa do Luis Zimm.../i,
+    });
+
+    expect(linkEnviadosParaCorrecao).toHaveAttribute(
+      "href",
+      expect.stringContaining(DETALHAR_LAYOUT_EMBALAGEM_SOLICITACAO_ALTERACAO),
+    );
+
+    const linkAprovados = screen.getByRole("link", {
+      name: /FT040\s*\/\s*FORMIGA\s*\/\s*JP Alimentos LTDA/i,
+    });
+
+    expect(linkAprovados).toHaveAttribute(
+      "href",
+      expect.stringContaining(DETALHAR_LAYOUT_EMBALAGEM),
+    );
+  });
+
+  it("Filtra layouts e depois remove o filtro quando valor fica menor que três caracteres", async () => {
+    mock.resetHistory();
+
+    mock
+      .onGet("/layouts-de-embalagem/dashboard/")
+      .reply(200, mockDashboardLayoutDeEmbalagemFiltradoDILOGABASTECIMENTO);
+
+    const divInputBuscaPorNomeProduto = screen.getByTestId(
+      "div-input-nome-produto",
+    );
+    const inputElement = divInputBuscaPorNomeProduto.querySelector("input");
+
+    fireEvent.change(inputElement, {
+      target: { value: "CAJUINA" },
+    });
+
+    await waitFor(() => {
+      expect(
+        mock.history.get.filter(
+          (request) => request.url === "/layouts-de-embalagem/dashboard/",
+        ),
+      ).toHaveLength(1);
+    });
+
+    mock.resetHistory();
+
+    mock
+      .onGet("/layouts-de-embalagem/dashboard/")
+      .reply(200, mockDashboardLayoutDeEmbalagemDILOGABASTECIMENTO);
+
+    fireEvent.change(inputElement, {
+      target: { value: "CA" },
+    });
+
+    await waitFor(() => {
+      expect(
+        mock.history.get.filter(
+          (request) => request.url === "/layouts-de-embalagem/dashboard/",
+        ),
+      ).toHaveLength(1);
     });
   });
 });

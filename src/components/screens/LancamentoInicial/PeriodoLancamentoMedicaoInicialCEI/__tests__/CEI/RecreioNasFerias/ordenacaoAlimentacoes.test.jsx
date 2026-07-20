@@ -31,6 +31,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 const mockNavigate = jest.fn();
 
@@ -44,6 +45,7 @@ jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/medicaoInicial/solicitacaoMedicaoInicial.service");
+jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -58,6 +60,7 @@ const awaitServices = async () => {
     ).toHaveBeenCalled();
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
+    expect(listDiasLetivosCalendario).toHaveBeenCalled();
   });
 };
 
@@ -116,6 +119,10 @@ describe("Ordenação alimentações para o Grupo Colaboradores - CEI", () => {
     });
     getFeriadosNoMes.mockResolvedValue({
       data: { results: ["12"] },
+      status: 200,
+    });
+    listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
       status: 200,
     });
     updateValoresPeriodosLancamentos.mockResolvedValue({

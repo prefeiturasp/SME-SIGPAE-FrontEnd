@@ -61,14 +61,15 @@ import {
 } from "./constants";
 
 export const cepCalculator = (
-  setDesabilitaEndereco: React.Dispatch<React.SetStateAction<Array<boolean>>>,
+  setDesabilitaEndereco?: React.Dispatch<React.SetStateAction<Array<boolean>>>,
 ) => {
   const lastCepValues: Record<string, string> = {};
 
   return createDecorator({
     field: /^cep_fabricante_(\d+)$/,
     updates: {
-      dummy: (_, allValues: FichaTecnicaPayload) => {
+      dummy: (_, allValuesGenerico) => {
+        const allValues = allValuesGenerico as FichaTecnicaPayload;
         Object.keys(allValues)
           .filter((key) => key.startsWith("cep_fabricante_"))
           .forEach((field) => {
@@ -76,7 +77,11 @@ export const cepCalculator = (
             if (cep?.length === 9 && cep !== lastCepValues[field]) {
               lastCepValues[field] = cep;
               const index = field.split("_").pop()!;
-              buscaCEP(cep, allValues, setDesabilitaEndereco, index);
+              if (setDesabilitaEndereco) {
+                buscaCEP(cep, allValues, setDesabilitaEndereco, index);
+              } else {
+                buscaCEPSemDesabilitarEndereco(cep, allValues, index);
+              }
             }
           });
 
@@ -115,6 +120,25 @@ export const buscaCEP = async (
       prev[index] = false;
       return prev;
     });
+  }
+};
+
+export const buscaCEPSemDesabilitarEndereco = async (
+  cep: string,
+  values: FichaTecnicaPayload,
+  index: string,
+) => {
+  try {
+    const response = await getEnderecoPorCEP(cep);
+    if (response.status === 200 && !response.data.erro) {
+      const { data } = response;
+      values[`bairro_fabricante_${index}`] = data.bairro;
+      values[`cidade_fabricante_${index}`] = data.localidade;
+      values[`endereco_fabricante_${index}`] = data.logradouro;
+      values[`estado_fabricante_${index}`] = data.uf;
+    }
+  } catch {
+    toastError("Erro ao buscar CEP");
   }
 };
 

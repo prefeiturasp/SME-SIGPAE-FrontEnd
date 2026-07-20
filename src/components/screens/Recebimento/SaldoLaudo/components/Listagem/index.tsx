@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tooltip } from "antd";
+import { NavLink } from "react-router-dom";
 
 import { truncarString } from "src/helpers/utilities";
 import { AjusteSaldoLaudoListagem } from "../../interfaces";
+import { excluirAjusteSaldo } from "src/services/ajusteSaldo.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
+
+import { EDITAR_SALDO_LAUDO, RECEBIMENTO } from "src/configs/constants";
 
 import { agruparMilharDecimalModificado } from "src/components/Shareable/Input/InputText/helpers";
 
@@ -10,11 +19,70 @@ import "./styles.scss";
 
 interface Props {
   objetos: AjusteSaldoLaudoListagem[];
+  aposExcluir?: () => void;
 }
 
 const TAMANHO_MAXIMO = 30;
 
-const Listagem: React.FC<Props> = ({ objetos }) => {
+const Listagem: React.FC<Props> = ({ objetos, aposExcluir }) => {
+  const [exibirModalExcluir, setExibirModalExcluir] = useState(false);
+  const [uuidExclusao, setUuidExclusao] = useState("");
+  const [carregandoExclusao, setCarregandoExclusao] = useState(false);
+
+  const excluirAjuste = async () => {
+    setCarregandoExclusao(true);
+    try {
+      await excluirAjusteSaldo(uuidExclusao);
+      toastSuccess("Ajuste de saldo excluído com sucesso!");
+      aposExcluir?.();
+    } catch {
+      toastError("Erro ao excluir ajuste de saldo.");
+    } finally {
+      setCarregandoExclusao(false);
+      setExibirModalExcluir(false);
+    }
+  };
+
+  const renderizarAcoes = (objeto: AjusteSaldoLaudoListagem) => {
+    const iconeEditar = (
+      <span className="link-acoes px-1">
+        <i title="Editar" className="fas fa-edit green" />
+      </span>
+    );
+
+    const botaoEditar = (
+      <NavLink
+        className="float-start"
+        to={`/${RECEBIMENTO}/${EDITAR_SALDO_LAUDO}?uuid=${objeto.uuid}`}
+      >
+        {iconeEditar}
+      </NavLink>
+    );
+
+    const botaoExcluir = (
+      <span className="link-acoes px-1">
+        <button
+          type="button"
+          title="Excluir"
+          aria-label="Excluir"
+          onClick={() => {
+            setUuidExclusao(objeto.uuid);
+            setExibirModalExcluir(true);
+          }}
+        >
+          <i className="fas fa-trash green" />
+        </button>
+      </span>
+    );
+
+    return (
+      <div className="acoes">
+        {botaoEditar}
+        {botaoExcluir}
+      </div>
+    );
+  };
+
   return (
     <div className="listagem-ajustes-saldo">
       <div className="titulo-verde mt-4 mb-3">Ajustes de Saldo Cadastrados</div>
@@ -56,13 +124,23 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
                     )}{" "}
                     {objeto.unidade_medida}
                   </div>
-                  <div> - </div>
+                  <div>{renderizarAcoes(objeto)}</div>
                 </div>
               );
             })}
           </>
         )}
       </article>
+
+      <ModalGenerico
+        show={exibirModalExcluir}
+        handleClose={() => setExibirModalExcluir(false)}
+        loading={carregandoExclusao}
+        handleSim={excluirAjuste}
+        textoBotaoSim="Excluir"
+        titulo="Excluir Ajuste de Saldo do Laudo"
+        texto="Deseja realmente excluir o Ajuste de Saldo do Laudo?"
+      />
     </div>
   );
 };

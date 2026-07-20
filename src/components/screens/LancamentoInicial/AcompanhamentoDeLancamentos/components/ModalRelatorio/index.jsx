@@ -81,8 +81,9 @@ const ModalRelatorio = ({
   };
 
   function desabilitaRadioButton(grupo) {
+    const gruposBloqueadosRecreio = ["Grupo 5", "Grupo 6"];
     if (nomeRelatorio === "Relatório Consolidado") {
-      if (recreioNasFerias && grupo !== "Grupo 3") {
+      if (recreioNasFerias && gruposBloqueadosRecreio.includes(grupo)) {
         return true;
       }
       return false;

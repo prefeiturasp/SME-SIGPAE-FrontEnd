@@ -42,7 +42,7 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock.onGet("/dias-uteis/").reply(200, {
@@ -51,7 +51,7 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
     });
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
       )
       .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
     mock
@@ -85,7 +85,7 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
             <InclusaoDeAlimentacaoCEMEIPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -106,19 +106,19 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
 
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # B922B")
+      screen.getByText("Inclusão de Alimentação # B922B"),
     ).toBeInTheDocument();
     expect(screen.getByText("2 dia(s)")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 11/07/2025 17:59:44")
+      screen.getByText("Criado em: 11/07/2025 17:59:44"),
     ).toBeInTheDocument();
   });
 
@@ -126,7 +126,7 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
     const selectMotivo = screen.getByTestId(`select-motivo-${id}`);
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoEventoEspecifico = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome === "Evento Específico"
+      (motivo) => motivo.nome === "Evento Específico",
     ).uuid;
     fireEvent.change(selectElement, {
       target: { value: uuidMotivoEventoEspecifico },
@@ -171,10 +171,10 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
     });
 
     const selectTiposAlimentacaoEMEI = screen.getByTestId(
-      "select-tipos-alimentacao"
+      "select-tipos-alimentacao",
     );
     const selectControl = within(selectTiposAlimentacaoEMEI).getByRole(
-      "combobox"
+      "combobox",
     );
     fireEvent.mouseDown(selectControl);
 
@@ -182,7 +182,7 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
     fireEvent.click(optionLanche);
 
     const divInputAlunosEMEI = screen.getByTestId(
-      "quantidades_periodo[0].alunos_emei"
+      "quantidades_periodo[0].alunos_emei",
     );
     const inputElementAlunosEMEI = divInputAlunosEMEI.querySelector("input");
     fireEvent.change(inputElementAlunosEMEI, {
@@ -192,7 +192,13 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
 
   it("Salva rascunho inclusão de alimentação CEMEI com sucesso", async () => {
     mock.onPost("/inclusao-alimentacao-cemei/").reply(201, {});
+
     await setupInclusaoEventoEspecifico();
+
+    expect(
+      screen.queryByTestId("div-select-alunos-cei-e-ou-emei"),
+    ).not.toBeInTheDocument();
+
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
       .closest("button");
@@ -200,7 +206,7 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação Rascunho criada com sucesso!")
+        screen.getByText("Solicitação Rascunho criada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -224,12 +230,12 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
 
     mock
       .onPut(
-        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEIMotivoEspecifico.results[0].uuid}/`
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEIMotivoEspecifico.results[0].uuid}/`,
       )
       .reply(200, {});
     mock
       .onPatch(
-        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEIMotivoEspecifico.results[0].uuid}/inicio-pedido/`
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEIMotivoEspecifico.results[0].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
 
@@ -238,7 +244,7 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
 
     await waitFor(() => {
       expect(
-        screen.getByText("Inclusão de Alimentação enviada com sucesso!")
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!"),
       ).toBeInTheDocument();
     });
   });

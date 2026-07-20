@@ -993,6 +993,7 @@ export const ConferenciaDosLancamentos = () => {
                                         type={BUTTON_TYPE.BUTTON}
                                         style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
                                         disabled={
+                                          !usuarioEhCODAENutriManifestacao() ||
                                           (ocorrencia?.status ===
                                             "MEDICAO_CORRECAO_SOLICITADA" &&
                                             !solicitacao?.com_ocorrencias) ||
@@ -1015,6 +1016,7 @@ export const ConferenciaDosLancamentos = () => {
                                           type={BUTTON_TYPE.BUTTON}
                                           style={BUTTON_STYLE.GREEN}
                                           disabled={
+                                            !usuarioEhCODAENutriManifestacao() ||
                                             desabilitarAprovarOcorrenciaCODAE ||
                                             desabilitarAprovarOcorrenciaDRE
                                           }

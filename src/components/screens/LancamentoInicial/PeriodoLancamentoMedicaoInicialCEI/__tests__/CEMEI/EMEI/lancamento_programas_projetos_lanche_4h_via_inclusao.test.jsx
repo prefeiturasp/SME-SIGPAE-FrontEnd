@@ -29,6 +29,7 @@ const LINHAS_DIETA = ["dietas_autorizadas", "frequencia", "lanche"];
 describe("Teste <PeriodoLancamentoMedicaoInicialCEI> - Programas e Projetos - Lanche 4h via inclusao", () => {
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")

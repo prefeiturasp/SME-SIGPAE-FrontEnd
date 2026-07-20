@@ -81,6 +81,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - MANHA - Usuário EMEF", () =
     mock
       .onGet("/medicao-inicial/valores-medicao/")
       .reply(200, mockValoresMedicaoMANHAEMEFAbril2025);
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/medicao-inicial/dias-para-corrigir/").reply(200, []);
     mock
       .onGet("/matriculados-no-mes/")

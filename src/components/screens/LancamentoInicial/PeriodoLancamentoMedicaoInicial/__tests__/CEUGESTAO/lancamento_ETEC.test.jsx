@@ -33,6 +33,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - ETEC - Usuário CEU GESTAO",
     mock.onGet("/notificacoes/quantidade-nao-lidos/").reply(200, {
       quantidade_nao_lidos: 0,
     });
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet(
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/",

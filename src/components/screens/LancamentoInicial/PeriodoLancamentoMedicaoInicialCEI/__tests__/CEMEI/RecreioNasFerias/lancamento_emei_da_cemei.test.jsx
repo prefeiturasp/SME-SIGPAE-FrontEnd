@@ -36,12 +36,14 @@ import {
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import mock from "src/services/_mock";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/medicaoInicial/permissaoLancamentosEspeciais.service");
+jest.mock("src/services/diasLetivos");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -57,6 +59,7 @@ const awaitServices = async () => {
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(getLogDietasAutorizadasRecreioNasFerias).toHaveBeenCalled;
+    expect(listDiasLetivosCalendario).toHaveBeenCalled();
   });
 };
 
@@ -72,6 +75,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio nas FÃ
 
     getSolicitacoesInclusoesAutorizadasEscola.mockResolvedValue({
       data: { results: [] },
+      status: 200,
+    });
+    listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
       status: 200,
     });
 
