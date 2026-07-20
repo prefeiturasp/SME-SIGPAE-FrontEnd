@@ -95,6 +95,7 @@ import {
   textoBotaoObservacao,
   valorZeroFrequencia,
   trataCategoriasMedicaoRecreio,
+  formatarParaSlug,
 } from "./helper";
 import "./styles.scss";
 import {
@@ -617,11 +618,7 @@ export default () => {
         .map((alimentacao) => {
           return {
             ...alimentacao,
-            name: alimentacao.nome
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(alimentacao.nome),
           };
         });
 
@@ -747,11 +744,7 @@ export default () => {
         if (indexLanche4h !== -1) {
           rowsDietas.push({
             nome: cloneTiposAlimentacao[indexLanche4h].nome,
-            name: cloneTiposAlimentacao[indexLanche4h].nome
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(cloneTiposAlimentacao[indexLanche4h].nome),
             uuid: cloneTiposAlimentacao[indexLanche4h].uuid,
           });
         }
@@ -767,11 +760,7 @@ export default () => {
       ) {
         rowsDietas.push({
           nome: "Lanche",
-          name: "Lanche"
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
-            .replaceAll(/ /g, "_"),
+          name: formatarParaSlug("Lanche"),
           uuid: cloneTiposAlimentacao[indexLanche].uuid,
         });
       }
@@ -783,11 +772,7 @@ export default () => {
         if (tiposAlimentacaoInclusaoContinua.includes("lanche")) {
           rowsDietas.push({
             nome: "Lanche",
-            name: "Lanche"
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug("Lanche"),
             uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
               (tp) => tp.nome === "Lanche",
             ).uuid,
@@ -863,11 +848,7 @@ export default () => {
         .map((alimentacao) => {
           return {
             nome: alimentacao,
-            name: alimentacao
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(alimentacao),
             uuid: null,
           };
         });
