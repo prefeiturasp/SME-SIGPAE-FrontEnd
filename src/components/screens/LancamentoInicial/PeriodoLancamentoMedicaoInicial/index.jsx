@@ -95,6 +95,7 @@ import {
   textoBotaoObservacao,
   valorZeroFrequencia,
   trataCategoriasMedicaoRecreio,
+  formatarParaSlug,
 } from "./helper";
 import "./styles.scss";
 import {
@@ -255,10 +256,9 @@ export default () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const ehGrupoSolicitacoesDeAlimentacaoUrlParam =
-    urlParams.get("ehGrupoSolicitacoesDeAlimentacao") === "true" ? true : false;
-  const ehGrupoETECUrlParam =
-    urlParams.get("ehGrupoETEC") === "true" ? true : false;
-  const grupoLocation = location && location.state && location.state.grupo;
+    urlParams.get("ehGrupoSolicitacoesDeAlimentacao") === "true";
+  const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
+  const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
 
   const getListaDiasSobremesaDoceAsync = async (escola_uuid) => {
@@ -546,7 +546,7 @@ export default () => {
 
       let periodo = periodos_escolares[0];
       const ehPeriodoEspecifico =
-        urlParams.get("ehPeriodoEspecifico") === "true" ? true : false;
+        urlParams.get("ehPeriodoEspecifico") === "true";
       if (ehPeriodoEspecifico) {
         periodo = location.state
           ? location.state.periodoEspecifico
@@ -618,11 +618,7 @@ export default () => {
         .map((alimentacao) => {
           return {
             ...alimentacao,
-            name: alimentacao.nome
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(alimentacao.nome),
           };
         });
 
@@ -748,11 +744,7 @@ export default () => {
         if (indexLanche4h !== -1) {
           rowsDietas.push({
             nome: cloneTiposAlimentacao[indexLanche4h].nome,
-            name: cloneTiposAlimentacao[indexLanche4h].nome
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(cloneTiposAlimentacao[indexLanche4h].nome),
             uuid: cloneTiposAlimentacao[indexLanche4h].uuid,
           });
         }
@@ -768,11 +760,7 @@ export default () => {
       ) {
         rowsDietas.push({
           nome: "Lanche",
-          name: "Lanche"
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
-            .replaceAll(/ /g, "_"),
+          name: formatarParaSlug("Lanche"),
           uuid: cloneTiposAlimentacao[indexLanche].uuid,
         });
       }
@@ -784,11 +772,7 @@ export default () => {
         if (tiposAlimentacaoInclusaoContinua.includes("lanche")) {
           rowsDietas.push({
             nome: "Lanche",
-            name: "Lanche"
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug("Lanche"),
             uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
               (tp) => tp.nome === "Lanche",
             ).uuid,
@@ -864,11 +848,7 @@ export default () => {
         .map((alimentacao) => {
           return {
             nome: alimentacao,
-            name: alimentacao
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(alimentacao),
             uuid: null,
           };
         });
