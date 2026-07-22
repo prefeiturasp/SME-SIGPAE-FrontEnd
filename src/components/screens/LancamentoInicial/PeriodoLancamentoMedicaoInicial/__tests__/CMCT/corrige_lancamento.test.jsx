@@ -20,8 +20,6 @@ import { mockGetVinculosTipoAlimentacaoPorEscolaCMCT } from "src/mocks/services/
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
-import { debug } from "jest-preview";
-
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CMCT - Corrige Lançamentos", () => {
   const escolaUuid = mockMeusDadosEscolaCMCT.vinculo_atual.instituicao.uuid;
 
@@ -163,8 +161,6 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
   it("Corrige lançamentos", async () => {
     const inputLanche4h = screen.getByTestId("lanche_4h__dia_03__categoria_1");
     fireEvent.change(inputLanche4h, { target: { value: "1" } });
-
-    debug();
 
     const botaoSalvarCorrecoes = screen
       .getByText("Salvar Correções")
