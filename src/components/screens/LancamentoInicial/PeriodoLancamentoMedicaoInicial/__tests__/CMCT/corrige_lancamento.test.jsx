@@ -20,6 +20,8 @@ import { mockGetVinculosTipoAlimentacaoPorEscolaCMCT } from "src/mocks/services/
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
+import { debug } from "jest-preview";
+
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CMCT - Corrige Lançamentos", () => {
   const escolaUuid = mockMeusDadosEscolaCMCT.vinculo_atual.instituicao.uuid;
 
@@ -67,6 +69,19 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     mock
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
       .reply(200, { results: ["07"] });
+
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dias-frequencia-zerada/",
+      )
+      .reply(200, {
+        alimentacoes: [],
+        dietas: {
+          "DIETA ESPECIAL - TIPO A": [],
+          "DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS": [],
+          "DIETA ESPECIAL - TIPO B": [],
+        },
+      });
 
     mock.onGet("/tipos-alimentacao/").reply(200, mockTipoAlimentacao);
 
@@ -125,6 +140,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
   });
 
   it("Clica em corrige lançamentos e cancela", async () => {
+    const inputLanche4h = screen.getByTestId("lanche_4h__dia_03__categoria_1");
+    fireEvent.change(inputLanche4h, { target: { value: "1" } });
+
     const botaoSalvarCorrecoes = screen
       .getByText("Salvar Correções")
       .closest("button");
@@ -143,6 +161,11 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
   });
 
   it("Corrige lançamentos", async () => {
+    const inputLanche4h = screen.getByTestId("lanche_4h__dia_03__categoria_1");
+    fireEvent.change(inputLanche4h, { target: { value: "1" } });
+
+    debug();
+
     const botaoSalvarCorrecoes = screen
       .getByText("Salvar Correções")
       .closest("button");
