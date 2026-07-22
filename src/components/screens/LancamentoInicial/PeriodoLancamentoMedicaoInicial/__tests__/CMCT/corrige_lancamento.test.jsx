@@ -69,6 +69,19 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
       .onGet("/medicao-inicial/medicao/feriados-no-mes/")
       .reply(200, { results: ["07"] });
 
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/dias-frequencia-zerada/",
+      )
+      .reply(200, {
+        alimentacoes: [],
+        dietas: {
+          "DIETA ESPECIAL - TIPO A": [],
+          "DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS": [],
+          "DIETA ESPECIAL - TIPO B": [],
+        },
+      });
+
     mock.onGet("/tipos-alimentacao/").reply(200, mockTipoAlimentacao);
 
     const search = `?uuid=bd69f3c8-33bb-42b2-86e8-db2f60d2a7d3&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
@@ -126,6 +139,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
   });
 
   it("Clica em corrige lançamentos e cancela", async () => {
+    const inputLanche4h = screen.getByTestId("lanche_4h__dia_03__categoria_1");
+    fireEvent.change(inputLanche4h, { target: { value: "1" } });
+
     const botaoSalvarCorrecoes = screen
       .getByText("Salvar Correções")
       .closest("button");
@@ -144,6 +160,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
   });
 
   it("Corrige lançamentos", async () => {
+    const inputLanche4h = screen.getByTestId("lanche_4h__dia_03__categoria_1");
+    fireEvent.change(inputLanche4h, { target: { value: "1" } });
+
     const botaoSalvarCorrecoes = screen
       .getByText("Salvar Correções")
       .closest("button");
