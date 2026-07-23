@@ -5,6 +5,8 @@ import CorpoRelatorio from "./components/corpoRelatorio";
 
 import { Spin } from "antd";
 import { retornaTodosOsLogs } from "./helpers";
+import { ENVIRONMENT } from "src/constants/config";
+import CorpoRelatorioDesenvolvimento from "./components/corpoRelatorio/index_development";
 
 const RelatorioProduto = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -36,14 +38,25 @@ const RelatorioProduto = () => {
         )}
         {produto && informacoesNutricionais && !!produto && (
           <Fragment>
-            <CorpoRelatorio
-              informacoesNutricionais={informacoesNutricionais}
-              produto={{
-                ...produto,
-                todos_logs: retornaTodosOsLogs(produto.homologacao),
-              }}
-              historico={produto.ultima_homologacao}
-            />
+            {!ENVIRONMENT.includes("production") ? (
+              <CorpoRelatorioDesenvolvimento
+                informacoesNutricionais={informacoesNutricionais}
+                produto={{
+                  ...produto,
+                  todos_logs: retornaTodosOsLogs(produto.homologacao),
+                }}
+                historico={produto.ultima_homologacao}
+              />
+            ) : (
+              <CorpoRelatorio
+                informacoesNutricionais={informacoesNutricionais}
+                produto={{
+                  ...produto,
+                  todos_logs: retornaTodosOsLogs(produto.homologacao),
+                }}
+                historico={produto.ultima_homologacao}
+              />
+            )}
           </Fragment>
         )}
       </div>

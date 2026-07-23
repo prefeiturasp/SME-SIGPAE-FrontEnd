@@ -84,6 +84,7 @@
       border: 1px solid #b40c02;
       box-sizing: border-box;
       border-radius: 4px;
+      margin-top: 15px;
     }
 
     .listagem-proteinas {
@@ -393,5 +394,97 @@
   }
   ::-webkit-scrollbar-thumb {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.title {
+    color: #198459;
+    font-size: 16px;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+.product-details-table {
+  width: 100%;
+  margin: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.5rem 1rem 0.5rem 0;
+    text-align: left;
+    vertical-align: top;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
+  }
+
+  .label-relatorio {
+    padding-bottom: 0.25rem;
+  }
+}
+
+.company-information {
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 767.98px) {
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .product-details-table {
+    min-width: 720px;
+  }
+}
+
+
+.linha-informacao {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 1rem;
+
+  .label-relatorio,
+  .value-relatorio {
+    margin: 0;
+  }
+}
+
+.linha-marca-fabricante {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 2rem;
+}
+
+@media (max-width: 767.98px) {
+  .linha-informacao {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .linha-marca-fabricante {
+    grid-template-columns: 1fr;
+  }
+}
+
+.motivos-produto {
+  width: 100%;
+
+  .row {
+    width: 100%;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
   }
 }
