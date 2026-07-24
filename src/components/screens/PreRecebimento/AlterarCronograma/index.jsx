@@ -77,7 +77,7 @@ export default ({ analiseSolicitacao }) => {
   };
 
   const exibirJustificativaAbastecimento = () =>
-    aprovacaoAbastecimento === false ||
+    aprovacaoAbastecimento !== null ||
     usuarioEhCronogramaOuCodae() ||
     ((usuarioEhDilogDiretoria() || usuarioEhDilogAbastecimento()) &&
       ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
@@ -244,12 +244,9 @@ export default ({ analiseSolicitacao }) => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     const payload = {
-      aprovado: aprovado,
+      aprovado,
+      justificativa_abastecimento: values.justificativa_abastecimento || "",
     };
-    if (!aprovado) {
-      payload.justificativa_abastecimento =
-        values["justificativa_abastecimento"];
-    }
     await analiseAbastecimentoSolicitacaoAlteracaoCronograma(uuid, payload)
       .then(() => {
         toastSuccess("Análise da alteração enviada com sucesso!");
@@ -540,17 +537,27 @@ export default ({ analiseSolicitacao }) => {
                                   : "Aprovado Abastecimento"}
                               </p>
                             )}
-                            {(aprovacaoAbastecimento === false ||
-                              reprovadoPeloAbastecimento()) && (
+
+                            {(aprovacaoAbastecimento !== null ||
+                              analisadoPeloAbastecimento()) && (
                               <>
                                 <label className="label fw-normal">
-                                  <span>* </span>Justificativa
+                                  {(aprovacaoAbastecimento === false ||
+                                    reprovadoPeloAbastecimento()) && (
+                                    <span>* </span>
+                                  )}
+                                  Justificativa
                                 </label>
+
                                 <Field
                                   component={TextArea}
                                   disabled={analisadoPeloAbastecimento()}
                                   name="justificativa_abastecimento"
-                                  placeholder="Escreva as alterações necessárias"
+                                  placeholder={
+                                    analisadoPeloAbastecimento()
+                                      ? ""
+                                      : "Escreva a justificativa da análise"
+                                  }
                                   className="input-busca-produto"
                                 />
                               </>
