@@ -260,10 +260,14 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
             IMPORTANTE: Relacioná-los conforme dispõe a RDC nº 26 de 02/07/15
           </div>
 
-          <div className="linha-informacao-produtos-aditivos">
-            <div className="label-relatorio">Quais?</div>
-            <div className="value-relatorio">{produto.aditivos || ""}</div>
-          </div>
+          {produto.tem_aditivos_alergenicos ? (
+            <div className="linha-informacao-produtos-aditivos">
+              <div className="label-relatorio">Quais?</div>
+              <div className="value-relatorio">{produto.aditivos || ""}</div>
+            </div>
+          ) : (
+            <></>
+          )}
         </article>
         <hr />
         <article className="informacoes-gerais">
@@ -343,7 +347,9 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
             <div className="value-relatorio">{produto.prazo_validade}</div>
           </div>
 
-          <p>Informações referentes ao volume e unidade de medida</p>
+          <div className="table-title">
+            Informações referentes ao volume e unidade de medida
+          </div>
           <table className="table table-ficha-identificacao-produto">
             <thead>
               <tr>
