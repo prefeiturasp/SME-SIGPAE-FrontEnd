@@ -134,3 +134,24 @@ export const getListagemRelatorioDocsRecebimento = async (
     toastError(getMensagemDeErro(error.response.status));
   }
 };
+
+export const exportarExcelRelatorioDocsRecebimento = async (
+  params: URLSearchParams,
+) => {
+  try {
+    const response = await axios.get(
+      "/documentos-de-recebimento/exportar-excel/",
+      {
+        params,
+        responseType: "blob",
+      },
+    );
+    const data_hora = new Date()
+      .toISOString()
+      .replace(/[:.]/g, "-")
+      .slice(0, 19);
+    saveAs(response.data, `relatorio_documentos_recebimento_${data_hora}.xlsx`);
+  } catch {
+    toastError("Houve um erro ao exportar o relatório para Excel.");
+  }
+};
