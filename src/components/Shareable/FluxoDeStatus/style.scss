@@ -234,3 +234,91 @@
   cursor: pointer;
   margin-left: 2px;
 }
+
+.fluxo-status-wrapper-com-setas {
+  --altura-titulos-status: 32px;
+  --centro-linha-fluxo: calc(var(--altura-titulos-status) + 17px);
+
+  position: relative;
+  align-items: flex-start;
+  isolation: isolate;
+
+  .progressbar-titles {
+    height: var(--altura-titulos-status);
+    min-height: var(--altura-titulos-status);
+    margin: 0;
+    align-items: flex-end;
+
+    li {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      height: 100%;
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: var(--centro-linha-fluxo);
+    right: 12px;
+    left: 12px;
+    height: 1px;
+    background-color: #d1d8dd;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .fluxo-scroll-container {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.seta-navegacao {
+  position: relative;
+  display: flex;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  width: 24px;
+  height: 24px;
+  margin-top: calc(var(--altura-titulos-status) + 5px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: #d1d8dd;
+  color: $white;
+  cursor: pointer;
+  z-index: 10;
+  -webkit-text-stroke: 0.6px $white;
+
+  i {
+    color: $white;
+    font-size: 10px;
+    line-height: 1;
+    transform: translateY(0.4px);
+  }
+
+  &:hover {
+    background-color: $grayPlaceholder;
+    color: $white;
+
+    i {
+      color: $white;
+    }
+  }
+}
+
+.linha-informacao-produtos-aditivos {
+  flex-direction: column;
+  align-items: flex-start;
+
+  .label-relatorio {
+    margin-top: 1%;
+  }
+  .value-relatorio {
+    width: 100%;
+  }
+}

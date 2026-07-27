@@ -16,6 +16,7 @@ export const FluxoDeStatus = (props) => {
     eh_gestao_alimentacao = false,
     eh_medicao_inicial = false,
     eh_dieta_especial = false,
+    exibirSetasNavegacao = false,
   } = props;
   let cloneListaDeStatus = deepCopy(listaDeStatus);
   cloneListaDeStatus = formatarLogs(cloneListaDeStatus);
@@ -122,12 +123,27 @@ export const FluxoDeStatus = (props) => {
   const tipoPerfil = localStorage.getItem("tipo_perfil");
 
   return (
-    <div className="fluxo-status-wrapper">
-      {isOverflowing && (
+    <div
+      className={`fluxo-status-wrapper ${
+        exibirSetasNavegacao ? "fluxo-status-wrapper-com-setas" : ""
+      }`}
+    >
+      {!exibirSetasNavegacao && isOverflowing && (
         <i
           className="fas fa-chevron-left seta-esquerda"
           onClick={() => scroll(-300)}
         />
+      )}
+
+      {exibirSetasNavegacao && isOverflowing && (
+        <button
+          type="button"
+          className="seta-navegacao seta-esquerda"
+          onClick={() => scroll(-300)}
+          aria-label="Visualizar status anteriores"
+        >
+          <i className="fas fa-arrow-left" />
+        </button>
       )}
 
       <div className="fluxo-scroll-container" ref={scrollRef}>
@@ -186,11 +202,22 @@ export const FluxoDeStatus = (props) => {
         </ul>
       </div>
 
-      {isOverflowing && (
+      {!exibirSetasNavegacao && isOverflowing && (
         <i
           className="fas fa-chevron-right seta-direita"
           onClick={() => scroll(300)}
         />
+      )}
+
+      {exibirSetasNavegacao && isOverflowing && (
+        <button
+          type="button"
+          className="seta-navegacao seta-direita"
+          onClick={() => scroll(300)}
+          aria-label="Visualizar próximos status"
+        >
+          <i className="fas fa-arrow-right" />
+        </button>
       )}
     </div>
   );
