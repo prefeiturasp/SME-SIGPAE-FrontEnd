@@ -136,6 +136,7 @@ import {
   verificaFeriadoProgramasProjetos,
   obrigarAdiocionarFeriadoProgramasProjetos,
 } from "./validacoes";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 export default () => {
@@ -249,6 +250,7 @@ export default () => {
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
   const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
+  const [diasSuspensaoAtividades, setDiasSuspensaoAtividades] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -260,6 +262,10 @@ export default () => {
   const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
   const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
+
+  const diasSuspensosDaSemana = weekColumns.filter((column) =>
+    diasSuspensaoAtividades.includes(Number(column.dia)),
+  );
 
   const getListaDiasSobremesaDoceAsync = async (escola_uuid) => {
     const params = {
@@ -293,6 +299,23 @@ export default () => {
       response.data.map(({ data }) => Number(data.substring(0, 2))),
     );
     setDiaLetivosSIGPAE(dias);
+  };
+
+  const getDiasSuspensaoAtividades = async (escola_uuid) => {
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+    };
+
+    const response = await getListaDiasSuspensaoAtividades(params);
+
+    const dias = response.data.map((diaSuspensao) => {
+      const [dia] = diaSuspensao.data.split("/");
+      return Number(dia);
+    });
+
+    setDiasSuspensaoAtividades(dias);
   };
 
   const getTiposAlimentacaoInclusoesContinuas = (inclusoesAutorizadas) => {
@@ -530,6 +553,7 @@ export default () => {
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
       getDiasLetivosSIGPAE(escola.uuid);
+      getDiasSuspensaoAtividades(escola.uuid);
 
       const response_get_tipos_alimentacao = await getTiposDeAlimentacao();
       if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
@@ -2255,7 +2279,10 @@ export default () => {
     const ehFeriadoNoDia = feriadosNoMes.some(
       (feriado) => Number(feriado) === Number(dia),
     );
-    if (ehFimDeSemanaUTC(dateObj) || ehFeriadoNoDia)
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(dia),
+    );
+    if (ehFimDeSemanaUTC(dateObj) || ehFeriadoNoDia || ehDiaSuspensaoAtividades)
       return temInclusaoAutorizadaNoDia;
     return true;
   };
@@ -4239,6 +4266,16 @@ export default () => {
                           </div>
                         ))}
                     </Spin>
+                    {diasSuspensosDaSemana.length > 0 && (
+                      <div className="dias-suspensos mb-2">
+                        {diasSuspensosDaSemana.map((column) => (
+                          <span key={column.dia}>
+                            * {column.dia} - Suspensão de atividade
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                     {ultimaAtualizacaoMedicao && (
                       <p className="ultimo-salvamento mb-0">
                         Lançamento do período {periodoGrupo} salvo em{" "}
