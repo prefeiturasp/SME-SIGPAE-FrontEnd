@@ -263,10 +263,6 @@ export default () => {
   const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
 
-  const diasSuspensosDaSemana = weekColumns.filter((column) =>
-    diasSuspensaoAtividades.includes(Number(column.dia)),
-  );
-
   const getListaDiasSobremesaDoceAsync = async (escola_uuid) => {
     const params = {
       mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
@@ -2241,6 +2237,7 @@ export default () => {
   };
 
   const validacaoDiaLetivo = (dia) => {
+    if (!calendarioMesConsiderado || !feriadosNoMes) return false;
     const objDia = calendarioMesConsiderado.find(
       (objDia) => Number(objDia.dia) === Number(dia),
     );
@@ -2286,6 +2283,15 @@ export default () => {
       return temInclusaoAutorizadaNoDia;
     return true;
   };
+
+  const diasSuspensosDaSemana = weekColumns.filter((column) => {
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(column.dia),
+    );
+
+    const estaLiberado = validacaoDiaLetivo(column.dia);
+    return ehDiaSuspensaoAtividades && !estaLiberado;
+  });
 
   const validacaoDiaLancamentoETEC = (dia, categoriaId) => {
     return ehDiaHabilitadoParaLancamentoETEC(
