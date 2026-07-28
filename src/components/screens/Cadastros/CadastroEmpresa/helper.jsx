@@ -17,7 +17,8 @@ export function transformaObjetos(objetos) {
 }
 
 export const fieldCnpj = createTextMask({
-  pattern: "99.999.999/9999-99",
+  pattern: "XX.XXX.XXX/XXXX-99",
+  maskDefinitions: { X: { regExp: /[A-Za-z0-9]/ } },
   allowEmpty: false,
   guide: false,
 });
