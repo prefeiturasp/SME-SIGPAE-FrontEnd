@@ -4272,15 +4272,16 @@ export default () => {
                           </div>
                         ))}
                     </Spin>
-                    {diasSuspensosDaSemana.length > 0 && (
-                      <div className="dias-suspensos mb-2">
-                        {diasSuspensosDaSemana.map((column) => (
-                          <span key={column.dia}>
-                            * {column.dia} - Suspensão de atividade
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {diasSuspensosDaSemana.length > 0 &&
+                      !loadingLancamentos && (
+                        <div className="dias-suspensos mb-2">
+                          {diasSuspensosDaSemana.map((column) => (
+                            <span key={column.dia}>
+                              * {column.dia} - Suspensão de atividade
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
                     {ultimaAtualizacaoMedicao && (
                       <p className="ultimo-salvamento mb-0">
