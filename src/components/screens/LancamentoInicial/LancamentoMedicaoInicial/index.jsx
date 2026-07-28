@@ -326,6 +326,26 @@ export default () => {
     }
 
     const dataPeriodo = new Date(Number(anoParam), Number(mesParam) - 1, 1);
+
+    const acessoDesdeDateAdicionar = meusDados?.vinculo_atual?.instituicao
+      ?.acesso_desde
+      ? parse(
+          meusDados.vinculo_atual.instituicao.acesso_desde,
+          "dd/MM/yyyy",
+          new Date(),
+        )
+      : null;
+
+    const periodoAnteriorAoAcessoDesdeAdicionar =
+      acessoDesdeDateAdicionar &&
+      (Number(anoParam) < getYear(acessoDesdeDateAdicionar) ||
+        (Number(anoParam) === getYear(acessoDesdeDateAdicionar) &&
+          Number(mesParam) < getMonth(acessoDesdeDateAdicionar) + 1));
+
+    if (periodoAnteriorAoAcessoDesdeAdicionar) {
+      return;
+    }
+
     const mesString = format(dataPeriodo, "LLLL", { locale: ptBR });
 
     periodosDisponiveis.push({
@@ -480,6 +500,15 @@ export default () => {
         };
       });
 
+      const acessoDesdeDate = meusDados?.vinculo_atual?.instituicao
+        ?.acesso_desde
+        ? parse(
+            meusDados.vinculo_atual.instituicao.acesso_desde,
+            "dd/MM/yyyy",
+            new Date(),
+          )
+        : null;
+
       for (let mes_ = 0; mes_ <= PROXIMOS_DOZE_MESES; mes_++) {
         const dataBRT = addMonths(new Date(), -mes_);
         const mes = getMonth(dataBRT) + 1;
@@ -489,23 +518,31 @@ export default () => {
         const periodoFormatado =
           mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + ano;
 
-        if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
-          const temSolicitacaoLancada = solicitacoesLancadasResultados.some(
-            (solicitacao) =>
-              ehSolicitacaoLancadaDoMesAno(solicitacao, mes, ano),
-          );
+        const periodoAnteriorAoAcessoDesde =
+          acessoDesdeDate &&
+          (ano < getYear(acessoDesdeDate) ||
+            (ano === getYear(acessoDesdeDate) &&
+              mes < getMonth(acessoDesdeDate) + 1));
 
-          if (!temSolicitacaoLancada) {
+        if (!periodoAnteriorAoAcessoDesde) {
+          if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
+            const temSolicitacaoLancada = solicitacoesLancadasResultados.some(
+              (solicitacao) =>
+                ehSolicitacaoLancadaDoMesAno(solicitacao, mes, ano),
+            );
+
+            if (!temSolicitacaoLancada) {
+              periodos.push({
+                dataBRT,
+                periodo: periodoFormatado,
+              });
+            }
+          } else {
             periodos.push({
               dataBRT,
               periodo: periodoFormatado,
             });
           }
-        } else {
-          periodos.push({
-            dataBRT,
-            periodo: periodoFormatado,
-          });
         }
 
         cadastrosRecreioPreparados?.forEach((cad) => {
