@@ -399,6 +399,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
       getDiasLetivosSIGPAE(escola.uuid);
       getDiasSuspensaoAtividades(escola.uuid);
+
       const response_faixas_etarias = await getFaixasEtarias();
       if (response_faixas_etarias.status === HTTP_STATUS.OK) {
         setFaixasEtarias(response_faixas_etarias.data.results);
@@ -1775,6 +1776,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const validacaoDiaLetivo = (dia) => {
+    if (!calendarioMesConsiderado || !feriadosNoMes) return false;
     const diaCalendario = calendarioMesConsiderado.find(
       (item) => Number(item.dia) === Number(dia),
     );
@@ -3755,15 +3757,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                           </div>
                         ))}
                     </Spin>
-                    {diasSuspensosDaSemana.length > 0 && (
-                      <div className="dias-suspensos mb-2">
-                        {diasSuspensosDaSemana.map((column) => (
-                          <span key={column.dia}>
-                            * {column.dia} - Suspensão de atividade
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {diasSuspensosDaSemana.length > 0 &&
+                      !loadingLancamentos && (
+                        <div className="dias-suspensos mb-2">
+                          {diasSuspensosDaSemana.map((column) => (
+                            <span key={column.dia}>
+                              * {column.dia} - Suspensão de atividade
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
                     {ultimaAtualizacaoMedicao && (
                       <p className="ultimo-salvamento mb-0">
