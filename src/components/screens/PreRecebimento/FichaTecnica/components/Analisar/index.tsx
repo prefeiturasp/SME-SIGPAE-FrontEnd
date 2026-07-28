@@ -46,7 +46,8 @@ import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 import "./styles.scss";
 
 const idCollapse = "collapseAnalisarFichaTecnica";
-
+import LinhaDoTempoFichaTecnica from "../LinhaDoTempoFichaTecnica";
+import { usuarioPodeVisualizarLinhaDoTempoFichaTecnica } from "src/helpers/utilities";
 interface AnalisarProps {
   somenteLeitura?: boolean;
 }
@@ -244,6 +245,9 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     return tagMap[ficha.status];
   };
 
+  const podeVisualizarLinhaDoTempo =
+    usuarioPodeVisualizarLinhaDoTempoFichaTecnica();
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-analise-ficha-tecnica">
@@ -373,6 +377,14 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     <div className="subtitulo">Identificação do Produto</div>
                     {somenteLeitura && renderizarTag()}
                   </div>
+
+                  {somenteLeitura &&
+                    podeVisualizarLinhaDoTempo &&
+                    ficha.logs?.length > 0 && (
+                      <div className="linha-do-tempo-ficha-tecnica mt-4 mb-5">
+                        <LinhaDoTempoFichaTecnica logs={ficha.logs} />
+                      </div>
+                    )}
 
                   <div className="row mt-4">
                     <div className="col-4">
