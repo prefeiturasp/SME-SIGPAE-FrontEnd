@@ -1,0 +1,246 @@
+@use "src/styles/variables.scss" as *;
+
+.linha-do-tempo-ficha-tecnica-wrapper {
+  --altura-titulos-ficha-tecnica: 32px;
+  --centro-linha-ficha-tecnica: calc(
+    var(--altura-titulos-ficha-tecnica) + 17px
+  );
+
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  isolation: isolate;
+
+  &--com-overflow {
+    &::before {
+      content: "";
+      position: absolute;
+      top: var(--centro-linha-ficha-tecnica);
+      right: 12px;
+      left: 12px;
+      height: 1px;
+      background-color: #d1d8dd;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .linha-do-tempo-ficha-tecnica__scroll {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
+    }
+  }
+
+  &--sem-overflow {
+    .linha-do-tempo-ficha-tecnica__scroll {
+      flex: 0 1 auto;
+      width: max-content;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+  }
+}
+
+.linha-do-tempo-ficha-tecnica {
+  &__scroll {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    z-index: 1;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &__titulos,
+  &__progresso {
+    display: flex;
+    flex-direction: row;
+    width: max-content;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__titulos {
+    height: var(--altura-titulos-ficha-tecnica);
+    min-height: var(--altura-titulos-ficha-tecnica);
+    align-items: flex-end;
+    color: $grayPlaceholder;
+    font-size: 9px;
+    font-weight: bold;
+    text-align: center;
+
+    li {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: 160px;
+      min-width: 160px;
+      max-width: 160px;
+      height: 100%;
+      padding: 0 0.25rem;
+    }
+  }
+
+  &__progresso {
+    li {
+      position: relative;
+      width: 160px;
+      min-width: 160px;
+      max-width: 160px;
+      padding-top: 40px;
+      color: #353535;
+      font-size: 9px;
+      font-weight: bold;
+      text-align: center;
+      list-style-type: none;
+      z-index: 0;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 50%;
+        display: block;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #a4a4a4;
+        line-height: 30px;
+        text-align: center;
+        transform: translateX(-50%);
+        z-index: 2;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 15px;
+        left: -50%;
+        width: 100%;
+        height: 5px;
+        margin-left: 14px;
+        background-color: #a4a4a4;
+        z-index: 1;
+      }
+
+      &:first-child::after {
+        content: none;
+      }
+    }
+  }
+
+  &__etapa {
+    &--concluida {
+      &::before {
+        content: "\f00c" !important;
+        border-color: $green !important;
+        background-color: $green !important;
+        color: $white;
+        font-family: "Font Awesome 5 Free", sans-serif;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      &::after {
+        background-color: $green !important;
+      }
+    }
+
+    &--alerta {
+      &::before {
+        content: "\f12a" !important;
+        border-color: $yellow !important;
+        background-color: $yellow !important;
+        color: $black;
+        font-family: "Font Awesome 5 Free", sans-serif;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
+      &::after {
+        background-color: $yellow !important;
+      }
+    }
+  }
+
+  &__data {
+    white-space: nowrap;
+  }
+
+  &__usuario {
+    min-height: 28px;
+    margin-top: 2px;
+    padding: 0 0.25rem;
+    overflow-wrap: anywhere;
+  }
+
+  &__seta {
+    position: relative;
+    display: flex;
+    flex: 0 0 24px;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    width: 24px;
+    height: 24px;
+    margin-top: calc(var(--altura-titulos-ficha-tecnica) + 5px);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: #d1d8dd;
+    color: $white;
+    cursor: pointer;
+    -webkit-text-stroke: 0.6px $white;
+    z-index: 10;
+
+    i {
+      color: $white;
+      font-size: 10px;
+      line-height: 1;
+      transform: translateY(0.4px);
+    }
+
+    &:hover {
+      background-color: $grayPlaceholder;
+
+      i {
+        color: $white;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid $green;
+      outline-offset: 2px;
+    }
+
+    &--esquerda {
+      margin-right: 2px;
+    }
+
+    &--direita {
+      margin-left: 2px;
+    }
+  }
+
+  &__descricao-acessivel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    white-space: nowrap;
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+  }
+}
