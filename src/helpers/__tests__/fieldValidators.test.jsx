@@ -3,6 +3,8 @@ import {
   noSpaceStartOrEnd,
   prefeituraEmail,
   SMEPrefeituraEmail,
+  tamanhoCnpj,
+  tamanhoCnpjMascara,
 } from "../fieldValidators";
 
 describe("prefeituraEmail", () => {
@@ -13,28 +15,28 @@ describe("prefeituraEmail", () => {
 
   test("deve retornar mensagem de erro para emails inválidos", () => {
     expect(prefeituraEmail("joao@gmail.com")).toBe(
-      "Somente emails da prefeitura de São Paulo"
+      "Somente emails da prefeitura de São Paulo",
     );
     expect(prefeituraEmail("joao@prefeitura.sp.gov.br.com")).toBe(
-      "Somente emails da prefeitura de São Paulo"
+      "Somente emails da prefeitura de São Paulo",
     );
     expect(prefeituraEmail("@prefeitura.sp.gov.br")).toBe(
-      "Somente emails da prefeitura de São Paulo"
+      "Somente emails da prefeitura de São Paulo",
     );
     expect(prefeituraEmail("prefeitura.sp.gov.br")).toBe(
-      "Somente emails da prefeitura de São Paulo"
+      "Somente emails da prefeitura de São Paulo",
     );
   });
 
   test("deve retornar mensagem de erro para valor vazio ou undefined", () => {
     expect(prefeituraEmail("")).toBe(
-      "Somente emails da prefeitura de São Paulo"
+      "Somente emails da prefeitura de São Paulo",
     );
     expect(prefeituraEmail(null)).toBe(
-      "Somente emails da prefeitura de São Paulo"
+      "Somente emails da prefeitura de São Paulo",
     );
     expect(prefeituraEmail(undefined)).toBe(
-      "Somente emails da prefeitura de São Paulo"
+      "Somente emails da prefeitura de São Paulo",
     );
   });
 });
@@ -42,41 +44,41 @@ describe("prefeituraEmail", () => {
 describe("SMEPrefeituraEmail", () => {
   test("deve retornar undefined para emails válidos da SME prefeitura", () => {
     expect(
-      SMEPrefeituraEmail("professor.joao@sme.prefeitura.sp.gov.br")
+      SMEPrefeituraEmail("professor.joao@sme.prefeitura.sp.gov.br"),
     ).toBeUndefined();
     expect(
-      SMEPrefeituraEmail("educador@sme.prefeitura.sp.gov.br")
+      SMEPrefeituraEmail("educador@sme.prefeitura.sp.gov.br"),
     ).toBeUndefined();
     expect(SMEPrefeituraEmail("a@sme.prefeitura.sp.gov.br")).toBeUndefined();
   });
 
   test("deve retornar mensagem de erro para emails inválidos", () => {
     expect(SMEPrefeituraEmail("joao@gmail.com")).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
     expect(SMEPrefeituraEmail("joao@sme.prefeitura.sp.gov.br.com")).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
     expect(SMEPrefeituraEmail("@sme.prefeitura.sp.gov.br")).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
     expect(SMEPrefeituraEmail("sme.prefeitura.sp.gov.br")).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
     expect(SMEPrefeituraEmail("joao@prefeitura.sp.gov.br")).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
   });
 
   test("deve retornar mensagem de erro para valor vazio ou undefined", () => {
     expect(SMEPrefeituraEmail("")).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
     expect(SMEPrefeituraEmail(null)).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
     expect(SMEPrefeituraEmail(undefined)).toBe(
-      "Digite o E-mail @sme.prefeitura.sp.gov.br"
+      "Digite o E-mail @sme.prefeitura.sp.gov.br",
     );
   });
 });
@@ -90,28 +92,28 @@ describe("noSpaceStartOrEnd", () => {
 
   test("deve retornar mensagem de erro para strings com espaços no início", () => {
     expect(noSpaceStartOrEnd(" texto")).toBe(
-      "Remover espaço do início e/ou final"
+      "Remover espaço do início e/ou final",
     );
     expect(noSpaceStartOrEnd("   texto com espaços no início")).toBe(
-      "Remover espaço do início e/ou final"
+      "Remover espaço do início e/ou final",
     );
   });
 
   test("deve retornar mensagem de erro para strings com espaços no final", () => {
     expect(noSpaceStartOrEnd("texto ")).toBe(
-      "Remover espaço do início e/ou final"
+      "Remover espaço do início e/ou final",
     );
     expect(noSpaceStartOrEnd("texto com espaços no final   ")).toBe(
-      "Remover espaço do início e/ou final"
+      "Remover espaço do início e/ou final",
     );
   });
 
   test("deve retornar mensagem de erro para strings com espaços no início e final", () => {
     expect(noSpaceStartOrEnd(" texto ")).toBe(
-      "Remover espaço do início e/ou final"
+      "Remover espaço do início e/ou final",
     );
     expect(noSpaceStartOrEnd("   texto com espaços   ")).toBe(
-      "Remover espaço do início e/ou final"
+      "Remover espaço do início e/ou final",
     );
   });
 
@@ -125,52 +127,52 @@ describe("noSpaceStartOrEnd", () => {
 describe("alphaNumericAndSingleSpaceBetweenCharacters", () => {
   test("deve retornar undefined para strings válidas", () => {
     expect(
-      alphaNumericAndSingleSpaceBetweenCharacters("abc123")
+      alphaNumericAndSingleSpaceBetweenCharacters("abc123"),
     ).toBeUndefined();
     expect(
-      alphaNumericAndSingleSpaceBetweenCharacters("ABC123")
+      alphaNumericAndSingleSpaceBetweenCharacters("ABC123"),
     ).toBeUndefined();
     expect(
-      alphaNumericAndSingleSpaceBetweenCharacters("abc 123")
+      alphaNumericAndSingleSpaceBetweenCharacters("abc 123"),
     ).toBeUndefined();
     expect(
-      alphaNumericAndSingleSpaceBetweenCharacters("a1 b2 c3")
+      alphaNumericAndSingleSpaceBetweenCharacters("a1 b2 c3"),
     ).toBeUndefined();
   });
 
   test('deve retornar "Apenas letras e números" para caracteres inválidos', () => {
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc!123")).toBe(
-      "Apenas letras e números"
+      "Apenas letras e números",
     );
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc@123")).toBe(
-      "Apenas letras e números"
+      "Apenas letras e números",
     );
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc_123")).toBe(
-      "Apenas letras e números"
+      "Apenas letras e números",
     );
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc-123")).toBe(
-      "Apenas letras e números"
+      "Apenas letras e números",
     );
   });
 
   test('deve retornar "Remover excesso de espaços" para múltiplos espaços consecutivos', () => {
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc  123")).toBe(
-      "Remover excesso de espaços"
+      "Remover excesso de espaços",
     );
     expect(alphaNumericAndSingleSpaceBetweenCharacters("  abc 123")).toBe(
-      "Remover excesso de espaços"
+      "Remover excesso de espaços",
     );
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc 123  ")).toBe(
-      "Remover excesso de espaços"
+      "Remover excesso de espaços",
     );
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc  123  def")).toBe(
-      "Remover excesso de espaços"
+      "Remover excesso de espaços",
     );
   });
 
   test("deve priorizar o erro de caracteres inválidos sobre o de espaços", () => {
     expect(alphaNumericAndSingleSpaceBetweenCharacters("abc!  123")).toBe(
-      "Apenas letras e números"
+      "Apenas letras e números",
     );
   });
 
@@ -178,7 +180,58 @@ describe("alphaNumericAndSingleSpaceBetweenCharacters", () => {
     expect(alphaNumericAndSingleSpaceBetweenCharacters("")).toBeUndefined();
     expect(alphaNumericAndSingleSpaceBetweenCharacters(null)).toBeUndefined();
     expect(
-      alphaNumericAndSingleSpaceBetweenCharacters(undefined)
+      alphaNumericAndSingleSpaceBetweenCharacters(undefined),
     ).toBeUndefined();
+  });
+});
+
+describe("tamanhoCnpj", () => {
+  test("deve retornar undefined para CNPJ numérico antigo válido (14 dígitos)", () => {
+    expect(tamanhoCnpj("12345678000195")).toBeUndefined();
+    expect(tamanhoCnpj("00000000000000")).toBeUndefined();
+  });
+
+  test("deve retornar undefined para CNPJ alfanumérico válido (12 letras/números + 2 dígitos)", () => {
+    expect(tamanhoCnpj("12AB3456789012")).toBeUndefined();
+    expect(tamanhoCnpj("AA112233445566")).toBeUndefined();
+    expect(tamanhoCnpj("ZZ999999999999")).toBeUndefined();
+  });
+
+  test("deve retornar undefined para CNPJ alfanumérico com letras minúsculas", () => {
+    expect(tamanhoCnpj("12ab3456789012")).toBeUndefined();
+  });
+
+  test('deve retornar "CNPJ Inválido" para CNPJ curto (< 14 caracteres)', () => {
+    expect(tamanhoCnpj("123456789012")).toBe("CNPJ Inválido");
+    expect(tamanhoCnpj("")).toBe("CNPJ Inválido");
+  });
+
+  test('deve retornar "CNPJ Inválido" quando os 2 últimos não são dígitos', () => {
+    expect(tamanhoCnpj("12AB34567890AA")).toBe("CNPJ Inválido");
+    expect(tamanhoCnpj("ABCDEFGHIJKLMN")).toBe("CNPJ Inválido");
+  });
+
+  test('deve retornar "CNPJ Inválido" para CNPJ com caracteres especiais', () => {
+    expect(tamanhoCnpj("12.345.678/0001-95")).toBe("CNPJ Inválido");
+  });
+});
+
+describe("tamanhoCnpjMascara", () => {
+  test("deve retornar undefined para CNPJ numérico com máscara (18 caracteres)", () => {
+    expect(tamanhoCnpjMascara("12.345.678/0001-95")).toBeUndefined();
+  });
+
+  test("deve retornar undefined para CNPJ alfanumérico com máscara", () => {
+    expect(tamanhoCnpjMascara("12.AB3.456/7890-12")).toBeUndefined();
+    expect(tamanhoCnpjMascara("AA.112.233/4455-66")).toBeUndefined();
+  });
+
+  test('deve retornar "CNPJ Inválido" para máscara incompleta', () => {
+    expect(tamanhoCnpjMascara("12.345.678/0001-9")).toBe("CNPJ Inválido");
+    expect(tamanhoCnpjMascara("")).toBe("CNPJ Inválido");
+  });
+
+  test('deve retornar "CNPJ Inválido" quando os 2 últimos não são dígitos (com máscara)', () => {
+    expect(tamanhoCnpjMascara("12.AB3.456/7890-AA")).toBe("CNPJ Inválido");
   });
 });
