@@ -47,6 +47,7 @@ describe("Lancamento MANHA EMEF - Dias Letivos via API Calendário", () => {
 
   beforeEach(async () => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -123,5 +124,41 @@ describe("Lancamento MANHA EMEF - Dias Letivos via API Calendário", () => {
 
     const inputLancheDia06 = screen.getByTestId("lanche__dia_06__categoria_1");
     expect(inputLancheDia06).not.toBeDisabled();
+  });
+
+  it("deve manter o campo liberado quando o dia suspenso também for letivo pelo SIGPAE", async () => {
+    mock
+      .onGet("/dias-letivos/calendario/")
+      .reply(200, [{ data: "05/04/2025" }]);
+
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, [
+      {
+        data: "05/04/2025",
+        editais: ["303030A"],
+      },
+    ]);
+
+    await renderComponente();
+
+    const inputLancheDia05 = screen.getByTestId("lanche__dia_05__categoria_1");
+
+    expect(inputLancheDia05).not.toBeDisabled();
+  });
+
+  it("deve bloquear o campo quando houver suspensão de atividade sem dia letivo pelo SIGPAE", async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
+
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, [
+      {
+        data: "05/04/2025",
+        editais: ["303030A"],
+      },
+    ]);
+
+    await renderComponente();
+
+    const inputLancheDia05 = screen.getByTestId("lanche__dia_05__categoria_1");
+
+    expect(inputLancheDia05).toBeDisabled();
   });
 });
