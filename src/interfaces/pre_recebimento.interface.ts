@@ -266,7 +266,7 @@ export interface AnaliseFichaTecnica extends AnaliseFichaTecnicaPayload {
 }
 
 export interface FichaTecnicaDetalhadaComAnalise extends FichaTecnicaDetalhada {
-  logs?: LogFichaTecnica[];
+  logs?: LogSolicitacoesUsuarioSimples[];
   analise: AnaliseFichaTecnica;
   log_mais_recente: string;
   ficha_tecnica?: string;
@@ -377,14 +377,4 @@ export interface MotivoInterrupcaoOption {
 export interface FiltrosInterrupcaoProgramada {
   mes?: number;
   ano?: number;
-}
-
-export interface UsuarioLogFichaTecnica {
-  nome?: string;
-}
-
-export interface LogFichaTecnica {
-  status_evento_explicacao: string;
-  criado_em: string;
-  usuario?: UsuarioLogFichaTecnica;
 }

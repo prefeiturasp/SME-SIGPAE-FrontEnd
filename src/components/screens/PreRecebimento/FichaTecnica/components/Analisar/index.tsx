@@ -14,6 +14,7 @@ import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
   imprimirFicha,
+  montarLinhaDoTempoFichaTecnica,
 } from "../../helpers";
 import { InformacaoNutricional } from "src/interfaces/produto.interface";
 import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
@@ -44,10 +45,10 @@ import { getMensagemDeErro } from "src/helpers/statusErrors";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 import "./styles.scss";
+import { usuarioPodeVisualizarLinhaDoTempoFichaTecnica } from "src/helpers/utilities";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 
 const idCollapse = "collapseAnalisarFichaTecnica";
-import LinhaDoTempoFichaTecnica from "../LinhaDoTempoFichaTecnica";
-import { usuarioPodeVisualizarLinhaDoTempoFichaTecnica } from "src/helpers/utilities";
 interface AnalisarProps {
   somenteLeitura?: boolean;
 }
@@ -248,6 +249,9 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
   const podeVisualizarLinhaDoTempo =
     usuarioPodeVisualizarLinhaDoTempoFichaTecnica();
 
+  const listaDeStatusLinhaDoTempo = montarLinhaDoTempoFichaTecnica(
+    ficha.logs ?? [],
+  );
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-analise-ficha-tecnica">
@@ -380,9 +384,11 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
 
                   {somenteLeitura &&
                     podeVisualizarLinhaDoTempo &&
-                    ficha.logs?.length > 0 && (
+                    listaDeStatusLinhaDoTempo.length > 0 && (
                       <div className="linha-do-tempo-ficha-tecnica mt-4 mb-5">
-                        <LinhaDoTempoFichaTecnica logs={ficha.logs} />
+                        <FluxoDeStatusPreRecebimento
+                          listaDeStatus={listaDeStatusLinhaDoTempo}
+                        />
                       </div>
                     )}
 
