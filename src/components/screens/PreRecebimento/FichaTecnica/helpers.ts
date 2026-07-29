@@ -36,6 +36,7 @@ import {
   FichaTecnicaDetalhadaComAnalise,
   OptionsGenerico,
 } from "src/interfaces/pre_recebimento.interface";
+
 import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
 
 import {
@@ -59,6 +60,8 @@ import {
   PROGRAMA_OPTIONS,
   TIPO_ENTREGA_OPTIONS,
 } from "./constants";
+
+import { LogSolicitacoesUsuarioSimples } from "src/interfaces/dados_comuns.interface";
 
 export const cepCalculator = (
   setDesabilitaEndereco?: React.Dispatch<React.SetStateAction<Array<boolean>>>,
@@ -1179,4 +1182,66 @@ export const imprimirFicha = (
       }
       setCarregando(false);
     });
+};
+
+const STATUS_FICHA_TECNICA = {
+  CADASTRADA: "Ficha Técnica cadastrada",
+  ENVIADA_PARA_ANALISE: "Ficha Técnica enviada para análise",
+  ENVIADA_PARA_CORRECAO: "Ficha Técnica enviada para correção",
+  APROVADA: "Ficha Técnica aprovada",
+} as const;
+
+const TITULO_STATUS_FICHA_TECNICA = {
+  CADASTRADA: "Ficha Técnica Cadastrada",
+  ENVIO: "Envio da Ficha Técnica",
+  CORRECAO_SOLICITADA: "Correção Solicitada",
+  CORRECAO_REALIZADA: "Correção Realizada",
+  APROVADA: "Ficha Técnica Aprovada",
+} as const;
+
+export const montarLinhaDoTempoFichaTecnica = (
+  logs: LogSolicitacoesUsuarioSimples[] = [],
+): LogSolicitacoesUsuarioSimples[] => {
+  let aguardandoCorrecaoRealizada = false;
+
+  return logs.map((log) => {
+    let statusEventoExplicacao = log.status_evento_explicacao;
+
+    switch (log.status_evento_explicacao) {
+      case STATUS_FICHA_TECNICA.CADASTRADA:
+        statusEventoExplicacao = TITULO_STATUS_FICHA_TECNICA.CADASTRADA;
+        break;
+
+      case STATUS_FICHA_TECNICA.ENVIADA_PARA_CORRECAO:
+        aguardandoCorrecaoRealizada = true;
+        statusEventoExplicacao =
+          TITULO_STATUS_FICHA_TECNICA.CORRECAO_SOLICITADA;
+        break;
+
+      case STATUS_FICHA_TECNICA.ENVIADA_PARA_ANALISE:
+        if (aguardandoCorrecaoRealizada) {
+          aguardandoCorrecaoRealizada = false;
+          statusEventoExplicacao =
+            TITULO_STATUS_FICHA_TECNICA.CORRECAO_REALIZADA;
+        } else {
+          statusEventoExplicacao = TITULO_STATUS_FICHA_TECNICA.ENVIO;
+        }
+        break;
+
+      case STATUS_FICHA_TECNICA.APROVADA:
+        aguardandoCorrecaoRealizada = false;
+        statusEventoExplicacao = TITULO_STATUS_FICHA_TECNICA.APROVADA;
+        break;
+    }
+
+    return {
+      status_evento_explicacao: statusEventoExplicacao,
+      criado_em: log.criado_em,
+      usuario: log.usuario ?? {
+        nome: "",
+        uuid: "",
+      },
+      justificativa: log.justificativa ?? "",
+    };
+  });
 };
