@@ -25,6 +25,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
 
   beforeEach(async () => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCMCT);
     mock
       .onGet(

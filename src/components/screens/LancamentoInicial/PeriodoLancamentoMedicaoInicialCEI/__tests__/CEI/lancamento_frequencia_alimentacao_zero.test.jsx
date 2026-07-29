@@ -17,6 +17,7 @@ import mock from "src/services/_mock";
 describe("Teste de validação para frequência de alimentação zero e frequência de dietas maior que zero sem observação", () => {
   beforeEach(async () => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCEI);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock
@@ -128,7 +129,7 @@ describe("Teste de validação para frequência de alimentação zero e frequên
     });
     expect(inputFrequenciaAlimentacaoDia1Faixa2).toHaveAttribute("value", "0");
 
-    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar 
+    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar
     observação fica destacado e o botão Salvar fica desabilitado */
 
     const inputFrequenciaDietaTipoADia1 = screen.getByTestId(
@@ -151,7 +152,7 @@ describe("Teste de validação para frequência de alimentação zero e frequên
     fireEvent.click(botaoSalvarLancamentos);
     expect(botaoSalvarLancamentos).toBeDisabled();
 
-    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar 
+    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar
     observação não fica mais destacado e o botão Salvar fica habilitado */
 
     fireEvent.change(inputFrequenciaAlimentacaoDia1Faixa1, {

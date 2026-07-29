@@ -52,6 +52,7 @@ describe("Bloqueio de dietas sem log de matriculados - EMEF", () => {
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
       .reply(200, []);
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/tipos-alimentacao/").reply(200, mockGetTipoAlimentacao);
     mock
       .onGet("/escola-solicitacoes/inclusoes-autorizadas/")
