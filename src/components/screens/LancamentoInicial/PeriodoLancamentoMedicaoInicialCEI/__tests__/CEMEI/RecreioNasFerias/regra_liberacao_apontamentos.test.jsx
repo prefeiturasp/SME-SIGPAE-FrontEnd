@@ -2,63 +2,65 @@ import "@testing-library/jest-dom";
 import {
   act,
   cleanup,
+  fireEvent,
   render,
   screen,
   waitFor,
-  fireEvent,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { localStorageMock } from "src/mocks/localStorageMock";
 import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
-import {
-  mockLocationStateGrupoCeiDaCEMEI,
-  mockLocationStateGrupoEmeiDaCEMEI,
-  mockLocationStateGrupoColaboradoresCEMEI,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockStateRecreio";
-import { getMeusDados } from "src/services/perfil.service";
-import { mockMeusDadosEscolaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEMEI";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
+import { mockMeusDadosEscolaCEMEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEMEI";
 import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/diasLetivosRecreio";
 import {
-  mockValoresMedicaoCeiDaCEMEI,
-  mockValoresMedicaoEmeiDaCEMEI,
-  mockValoresMedicaoCEMEIColaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
+  mockDietasEspeciaisEmeiDaCEMEI,
+  mockDietasEspeciasisCeiDaCEMEI,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockDietasEspeciais";
 import {
   mockSalvaLancamentoSemana1CeiDaCEMEI,
-  mockSalvaLancamentoSemana1EmeiDaCEMEI,
   mockSalvaLancamentoSemana1ColabordoresCEMEI,
+  mockSalvaLancamentoSemana1EmeiDaCEMEI,
 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockSalvarLancamentos";
 import {
-  mockDietasEspeciasisCeiDaCEMEI,
-  mockDietasEspeciaisEmeiDaCEMEI,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockDietasEspeciais";
+  mockLocationStateGrupoCeiDaCEMEI,
+  mockLocationStateGrupoColaboradoresCEMEI,
+  mockLocationStateGrupoEmeiDaCEMEI,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockStateRecreio";
+import {
+  mockValoresMedicaoCeiDaCEMEI,
+  mockValoresMedicaoCEMEIColaboradores,
+  mockValoresMedicaoEmeiDaCEMEI,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEMEI/mockValoresMedicao";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
   getDiasLetivosRecreio,
   getDiasParaCorrecao,
   getFeriadosNoMes,
+  getLogDietasAutorizadasRecreioNasFerias,
+  getLogDietasAutorizadasRecreioNasFeriasCEI,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesAutorizadasEscola,
   getSolicitacoesSuspensoesAutorizadasEscola,
   getValoresPeriodosLancamentos,
   updateValoresPeriodosLancamentos,
-  getLogDietasAutorizadasRecreioNasFeriasCEI,
-  getLogDietasAutorizadasRecreioNasFerias,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
-import mock from "src/services/_mock";
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
+import { getMeusDados } from "src/services/perfil.service";
+import mock from "src/services/_mock";
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/medicaoInicial/permissaoLancamentosEspeciais.service");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -74,6 +76,7 @@ const awaitServices = async () => {
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(listDiasLetivosCalendario).toHaveBeenCalled();
+    expect(getListaDiasSuspensaoAtividades).toHaveBeenCalled();
   });
 };
 
@@ -94,6 +97,10 @@ describe("Teste Grupo Recreio nas Férias - de 0 a 3 anos e 11 meses JANEIRO/202
       status: 200,
     });
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });
