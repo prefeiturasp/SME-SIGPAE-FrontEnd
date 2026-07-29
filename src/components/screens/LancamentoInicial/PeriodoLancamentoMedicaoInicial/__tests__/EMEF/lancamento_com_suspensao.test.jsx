@@ -19,10 +19,12 @@ import { mockPermissoesLancamentosEspeciaisMesAnoPorPeriodoEMEF } from "src/mock
 import { mockSuspensoesAutorizadasEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/suspensoesAutorizadasEMEF";
 import { mockValoresMedicaoEMEF } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/valoresMedicaoEMEF";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import {
   getTiposDeAlimentacao,
   getVinculosTipoAlimentacaoPorEscola,
 } from "src/services/cadastroTipoAlimentacao.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
@@ -40,7 +42,6 @@ import {
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
@@ -48,6 +49,7 @@ jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/medicaoInicial/permissaoLancamentosEspeciais.service");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -69,6 +71,7 @@ const awaitServices = async () => {
     expect(getDiasCalendario).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(listDiasLetivosCalendario).toHaveBeenCalled();
+    expect(getListaDiasSuspensaoAtividades).toHaveBeenCalled();
   });
 };
 
@@ -79,6 +82,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> com suspensão cancelada parci
       status: 200,
     });
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });

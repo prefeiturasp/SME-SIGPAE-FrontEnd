@@ -11,37 +11,39 @@ import { ToastContainer } from "react-toastify";
 
 import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
-import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockSalvarLancamentos";
-import { mockValoresMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockValoresMedicaoCEI";
-import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio.jsx";
 import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
-import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
-import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
-import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockStateRecreio";
+import { mockDiasLetivosRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio.jsx";
 import { mockDietasEspsciais } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockDietasEspeciais.jsx";
+import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockSalvarLancamentos";
+import { mockLocationStateGrupoRecreioNasFerias } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockStateRecreio";
+import { mockValoresMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockValoresMedicaoCEI";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
+import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
+import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
   getDiasLetivosRecreio,
   getDiasParaCorrecao,
   getFeriadosNoMes,
+  getLogDietasAutorizadasRecreioNasFeriasCEI,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesAutorizadasEscola,
   getSolicitacoesSuspensoesAutorizadasEscola,
   getValoresPeriodosLancamentos,
   updateValoresPeriodosLancamentos,
-  getLogDietasAutorizadasRecreioNasFeriasCEI,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import mock from "src/services/_mock";
-import { localStorageMock } from "src/mocks/localStorageMock";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -58,6 +60,7 @@ const awaitServices = async () => {
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(getLogDietasAutorizadasRecreioNasFeriasCEI).toHaveBeenCalled;
     expect(listDiasLetivosCalendario).toHaveBeenCalled();
+    expect(getListaDiasSuspensaoAtividades).toHaveBeenCalled();
   });
 };
 
@@ -68,6 +71,10 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> para o Grupo Recreio Nas FÃ
       status: 200,
     });
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });

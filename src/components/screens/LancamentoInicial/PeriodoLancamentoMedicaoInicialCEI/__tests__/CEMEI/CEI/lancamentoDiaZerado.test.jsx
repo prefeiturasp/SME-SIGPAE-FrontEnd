@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom";
-import React from "react";
 import {
   fireEvent,
   render,
@@ -7,16 +6,18 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
 import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
-import { MemoryRouter } from "react-router-dom";
+import { mockSalvarObservacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockSalvarObservacaoDiasZerados.jsx";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import * as periodoLancamentoMedicaoService from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import { PeriodoLancamentoMedicaoInicialCEI } from "../../../";
-import { mockSalvarObservacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockSalvarObservacaoDiasZerados.jsx";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
@@ -37,6 +38,7 @@ jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/faixaEtaria.service.jsx");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());
@@ -49,6 +51,7 @@ const awaitServices = async () => {
     expect(periodoLancamentoMedicaoService.getFeriadosNoMes).toHaveBeenCalled(),
   );
   expect(listDiasLetivosCalendario).toHaveBeenCalled();
+  expect(getListaDiasSuspensaoAtividades).toHaveBeenCalled();
 };
 
 function formatarData(dia) {
@@ -144,6 +147,10 @@ describe("Funcionalidade de dias zerados", () => {
     jest.clearAllMocks();
 
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });

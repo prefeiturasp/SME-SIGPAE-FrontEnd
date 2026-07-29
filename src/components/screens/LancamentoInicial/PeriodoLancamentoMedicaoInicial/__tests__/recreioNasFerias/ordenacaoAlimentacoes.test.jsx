@@ -8,48 +8,50 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
+import { ToastContainer } from "react-toastify";
+import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "src/mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import {
-  mockLocationStateGrupoRecreioNasFerias,
-  mockLocationStateGrupoColaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockStateEMEFGrupoRecreio";
-import {
-  mockValoresMedicaoEMEF,
-  mockValoresMedicaoColaboradoresEMEF,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/valoresMedicaoEMEF";
-import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import { mockDiasLetivos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/diasLetivosRecreio";
+import { mockLogQuantidadeDietasAutorizadasRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockDietasEspeciais";
 import { mockSalvaLancamentoSemana1 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockSalvaLancamentoEMEF";
 import {
-  getCategoriasDeMedicao,
-  getFeriadosNoMes,
-  getValoresPeriodosLancamentos,
-  updateValoresPeriodosLancamentos,
-  getDiasLetivosRecreio,
-  getSolicitacoesInclusoesAutorizadasEscola,
-  getDiasParaCorrecao,
-  getSolicitacoesSuspensoesAutorizadasEscola,
-  getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
-  getLogDietasAutorizadasRecreioNasFerias,
-} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
-import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
-import { mockVinculosTipoAlimentacaoEPeriodoEscolar } from "src/mocks/InclusaoAlimentacao/mockVinculosTipoAlimentacaoEPeriodoescolar";
+  mockLocationStateGrupoColaboradores,
+  mockLocationStateGrupoRecreioNasFerias,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockStateEMEFGrupoRecreio";
+import {
+  mockValoresMedicaoColaboradoresEMEF,
+  mockValoresMedicaoEMEF,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/valoresMedicaoEMEF";
+import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import {
   getTiposDeAlimentacao,
   getVinculosTipoAlimentacaoPorEscola,
 } from "src/services/cadastroTipoAlimentacao.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
+import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
+import {
+  getCategoriasDeMedicao,
+  getDiasLetivosRecreio,
+  getDiasParaCorrecao,
+  getFeriadosNoMes,
+  getLogDietasAutorizadasRecreioNasFerias,
+  getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
+  getSolicitacoesInclusoesAutorizadasEscola,
+  getSolicitacoesSuspensoesAutorizadasEscola,
+  getValoresPeriodosLancamentos,
+  updateValoresPeriodosLancamentos,
+} from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import PeriodoLancamentoMedicaoInicial from "../..";
-import { ToastContainer } from "react-toastify";
-import { mockLogQuantidadeDietasAutorizadasRecreio } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/RecreioNasFerias/EMEF/mockDietasEspeciais";
-import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -67,6 +69,7 @@ const awaitServices = async () => {
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(getLogDietasAutorizadasRecreioNasFerias).toHaveBeenCalled();
     expect(listDiasLetivosCalendario).toHaveBeenCalled();
+    expect(getListaDiasSuspensaoAtividades).toHaveBeenCalled();
   });
 };
 
@@ -99,6 +102,10 @@ describe("Ordenação alimentações para o Grupo Recreio Nas Férias - EMEF", (
       status: 200,
     });
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });

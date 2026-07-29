@@ -12,49 +12,51 @@ import { ToastContainer } from "react-toastify";
 
 import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
 import { mockFaixasEtarias } from "src/mocks/faixaEtaria.service/mockGetFaixasEtarias";
+import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
+import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
+import {
+  mockDiasLetivosColaboradores,
+  mockDiasLetivosRecreio,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio.jsx";
+import { mockDietasEspsciais } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockDietasEspeciais.jsx";
 import {
   mockSalvaLancamentoSemana1,
   mockSalvaLancamentoSemana1Colaboradores,
 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockSalvarLancamentos";
 import {
+  mockLocationStateGrupoColaboradores,
+  mockLocationStateGrupoRecreioNasFerias,
+} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockStateRecreio";
+import {
   mockValoresMedicaoCEI,
   mockValoresMedicaoCEIColaboradores,
 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockValoresMedicaoCEI";
-import {
-  mockDiasLetivosRecreio,
-  mockDiasLetivosColaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio.jsx";
-import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
-import {
-  mockLocationStateGrupoRecreioNasFerias,
-  mockLocationStateGrupoColaboradores,
-} from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockStateRecreio";
-import { mockDietasEspsciais } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockDietasEspeciais.jsx";
 import {
   getCategoriasDeMedicao,
   getDiasLetivosRecreio,
   getDiasParaCorrecao,
   getFeriadosNoMes,
+  getLogDietasAutorizadasRecreioNasFeriasCEI,
   getSolicitacoesAlteracoesAlimentacaoAutorizadasEscola,
   getSolicitacoesInclusoesAutorizadasEscola,
   getSolicitacoesSuspensoesAutorizadasEscola,
   getValoresPeriodosLancamentos,
   updateValoresPeriodosLancamentos,
-  getLogDietasAutorizadasRecreioNasFeriasCEI,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
 import mock from "src/services/_mock";
-import { localStorageMock } from "src/mocks/localStorageMock";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 jest.mock("src/services/perfil.service.jsx");
 jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -71,6 +73,7 @@ const awaitServices = async () => {
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(getLogDietasAutorizadasRecreioNasFeriasCEI).toHaveBeenCalled;
     expect(listDiasLetivosCalendario).toHaveBeenCalled();
+    expect(getListaDiasSuspensaoAtividades).toHaveBeenCalled();
   });
 };
 
@@ -92,6 +95,10 @@ describe("Teste Grupo Recreio Nas Férias OUTUBRO/2025 - CEI: Regra de liberaç�
       status: 200,
     });
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });
