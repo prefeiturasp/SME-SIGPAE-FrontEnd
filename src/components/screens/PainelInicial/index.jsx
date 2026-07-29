@@ -38,6 +38,8 @@ import {
   RECEBIMENTO,
   PAINEL_APROVACOES,
   SOLICITACAO_ALTERACAO_CRONOGRAMA,
+  CRONOGRAMA_SEMANAL_FLV,
+  CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL,
 } from "src/configs/constants";
 import { ENVIRONMENT } from "src/constants/config";
 import {
@@ -66,6 +68,7 @@ import {
   usuarioComAcessoAosCalendarios,
   usuarioEhDilogQualidade,
   usuarioEhDilogDiretoria,
+  usuarioEhCronograma,
 } from "src/helpers/utilities";
 
 const PainelInicial = () => {
@@ -400,6 +403,74 @@ const PainelInicial = () => {
               onClick={() => navigate(`${RECEBIMENTO}/${FICHA_RECEBIMENTO}`)}
             >
               <IconeFichaDeRecebimento />
+            </CardLogo>
+          </Col>
+        </>
+      )}
+      {usuarioEhCronograma() && (
+        <>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Painel de Aprovações"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${PAINEL_APROVACOES}`)
+              }
+            >
+              <IconePainelDeAprovacoes />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Cronograma de Entrega"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`)
+              }
+            >
+              <IconeCronogramaEntrega />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Criar atalho"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`)
+              }
+            >
+              {/* <IconeVerificarAlteracoesDeCronograma /> */}
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Verificar Alterações de Cronograma"}
+              onClick={() =>
+                navigate(
+                  `${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,
+                )
+              }
+            >
+              <IconeVerificarAlteracoesDeCronograma />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Calendário de Cronogramas"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/calendario-cronograma`)
+              }
+            >
+              <IconeCalendarioCronograma />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Criar atalho"}
+              onClick={() =>
+                navigate(
+                  `${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
+                )
+              }
+            >
+              {/* <IconeFichaTecnica /> */}
             </CardLogo>
           </Col>
         </>
