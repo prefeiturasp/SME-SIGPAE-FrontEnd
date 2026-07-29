@@ -151,6 +151,7 @@ import {
 } from "./validacoes";
 import { ORDEM_CAMPOS_DIETAS_RECREIO } from "src/components/screens/LancamentoInicial/constants";
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const initialStateWeekColumns = [
@@ -257,6 +258,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [faixasAtivasPorTipo, setFaixasAtivasPorTipo] = useState({});
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
   const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
+  const [diasSuspensaoAtividades, setDiasSuspensaoAtividades] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -347,6 +349,23 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     setDiaLetivosSIGPAE(dias);
   };
 
+  const getDiasSuspensaoAtividades = async (escola_uuid) => {
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+    };
+
+    const response = await getListaDiasSuspensaoAtividades(params);
+
+    const dias = response.data.map((diaSuspensao) => {
+      const [dia] = diaSuspensao.data.split("/");
+      return Number(dia);
+    });
+
+    setDiasSuspensaoAtividades(dias);
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === "string"
@@ -379,6 +398,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const ano = getYear(mesAnoSelecionado);
 
       getDiasLetivosSIGPAE(escola.uuid);
+      getDiasSuspensaoAtividades(escola.uuid);
+
       const response_faixas_etarias = await getFaixasEtarias();
       if (response_faixas_etarias.status === HTTP_STATUS.OK) {
         setFaixasEtarias(response_faixas_etarias.data.results);
@@ -1755,6 +1776,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const validacaoDiaLetivo = (dia) => {
+    if (!calendarioMesConsiderado || !feriadosNoMes) return false;
     const diaCalendario = calendarioMesConsiderado.find(
       (item) => Number(item.dia) === Number(dia),
     );
@@ -1783,12 +1805,24 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
     const ehFinalDeSemanaOuFeriado = ehFimDeSemanaUTC(dataAtual) || ehFeriado;
 
-    if (ehFinalDeSemanaOuFeriado) {
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(dia),
+    );
+    if (ehFinalDeSemanaOuFeriado || ehDiaSuspensaoAtividades) {
       return temInclusaoAutorizada;
     }
 
     return true;
   };
+
+  const diasSuspensosDaSemana = weekColumns.filter((column) => {
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(column.dia),
+    );
+
+    const estaLiberado = validacaoDiaLetivo(column.dia);
+    return ehDiaSuspensaoAtividades && !estaLiberado;
+  });
 
   const openModalObservacaoDiaria = (dia, categoria) => {
     setShowModalObservacaoDiaria(true);
@@ -3723,6 +3757,17 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                           </div>
                         ))}
                     </Spin>
+                    {diasSuspensosDaSemana.length > 0 &&
+                      !loadingLancamentos && (
+                        <div className="dias-suspensos mb-2">
+                          {diasSuspensosDaSemana.map((column) => (
+                            <span key={column.dia}>
+                              * {column.dia} - Suspensão de atividade
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                     {ultimaAtualizacaoMedicao && (
                       <p className="ultimo-salvamento mb-0">
                         Lançamento do período {periodoGrupo} salvo em{" "}

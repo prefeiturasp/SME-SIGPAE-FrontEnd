@@ -9,14 +9,17 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
 import { PeriodoLancamentoMedicaoInicialCEI } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI";
 import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockCategoriasMedicaoCEI";
+import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
+import { mockDiasLetivosColaboradores } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio";
 import { mockSalvaLancamentoSemana1Colaboradores } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockSalvarLancamentos";
 import { mockLocationStateGrupoColaboradores } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockStateRecreio";
 import { mockValoresMedicaoCEIColaboradores } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/mockValoresMedicaoCEI";
-import { mockDiasLetivosColaboradores } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/RecreioNasFerias/CEI/diasLetivosRecreio";
-import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
   getCategoriasDeMedicao,
@@ -30,8 +33,6 @@ import {
   updateValoresPeriodosLancamentos,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getMeusDados } from "src/services/perfil.service";
-import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
-import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 const mockNavigate = jest.fn();
 
@@ -46,6 +47,7 @@ jest.mock("src/services/cadastroTipoAlimentacao.service");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/medicaoInicial/solicitacaoMedicaoInicial.service");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -61,6 +63,7 @@ const awaitServices = async () => {
     expect(getDiasLetivosRecreio).toHaveBeenCalled();
     expect(getFeriadosNoMes).toHaveBeenCalled();
     expect(listDiasLetivosCalendario).toHaveBeenCalled();
+    expect(getListaDiasSuspensaoAtividades).toHaveBeenCalled();
   });
 };
 
@@ -122,6 +125,10 @@ describe("Ordenação alimentações para o Grupo Colaboradores - CEI", () => {
       status: 200,
     });
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });

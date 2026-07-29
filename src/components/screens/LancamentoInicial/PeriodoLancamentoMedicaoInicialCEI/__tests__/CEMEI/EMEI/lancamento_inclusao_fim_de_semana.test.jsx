@@ -23,6 +23,7 @@ import mock from "src/services/_mock";
 describe("Testes de inclusão de lançamento em fim de semana", () => {
   beforeEach(async () => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock

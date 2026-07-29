@@ -21,6 +21,7 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
 
   beforeEach(async () => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -129,7 +130,7 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
     );
     expect(inputFrequenciaAlimentacaoDia2).toHaveAttribute("value", "0");
 
-    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar 
+    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar
     observação fica destacado e o botão Salvar fica desabilitado */
 
     const inputFrequenciaDietaTipoAEnteralDia2 = screen.getByTestId(
@@ -151,7 +152,7 @@ describe("Lancamento de Dieta Especial com Frequência Zero na Alimentação - E
     fireEvent.click(botaoSalvarLancamentos);
     expect(botaoSalvarLancamentos).toBeDisabled();
 
-    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar 
+    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar
     observação não fica mais destacado e o botão Salvar fica habilitado */
 
     fireEvent.change(inputFrequenciaDietaTipoAEnteralDia2, {
