@@ -19,7 +19,8 @@ import { IconeFichaDeRecebimento } from "src/components/Shareable/Icones/IconeFi
 import { IconeDocumentoDeRecebimento } from "src/components/Shareable/Icones/IconeDocumentoDeRecebimento";
 import { IconeVerificarAlteracoesDeCronograma } from "src/components/Shareable/Icones/IconeVerificarAlteracoesDeCronograma";
 import { IconePainelDeAprovacoes } from "src/components/Shareable/Icones/IconePainelDeAprovacoes";
-
+import { IconeCronogramaSemanalFLV } from "src/components/Shareable/Icones/IconeCronogramaSemanalFLV";
+import { IconeCalendarioPontoAPonto } from "src/components/Shareable/Icones/IconeCalendarioPontoAPonto";
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
   CRONOGRAMA_ENTREGA,
@@ -431,12 +432,12 @@ const PainelInicial = () => {
           </Col>
           <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <CardLogo
-              titulo={"Criar atalho"}
+              titulo={"Cronograma Semanal FLV"}
               onClick={() =>
                 navigate(`${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`)
               }
             >
-              {/* <IconeVerificarAlteracoesDeCronograma /> */}
+              <IconeCronogramaSemanalFLV />
             </CardLogo>
           </Col>
           <Col xs={24} sm={24} md={12} lg={8} xl={8}>
@@ -463,14 +464,14 @@ const PainelInicial = () => {
           </Col>
           <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <CardLogo
-              titulo={"Criar atalho"}
+              titulo={"Calendário Ponto a Ponto"}
               onClick={() =>
                 navigate(
                   `${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
                 )
               }
             >
-              {/* <IconeFichaTecnica /> */}
+              <IconeCalendarioPontoAPonto />
             </CardLogo>
           </Col>
         </>
