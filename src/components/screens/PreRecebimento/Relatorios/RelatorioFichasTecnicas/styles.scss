@@ -1,0 +1,113 @@
+@use "src/styles/variables.scss" as *;
+.relatorio-ficha-tecnica {
+  .titulo-cards {
+    font-size: 16px;
+    font-weight: 600;
+    color: $green;
+  }
+
+  .totalizador {
+    padding: 0.5em;
+    color: $green;
+    font-weight: 500;
+    border: 1px solid $green;
+    border-left: 5px solid $green;
+    border-radius: 4px;
+
+    .valor {
+      font-weight: bolder;
+    }
+  }
+
+  .titulo-verde {
+    color: #0c6b45;
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
+
+  .table-responsive {
+    .table-bordered {
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 4px 4px 0 0;
+      border: 1px solid #e9eaea;
+      font-size: 14px;
+      line-height: 16px;
+      margin: 10px 0 15px 0;
+
+      thead {
+        tr {
+          th {
+            height: 48px;
+            background: #f5f6f8 !important;
+            color: #42474a !important;
+            font-weight: bold;
+            vertical-align: middle;
+            text-align: left;
+            padding-left: 8px;
+            border: none !important;
+            border-right: 1px solid #e9eaea !important;
+
+            &:last-child {
+              border-right: none;
+            }
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          td {
+            height: 48px;
+            font-weight: 500;
+            color: #686868;
+            vertical-align: middle;
+            text-align: left;
+            padding-left: 8px;
+            border: none !important;
+            border-right: 1px solid #e9eaea !important;
+            border-bottom: 1px solid #e9eaea !important;
+
+            &:last-child {
+              border-right: none;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.filtros-relatorio-ficha-tecnica {
+  .autocomplete-select {
+    height: 40px;
+  }
+
+  .input-data {
+    height: 40px;
+  }
+
+  .input {
+    input {
+      height: 40px;
+    }
+  }
+
+  .dropdown {
+    height: 40px;
+    border-radius: 0.35rem !important;
+
+    .dropdown-heading {
+      height: 100% !important;
+      border: 1px solid $grayInputBorder;
+
+      .dropdown-heading-dropdown-arrow {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}

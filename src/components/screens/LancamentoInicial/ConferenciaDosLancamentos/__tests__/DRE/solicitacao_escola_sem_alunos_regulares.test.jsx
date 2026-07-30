@@ -51,6 +51,7 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
     process.env.IS_TEST = true;
 
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock
       .onGet(
         "/medicao-inicial/solicitacao-medicao-inicial/periodos-grupos-medicao/",

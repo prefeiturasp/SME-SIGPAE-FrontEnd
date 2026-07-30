@@ -63,6 +63,7 @@ import {
 import "./style.scss";
 import { ModalPedirCorrecaoSemLancamentos } from "./components/ModalPedirCorrecaoSemLancamentos";
 import { carregarDiasCalendario } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/validacoes.jsx";
+import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();
@@ -108,6 +109,7 @@ export const ConferenciaDosLancamentos = () => {
     useState(true);
   const [showModal, setShowModal] = useState(false);
 
+  const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState([]);
   const [feriadosNoMes, setFeriadosNoMes] = useState();
   const [diasCalendario, setDiasCalendario] = useState({});
   const [diasSobremesaDoce, setDiasSobremesaDoce] = useState();
@@ -135,6 +137,18 @@ export const ConferenciaDosLancamentos = () => {
         "Erro ao carregar feriados do mês para esta escola. Tente novamente mais tarde.",
       );
     }
+  };
+
+  const getDiasLetivosSIGPAE = async (mes, ano) => {
+    const escolaUuid = location.state.escolaUuid;
+    const params = {
+      mes,
+      ano,
+      escola: escolaUuid,
+    };
+
+    const response = await listDiasLetivosCalendario(params);
+    setDiaLetivosSIGPAE(response.data);
   };
 
   const carregarTodosDiasCalendario = async () => {
@@ -367,6 +381,8 @@ export const ConferenciaDosLancamentos = () => {
         mes_lancamento: recreioNasFeriasTitulo || `${mesString} / ${ano}`,
         unidade_educacional: escola,
       };
+
+      getDiasLetivosSIGPAE(mes, ano);
       setSolicitacao(response.data);
       setHistorico(response.data.ocorrencia && response.data.ocorrencia.logs);
       setMesSolicitacao(mes);
@@ -1098,6 +1114,7 @@ export const ConferenciaDosLancamentos = () => {
                               feriadosNoMes={feriadosNoMes}
                               diasCalendario={diasCalendario[chaveCalendario]}
                               diasSobremesaDoce={diasSobremesaDoce}
+                              diasLetivosSIGPAE={diasLetivosSIGPAE}
                             />,
                           ];
                         })}
