@@ -217,4 +217,33 @@ describe("Lancamento MANHA EMEF - Dias Letivos via API Calendário", () => {
       screen.queryByText(/05\s*-\s*Suspensão de atividade/),
     ).not.toBeInTheDocument();
   });
+
+  it("deve exibir os avisos de calendário em ordem crescente de dia", async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, [
+      {
+        data: "06/04/2025",
+      },
+    ]);
+
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, [
+      {
+        data: "05/04/2025",
+        editais: ["303030A"],
+      },
+    ]);
+
+    await renderComponente();
+
+    await screen.findByText(/05\s*-\s*Suspensão de atividade/);
+    await screen.findByText(/06\s*-\s*Dia letivo cadastrado por CODAE/);
+
+    const avisos = screen.getAllByText(
+      /Suspensão de atividade|Dia letivo cadastrado por CODAE/,
+    );
+
+    expect(avisos.map((aviso) => aviso.textContent)).toEqual([
+      "* 05 - Suspensão de atividade",
+      "* 06 - Dia letivo cadastrado por CODAE",
+    ]);
+  });
 });
