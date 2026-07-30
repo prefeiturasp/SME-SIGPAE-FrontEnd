@@ -40,7 +40,7 @@ import {
   FICHA_TECNICA,
   ATUALIZAR_FICHA_TECNICA,
 } from "src/configs/constants";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
@@ -55,6 +55,7 @@ interface AnalisarProps {
 
 export default ({ somenteLeitura = false }: AnalisarProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [carregando, setCarregando] = useState<boolean>(true);
   const [showModalCancelar, setShowModalCancelar] = useState<boolean>(false);
   const [collapse, setCollapse] = useState<CollapseControl>({});
@@ -89,6 +90,10 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
       );
     })();
   }, []);
+
+  const estaNaTelaDetalharFichaTecnica = location.pathname.includes(
+    "/detalhar-ficha-tecnica",
+  );
 
   const imprimirFichaTecnica = () => {
     setCarregando(true);
@@ -382,7 +387,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     {somenteLeitura && renderizarTag()}
                   </div>
 
-                  {somenteLeitura &&
+                  {estaNaTelaDetalharFichaTecnica &&
                     podeVisualizarLinhaDoTempo &&
                     listaDeStatusLinhaDoTempo.length > 0 && (
                       <div className="linha-do-tempo-ficha-tecnica mt-4 mb-5">
