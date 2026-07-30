@@ -8,19 +8,19 @@ import {
   within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import mock from "src/services/_mock";
-import { localStorageMock } from "src/mocks/localStorageMock";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { mockGetTipoAlimentacao } from "src/mocks/cadastroTipoAlimentacao.service/mockGetTipoAlimentacao";
+import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { diasCalendarioMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/diasCalendarioMaio2025";
+import { logDietasAutorizadasMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/logDietasAutorizadasMaio2025";
+import { matriculadosMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/matriculadosMaio2025";
+import { stateManhaMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/stateManhaMaio2025";
+import { valoresMedicaoMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/valoresMedicaoMaio2025";
 import { mockMeusDadosEscolaCIEJA } from "src/mocks/meusDados/escolaCIEJA";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCIEJA } from "src/mocks/services/cadastroTipoAlimentacao.service/CIEJA/mockGetVinculosTipoAlimentacaoPorEscolaCIEJA";
-import { mockGetTipoAlimentacao } from "src/mocks/cadastroTipoAlimentacao.service/mockGetTipoAlimentacao";
-import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { logDietasAutorizadasMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/logDietasAutorizadasMaio2025";
-import { valoresMedicaoMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/valoresMedicaoMaio2025";
-import { diasCalendarioMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/diasCalendarioMaio2025";
-import { matriculadosMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/matriculadosMaio2025";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import { stateManhaMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CIEJA/stateManhaMaio2025";
+import mock from "src/services/_mock";
 
 jest.mock("src/components/Shareable/CKEditorField", () => ({
   __esModule: true,
@@ -71,6 +71,7 @@ describe("Teste Refeições Simultâneas - CIEJA", () => {
     jest.clearAllMocks();
 
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCIEJA);
     mock
       .onGet(

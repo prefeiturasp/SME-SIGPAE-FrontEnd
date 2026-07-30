@@ -62,6 +62,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos com per
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
       .reply(200, []);

@@ -9,16 +9,16 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockGetTipoAlimentacao } from "src/mocks/cadastroTipoAlimentacao.service/mockGetTipoAlimentacao";
-import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
-import { mockMeusDadosEscolaEMEBS } from "src/mocks/meusDados/escola/EMEBS";
-import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import { mockDiasCalendarioEMEBSFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/diasCalendario";
-import { mockGetVinculosTipoAlimentacaoPorEscolaEMEBS } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEBS/vinculosTipoAlimentacaoPeriodoEscolar";
-import { mockValoresMedicaoFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/valoresMedicaoFevereiro2026";
-import { mockMatriculadosManha } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/matriculadosManhaFevereiro2026";
-import { mockDietasEspeciaisFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/dietasespeciaisManhaFevereiro2026";
-import { mockStateMANHAFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/stateManhaFevereiro2026";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
+import { mockDiasCalendarioEMEBSFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/diasCalendario";
+import { mockDietasEspeciaisFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/dietasespeciaisManhaFevereiro2026";
+import { mockMatriculadosManha } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/matriculadosManhaFevereiro2026";
+import { mockStateMANHAFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/stateManhaFevereiro2026";
+import { mockValoresMedicaoFevereiro2026 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEBS/Fevereiro2026/valoresMedicaoFevereiro2026";
+import { mockMeusDadosEscolaEMEBS } from "src/mocks/meusDados/escola/EMEBS";
+import { mockGetVinculosTipoAlimentacaoPorEscolaEMEBS } from "src/mocks/services/cadastroTipoAlimentacao.service/EMEBS/vinculosTipoAlimentacaoPeriodoEscolar";
+import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
 
 describe("Bloqueio de dietas sem log de matriculados - EMEBS", () => {
@@ -63,6 +63,7 @@ describe("Bloqueio de dietas sem log de matriculados - EMEBS", () => {
 
   beforeEach(async () => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
     mock
       .onGet(

@@ -2,7 +2,7 @@ import React from "react";
 import { Field } from "react-final-form";
 import Select from "src/components/Shareable/Select";
 import InputText from "src/components/Shareable/Input/InputText";
-import { required, tamanhoCnpj } from "src/helpers/fieldValidators";
+import { required, tamanhoCnpjMascara } from "src/helpers/fieldValidators";
 import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 import { cnpjMask } from "src/constants/shared";
 import { Link } from "react-router-dom";
@@ -130,7 +130,7 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
               name="cnpj"
               placeholder="Digite o CNPJ da Empresa"
               required
-              validate={composeValidators(required, tamanhoCnpj)}
+              validate={composeValidators(required, tamanhoCnpjMascara)}
             />
           </div>
         </div>

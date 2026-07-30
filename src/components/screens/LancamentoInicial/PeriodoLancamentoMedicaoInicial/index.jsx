@@ -95,6 +95,7 @@ import {
   textoBotaoObservacao,
   valorZeroFrequencia,
   trataCategoriasMedicaoRecreio,
+  formatarParaSlug,
 } from "./helper";
 import "./styles.scss";
 import {
@@ -135,6 +136,7 @@ import {
   verificaFeriadoProgramasProjetos,
   obrigarAdiocionarFeriadoProgramasProjetos,
 } from "./validacoes";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
 export default () => {
@@ -248,6 +250,7 @@ export default () => {
   const [diasFrequenciaZerada, setDiasFrequenciaZeradas] = useState(null);
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
   const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
+  const [diasSuspensaoAtividades, setDiasSuspensaoAtividades] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -255,10 +258,9 @@ export default () => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const ehGrupoSolicitacoesDeAlimentacaoUrlParam =
-    urlParams.get("ehGrupoSolicitacoesDeAlimentacao") === "true" ? true : false;
-  const ehGrupoETECUrlParam =
-    urlParams.get("ehGrupoETEC") === "true" ? true : false;
-  const grupoLocation = location && location.state && location.state.grupo;
+    urlParams.get("ehGrupoSolicitacoesDeAlimentacao") === "true";
+  const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
+  const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
 
   const getListaDiasSobremesaDoceAsync = async (escola_uuid) => {
@@ -293,6 +295,23 @@ export default () => {
       response.data.map(({ data }) => Number(data.substring(0, 2))),
     );
     setDiaLetivosSIGPAE(dias);
+  };
+
+  const getDiasSuspensaoAtividades = async (escola_uuid) => {
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+    };
+
+    const response = await getListaDiasSuspensaoAtividades(params);
+
+    const dias = response.data.map((diaSuspensao) => {
+      const [dia] = diaSuspensao.data.split("/");
+      return Number(dia);
+    });
+
+    setDiasSuspensaoAtividades(dias);
   };
 
   const getTiposAlimentacaoInclusoesContinuas = (inclusoesAutorizadas) => {
@@ -367,6 +386,7 @@ export default () => {
   const trataTabelaAlimentacaoEscolaSemAlunosRegulares = (
     tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
     tiposAlimentacaoInclusaoContinua,
+    periodoPossuiLanche4h = false,
   ) => {
     if (!tiposAlimentacaoInclusaoContinua.includes("refeicao")) {
       const indexRefeicao1Oferta =
@@ -417,15 +437,20 @@ export default () => {
       );
     }
 
-    if (!tiposAlimentacaoInclusaoContinua.includes("lanche_4h")) {
+    if (
+      !tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
+      !periodoPossuiLanche4h
+    ) {
       const indexLanche4h =
         tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Lanche 4h",
         );
-      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
-        indexLanche4h,
-        1,
-      );
+      if (indexLanche4h !== -1) {
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
+          indexLanche4h,
+          1,
+        );
+      }
     }
     if (
       !tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
@@ -530,6 +555,7 @@ export default () => {
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
       getDiasLetivosSIGPAE(escola.uuid);
+      getDiasSuspensaoAtividades(escola.uuid);
 
       const response_get_tipos_alimentacao = await getTiposDeAlimentacao();
       if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
@@ -546,7 +572,7 @@ export default () => {
 
       let periodo = periodos_escolares[0];
       const ehPeriodoEspecifico =
-        urlParams.get("ehPeriodoEspecifico") === "true" ? true : false;
+        urlParams.get("ehPeriodoEspecifico") === "true";
       if (ehPeriodoEspecifico) {
         periodo = location.state
           ? location.state.periodoEspecifico
@@ -618,11 +644,7 @@ export default () => {
         .map((alimentacao) => {
           return {
             ...alimentacao,
-            name: alimentacao.nome
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(alimentacao.nome),
           };
         });
 
@@ -652,6 +674,10 @@ export default () => {
 
       const tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares =
         deepCopy(tiposAlimentacaoFormatadas);
+
+      const periodoPossuiLanche4h = tiposAlimentacaoFormatadas.some(
+        (taf) => taf.nome === "Lanche 4h",
+      );
 
       if (
         tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
@@ -710,6 +736,7 @@ export default () => {
         trataTabelaAlimentacaoEscolaSemAlunosRegulares(
           tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
           tiposAlimentacaoInclusaoContinua,
+          periodoPossuiLanche4h,
         ),
       );
 
@@ -748,11 +775,7 @@ export default () => {
         if (indexLanche4h !== -1) {
           rowsDietas.push({
             nome: cloneTiposAlimentacao[indexLanche4h].nome,
-            name: cloneTiposAlimentacao[indexLanche4h].nome
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(cloneTiposAlimentacao[indexLanche4h].nome),
             uuid: cloneTiposAlimentacao[indexLanche4h].uuid,
           });
         }
@@ -768,11 +791,7 @@ export default () => {
       ) {
         rowsDietas.push({
           nome: "Lanche",
-          name: "Lanche"
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase()
-            .replaceAll(/ /g, "_"),
+          name: formatarParaSlug("Lanche"),
           uuid: cloneTiposAlimentacao[indexLanche].uuid,
         });
       }
@@ -784,11 +803,7 @@ export default () => {
         if (tiposAlimentacaoInclusaoContinua.includes("lanche")) {
           rowsDietas.push({
             nome: "Lanche",
-            name: "Lanche"
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug("Lanche"),
             uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
               (tp) => tp.nome === "Lanche",
             ).uuid,
@@ -864,11 +879,7 @@ export default () => {
         .map((alimentacao) => {
           return {
             nome: alimentacao,
-            name: alimentacao
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase()
-              .replaceAll(/ /g, "_"),
+            name: formatarParaSlug(alimentacao),
             uuid: null,
           };
         });
@@ -2237,6 +2248,7 @@ export default () => {
   };
 
   const validacaoDiaLetivo = (dia) => {
+    if (!calendarioMesConsiderado || !feriadosNoMes) return false;
     const objDia = calendarioMesConsiderado.find(
       (objDia) => Number(objDia.dia) === Number(dia),
     );
@@ -2275,10 +2287,22 @@ export default () => {
     const ehFeriadoNoDia = feriadosNoMes.some(
       (feriado) => Number(feriado) === Number(dia),
     );
-    if (ehFimDeSemanaUTC(dateObj) || ehFeriadoNoDia)
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(dia),
+    );
+    if (ehFimDeSemanaUTC(dateObj) || ehFeriadoNoDia || ehDiaSuspensaoAtividades)
       return temInclusaoAutorizadaNoDia;
     return true;
   };
+
+  const diasSuspensosDaSemana = weekColumns.filter((column) => {
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(column.dia),
+    );
+
+    const estaLiberado = validacaoDiaLetivo(column.dia);
+    return ehDiaSuspensaoAtividades && !estaLiberado;
+  });
 
   const validacaoDiaLancamentoETEC = (dia, categoriaId) => {
     return ehDiaHabilitadoParaLancamentoETEC(
@@ -4259,6 +4283,17 @@ export default () => {
                           </div>
                         ))}
                     </Spin>
+                    {diasSuspensosDaSemana.length > 0 &&
+                      !loadingLancamentos && (
+                        <div className="dias-suspensos mb-2">
+                          {diasSuspensosDaSemana.map((column) => (
+                            <span key={column.dia}>
+                              * {column.dia} - Suspensão de atividade
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
                     {ultimaAtualizacaoMedicao && (
                       <p className="ultimo-salvamento mb-0">
                         Lançamento do período {periodoGrupo} salvo em{" "}

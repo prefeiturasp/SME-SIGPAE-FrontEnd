@@ -8,6 +8,7 @@ import {
 import { ContratoTerceirizadaInterface } from "src/interfaces/terceirizada.interface";
 
 export interface InstituicaoInterface {
+  acesso_desde?: string;
   acesso_modulo_medicao_inicial?: boolean;
   codigo_eol: string | null;
   contato: ContratoTerceirizadaInterface;

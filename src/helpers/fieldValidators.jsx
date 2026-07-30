@@ -229,11 +229,16 @@ export const nonRequiredNumericInteger = (value) => {
   }
 };
 
-export const tamanhoCnpj = (value) =>
-  value.length < 14 ? "CNPJ Inválido" : undefined;
+export const tamanhoCnpj = (value) => {
+  if (value.length < 14) return "CNPJ Inválido";
+  if (!/^[A-Z0-9]{12}\d{2}$/i.test(value)) return "CNPJ Inválido";
+};
 
-export const tamanhoCnpjMascara = (value) =>
-  value.length < 18 ? "CNPJ Inválido" : undefined;
+export const tamanhoCnpjMascara = (value) => {
+  if (value.length < 18) return "CNPJ Inválido";
+  const raw = value.replace(/[.\-/]/g, "");
+  if (!/^[A-Z0-9]{12}\d{2}$/i.test(raw)) return "CNPJ Inválido";
+};
 
 export const inteiroOuDecimal = (value) => {
   return value && !/^[0-9]+([,.][0-9]+)?$/g.test(value)

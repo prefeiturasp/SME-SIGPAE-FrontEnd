@@ -5,6 +5,7 @@ import { mockCategoriasMedicaoCEI } from "src/mocks/medicaoInicial/PeriodoLancam
 import { mockMeusDadosEscolaCEI } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockMeusDadosEscolaCEI";
 import { mockSalvarObservacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicialCEI/mockSalvarObservacaoDiasZerados.jsx";
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import * as periodoLancamentoMedicaoService from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -30,6 +31,7 @@ jest.mock("src/services/medicaoInicial/diaSobremesaDoce.service.jsx");
 jest.mock("src/services/medicaoInicial/periodoLancamentoMedicao.service");
 jest.mock("src/services/faixaEtaria.service.jsx");
 jest.mock("src/services/diasLetivos");
+jest.mock("src/services/cadastroDiasSuspensaoAtividades.service");
 
 const awaitServices = async () => {
   await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());
@@ -178,6 +180,10 @@ describe("Bloqueio de dietas sem log de matriculados - CEI", () => {
     jest.clearAllMocks();
 
     listDiasLetivosCalendario.mockResolvedValue({
+      data: [],
+      status: 200,
+    });
+    getListaDiasSuspensaoAtividades.mockResolvedValue({
       data: [],
       status: 200,
     });

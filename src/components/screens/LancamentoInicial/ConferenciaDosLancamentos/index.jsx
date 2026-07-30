@@ -270,15 +270,18 @@ export const ConferenciaDosLancamentos = () => {
       "MEDICAO_CORRIGIDA_PARA_CODAE",
     ].includes(solicitacao.ocorrencia.status);
 
+  const statusOcorrenciaEsperadoCODAE = [
+    "MEDICAO_APROVADA_PELA_DRE",
+    "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    "MEDICAO_CORRIGIDA_PARA_CODAE",
+  ].includes(solicitacao?.ocorrencia?.status);
+
   const desabilitarAprovarOcorrenciaCODAE =
-    usuarioMedicaoOuManifestacaoTemPermissao &&
-    solicitacao &&
-    solicitacao.ocorrencia &&
-    ![
-      "MEDICAO_APROVADA_PELA_DRE",
-      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-      "MEDICAO_CORRIGIDA_PARA_CODAE",
-    ].includes(solicitacao.ocorrencia.status);
+    (statusOcorrenciaEsperadoCODAE && !usuarioEhCODAENutriManifestacao()) ||
+    (usuarioEhCODAENutriManifestacao() &&
+      solicitacao &&
+      solicitacao.ocorrencia &&
+      !statusOcorrenciaEsperadoCODAE);
 
   const desabilitarAprovarOcorrenciaDRE =
     usuarioEhDRE() &&
@@ -1016,7 +1019,6 @@ export const ConferenciaDosLancamentos = () => {
                                           type={BUTTON_TYPE.BUTTON}
                                           style={BUTTON_STYLE.GREEN}
                                           disabled={
-                                            !usuarioEhCODAENutriManifestacao() ||
                                             desabilitarAprovarOcorrenciaCODAE ||
                                             desabilitarAprovarOcorrenciaDRE
                                           }

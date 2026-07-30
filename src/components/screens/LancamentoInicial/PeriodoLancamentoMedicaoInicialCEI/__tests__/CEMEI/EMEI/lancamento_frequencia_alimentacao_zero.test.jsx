@@ -86,6 +86,7 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     alteracoesAlimentacaoParams.length = 0;
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
@@ -362,7 +363,7 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     });
     expect(inputFrequenciaAlimentacaoDia12).toHaveAttribute("value", "0");
 
-    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar 
+    /* Ao colocar frequência > 0, é exibido um warning, botão de adicionar
     observação fica destacado e o botão Salvar fica desabilitado */
 
     const inputFrequenciaDietaTipoADia12 = screen.getByTestId(
@@ -383,7 +384,7 @@ describe("Teste de lançamento de frequência de alimentação zero - EMEI da CE
     fireEvent.click(botaoSalvarLancamentos);
     expect(botaoSalvarLancamentos).toBeDisabled();
 
-    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar 
+    /* Ao corrigir frequência para zero, warning é removido, botão de adicionar
     observação não fica mais destacado e o botão Salvar fica habilitado */
 
     fireEvent.change(inputFrequenciaDietaTipoADia12, {

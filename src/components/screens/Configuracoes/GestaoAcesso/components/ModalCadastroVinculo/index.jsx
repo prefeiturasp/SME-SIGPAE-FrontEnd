@@ -14,7 +14,7 @@ import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 import {
   email,
   required,
-  tamanhoCnpj,
+  tamanhoCnpjMascara,
   validaCPF,
   SMEPrefeituraEmail,
 } from "src/helpers/fieldValidators";
@@ -514,7 +514,10 @@ const ModalCadastroVinculo = ({
                             name="cnpj"
                             placeholder="Digite o CNPJ da Empresa"
                             className="input-busca-produto"
-                            validate={composeValidators(required, tamanhoCnpj)}
+                            validate={composeValidators(
+                              required,
+                              tamanhoCnpjMascara,
+                            )}
                             required
                             disabled={valoresEdicao}
                           />
