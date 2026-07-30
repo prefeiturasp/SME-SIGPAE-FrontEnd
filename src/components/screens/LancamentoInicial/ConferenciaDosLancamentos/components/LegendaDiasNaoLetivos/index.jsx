@@ -15,7 +15,27 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
     categoria,
     periodoGrupo,
     semanaSelecionada,
+    diasLetivosSIGPAE,
   } = props;
+
+  const diaEhLetivoSIGPAE = (dia) => {
+    const diaFormatado = String(dia).padStart(2, "0");
+    const mesFormatado = String(mesSolicitacao).padStart(2, "0");
+    const dataFormatada = `${diaFormatado}/${mesFormatado}/${anoSolicitacao}`;
+
+    const entrada = diasLetivosSIGPAE.find((d) => d.data === dataFormatada);
+    if (!entrada) return false;
+
+    const nomePeriodo =
+      periodoGrupo?.periodo_escolar ?? periodoGrupo?.nome_periodo_grupo ?? "";
+    const periodoNormalizado = nomePeriodo
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase()
+      .trim();
+
+    return entrada.periodos_escolares.includes(periodoNormalizado);
+  };
 
   const getListaDiasLabels = () => {
     const listaDiasLabels = [];
@@ -51,7 +71,9 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
         !validacaoSemana(diaFeriado.dia, semanaSelecionada) &&
           listaDiasLabels.push({
             dia: diaFeriado.dia,
-            label: `Feriado: ${diaFeriado.feriado}`,
+            label: diaEhLetivoSIGPAE(diaFeriado.dia)
+              ? "Dia letivo cadastrado por CODAE"
+              : `Feriado: ${diaFeriado.feriado}`,
           });
       });
 
@@ -102,7 +124,45 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
           !validacaoSemana(diaCalendario.dia, semanaSelecionada) &&
           listaDiasLabels.push({
             dia: diaCalendario.dia,
-            label: "Dia não letivo",
+            label: diaEhLetivoSIGPAE(diaCalendario.dia)
+              ? "Dia letivo cadastrado por CODAE"
+              : "Dia não letivo",
+          });
+      });
+
+    diasLetivosSIGPAE
+      ?.filter((entradaSIGPAE) => {
+        const diaFormatado = entradaSIGPAE.data.substring(0, 2);
+        const mesFormatado = entradaSIGPAE.data.substring(3, 5);
+        const anoFormatado = entradaSIGPAE.data.substring(6, 10);
+
+        if (mesFormatado !== String(mesSolicitacao).padStart(2, "0"))
+          return false;
+        if (anoFormatado !== String(anoSolicitacao)) return false;
+
+        const nomePeriodo =
+          periodoGrupo?.periodo_escolar ??
+          periodoGrupo?.nome_periodo_grupo ??
+          "";
+        const periodoNormalizado = nomePeriodo
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toUpperCase()
+          .trim();
+
+        if (!entradaSIGPAE.periodos_escolares.includes(periodoNormalizado))
+          return false;
+        if (!weekColumns.find((col) => col.dia === diaFormatado)) return false;
+        if (listaDiasLabels.find((l) => l.dia === diaFormatado)) return false;
+
+        return true;
+      })
+      .forEach((entradaSIGPAE) => {
+        const dia = entradaSIGPAE.data.substring(0, 2);
+        !validacaoSemana(dia, semanaSelecionada) &&
+          listaDiasLabels.push({
+            dia,
+            label: "Dia letivo cadastrado por CODAE",
           });
       });
 

@@ -2295,6 +2295,10 @@ export default () => {
     return true;
   };
 
+  const diasLetivosCadastradosDaSemana = weekColumns
+    .filter((column) => diasLetivosSIGPAE.has(Number(column.dia)))
+    .sort((diaA, diaB) => Number(diaA.dia) - Number(diaB.dia));
+
   const diasSuspensosDaSemana = weekColumns.filter((column) => {
     const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
       Number(column.dia),
@@ -2303,6 +2307,24 @@ export default () => {
     const estaLiberado = validacaoDiaLetivo(column.dia);
     return ehDiaSuspensaoAtividades && !estaLiberado;
   });
+
+  const avisosDaSemana = [
+    ...diasSuspensosDaSemana.map((column) => ({
+      dia: Number(column.dia),
+      diaFormatado: column.dia,
+      tipo: "suspensao",
+      texto: "Suspensão de atividade",
+      chave: `suspensao-${column.ano}-${column.mes}-${column.dia}`,
+    })),
+
+    ...diasLetivosCadastradosDaSemana.map((column) => ({
+      dia: Number(column.dia),
+      diaFormatado: column.dia,
+      tipo: "dia-letivo",
+      texto: "Dia letivo cadastrado por CODAE",
+      chave: `dia-letivo-${column.ano}-${column.mes}-${column.dia}`,
+    })),
+  ].sort((avisoA, avisoB) => avisoA.dia - avisoB.dia);
 
   const validacaoDiaLancamentoETEC = (dia, categoriaId) => {
     return ehDiaHabilitadoParaLancamentoETEC(
@@ -4283,16 +4305,15 @@ export default () => {
                           </div>
                         ))}
                     </Spin>
-                    {diasSuspensosDaSemana.length > 0 &&
-                      !loadingLancamentos && (
-                        <div className="dias-suspensos mb-2">
-                          {diasSuspensosDaSemana.map((column) => (
-                            <span key={column.dia}>
-                              * {column.dia} - Suspensão de atividade
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                    {avisosDaSemana.length > 0 && !loadingLancamentos && (
+                      <div className="avisos-calendario mb-2">
+                        {avisosDaSemana.map((aviso) => (
+                          <span key={aviso.chave} className="d-block">
+                            * {aviso.diaFormatado} - {aviso.texto}
+                          </span>
+                        ))}
+                      </div>
+                    )}
 
                     {ultimaAtualizacaoMedicao && (
                       <p className="ultimo-salvamento mb-0">
