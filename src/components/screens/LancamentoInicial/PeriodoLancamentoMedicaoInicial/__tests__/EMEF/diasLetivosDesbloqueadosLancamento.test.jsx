@@ -100,8 +100,6 @@ describe("Lancamento MANHA EMEF - Dias Letivos via API Calendário", () => {
 
     const search = `?uuid=${escolaUuid}&ehGrupoSolicitacoesDeAlimentacao=false&ehGrupoETEC=false&ehPeriodoEspecifico=false`;
     window.history.pushState({}, "", search);
-
-    await renderComponente();
   });
 
   it("deve desbloquear os campos de fim de semana quando retornados como letivos pela API", async () => {
@@ -160,5 +158,63 @@ describe("Lancamento MANHA EMEF - Dias Letivos via API Calendário", () => {
     const inputLancheDia05 = screen.getByTestId("lanche__dia_05__categoria_1");
 
     expect(inputLancheDia05).toBeDisabled();
+  });
+
+  it("deve exibir o aviso de suspensão de atividade quando o dia estiver suspenso e bloqueado", async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, []);
+
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, [
+      {
+        data: "05/04/2025",
+        editais: ["303030A"],
+      },
+    ]);
+
+    await renderComponente();
+
+    expect(
+      await screen.findByText(/05\s*-\s*Suspensão de atividade/),
+    ).toBeInTheDocument();
+  });
+
+  it("deve exibir o aviso de dia letivo cadastrado por CODAE", async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, [
+      {
+        data: "05/04/2025",
+      },
+    ]);
+
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
+
+    await renderComponente();
+
+    expect(
+      await screen.findByText(/05\s*-\s*Dia letivo cadastrado por CODAE/),
+    ).toBeInTheDocument();
+  });
+
+  it("não deve exibir aviso de suspensão quando o dia suspenso estiver liberado pela CODAE", async () => {
+    mock.onGet("/dias-letivos/calendario/").reply(200, [
+      {
+        data: "05/04/2025",
+      },
+    ]);
+
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, [
+      {
+        data: "05/04/2025",
+        editais: ["303030A"],
+      },
+    ]);
+
+    await renderComponente();
+
+    expect(
+      await screen.findByText(/05\s*-\s*Dia letivo cadastrado por CODAE/),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.queryByText(/05\s*-\s*Suspensão de atividade/),
+    ).not.toBeInTheDocument();
   });
 });
