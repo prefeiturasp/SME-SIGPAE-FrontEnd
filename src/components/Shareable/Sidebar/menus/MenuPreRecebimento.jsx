@@ -12,6 +12,7 @@ import {
   PAINEL_LAYOUT_EMBALAGEM,
   PRE_RECEBIMENTO,
   RELATORIO_CRONOGRAMA,
+  RELATORIO_FICHAS_TECNICAS,
   SOLICITACAO_ALTERACAO_CRONOGRAMA,
   SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR,
 } from "src/configs/constants";
@@ -22,6 +23,7 @@ import {
   usuarioComAcessoAoPainelEmbalagens,
   usuarioComAcessoAoPainelFichasTecnicas,
   usuarioComAcessoAoRelatorioCronogramas,
+  usuarioComAcessoAoRelatorioFichasTecnicas,
   usuarioEhCodaeDilog,
   usuarioEhCODAEGabinete,
   usuarioEhCronograma,
@@ -121,7 +123,8 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
           Fichas Técnicas
         </LeafItem>
       )}
-      {usuarioComAcessoAoRelatorioCronogramas() && (
+      {(usuarioComAcessoAoRelatorioCronogramas() ||
+        usuarioComAcessoAoRelatorioFichasTecnicas()) && (
         <SubMenu
           icon="fa-chevron-down"
           onClick={onSubmenuClick}
@@ -132,6 +135,11 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
           {usuarioComAcessoAoRelatorioCronogramas() && (
             <LeafItem to={`/${PRE_RECEBIMENTO}/${RELATORIO_CRONOGRAMA}/`}>
               Cronogramas de Entregas
+            </LeafItem>
+          )}
+          {usuarioComAcessoAoRelatorioFichasTecnicas() && (
+            <LeafItem to={`/${PRE_RECEBIMENTO}/${RELATORIO_FICHAS_TECNICAS}/`}>
+              Fichas Técnicas
             </LeafItem>
           )}
         </SubMenu>
