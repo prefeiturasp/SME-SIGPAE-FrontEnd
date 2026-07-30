@@ -25,33 +25,33 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 }
 
 export const cadastraRascunhoFichaTecnica = async (
-  payload: FichaTecnicaPayload
+  payload: FichaTecnicaPayload,
 ): Promise<ResponseFichaTecnicaDetalhada> =>
   await axios.post("/rascunho-ficha-tecnica/", payload);
 
 export const editaRascunhoFichaTecnica = async (
   payload: FichaTecnicaPayload,
-  uuid: string
+  uuid: string,
 ): Promise<ResponseFichaTecnicaDetalhada> =>
   await axios.put(`/rascunho-ficha-tecnica/${uuid}/`, payload);
 
 export const getFichaTecnica = async (
-  uuid: string
+  uuid: string,
 ): Promise<ResponseFichaTecnicaDetalhada> =>
   await axios.get(`/ficha-tecnica/${uuid}/`);
 
 export const getFichaTecnicaComAnalise = async (
-  uuid: string
+  uuid: string,
 ): Promise<ResponseFichaTecnicaDetalhadaComAnalise> =>
   await axios.get(`/ficha-tecnica/${uuid}/detalhar-com-analise/`);
 
 export const listarFichastecnicas = async (
-  params: URLSearchParams
+  params: URLSearchParams,
 ): Promise<ResponseFichasTecnicas> =>
   await axios.get("/ficha-tecnica/", { params });
 
 export const cadastrarFichaTecnica = async (
-  payload: FichaTecnicaPayload
+  payload: FichaTecnicaPayload,
 ): Promise<ResponseFichaTecnicaDetalhada> =>
   await axios.post("/ficha-tecnica/", payload, {
     skipAuthRefresh: true,
@@ -59,7 +59,7 @@ export const cadastrarFichaTecnica = async (
 
 export const cadastrarFichaTecnicaDoRascunho = async (
   payload: FichaTecnicaPayload,
-  uuid: string
+  uuid: string,
 ): Promise<ResponseFichaTecnicaDetalhada> =>
   await axios.put(`/ficha-tecnica/${uuid}/`, payload, {
     skipAuthRefresh: true,
@@ -67,7 +67,7 @@ export const cadastrarFichaTecnicaDoRascunho = async (
 
 // Service retorna vários status diferente dentro dos resultados, filtros são apenas strings
 export const getDashboardFichasTecnicas = async (
-  params: FiltrosDashboardFichasTecnicas = null
+  params: FiltrosDashboardFichasTecnicas = null,
 ): Promise<ResponseFichasTecnicasDashboard> => {
   const url = `/ficha-tecnica/dashboard/`;
   const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
@@ -79,7 +79,7 @@ export const getDashboardFichasTecnicas = async (
 
 // Service retorna apenas um status nos resultados, filtros em formatos de array são transformados em parametros de URL
 export const getDashboardFichasTecnicasPorStatus = async (
-  params: URLSearchParams = null
+  params: URLSearchParams = null,
 ): Promise<ResponseFichasTecnicasPorStatusDashboard> => {
   try {
     return await axios.get(`/ficha-tecnica/dashboard/`, { params });
@@ -119,7 +119,7 @@ export const getListaFichasTecnicasSimplesSemLayoutEmbalagem =
   async (): Promise<ResponseFichasTecnicasSimples> => {
     try {
       return await axios.get(
-        `/ficha-tecnica/lista-simples-sem-layout-embalagem/`
+        `/ficha-tecnica/lista-simples-sem-layout-embalagem/`,
       );
     } catch (error) {
       toastError(getMensagemDeErro(error.response.status));
@@ -130,7 +130,7 @@ export const getListaFichasTecnicasSimplesSemQuestoesConferencia =
   async (): Promise<ResponseFichasTecnicasSimples> => {
     try {
       return await axios.get(
-        `/ficha-tecnica/lista-simples-sem-questoes-conferencia/`
+        `/ficha-tecnica/lista-simples-sem-questoes-conferencia/`,
       );
     } catch (error) {
       toastError(getMensagemDeErro(error.response.status));
@@ -138,31 +138,31 @@ export const getListaFichasTecnicasSimplesSemQuestoesConferencia =
   };
 
 export const getDadosCronogramaFichaTecnica = async (
-  uuid: string
+  uuid: string,
 ): Promise<ResponseDadosCronogramaFichaTecnica> =>
   await axios.get(`/ficha-tecnica/${uuid}/dados-cronograma/`);
 
 export const cadastraRascunhoAnaliseFichaTecnica = async (
   payload: AnaliseFichaTecnicaPayload,
-  uuid: string
+  uuid: string,
 ): Promise<ResponseFichaTecnicaDetalhadaComAnalise> =>
   await axios.post(`/ficha-tecnica/${uuid}/rascunho-analise-gpcodae/`, payload);
 
 export const editaRascunhoAnaliseFichaTecnica = async (
   payload: AnaliseFichaTecnicaPayload,
-  uuid: string
+  uuid: string,
 ): Promise<ResponseFichaTecnicaDetalhadaComAnalise> =>
   await axios.put(`/ficha-tecnica/${uuid}/rascunho-analise-gpcodae/`, payload);
 
 export const cadastraAnaliseFichaTecnica = async (
   payload: AnaliseFichaTecnicaPayload,
-  uuid: string
+  uuid: string,
 ): Promise<ResponseSemDadosInterface> =>
   await axios.post(`/ficha-tecnica/${uuid}/analise-gpcodae/`, payload);
 
 export const corrigirFichaTecnica = async (
   payload: FichaTecnicaPayload,
-  uuid: string
+  uuid: string,
 ): Promise<ResponseSemDadosInterface> =>
   await axios.patch(`/ficha-tecnica/${uuid}/correcao-fornecedor/`, payload, {
     skipAuthRefresh: true,
@@ -170,11 +170,18 @@ export const corrigirFichaTecnica = async (
 
 export const atualizarFichaTecnica = async (
   payload: FichaTecnicaPayload,
-  uuid: string
+  uuid: string,
 ): Promise<ResponseSemDadosInterface> =>
   await axios.patch(`/ficha-tecnica/${uuid}/atualizacao-fornecedor/`, payload, {
     skipAuthRefresh: true,
   } as CustomAxiosRequestConfig);
+
+export const getRelatorioFichasTecnicas = async (params: URLSearchParams) => {
+  const response = await axios.get("/ficha-tecnica/listagem-relatorio/", {
+    params,
+  });
+  return response;
+};
 
 export const imprimirFichaTecnica = async (uuid: string, numero: string) => {
   const url = `/ficha-tecnica/${uuid}/gerar-pdf-ficha/`;
