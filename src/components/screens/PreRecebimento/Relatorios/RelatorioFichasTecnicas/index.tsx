@@ -4,6 +4,7 @@ import { Field } from "react-final-form";
 import moment from "moment";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
+import { InputText } from "src/components/Shareable/Input/InputText";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
@@ -148,38 +149,32 @@ export default () => {
                   </div>
                   <div className="col-4 mt-2">
                     <Field
-                      component={AutoCompleteSelectField}
-                      options={getListaFiltradaAutoCompleteSelect(
-                        CATEGORIA_CHOICES.map((c) => c.label),
-                        values?.categoria,
-                        true,
-                      )}
                       label="Categoria"
+                      component={MultiSelect}
                       name="categoria"
+                      multiple
+                      nomeDoItemNoPlural="categorias"
+                      options={CATEGORIA_CHOICES}
                       placeholder="Selecione uma Categoria"
                     />
                   </div>
                   <div className="col-4 mt-2">
                     <Field
-                      component={AutoCompleteSelectField}
-                      options={getListaFiltradaAutoCompleteSelect(
-                        PROGRAMA_CHOICES.map((p) => p.label),
-                        values?.programa,
-                        true,
-                      )}
                       label="Programa"
+                      component={MultiSelect}
                       name="programa"
+                      multiple
+                      nomeDoItemNoPlural="programas"
+                      options={PROGRAMA_CHOICES}
                       placeholder="Selecione um Programa"
                     />
                   </div>
                   <div className="col-4 mt-2">
                     <Field
-                      component={AutoCompleteSelectField}
-                      options={[]}
+                      component={InputText}
                       label="Nº de Pregão / Chamada Pública"
                       name="pregao"
-                      placeholder="Selecione o Nº de Pregão / Chamada Pública"
-                      freeSolo
+                      placeholder="Digite o Nº de Pregão / Chamada Pública"
                     />
                   </div>
                   <div className="col-4 mt-2">
