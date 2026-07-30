@@ -1399,3 +1399,17 @@ export const ehFimDeSemanaUTC = (date) => {
 export const usuarioComAcessoAosCalendarios = () => {
   return usuarioEhCODAEGabinete();
 };
+
+export const usuarioPodeVisualizarLinhaDoTempoFichaTecnica = () => {
+  return (
+    usuarioEhAdmQualquerEmpresa() ||
+    usuarioEhQualquerUsuarioEmpresa() ||
+    usuarioEhCoordenadorGpCODAE() ||
+    usuarioEhAdministradorGpCODAE() ||
+    usuarioEhCronograma() ||
+    usuarioEhCodaeDilog() ||
+    usuarioEhDilogQualidade() ||
+    usuarioEhDilogDiretoria() ||
+    usuarioEhDilog()
+  );
+};

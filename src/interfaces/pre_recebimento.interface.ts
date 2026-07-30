@@ -266,6 +266,7 @@ export interface AnaliseFichaTecnica extends AnaliseFichaTecnicaPayload {
 }
 
 export interface FichaTecnicaDetalhadaComAnalise extends FichaTecnicaDetalhada {
+  logs?: LogSolicitacoesUsuarioSimples[];
   analise: AnaliseFichaTecnica;
   log_mais_recente: string;
   ficha_tecnica?: string;
