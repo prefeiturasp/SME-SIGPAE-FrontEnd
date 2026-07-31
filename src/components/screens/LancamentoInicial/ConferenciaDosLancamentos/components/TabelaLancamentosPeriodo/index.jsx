@@ -1913,7 +1913,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                       semanaSelecionada={semanaSelecionada}
                       diasLetivosSIGPAE={diasLetivosSIGPAE}
                       diasSuspensaoAtividades={diasSuspensaoAtividades}
-                      inclusoesAutorizadas={inclusoesAutorizadas}
                     />
                   ),
                 ])}
@@ -1929,7 +1928,6 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 semanaSelecionada={semanaSelecionada}
                 diasLetivosSIGPAE={diasLetivosSIGPAE}
                 diasSuspensaoAtividades={diasSuspensaoAtividades}
-                inclusoesAutorizadas={inclusoesAutorizadas}
               />
               {usuarioEhDRE() && logPeriodoAprovado && (
                 <div className="row">
