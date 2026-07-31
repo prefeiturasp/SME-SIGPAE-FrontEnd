@@ -27,6 +27,7 @@ export default ({ show, setShow, handleClose, loading, handleSim }) => {
               </Modal.Header>
               <Modal.Body>
                 <Field
+                  dataTestId="justificativa_cronograma"
                   component={TextArea}
                   label="Insira sua análise da Solicitação de Alteração"
                   name="justificativa_cronograma"
