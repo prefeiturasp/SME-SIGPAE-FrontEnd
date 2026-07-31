@@ -1355,6 +1355,7 @@ export const AcompanhamentoDeLancamentos = () => {
                                   gruposHabilitadosPorDre
                                 }
                                 mesAnoSelecionado={mesAno}
+                                recreioNasFerias={recreioNasFerias !== null}
                               />
 
                               <ModalRelatorio
