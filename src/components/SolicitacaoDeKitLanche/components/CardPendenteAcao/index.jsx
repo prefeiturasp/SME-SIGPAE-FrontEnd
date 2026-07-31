@@ -97,10 +97,10 @@ export class CardPendenteAcao extends Component {
                   {`
                   ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "escola"
+                    "escola",
                   )} ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "solicitante"
+                    "solicitante",
                   )}
                   `}
                 </span>
@@ -110,6 +110,7 @@ export class CardPendenteAcao extends Component {
           <div className="col-1">
             {pedidos.length > 0 && (
               <ToggleExpandir
+                dataTestId="botao-expandir"
                 onClick={() => this.setState({ collapsed: !collapsed })}
                 ativo={!collapsed}
               />
@@ -143,8 +144,8 @@ export class CardPendenteAcao extends Component {
                     const tipoSolicitacao = ehEscolaTipoCEI(pedido.escola)
                       ? SOLICITACAO_CEI
                       : ehEscolaTipoCEMEI(pedido.escola)
-                      ? SOLICITACAO_CEMEI
-                      : SOLICITACAO_NORMAL;
+                        ? SOLICITACAO_CEMEI
+                        : SOLICITACAO_NORMAL;
                     const solicitacaoUrl = ehEscolaTipoCEMEI(pedido.escola)
                       ? SOLICITACAO_KIT_LANCHE_CEMEI
                       : SOLICITACAO_KIT_LANCHE;
@@ -208,7 +209,7 @@ export class CardPendenteAcao extends Component {
                                           onClick={() =>
                                             this.collapseSolicitacaoSimilar(
                                               key,
-                                              idxSolicitacaoSimilar
+                                              idxSolicitacaoSimilar,
                                             )
                                           }
                                           ativo={!s.collapsed}
@@ -217,7 +218,7 @@ export class CardPendenteAcao extends Component {
                                       </b>
                                     </p>
                                   );
-                                }
+                                },
                               )
                             ) : (
                               <p />
@@ -234,7 +235,7 @@ export class CardPendenteAcao extends Component {
                                   index={idxSolicitacaoSimilar}
                                 />
                               );
-                            }
+                            },
                           )}
                       </>
                     );
