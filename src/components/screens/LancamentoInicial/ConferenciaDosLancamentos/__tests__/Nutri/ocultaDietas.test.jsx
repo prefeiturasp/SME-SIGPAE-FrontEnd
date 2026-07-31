@@ -51,6 +51,7 @@ describe("Teste de Filtragem de Tabelas de Dieta", () => {
 
   const setupMocks = (withDiets = true) => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosNutriSupervisao);

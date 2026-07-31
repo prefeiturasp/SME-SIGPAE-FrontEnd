@@ -101,6 +101,7 @@ const setupConferencia = async ({
 
   mock.reset();
   mock.onGet("/dias-letivos/calendario/").reply(200, []);
+  mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
   mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
   mock.onGet("/notificacoes/").reply(200, { results: [] });
   mock.onGet("/notificacoes/quantidade-nao-lidos/").reply(200, {
