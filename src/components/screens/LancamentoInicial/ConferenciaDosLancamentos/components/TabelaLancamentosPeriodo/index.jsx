@@ -109,6 +109,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     diasSobremesaDoce,
     periodosGruposMedicao,
     diasLetivosSIGPAE,
+    diasSuspensaoAtividades,
   } = props;
 
   const [weekColumns, setWeekColumns] = useState(initialStateWeekColumns);
@@ -601,6 +602,15 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     return entrada.periodos_escolares.includes(periodoNormalizado);
   };
 
+  const diaEhSuspensaoAtividade = (dia) => {
+    if (diaEhLetivoSIGPAE(dia)) return false;
+
+    const diaFormatado = String(dia).padStart(2, "0");
+    const dataFormatada = `${diaFormatado}/${mesSolicitacao}/${anoSolicitacao}`;
+
+    return diasSuspensaoAtividades.some((d) => d.data === dataFormatada);
+  };
+
   const ehDiaNaoLetivoOuFeriado = (column, categoria) => {
     return (
       !["Mês anterior", "Mês posterior"].includes(
@@ -623,7 +633,9 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           )}`
         ],
       ) &&
-      (diaEhFeriado(column.dia) || diaEhNaoLetivoEDeSemana(column.dia)) &&
+      (diaEhFeriado(column.dia) ||
+        diaEhNaoLetivoEDeSemana(column.dia) ||
+        diaEhSuspensaoAtividade(column.dia)) &&
       !validacaoSemana(column.dia, semanaSelecionada) &&
       !diaEhLetivoSIGPAE(column.dia)
     );
@@ -651,7 +663,9 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           )}`
         ],
       ) &&
-      (diaEhFeriadoByIndex(index) || diaEhNaoLetivoEDeSemanaByIndex(index)) &&
+      (diaEhFeriadoByIndex(index) ||
+        diaEhNaoLetivoEDeSemanaByIndex(index) ||
+        diaEhSuspensaoAtividade(weekColumns[index].dia)) &&
       !validacaoSemana(weekColumns[index].dia, semanaSelecionada) &&
       !diaEhLetivoSIGPAE(weekColumns[index].dia)
     );
@@ -1898,6 +1912,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                       periodoGrupo={periodoGrupo}
                       semanaSelecionada={semanaSelecionada}
                       diasLetivosSIGPAE={diasLetivosSIGPAE}
+                      diasSuspensaoAtividades={diasSuspensaoAtividades}
                     />
                   ),
                 ])}
@@ -1912,6 +1927,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                 periodoGrupo={periodoGrupo}
                 semanaSelecionada={semanaSelecionada}
                 diasLetivosSIGPAE={diasLetivosSIGPAE}
+                diasSuspensaoAtividades={diasSuspensaoAtividades}
               />
               {usuarioEhDRE() && logPeriodoAprovado && (
                 <div className="row">

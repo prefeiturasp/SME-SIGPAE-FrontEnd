@@ -16,6 +16,7 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
     periodoGrupo,
     semanaSelecionada,
     diasLetivosSIGPAE,
+    diasSuspensaoAtividades,
   } = props;
 
   const diaEhLetivoSIGPAE = (dia) => {
@@ -133,12 +134,6 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
     diasLetivosSIGPAE
       ?.filter((entradaSIGPAE) => {
         const diaFormatado = entradaSIGPAE.data.substring(0, 2);
-        const mesFormatado = entradaSIGPAE.data.substring(3, 5);
-        const anoFormatado = entradaSIGPAE.data.substring(6, 10);
-
-        if (mesFormatado !== String(mesSolicitacao).padStart(2, "0"))
-          return false;
-        if (anoFormatado !== String(anoSolicitacao)) return false;
 
         const nomePeriodo =
           periodoGrupo?.periodo_escolar ??
@@ -154,6 +149,19 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
           return false;
         if (!weekColumns.find((col) => col.dia === diaFormatado)) return false;
         if (listaDiasLabels.find((l) => l.dia === diaFormatado)) return false;
+        if (
+          ["Mês anterior", "Mês posterior"].includes(
+            values[
+              `frequencia__dia_${diaFormatado}__categoria_${
+                categoria?.id
+              }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
+                0,
+                5,
+              )}`
+            ],
+          )
+        )
+          return false;
 
         return true;
       })
@@ -164,6 +172,38 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
             dia,
             label: "Dia letivo cadastrado por CODAE",
           });
+      });
+
+    diasSuspensaoAtividades
+      .filter((entrada) => {
+        const diaFormatado = entrada.data.substring(0, 2);
+
+        if (!weekColumns.find((col) => col.dia === diaFormatado)) return false;
+        if (listaDiasLabels.find((l) => l.dia === diaFormatado)) return false;
+        if (
+          ["Mês anterior", "Mês posterior"].includes(
+            values[
+              `frequencia__dia_${diaFormatado}__categoria_${
+                categoria?.id
+              }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
+                0,
+                5,
+              )}`
+            ],
+          )
+        )
+          return false;
+
+        return true;
+      })
+      .forEach((entrada) => {
+        const dia = entrada.data.substring(0, 2);
+        if (!validacaoSemana(dia, semanaSelecionada)) {
+          listaDiasLabels.push({
+            dia,
+            label: "Suspensão de atividade",
+          });
+        }
       });
 
     return listaDiasLabels.sort((obj1, obj2) => (obj1.dia > obj2.dia ? 1 : -1));

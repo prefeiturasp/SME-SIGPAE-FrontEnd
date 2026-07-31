@@ -64,6 +64,7 @@ import "./style.scss";
 import { ModalPedirCorrecaoSemLancamentos } from "./components/ModalPedirCorrecaoSemLancamentos";
 import { carregarDiasCalendario } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/validacoes.jsx";
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();
@@ -109,6 +110,7 @@ export const ConferenciaDosLancamentos = () => {
     useState(true);
   const [showModal, setShowModal] = useState(false);
 
+  const [diasSuspensaoAtividades, setDiasSuspensaoAtividades] = useState([]);
   const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState([]);
   const [feriadosNoMes, setFeriadosNoMes] = useState();
   const [diasCalendario, setDiasCalendario] = useState({});
@@ -149,6 +151,18 @@ export const ConferenciaDosLancamentos = () => {
 
     const response = await listDiasLetivosCalendario(params);
     setDiaLetivosSIGPAE(response.data);
+  };
+
+  const getDiasSuspensaoAtividades = async (mes, ano) => {
+    const escolaUuid = location.state.escolaUuid;
+    const params = {
+      mes,
+      ano,
+      escola: escolaUuid,
+    };
+
+    const response = await getListaDiasSuspensaoAtividades(params);
+    setDiasSuspensaoAtividades(response.data);
   };
 
   const carregarTodosDiasCalendario = async () => {
@@ -383,6 +397,7 @@ export const ConferenciaDosLancamentos = () => {
       };
 
       getDiasLetivosSIGPAE(mes, ano);
+      getDiasSuspensaoAtividades(mes, ano);
       setSolicitacao(response.data);
       setHistorico(response.data.ocorrencia && response.data.ocorrencia.logs);
       setMesSolicitacao(mes);
@@ -1115,6 +1130,7 @@ export const ConferenciaDosLancamentos = () => {
                               diasCalendario={diasCalendario[chaveCalendario]}
                               diasSobremesaDoce={diasSobremesaDoce}
                               diasLetivosSIGPAE={diasLetivosSIGPAE}
+                              diasSuspensaoAtividades={diasSuspensaoAtividades}
                             />,
                           ];
                         })}

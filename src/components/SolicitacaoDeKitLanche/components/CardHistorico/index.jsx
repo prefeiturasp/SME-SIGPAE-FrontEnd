@@ -76,6 +76,7 @@ export class CardHistorico extends Component {
             </div>
             <div className="ps-5 col-1">
               <ToggleExpandir
+                dataTestId="botao-expandir"
                 onClick={() => this.setState({ collapsed: !collapsed })}
                 ativo={!collapsed}
               />
@@ -103,6 +104,7 @@ export class CardHistorico extends Component {
                     Selecionar todos
                   </label>
                   <Botao
+                    dataTestId="botao-imprimir"
                     type={BUTTON_TYPE.BUTTON}
                     titulo="imprimir"
                     style={BUTTON_STYLE.BLUE}
