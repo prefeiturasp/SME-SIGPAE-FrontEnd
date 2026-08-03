@@ -19,7 +19,6 @@ import {
   TIPOS_EMBALAGENS,
   UNIDADES_MEDIDA,
 } from "src/configs/constants";
-import { ENVIRONMENT } from "src/constants/config";
 import {
   usuarioEhAdministradorCONTRATOS,
   usuarioEhCodaeDilog,
@@ -114,11 +113,9 @@ const MenuCadastros = () => {
           >
             Suspensão de Atividades
           </LeafItem>
-          {!ENVIRONMENT.includes("production") && (
-            <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}`}>
-              Dias Letivos
-            </LeafItem>
-          )}
+          <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}`}>
+            Dias Letivos
+          </LeafItem>
         </>
       )}
       {usuarioEhMedicao() && (
