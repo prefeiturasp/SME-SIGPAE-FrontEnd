@@ -16,7 +16,7 @@ import { usuarioEhCODAEGestaoAlimentacao } from "src/helpers/utilities";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`,
-  titulo: "Sobremesa Doce e Agricultura Familiar",
+  titulo: "Sobremesa Doce e da Agricultura Familiar",
 };
 
 const anteriores = [
