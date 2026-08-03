@@ -1,4 +1,9 @@
-import { formataMilhar, formataMilharDecimal, geradorUUID } from "../utilities";
+import {
+  formataMilhar,
+  formataMilharDecimal,
+  geradorUUID,
+  formatarCPFouCNPJ,
+} from "../utilities";
 
 describe("formataMilhar", () => {
   test("deve formatar números corretamente", () => {
@@ -64,5 +69,40 @@ describe("Testes para geradorUUID", () => {
     expect(uuid1).not.toBe(uuid2);
     expect(uuid1).not.toBe(uuid3);
     expect(uuid2).not.toBe(uuid3);
+  });
+});
+
+describe("formatarCPFouCNPJ", () => {
+  test("deve formatar CNPJ numérico antigo (14 dígitos)", () => {
+    expect(formatarCPFouCNPJ("12345678000195")).toBe("12.345.678/0001-95");
+  });
+
+  test("deve formatar CNPJ alfanumérico (com letras nos primeiros 12 caracteres)", () => {
+    expect(formatarCPFouCNPJ("12AB3456789012")).toBe("12.AB3.456/7890-12");
+    expect(formatarCPFouCNPJ("AA112233445566")).toBe("AA.112.233/4455-66");
+  });
+
+  test("deve formatar CNPJ com letras minúsculas", () => {
+    expect(formatarCPFouCNPJ("12ab3456789012")).toBe("12.AB3.456/7890-12");
+  });
+
+  test("deve formatar CNPJ já formatado corretamente", () => {
+    expect(formatarCPFouCNPJ("12.345.678/0001-95")).toBe("12.345.678/0001-95");
+    expect(formatarCPFouCNPJ("12.AB3.456/7890-12")).toBe("12.AB3.456/7890-12");
+  });
+
+  test("deve formatar CPF (11 dígitos)", () => {
+    expect(formatarCPFouCNPJ("12345678901")).toBe("123.456.789-01");
+    expect(formatarCPFouCNPJ("52998224725")).toBe("529.982.247-25");
+  });
+
+  test("deve retornar string sem formatação se não tiver 11 ou 14 caracteres", () => {
+    expect(formatarCPFouCNPJ("123")).toBe("123");
+    expect(formatarCPFouCNPJ("")).toBe("");
+  });
+
+  test("deve rejeitar CNPJ com letras nos dígitos verificadores (últimos 2)", () => {
+    expect(formatarCPFouCNPJ("12.345.678/0001-A5")).not.toMatch(/-[A-Z]/);
+    expect(formatarCPFouCNPJ("1234567890AB")).toBe("1234567890AB");
   });
 });

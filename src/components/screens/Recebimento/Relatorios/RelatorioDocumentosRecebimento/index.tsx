@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
 import Filtros from "./components/Filtros";
-import { getListagemRelatorioDocsRecebimento } from "src/services/documentosRecebimento.service";
+import {
+  getListagemRelatorioDocsRecebimento,
+  exportarExcelRelatorioDocsRecebimento,
+} from "src/services/documentosRecebimento.service";
 import {
   DocsRecebimentoRelatorio,
   FiltrosRelatorioDocRecebimento,
 } from "./interfaces";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
 import { Paginacao } from "src/components/Shareable/Paginacao";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 import Listagem from "./components/Listagem";
 import "./styles.scss";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -46,6 +55,11 @@ export default () => {
   const nextPage = (page: number) => {
     buscarResultados(page);
     setPage(page);
+  };
+
+  const handleExportarExcel = async () => {
+    const params = gerarParametrosConsulta({ page: page, ...filtros });
+    await exportarExcelRelatorioDocsRecebimento(params);
   };
 
   useEffect(() => {
@@ -112,6 +126,18 @@ export default () => {
                         current={page}
                         total={totalResultados}
                         onChange={nextPage}
+                      />
+                    </div>
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col-12 d-flex justify-content-end">
+                      <Botao
+                        texto="Baixar em Excel"
+                        style={BUTTON_STYLE.GREEN}
+                        icon={BUTTON_ICON.FILE_EXCEL}
+                        type={BUTTON_TYPE.BUTTON}
+                        onClick={handleExportarExcel}
+                        className="float-end"
                       />
                     </div>
                   </div>

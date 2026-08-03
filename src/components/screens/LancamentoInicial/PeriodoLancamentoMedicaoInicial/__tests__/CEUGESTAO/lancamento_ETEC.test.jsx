@@ -6,6 +6,8 @@ import {
   render,
   screen,
 } from "@testing-library/react";
+import React from "react";
+import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
 import { mockDiasCalendarioFevereiro2025CEUGESTAO } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/diasCalendario_Fevereiro2025";
@@ -16,8 +18,6 @@ import { mockValoresMedicaoCEUGESTAO_ETEC } from "src/mocks/medicaoInicial/Perio
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
-import React from "react";
-import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - ETEC - Usuário CEU GESTAO", () => {
@@ -34,6 +34,7 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - ETEC - Usuário CEU GESTAO",
       quantidade_nao_lidos: 0,
     });
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock
       .onGet(
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/b11a2964-c9e0-488a-bb7f-6e11df2c903b/",

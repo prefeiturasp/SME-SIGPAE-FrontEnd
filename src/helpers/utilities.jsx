@@ -350,13 +350,14 @@ export const vizualizaBotoesDietaEspecial = (solicitacao) => {
 };
 
 export const formatarCPFouCNPJ = (value) => {
-  const cnpjCpf = value.replace(/\D/g, "");
-  if (cnpjCpf.length === 11) {
-    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "$1.$2.$3-$4");
+  const cleaned = value.replace(/[.\-/]/g, "");
+  if (cleaned.length === 11) {
+    return cleaned.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "$1.$2.$3-$4");
   }
-  return cnpjCpf.replace(
-    /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g,
-    "$1.$2.$3/$4-$5",
+  return cleaned.replace(
+    /^([A-Z0-9]{2})([A-Z0-9]{3})([A-Z0-9]{3})([A-Z0-9]{4})(\d{2})$/i,
+    (_, g1, g2, g3, g4, g5) =>
+      `${g1.toUpperCase()}.${g2.toUpperCase()}.${g3.toUpperCase()}/${g4.toUpperCase()}-${g5}`,
   );
 };
 
@@ -534,6 +535,16 @@ export const usuarioComAcessoAoRelatorioCronogramas = () => {
     PERFIL.USUARIO_RELATORIOS,
     PERFIL.USUARIO_GTIC_CODAE,
     PERFIL.DILOG_VISUALIZACAO,
+  ].includes(localStorage.getItem("perfil"));
+};
+
+export const usuarioComAcessoAoRelatorioFichasTecnicas = () => {
+  return [
+    PERFIL.DILOG_QUALIDADE,
+    PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+    PERFIL.COORDENADOR_GESTAO_PRODUTO,
+    PERFIL.ADMINISTRADOR_GESTAO_PRODUTO,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -1397,4 +1408,18 @@ export const ehFimDeSemanaUTC = (date) => {
 
 export const usuarioComAcessoAosCalendarios = () => {
   return usuarioEhCODAEGabinete();
+};
+
+export const usuarioPodeVisualizarLinhaDoTempoFichaTecnica = () => {
+  return (
+    usuarioEhAdmQualquerEmpresa() ||
+    usuarioEhQualquerUsuarioEmpresa() ||
+    usuarioEhCoordenadorGpCODAE() ||
+    usuarioEhAdministradorGpCODAE() ||
+    usuarioEhCronograma() ||
+    usuarioEhCodaeDilog() ||
+    usuarioEhDilogQualidade() ||
+    usuarioEhDilogDiretoria() ||
+    usuarioEhDilog()
+  );
 };

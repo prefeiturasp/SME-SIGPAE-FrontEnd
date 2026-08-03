@@ -7,16 +7,17 @@ import { mockDiasCalendarioCEUGESTAO_NOVEMBRO24 } from "src/mocks/medicaoInicial
 import { mockInclusoesAutorizadasCEUGESTAO_ProgramasProjetos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/inclusoesAutorizadasCEUGESTAO_ProgramasProjetos";
 import { mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/logQuantidadeDietasAutorizadasCEUGESTAO";
 import { mockStateCEUGESTAO_ProgramasProjetos } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockStateCEUGESTAO_ProgramasProjetos";
+import { mockTipoAlimentacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockTipoAlimentacao";
 import { mockValoresMedicaoCEUGESTAO_TARDE } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/valoresMedicaoCEUGESTAO_TARDE";
 import { mockMeusDadosEscolaCEUGESTAO } from "src/mocks/meusDados/escolaCeuGestao";
 import { mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO } from "src/mocks/services/cadastroTipoAlimentacao.service/CEUGESTAO/mockGetVinculosTipoAlimentacaoPorEscolaCEUGESTAO";
 import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/PeriodoLancamentoMedicaoInicialPage";
 import mock from "src/services/_mock";
-import { mockTipoAlimentacao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/CEUGESTAO/mockTipoAlimentacao";
 
 describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuário CEU GESTAO", () => {
   beforeEach(async () => {
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
+    mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEUGESTAO);

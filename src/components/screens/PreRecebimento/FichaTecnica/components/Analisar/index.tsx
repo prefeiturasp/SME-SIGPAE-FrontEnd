@@ -14,6 +14,7 @@ import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
   imprimirFicha,
+  montarLinhaDoTempoFichaTecnica,
 } from "../../helpers";
 import { InformacaoNutricional } from "src/interfaces/produto.interface";
 import { TerceirizadaComEnderecoInterface } from "src/interfaces/terceirizada.interface";
@@ -39,20 +40,22 @@ import {
   FICHA_TECNICA,
   ATUALIZAR_FICHA_TECNICA,
 } from "src/configs/constants";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 import "./styles.scss";
+import { usuarioPodeVisualizarLinhaDoTempoFichaTecnica } from "src/helpers/utilities";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 
 const idCollapse = "collapseAnalisarFichaTecnica";
-
 interface AnalisarProps {
   somenteLeitura?: boolean;
 }
 
 export default ({ somenteLeitura = false }: AnalisarProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [carregando, setCarregando] = useState<boolean>(true);
   const [showModalCancelar, setShowModalCancelar] = useState<boolean>(false);
   const [collapse, setCollapse] = useState<CollapseControl>({});
@@ -87,6 +90,10 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
       );
     })();
   }, []);
+
+  const estaNaTelaDetalharFichaTecnica = location.pathname.includes(
+    "/detalhar-ficha-tecnica",
+  );
 
   const imprimirFichaTecnica = () => {
     setCarregando(true);
@@ -244,6 +251,12 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     return tagMap[ficha.status];
   };
 
+  const podeVisualizarLinhaDoTempo =
+    usuarioPodeVisualizarLinhaDoTempoFichaTecnica();
+
+  const listaDeStatusLinhaDoTempo = montarLinhaDoTempoFichaTecnica(
+    ficha.logs ?? [],
+  );
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-analise-ficha-tecnica">
@@ -373,6 +386,16 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     <div className="subtitulo">Identificação do Produto</div>
                     {somenteLeitura && renderizarTag()}
                   </div>
+
+                  {estaNaTelaDetalharFichaTecnica &&
+                    podeVisualizarLinhaDoTempo &&
+                    listaDeStatusLinhaDoTempo.length > 0 && (
+                      <div className="linha-do-tempo-ficha-tecnica mt-4 mb-5">
+                        <FluxoDeStatusPreRecebimento
+                          listaDeStatus={listaDeStatusLinhaDoTempo}
+                        />
+                      </div>
+                    )}
 
                   <div className="row mt-4">
                     <div className="col-4">

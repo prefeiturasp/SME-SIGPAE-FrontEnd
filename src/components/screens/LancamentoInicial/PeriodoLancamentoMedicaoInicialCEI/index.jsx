@@ -151,6 +151,7 @@ import {
 } from "./validacoes";
 import { ORDEM_CAMPOS_DIETAS_RECREIO } from "src/components/screens/LancamentoInicial/constants";
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
+import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 
 export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const initialStateWeekColumns = [
@@ -257,6 +258,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [faixasAtivasPorTipo, setFaixasAtivasPorTipo] = useState({});
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
   const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
+  const [diasSuspensaoAtividades, setDiasSuspensaoAtividades] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -347,6 +349,23 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     setDiaLetivosSIGPAE(dias);
   };
 
+  const getDiasSuspensaoAtividades = async (escola_uuid) => {
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola: escola_uuid,
+    };
+
+    const response = await getListaDiasSuspensaoAtividades(params);
+
+    const dias = response.data.map((diaSuspensao) => {
+      const [dia] = diaSuspensao.data.split("/");
+      return Number(dia);
+    });
+
+    setDiasSuspensaoAtividades(dias);
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === "string"
@@ -379,6 +398,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const ano = getYear(mesAnoSelecionado);
 
       getDiasLetivosSIGPAE(escola.uuid);
+      getDiasSuspensaoAtividades(escola.uuid);
+
       const response_faixas_etarias = await getFaixasEtarias();
       if (response_faixas_etarias.status === HTTP_STATUS.OK) {
         setFaixasEtarias(response_faixas_etarias.data.results);
@@ -1755,6 +1776,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const validacaoDiaLetivo = (dia) => {
+    if (!calendarioMesConsiderado || !feriadosNoMes) return false;
     const diaCalendario = calendarioMesConsiderado.find(
       (item) => Number(item.dia) === Number(dia),
     );
@@ -1783,12 +1805,46 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
     const ehFinalDeSemanaOuFeriado = ehFimDeSemanaUTC(dataAtual) || ehFeriado;
 
-    if (ehFinalDeSemanaOuFeriado) {
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(dia),
+    );
+    if (ehFinalDeSemanaOuFeriado || ehDiaSuspensaoAtividades) {
       return temInclusaoAutorizada;
     }
 
     return true;
   };
+
+  const diasLetivosCadastradosDaSemana = weekColumns
+    .filter((column) => diasLetivosSIGPAE.has(Number(column.dia)))
+    .sort((diaA, diaB) => Number(diaA.dia) - Number(diaB.dia));
+
+  const diasSuspensosDaSemana = weekColumns.filter((column) => {
+    const ehDiaSuspensaoAtividades = diasSuspensaoAtividades.includes(
+      Number(column.dia),
+    );
+
+    const estaLiberado = validacaoDiaLetivo(column.dia);
+    return ehDiaSuspensaoAtividades && !estaLiberado;
+  });
+
+  const avisosDaSemana = [
+    ...diasSuspensosDaSemana.map((column) => ({
+      dia: Number(column.dia),
+      diaFormatado: column.dia,
+      tipo: "suspensao",
+      texto: "Suspensão de atividade",
+      chave: `suspensao-${column.ano}-${column.mes}-${column.dia}`,
+    })),
+
+    ...diasLetivosCadastradosDaSemana.map((column) => ({
+      dia: Number(column.dia),
+      diaFormatado: column.dia,
+      tipo: "dia-letivo",
+      texto: "Dia letivo cadastrado por CODAE",
+      chave: `dia-letivo-${column.ano}-${column.mes}-${column.dia}`,
+    })),
+  ].sort((avisoA, avisoB) => avisoA.dia - avisoB.dia);
 
   const openModalObservacaoDiaria = (dia, categoria) => {
     setShowModalObservacaoDiaria(true);
@@ -3723,6 +3779,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                           </div>
                         ))}
                     </Spin>
+                    {avisosDaSemana.length > 0 && !loadingLancamentos && (
+                      <div className="avisos-calendario mb-2">
+                        {avisosDaSemana.map((aviso) => (
+                          <span key={aviso.chave} className="d-block">
+                            * {aviso.diaFormatado} - {aviso.texto}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
                     {ultimaAtualizacaoMedicao && (
                       <p className="ultimo-salvamento mb-0">
                         Lançamento do período {periodoGrupo} salvo em{" "}

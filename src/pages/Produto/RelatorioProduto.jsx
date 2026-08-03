@@ -6,6 +6,7 @@ import {
   PESQUISA_DESENVOLVIMENTO,
   RELATORIO_PRODUTO,
 } from "../../configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
 
 const atual = {
   href: `/${PESQUISA_DESENVOLVIMENTO}/${RELATORIO_PRODUTO}`,
@@ -13,8 +14,17 @@ const atual = {
 };
 
 export default () => (
-  <Page titulo={"Consultar Produto"} botaoVoltar>
+  <Page
+    titulo={
+      !ENVIRONMENT.includes("production")
+        ? "Visualizar Produto"
+        : "Consultar Produto"
+    }
+    botaoVoltar
+  >
     <Breadcrumb home={"/"} atual={atual} />
-    <RelatorioProduto />
+    <div className="mt-3">
+      <RelatorioProduto />
+    </div>
   </Page>
 );

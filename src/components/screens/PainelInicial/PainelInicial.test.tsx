@@ -3,7 +3,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
+  CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL,
   CRONOGRAMA_ENTREGA,
+  CRONOGRAMA_SEMANAL_FLV,
   FICHA_RECEBIMENTO,
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PAINEL_FICHAS_TECNICAS,
@@ -316,6 +318,65 @@ describe("PainelInicial - Atalhos por perfil", () => {
       expect(mockNavigate).toHaveBeenCalledWith(rota);
     },
   );
+  it("navega para o Painel de Aprovações do perfil Cronograma", () => {
+    renderPainelInicial(PERFIL.DILOG_CRONOGRAMA);
+
+    fireEvent.click(getAtalhoPorTitulo("Painel de Aprovações"));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `${PRE_RECEBIMENTO}/${PAINEL_APROVACOES}`,
+    );
+  });
+
+  it("navega para o Cronograma de Entrega do perfil Cronograma", () => {
+    renderPainelInicial(PERFIL.DILOG_CRONOGRAMA);
+
+    fireEvent.click(getAtalhoPorTitulo("Cronograma de Entrega"));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`,
+    );
+  });
+
+  it("navega para o Cronograma Semanal FLV", () => {
+    renderPainelInicial(PERFIL.DILOG_CRONOGRAMA);
+
+    fireEvent.click(getAtalhoPorTitulo("Cronograma Semanal FLV"));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`,
+    );
+  });
+
+  it("navega para Verificar Alterações de Cronograma", () => {
+    renderPainelInicial(PERFIL.DILOG_CRONOGRAMA);
+
+    fireEvent.click(getAtalhoPorTitulo("Verificar Alterações de Cronograma"));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,
+    );
+  });
+
+  it("navega para o Calendário de Cronogramas do perfil Cronograma", () => {
+    renderPainelInicial(PERFIL.DILOG_CRONOGRAMA);
+
+    fireEvent.click(getAtalhoPorTitulo("Calendário de Cronogramas"));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `${PRE_RECEBIMENTO}/calendario-cronograma`,
+    );
+  });
+
+  it("navega para o Calendário Ponto a Ponto do perfil Cronograma", () => {
+    renderPainelInicial(PERFIL.DILOG_CRONOGRAMA);
+
+    fireEvent.click(getAtalhoPorTitulo("Calendário Ponto a Ponto"));
+
+    expect(mockNavigate).toHaveBeenCalledWith(
+      `${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
+    );
+  });
 });
 
 describe("PainelInicial - Redirecionamentos dos demais cards", () => {

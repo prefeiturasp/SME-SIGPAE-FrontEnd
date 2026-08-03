@@ -15,7 +15,28 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
     categoria,
     periodoGrupo,
     semanaSelecionada,
+    diasLetivosSIGPAE,
+    diasSuspensaoAtividades,
   } = props;
+
+  const diaEhLetivoSIGPAE = (dia) => {
+    const diaFormatado = String(dia).padStart(2, "0");
+    const mesFormatado = String(mesSolicitacao).padStart(2, "0");
+    const dataFormatada = `${diaFormatado}/${mesFormatado}/${anoSolicitacao}`;
+
+    const entrada = diasLetivosSIGPAE.find((d) => d.data === dataFormatada);
+    if (!entrada) return false;
+
+    const nomePeriodo =
+      periodoGrupo?.periodo_escolar ?? periodoGrupo?.nome_periodo_grupo ?? "";
+    const periodoNormalizado = nomePeriodo
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase()
+      .trim();
+
+    return entrada.periodos_escolares.includes(periodoNormalizado);
+  };
 
   const getListaDiasLabels = () => {
     const listaDiasLabels = [];
@@ -51,7 +72,9 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
         !validacaoSemana(diaFeriado.dia, semanaSelecionada) &&
           listaDiasLabels.push({
             dia: diaFeriado.dia,
-            label: `Feriado: ${diaFeriado.feriado}`,
+            label: diaEhLetivoSIGPAE(diaFeriado.dia)
+              ? "Dia letivo cadastrado por CODAE"
+              : `Feriado: ${diaFeriado.feriado}`,
           });
       });
 
@@ -102,8 +125,85 @@ export const LegendaDiasNaoLetivos = ({ ...props }) => {
           !validacaoSemana(diaCalendario.dia, semanaSelecionada) &&
           listaDiasLabels.push({
             dia: diaCalendario.dia,
-            label: "Dia não letivo",
+            label: diaEhLetivoSIGPAE(diaCalendario.dia)
+              ? "Dia letivo cadastrado por CODAE"
+              : "Dia não letivo",
           });
+      });
+
+    diasLetivosSIGPAE
+      ?.filter((entradaSIGPAE) => {
+        const diaFormatado = entradaSIGPAE.data.substring(0, 2);
+
+        const nomePeriodo =
+          periodoGrupo?.periodo_escolar ??
+          periodoGrupo?.nome_periodo_grupo ??
+          "";
+        const periodoNormalizado = nomePeriodo
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toUpperCase()
+          .trim();
+
+        if (!entradaSIGPAE.periodos_escolares.includes(periodoNormalizado))
+          return false;
+        if (!weekColumns.find((col) => col.dia === diaFormatado)) return false;
+        if (listaDiasLabels.find((l) => l.dia === diaFormatado)) return false;
+        if (
+          ["Mês anterior", "Mês posterior"].includes(
+            values[
+              `frequencia__dia_${diaFormatado}__categoria_${
+                categoria?.id
+              }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
+                0,
+                5,
+              )}`
+            ],
+          )
+        )
+          return false;
+
+        return true;
+      })
+      .forEach((entradaSIGPAE) => {
+        const dia = entradaSIGPAE.data.substring(0, 2);
+        !validacaoSemana(dia, semanaSelecionada) &&
+          listaDiasLabels.push({
+            dia,
+            label: "Dia letivo cadastrado por CODAE",
+          });
+      });
+
+    diasSuspensaoAtividades
+      .filter((entrada) => {
+        const diaFormatado = entrada.data.substring(0, 2);
+
+        if (!weekColumns.find((col) => col.dia === diaFormatado)) return false;
+        if (listaDiasLabels.find((l) => l.dia === diaFormatado)) return false;
+        if (
+          ["Mês anterior", "Mês posterior"].includes(
+            values[
+              `frequencia__dia_${diaFormatado}__categoria_${
+                categoria?.id
+              }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
+                0,
+                5,
+              )}`
+            ],
+          )
+        )
+          return false;
+
+        return true;
+      })
+      .forEach((entrada) => {
+        const dia = entrada.data.substring(0, 2);
+        if (!validacaoSemana(dia, semanaSelecionada)) {
+          listaDiasLabels.push({
+            dia,
+            label: "Suspensão de atividade",
+          });
+        }
       });
 
     return listaDiasLabels.sort((obj1, obj2) => (obj1.dia > obj2.dia ? 1 : -1));

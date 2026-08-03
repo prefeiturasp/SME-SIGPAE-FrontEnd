@@ -20,12 +20,17 @@ export const tipoDeStatusClasse = (status: LogSolicitacoesUsuarioSimples) => {
     case "Fornecedor Ciente":
     case "Enviado para Análise":
     case "Aprovado":
+    case "Ficha Técnica Cadastrada":
+    case "Envio da Ficha Técnica":
+    case "Correção Realizada":
+    case "Ficha Técnica Aprovada":
       return "active";
 
     case "Solicitada Alteração":
     case "Alteração CODAE":
     case "Enviado para Correção":
     case "Solicitado Correção":
+    case "Correção Solicitada":
       return "questioned";
 
     case "Reprovado DILOG":

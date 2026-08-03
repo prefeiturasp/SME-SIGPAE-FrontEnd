@@ -432,16 +432,14 @@ describe("AlterarCronograma - Testes Completos", () => {
     it("exibe campo de justificativa ao reprovar", async () => {
       await setup(true);
 
-      // Seleciona reprovar
       const radioReprovar = await screen.findByText(/Analise Reprovada/i);
       fireEvent.click(radioReprovar);
 
-      await waitFor(() => {
-        const justificativaFields = screen.getAllByPlaceholderText(
-          /Escreva as alterações necessárias/i,
-        );
-        expect(justificativaFields.length).toBeGreaterThan(0);
-      });
+      expect(
+        await screen.findByPlaceholderText(
+          "Escreva a justificativa da análise",
+        ),
+      ).toBeInTheDocument();
     });
   });
 
@@ -597,6 +595,48 @@ describe("AlterarCronograma - Testes Completos", () => {
           `/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,
         );
       });
+    });
+
+    it("envia justificativa opcional ao aprovar a análise", async () => {
+      await setup(true);
+
+      const radioAprovar = await screen.findByText(/Analise Aprovada/i);
+      fireEvent.click(radioAprovar);
+
+      const campoJustificativa = await screen.findByPlaceholderText(
+        /Escreva a justificativa da análise/i,
+      );
+
+      expect(campoJustificativa).toBeInTheDocument();
+
+      fireEvent.change(campoJustificativa, {
+        target: {
+          value: "Cronograma aprovado sem ressalvas",
+        },
+      });
+
+      expect(campoJustificativa).toHaveValue(
+        "Cronograma aprovado sem ressalvas",
+      );
+
+      await clicarBotao("Enviar DILOG");
+
+      const modalSim = await screen.findByText("Sim");
+      fireEvent.click(modalSim);
+
+      await waitFor(() => {
+        expect(mock.history.patch.length).toBe(1);
+        expect(mock.history.patch[0].url).toContain("/analise-abastecimento");
+      });
+
+      expect(JSON.parse(mock.history.patch[0].data)).toEqual({
+        aprovado: true,
+        justificativa_abastecimento: "Cronograma aprovado sem ressalvas",
+      });
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,
+      );
     });
   });
 
