@@ -16,7 +16,7 @@ import { usuarioEhCODAEGestaoAlimentacao } from "src/helpers/utilities";
 
 const atual = {
   href: `/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`,
-  titulo: "Sobremesa Doce",
+  titulo: "Sobremesa Doce e Agricultura Familiar",
 };
 
 const anteriores = [
@@ -32,8 +32,8 @@ export const CadastroSobremesaDocePage = () => {
       <Breadcrumb home={"/"} anteriores={anteriores} atual={atual} />
       <Calendario
         getObjetos={getDiasSobremesaDoce}
-        nomeObjeto="Sobremesa Doce"
-        nomeObjetoMinusculo="sobremesa doce"
+        nomeObjeto="Sobremesa Doce ou Agricultura Familiar"
+        nomeObjetoMinusculo="sobremesa doce ou agricultura familiar"
         setObjeto={setDiaSobremesaDoce}
         deleteObjeto={deleteDiaSobremesaDoce}
         podeEditar={usuarioEhCODAEGestaoAlimentacao()}

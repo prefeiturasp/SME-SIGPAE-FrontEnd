@@ -209,8 +209,9 @@ export class Calendario extends React.Component {
             {editais && tiposUnidades && objetos && (
               <>
                 <p>
-                  Para cadastrar um dia para {nomeObjetoMinusculo}, clique sobre
-                  o dia e selecione o tipo de unidade.
+                  Para cadastrar um dia para{" "}
+                  <strong>{nomeObjetoMinusculo}</strong>, clique sobre o dia e
+                  selecione o tipo de unidade.
                 </p>
                 <Spin
                   tip={`Carregando dias de ${nomeObjeto}...`}
@@ -218,6 +219,11 @@ export class Calendario extends React.Component {
                 >
                   <DragAndDropCalendar
                     tooltipAccessor={(e) => e.editais_numeros}
+                    eventPropGetter={(event) =>
+                      event.tipo?.nome === "Sobremesa AF"
+                        ? { className: "rbc-event-sobremesa-af" }
+                        : {}
+                    }
                     style={{ height: 1000 }}
                     formats={{
                       weekdayFormat: (date, culture, localizer) =>

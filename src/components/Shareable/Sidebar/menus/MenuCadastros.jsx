@@ -107,7 +107,7 @@ const MenuCadastros = () => {
             Recreio nas Férias
           </LeafItem>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
-            Sobremesa Doce
+            Sobremesa Doce e AF
           </LeafItem>
           <LeafItem
             to={`/${CONFIGURACOES}/${CADASTROS}/${SUSPENSAO_ATIVIDADES}`}
@@ -124,7 +124,7 @@ const MenuCadastros = () => {
       {usuarioEhMedicao() && (
         <>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
-            Sobremesa Doce
+            Sobremesa Doce e AF
           </LeafItem>
           <LeafItem
             to={`/${CONFIGURACOES}/${CADASTROS}/${SUSPENSAO_ATIVIDADES}`}
