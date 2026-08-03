@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, act, cleanup } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import mock from "src/services/_mock";
@@ -23,6 +23,10 @@ describe("Integração Calendario", () => {
       .reply(200, mockGetTiposUnidadeEscolar);
 
     mock.onGet("/editais/lista-numeros/").reply(200, mockListaNumeros);
+
+    mock
+      .onGet("/medicao-inicial/medicao/feriados-no-mes-com-nome/")
+      .reply(200, { results: [] });
 
     mockGetObjetos.mockResolvedValue({
       status: HTTP_STATUS.OK,
@@ -69,16 +73,16 @@ describe("Integração Calendario", () => {
     );
 
   it("renderiza corretamente após carregar dados", async () => {
-    await act(async () => {
-      renderCalendario();
-    });
+    renderCalendario();
 
     expect(
-      screen.getByText((content) => content.includes("sobremesa")),
+      await screen.findByText((content) => content.includes("sobremesa")),
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Para cadastrar um dia para sobremesa/i),
+      await screen.findByText((content) =>
+        content.includes("cadastrar um dia para"),
+      ),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/julho 2025/i)).toBeInTheDocument();

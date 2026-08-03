@@ -27,6 +27,7 @@ describe("formataComoEventos", () => {
       {
         title: "TU1",
         tipo_unidade: { iniciais: "TU1", uuid: "uuid1" },
+        tipo: undefined,
         data: "19/12/2024",
         start: new Date(2024, 11, 19, 0),
         end: new Date(2024, 11, 19, 1),
