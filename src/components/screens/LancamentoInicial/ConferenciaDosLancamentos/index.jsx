@@ -286,17 +286,21 @@ export const ConferenciaDosLancamentos = () => {
       "MEDICAO_CORRIGIDA_PELA_UE",
     ].includes(solicitacao.ocorrencia.status);
 
+  const statusOcorrenciaEsperadoSolicitarCorrecaoCODAE = [
+    "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
+    "MEDICAO_APROVADA_PELA_DRE",
+    "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    "MEDICAO_APROVADA_PELA_CODAE",
+    "MEDICAO_CORRIGIDA_PARA_CODAE",
+  ].includes(solicitacao?.ocorrencia?.status);
+
   const desabilitarSolicitarCorrecaoOcorrenciaCODAE =
-    usuarioMedicaoOuManifestacaoTemPermissao &&
-    solicitacao &&
-    solicitacao.ocorrencia &&
-    ![
-      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
-      "MEDICAO_APROVADA_PELA_DRE",
-      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-      "MEDICAO_APROVADA_PELA_CODAE",
-      "MEDICAO_CORRIGIDA_PARA_CODAE",
-    ].includes(solicitacao.ocorrencia.status);
+    (statusOcorrenciaEsperadoSolicitarCorrecaoCODAE &&
+      !usuarioEhCODAENutriManifestacao()) ||
+    (usuarioEhCODAENutriManifestacao() &&
+      solicitacao &&
+      solicitacao.ocorrencia &&
+      !statusOcorrenciaEsperadoSolicitarCorrecaoCODAE);
 
   const statusOcorrenciaEsperadoCODAE = [
     "MEDICAO_APROVADA_PELA_DRE",
@@ -1027,7 +1031,6 @@ export const ConferenciaDosLancamentos = () => {
                                         type={BUTTON_TYPE.BUTTON}
                                         style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
                                         disabled={
-                                          !usuarioEhCODAENutriManifestacao() ||
                                           (ocorrencia?.status ===
                                             "MEDICAO_CORRECAO_SOLICITADA" &&
                                             !solicitacao?.com_ocorrencias) ||

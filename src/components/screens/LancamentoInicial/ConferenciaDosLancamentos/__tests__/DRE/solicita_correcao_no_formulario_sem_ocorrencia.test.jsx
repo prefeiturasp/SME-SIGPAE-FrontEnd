@@ -75,11 +75,11 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação corr
     });
   });
 
-  it("Renderiza botão `Solicitar correção no formulário` sem estar habilitado", async () => {
+  it("Renderiza botão `Solicitar correção no formulário` habilitado para DRE quando medição tem status esperado", async () => {
     const span = screen.getByText("Solicitar correção no formulário");
     const botao = span.closest("button");
 
     expect(botao).toBeInTheDocument();
-    expect(botao).not.toBeEnabled();
+    expect(botao).toBeEnabled();
   });
 });
