@@ -75,12 +75,14 @@ const FaqPage = () => {
       return;
     }
 
-    const filtered = categories.map((category) => ({
-      ...category,
-      perguntas: category.perguntas.filter((item) =>
-        item.pergunta.toLowerCase().includes(normalizedPattern),
-      ),
-    }));
+    const filtered = categories
+      .map((category) => ({
+        ...category,
+        perguntas: category.perguntas.filter((item) =>
+          item.pergunta.toLowerCase().includes(normalizedPattern),
+        ),
+      }))
+      .filter((category) => category.perguntas.length > 0);
 
     setFilteredCategories(filtered);
     setActiveCategoryIndex(0);
