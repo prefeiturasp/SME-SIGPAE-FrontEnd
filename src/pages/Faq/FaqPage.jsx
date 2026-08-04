@@ -11,6 +11,7 @@ import {
   BUTTON_TYPE,
   BUTTON_STYLE,
 } from "src/components/Shareable/Botao/constants";
+import { useNavigate } from "react-router-dom";
 
 const TabContent = ({ items }) => {
   return (
@@ -46,6 +47,7 @@ const FaqPage = () => {
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [pattern, setPattern] = useState("");
   const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchData() {
@@ -108,7 +110,7 @@ const FaqPage = () => {
               texto="Cadastro de Categoria"
               type={BUTTON_TYPE.BUTTON}
               style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() => {}}
+              onClick={() => navigate("/ajuda/cadastro-categoria")}
             />
 
             <Botao
