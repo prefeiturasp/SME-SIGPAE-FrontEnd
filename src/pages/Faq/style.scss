@@ -2,10 +2,12 @@
 
 .faq-screen {
   margin-top: 5rem;
+
   .no-search-results {
     min-height: 25px;
     font-size: 14px;
     font-style: italic;
+
     span {
       cursor: pointer;
       text-decoration: underline;
@@ -29,6 +31,7 @@
 
   .page-title {
     padding-top: 1.5rem;
+
     h4 {
       font-weight: 500;
       font-size: 24px;
@@ -39,6 +42,7 @@
   .search-input-container {
     background-color: #f5f6f8;
     position: relative;
+
     #search-input {
       background-color: transparent;
       border: none;
@@ -47,16 +51,121 @@
       font-size: 14px;
       padding-left: 10px;
       color: $blackInput;
+
       &::placeholder {
         color: $grayLight;
       }
     }
+
     .fas {
       color: $grayLight;
       position: absolute;
       right: 10px;
       top: 15px;
       pointer-events: none;
+    }
+  }
+
+  .faq-title-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .faq-title {
+    color: #198459;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .faq-categories-content {
+    margin-top: 3rem;
+  }
+
+  .faq-category-menu {
+    padding-right: 1rem;
+  }
+
+  .faq-category-menu__title {
+    color: #333;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+  }
+
+  .faq-category-menu__items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .faq-category-menu__item {
+    background-color: transparent;
+    border: 0;
+    border-radius: 4px;
+    color: #198459;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+    width: 100%;
+
+    &:hover {
+      background-color: #edf7f3;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #198459;
+      outline-offset: 2px;
+    }
+  }
+
+  .faq-category-menu__item--active {
+    background-color: #d5ebe3;
+    color: #198459;
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .faq-empty-result {
+    color: #666;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 767px) {
+    .faq-categories-content {
+      margin-top: 2rem;
+    }
+
+    .faq-category-menu {
+      margin-bottom: 1.5rem;
+      padding-right: 0;
+    }
+
+    .faq-category-menu__title {
+      margin-bottom: 0.75rem;
+    }
+
+    .faq-category-menu__items {
+      flex-direction: row;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .faq-category-menu__item {
+      min-width: max-content;
+      width: auto;
     }
   }
 }

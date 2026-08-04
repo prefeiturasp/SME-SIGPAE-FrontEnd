@@ -1,10 +1,10 @@
 @use "src/styles/variables.scss" as *;
 
 .breadcrumb-title {
-  font-weight: bold;
-  font-size: 12px;
-  text-transform: uppercase;
   color: #c8c8c8;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .page-title {
@@ -16,8 +16,34 @@
   }
 }
 
+.page-no-sidebar {
+  min-height: calc(100vh - 5rem);
+  padding: 1.5rem 2rem 2rem;
+  width: 100%;
+}
+
+.page-no-sidebar-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin: 0.75rem 0 1rem;
+
+  .page-title {
+    margin: 0;
+  }
+
+  .float-end {
+    float: none !important;
+  }
+}
+
 .page-no-sidebar-card {
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
   min-height: 500px;
+  padding: 1.5rem;
 }
 
 #wrapper {
@@ -28,6 +54,7 @@
 #content-wrapper {
   div.content-wrapper-div {
     margin-left: 17rem;
+
     &.toggled {
       margin-left: 5.5rem;
     }
@@ -38,6 +65,7 @@
   #wrapper {
     #content-wrapper {
       background-color: #464646;
+
       div.content-wrapper-div {
         background-color: #464646;
       }
@@ -47,7 +75,13 @@
   .page-title {
     color: #fff;
   }
+
+  .page-no-sidebar-card {
+    background-color: #464646;
+    border-color: #5a5a5a;
+  }
 }
+
 .modal-botao-voltar {
   .modal-dialog {
     max-width: 600px !important;
@@ -59,5 +93,28 @@
     div.content-wrapper-div {
       margin-left: 0;
     }
+  }
+
+  .page-no-sidebar {
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .page-no-sidebar-header {
+    align-items: stretch;
+    flex-direction: column;
+
+    .page-title {
+      font-size: 1.5rem;
+    }
+
+    .float-end {
+      align-self: flex-end;
+    }
+  }
+
+  .page-no-sidebar-card {
+    padding: 1rem;
   }
 }
