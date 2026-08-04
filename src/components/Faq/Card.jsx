@@ -1,34 +1,40 @@
 import React, { useState } from "react";
 import { Collapse } from "react-collapse";
-import { ToggleExpandir } from "./../Shareable/ToggleExpandir";
 import { string } from "prop-types";
+import { ToggleExpandir } from "../Shareable/ToggleExpandir";
 import "./style.scss";
 
 const Card = ({ question, answer }) => {
   const [collapsed, setCollapsed] = useState(true);
+
+  const handleToggle = () => {
+    setCollapsed((currentValue) => !currentValue);
+  };
+
   return (
     <div className="card faq-card">
-      <div className="container">
-        <div className="row">
-          <div className="col title">{question}</div>
-          <div className="pe-2 toggle-expand">
-            <ToggleExpandir
-              onClick={() => setCollapsed(!collapsed)}
-              ativo={!collapsed}
-            />
+      <div className="card-border" aria-hidden="true" />
+
+      <div className="container-fluid faq-card-content">
+        <div className="row align-items-center g-0">
+          <div className="col card-title">{question}</div>
+
+          <div className="col-auto toggle-expand">
+            <ToggleExpandir onClick={handleToggle} ativo={!collapsed} />
           </div>
         </div>
 
         <Collapse isOpened={!collapsed}>
-          <div className="card-body p-0 pt-3 pb-1">{answer}</div>
+          <div className="card-body">{answer}</div>
         </Collapse>
       </div>
     </div>
   );
 };
+
 Card.propTypes = {
-  question: string,
-  answer: string,
+  question: string.isRequired,
+  answer: string.isRequired,
 };
 
 export default Card;
