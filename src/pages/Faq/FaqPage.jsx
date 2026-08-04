@@ -12,6 +12,7 @@ import {
   BUTTON_STYLE,
 } from "src/components/Shareable/Botao/constants";
 import { useNavigate } from "react-router-dom";
+import { usuarioComAcessoAoCadastroDeCategorias } from "src/helpers/utilities";
 
 const TabContent = ({ items }) => {
   return (
@@ -106,13 +107,16 @@ const FaqPage = () => {
         <div className="d-none d-md-block col-md-4 col-lg-3" />
         <div className="col-12 col-md-8 col-lg-9">
           <div className="d-flex justify-content-end align-items-center gap-3 flex-wrap">
-            <Botao
-              texto="Cadastro de Categoria"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() => navigate("/ajuda/cadastro-categoria")}
-            />
-
+            {usuarioComAcessoAoCadastroDeCategorias() ? (
+              <Botao
+                texto="Cadastro de Categoria"
+                type={BUTTON_TYPE.BUTTON}
+                style={BUTTON_STYLE.GREEN_OUTLINE}
+                onClick={() => navigate("/ajuda/cadastro-categoria")}
+              />
+            ) : (
+              <></>
+            )}
             <Botao
               texto="Cadastro Dúvidas Frequentes"
               type={BUTTON_TYPE.BUTTON}
