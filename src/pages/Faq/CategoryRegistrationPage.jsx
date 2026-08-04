@@ -14,6 +14,8 @@ import {
 import { HOME } from "src/constants/config";
 import { createFaqCategory } from "src/services/faq.service";
 import "./categoryRegistration.scss";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import HTTP_STATUS from "http-status-codes";
 
 const FAQ_PATH = "/ajuda";
 const CATEGORY_REGISTRATION_PATH = "/ajuda/cadastro-categoria";
@@ -25,6 +27,14 @@ const CategoryRegistrationPage = () => {
   const normalizedCategoryName = categoryName.trim();
 
   const submitDisabled = !normalizedCategoryName || submitting;
+
+  const [showDuplicateCategoryModal, setShowDuplicateCategoryModal] =
+    useState(false);
+  const [duplicateCategoryMessage, setDuplicateCategoryMessage] = useState("");
+
+  const closeDuplicateCategoryModal = () => {
+    setShowDuplicateCategoryModal(false);
+  };
 
   const handleCancel = () => {
     setCategoryName("");
@@ -49,9 +59,19 @@ const CategoryRegistrationPage = () => {
         setCategoryName("");
       }
     } catch (error) {
-      const message = error.response?.data?.nome?.[0];
+      const errorMessage = error.response?.data?.nome?.[0];
 
-      toastError(message || "Não foi possível cadastrar a categoria.");
+      const isDuplicateCategory =
+        error.response?.status === HTTP_STATUS.BAD_REQUEST &&
+        errorMessage?.includes("já existe uma categoria");
+
+      if (isDuplicateCategory) {
+        setDuplicateCategoryMessage(errorMessage);
+        setShowDuplicateCategoryModal(true);
+        return;
+      }
+
+      toastError(errorMessage || "Não foi possível cadastrar a categoria.");
     } finally {
       setSubmitting(false);
     }
@@ -114,6 +134,15 @@ const CategoryRegistrationPage = () => {
           />
         </div>
       </form>
+      <ModalGenerico
+        show={showDuplicateCategoryModal}
+        titulo="Cadastrar Categoria"
+        texto={<strong>{duplicateCategoryMessage}</strong>}
+        textoBotaoSim="OK"
+        handleClose={closeDuplicateCategoryModal}
+        handleSim={closeDuplicateCategoryModal}
+        unicoBotao
+      />
     </PageNoSidebar>
   );
 };
