@@ -37,6 +37,7 @@ export const CadastroSobremesaDocePage = () => {
         setObjeto={setDiaSobremesaDoce}
         deleteObjeto={deleteDiaSobremesaDoce}
         podeEditar={usuarioEhCODAEGestaoAlimentacao()}
+        isSobremesaDoce={true}
       />
     </Page>
   );
