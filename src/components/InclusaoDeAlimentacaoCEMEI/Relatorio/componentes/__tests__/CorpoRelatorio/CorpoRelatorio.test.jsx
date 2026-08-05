@@ -49,7 +49,7 @@ jest.mock("src/components/InclusaoDeAlimentacaoCEMEI/helpers", () => ({
 jest.mock(
   "src/components/InclusaoDeAlimentacao/Relatorio/componentes/helper",
   () => ({
-    formataMotivosDiasComOutros: () => ({ MotivoX: ["2023-12-01"] }),
+    formataMotivosDias: () => ({ MotivoX: ["2023-12-01"] }),
   }),
 );
 
