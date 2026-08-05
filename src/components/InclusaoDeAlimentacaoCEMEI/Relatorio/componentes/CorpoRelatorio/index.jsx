@@ -27,7 +27,7 @@ import {
   periodosDaInclusao,
 } from "../../helpers";
 import "./style.scss";
-import { formataMotivosDiasComOutros } from "src/components/InclusaoDeAlimentacao/Relatorio/componentes/helper";
+import { formataMotivosDias } from "src/components/InclusaoDeAlimentacao/Relatorio/componentes/helper";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
 import { SolicitacoesSimilaresInclusao } from "src/components/Shareable/SolicitacoesSimilaresInclusao";
 import {
@@ -223,9 +223,7 @@ export const CorpoRelatorio = ({
       <table className="table-reasons">
         <tbody className="tabela-motivos-dias">
           {Object.entries(
-            formataMotivosDiasComOutros(
-              solicitacao.dias_motivos_da_inclusao_cemei,
-            ),
+            formataMotivosDias(solicitacao.dias_motivos_da_inclusao_cemei),
           ).map((dadosMotivo, key) => {
             const [motivo, datas] = dadosMotivo;
             return (
@@ -267,40 +265,56 @@ export const CorpoRelatorio = ({
                     );
                   })}
                 </tr>
-                {motivo === "Evento Específico" && (
-                  <Fragment>
-                    <tr className="row">
-                      <th className="col-12">Descrição do evento:</th>
-                    </tr>
-                    <tr className="row">
-                      <td className="col-12 text-justify">
-                        {
-                          solicitacao.dias_motivos_da_inclusao_cemei[key]
-                            .descricao_evento
-                        }
-                      </td>
-                    </tr>
-                  </Fragment>
-                )}
-                {motivo === "Outro" && (
-                  <Fragment>
-                    <tr className="row">
-                      <th className="col-12">Descrição do motivo:</th>
-                    </tr>
-                    <tr className="row">
-                      <td className="col-12 text-justify">
-                        {
-                          solicitacao.dias_motivos_da_inclusao_cemei[key]
-                            .outro_motivo
-                        }
-                      </td>
-                    </tr>
-                  </Fragment>
-                )}
                 <hr />
               </div>
             );
           })}
+          {solicitacao.dias_motivos_da_inclusao_cemei
+            .filter(
+              (inclusao) =>
+                inclusao.motivo?.nome?.includes("Outro") ||
+                inclusao.motivo?.nome?.includes("Evento Específico"),
+            )
+            .map((inclusao, key) => (
+              <Fragment key={key}>
+                <tr className="row">
+                  <th className="col-2">Motivo</th>
+                  <th className="col-10">Dia de inclusão</th>
+                </tr>
+                <tr className="row">
+                  <td className="col-2">{inclusao.motivo.nome}</td>
+                  <td
+                    className={`col-2 ${inclusao.cancelado || solicitacao.status === "ESCOLA_CANCELOU" ? "cancelado" : ""}`}
+                  >
+                    <span>{inclusao.data}</span>
+                    {(inclusao.cancelado_justificativa ||
+                      solicitacao.status === "ESCOLA_CANCELOU") && (
+                      <div className="dark-red">
+                        <strong>justificativa:</strong>{" "}
+                        {inclusao.cancelado_justificativa ||
+                          solicitacao.logs[solicitacao.logs.length - 1]
+                            .justificativa}
+                      </div>
+                    )}
+                  </td>
+                </tr>
+                <tr className="row">
+                  <th className="col-12">
+                    {inclusao.motivo.nome.includes("Evento Específico")
+                      ? "Descrição do evento:"
+                      : "Descrição do motivo:"}
+                  </th>
+                </tr>
+                <tr className="row">
+                  <td className="col-12 text-justify">
+                    {inclusao.motivo.nome.includes("Evento Específico")
+                      ? inclusao.descricao_evento
+                      : inclusao.outro_motivo}
+                  </td>
+                </tr>
+                <hr />
+              </Fragment>
+            ))}
         </tbody>
       </table>
       {periodosDaInclusao(solicitacao).map((periodo, key) => {
