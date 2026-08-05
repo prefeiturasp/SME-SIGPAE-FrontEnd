@@ -87,4 +87,42 @@ describe("Integração Calendario", () => {
 
     expect(await screen.findByText(/julho 2025/i)).toBeInTheDocument();
   });
+
+  it("exibe label azul com prefixo 'Sob. AF - ' quando tipo.nome === 'Sobremesa AF'", async () => {
+    mockGetObjetos.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: [
+        {
+          uuid: "evt-1",
+          data: "29/07/2025",
+          tipo_unidade: { iniciais: "ESC", uuid: "123" },
+          tipo: { nome: "Sobremesa AF" },
+          edital_numero: "Edital 001",
+          edital: "999",
+          criado_por: "tester",
+          criado_em: "2025-07-29",
+        },
+      ],
+    });
+
+    renderCalendario();
+
+    const eventoTitulo = await screen.findByText("Sob. AF - ESC");
+    expect(eventoTitulo).toBeInTheDocument();
+    expect(eventoTitulo.closest(".rbc-event-sobremesa-af")).toBeInTheDocument();
+  });
+
+  it("exibe feriado com label laranja quando backend retorna feriados no mes", async () => {
+    mock
+      .onGet("/medicao-inicial/medicao/feriados-no-mes-com-nome/")
+      .reply(200, {
+        results: [{ feriado: "Independência do Brasil", dia: "29" }],
+      });
+
+    renderCalendario();
+
+    const feriadoLabel = await screen.findByText("FERIADO");
+    expect(feriadoLabel).toBeInTheDocument();
+    expect(feriadoLabel.closest(".rbc-event-feriado")).toBeInTheDocument();
+  });
 });
