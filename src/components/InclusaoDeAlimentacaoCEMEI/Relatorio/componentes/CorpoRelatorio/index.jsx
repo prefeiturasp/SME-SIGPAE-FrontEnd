@@ -44,7 +44,7 @@ export const CorpoRelatorio = ({
   const [imprimindo, setImprimindo] = useState(false);
 
   const [solicitacoesSimilaresState, setSolicitacoesSimilares] = useState(
-    solicitacoesSimilares
+    solicitacoesSimilares,
   );
 
   const justificativaNegacao =
@@ -56,7 +56,7 @@ export const CorpoRelatorio = ({
       await getRelatorioInclusaoAlimentacaoCEMEI(
         solicitacao.uuid,
         TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
-        solicitacao?.escola?.nome
+        solicitacao?.escola?.nome,
       );
     } catch {
       toastError("Houve um erro ao imprimir o relatório");
@@ -71,7 +71,7 @@ export const CorpoRelatorio = ({
           solicitacaoSimilar.collapsed = !solicitacaoSimilar.collapsed;
         }
         return solicitacaoSimilar;
-      }
+      },
     );
 
     setSolicitacoesSimilares(novoSolicitacoesSimilares);
@@ -82,7 +82,7 @@ export const CorpoRelatorio = ({
       <div className="row">
         <p
           className={`col-12 title-message ${corDaMensagem(
-            prazoDoPedidoMensagem(solicitacao.prioridade)
+            prazoDoPedidoMensagem(solicitacao.prioridade),
           )}`}
         >
           {prazoDoPedidoMensagem(solicitacao.prioridade)}
@@ -185,7 +185,7 @@ export const CorpoRelatorio = ({
                                     ? "-cemei"
                                     : ""
                                 }`,
-                                inclusaoDeAlimentacao
+                                inclusaoDeAlimentacao,
                               )}
                               target="blank"
                             >
@@ -195,7 +195,7 @@ export const CorpoRelatorio = ({
                               dataTestId={`toggle-expandir-${idxSolicitacaoSimilar}`}
                               onClick={() =>
                                 collapseSolicitacaoSimilar(
-                                  idxSolicitacaoSimilar
+                                  idxSolicitacaoSimilar,
                                 )
                               }
                               ativo={inclusaoDeAlimentacao.collapsed}
@@ -212,7 +212,7 @@ export const CorpoRelatorio = ({
                     />
                   </>
                 );
-              }
+              },
             )}
             <hr />
           </>
@@ -221,11 +221,11 @@ export const CorpoRelatorio = ({
         <strong>Solicitação de Inclusão de Alimentação</strong>
       </p>
       <table className="table-reasons">
-        <tbody>
+        <tbody className="tabela-motivos-dias">
           {Object.entries(
             formataMotivosDiasComOutros(
-              solicitacao.dias_motivos_da_inclusao_cemei
-            )
+              solicitacao.dias_motivos_da_inclusao_cemei,
+            ),
           ).map((dadosMotivo, key) => {
             const [motivo, datas] = dadosMotivo;
             return (
@@ -242,7 +242,7 @@ export const CorpoRelatorio = ({
                         key={key}
                         className={`col-2 ${
                           solicitacao.dias_motivos_da_inclusao_cemei.find(
-                            (i) => i.data === dia
+                            (i) => i.data === dia,
                           ).cancelado ||
                           solicitacao.status === "ESCOLA_CANCELOU"
                             ? `cancelado`
@@ -251,13 +251,13 @@ export const CorpoRelatorio = ({
                       >
                         <span>{dia}</span>
                         {(solicitacao.dias_motivos_da_inclusao_cemei.find(
-                          (i) => i.data === dia
+                          (i) => i.data === dia,
                         ).cancelado_justificativa ||
                           solicitacao.status === "ESCOLA_CANCELOU") && (
                           <div className="dark-red">
                             <strong>justificativa:</strong>{" "}
                             {solicitacao.dias_motivos_da_inclusao_cemei.find(
-                              (i) => i.data === dia
+                              (i) => i.data === dia,
                             ).cancelado_justificativa ||
                               solicitacao.logs[solicitacao.logs.length - 1]
                                 .justificativa}
@@ -297,6 +297,7 @@ export const CorpoRelatorio = ({
                     </tr>
                   </Fragment>
                 )}
+                <hr />
               </div>
             );
           })}
@@ -319,7 +320,7 @@ export const CorpoRelatorio = ({
                       {tiposAlimentacaoPorPeriodoETipoUnidade(
                         vinculos,
                         periodo,
-                        "CEI"
+                        "CEI",
                       )}
                     </span>
                   </div>
@@ -380,24 +381,24 @@ export const CorpoRelatorio = ({
                     Tipos de inclusão de alimentação:{" "}
                     <span>
                       {solicitacao.quantidade_alunos_emei_da_inclusao_cemei.find(
-                        (q) => q.periodo_escolar.nome === periodo
+                        (q) => q.periodo_escolar.nome === periodo,
                       ).tipos_alimentacao?.length
                         ? solicitacao.quantidade_alunos_emei_da_inclusao_cemei
                             .find((q) => q.periodo_escolar.nome === periodo)
                             .tipos_alimentacao.map(
-                              (alimentacao) => alimentacao.nome
+                              (alimentacao) => alimentacao.nome,
                             )
                             .join(", ")
                         : !ehMotivoEspecifico
-                        ? tiposAlimentacaoPorPeriodoETipoUnidade(
-                            vinculos,
-                            periodo,
-                            "EMEI"
-                          )
-                        : vinculos
-                            .find((v) => v.nome === periodo)
-                            .tipos_alimentacao.map((t) => t.nome)
-                            .join(", ")}
+                          ? tiposAlimentacaoPorPeriodoETipoUnidade(
+                              vinculos,
+                              periodo,
+                              "EMEI",
+                            )
+                          : vinculos
+                              .find((v) => v.nome === periodo)
+                              .tipos_alimentacao.map((t) => t.nome)
+                              .join(", ")}
                     </span>
                   </div>
                   <table
@@ -413,7 +414,7 @@ export const CorpoRelatorio = ({
                             <span className="fw-normal">
                               {
                                 solicitacao.quantidade_alunos_emei_da_inclusao_cemei.find(
-                                  (q) => q.periodo_escolar.nome === periodo
+                                  (q) => q.periodo_escolar.nome === periodo,
                                 ).matriculados_quando_criado
                               }
                             </span>
@@ -427,7 +428,7 @@ export const CorpoRelatorio = ({
                           Quantidade:{" "}
                           {
                             solicitacao.quantidade_alunos_emei_da_inclusao_cemei.find(
-                              (q) => q.periodo_escolar.nome === periodo
+                              (q) => q.periodo_escolar.nome === periodo,
                             ).quantidade_alunos
                           }
                         </th>
@@ -437,7 +438,7 @@ export const CorpoRelatorio = ({
                 </>
               )}
               {solicitacao.dias_motivos_da_inclusao_cemei.find(
-                (inclusao) => inclusao.cancelado_justificativa
+                (inclusao) => inclusao.cancelado_justificativa,
               ) && (
                 <>
                   <hr />
@@ -490,7 +491,7 @@ export const CorpoRelatorio = ({
               </p>
               {
                 solicitacao.logs.find(
-                  (log) => log.status_evento_explicacao === "CODAE autorizou"
+                  (log) => log.status_evento_explicacao === "CODAE autorizou",
                 ).criado_em
               }{" "}
               - Informações da CODAE
@@ -502,7 +503,7 @@ export const CorpoRelatorio = ({
                   __html: `${
                     solicitacao.logs.find(
                       (log) =>
-                        log.status_evento_explicacao === "CODAE autorizou"
+                        log.status_evento_explicacao === "CODAE autorizou",
                     ).justificativa || `Sem observações por parte da CODAE`
                   }`,
                 }}
