@@ -27,6 +27,7 @@ describe("formataComoEventos", () => {
       {
         title: "TU1",
         tipo_unidade: { iniciais: "TU1", uuid: "uuid1" },
+        tipo: undefined,
         data: "19/12/2024",
         start: new Date(2024, 11, 19, 0),
         end: new Date(2024, 11, 19, 1),
@@ -42,5 +43,43 @@ describe("formataComoEventos", () => {
 
     const result = formataComoEventos(diasSobremesaDoce);
     expect(result).toEqual(expected);
+  });
+
+  it("adiciona prefixo 'Sob. AF - ' e propaga tipo quando tipo.nome === 'Sobremesa AF'", () => {
+    const diasSobremesaDoce = [
+      {
+        data: "19/12/2024",
+        tipo_unidade: { iniciais: "EMEF", uuid: "uuid1" },
+        tipo: { nome: "Sobremesa AF" },
+        edital_numero: "E1",
+        edital: "edit_uuid1",
+        criado_por: "user1",
+        criado_em: "2024-12-19T10:00:00",
+        uuid: "event_uuid1",
+      },
+    ];
+
+    const result = formataComoEventos(diasSobremesaDoce);
+    expect(result[0].title).toBe("Sob. AF - EMEF");
+    expect(result[0].tipo).toEqual({ nome: "Sobremesa AF" });
+  });
+
+  it("nao altera titulo quando tipo.nome nao eh 'Sobremesa AF'", () => {
+    const diasSobremesaDoce = [
+      {
+        data: "19/12/2024",
+        tipo_unidade: { iniciais: "EMEF", uuid: "uuid1" },
+        tipo: { nome: "Outro Tipo" },
+        edital_numero: "E1",
+        edital: "edit_uuid1",
+        criado_por: "user1",
+        criado_em: "2024-12-19T10:00:00",
+        uuid: "event_uuid1",
+      },
+    ];
+
+    const result = formataComoEventos(diasSobremesaDoce);
+    expect(result[0].title).toBe("EMEF");
+    expect(result[0].tipo).toEqual({ nome: "Outro Tipo" });
   });
 });
