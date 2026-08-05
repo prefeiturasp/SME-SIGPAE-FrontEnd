@@ -52,7 +52,7 @@ describe("Integração Calendario", () => {
     jest.useRealTimers();
   });
 
-  const renderCalendario = () =>
+  const renderCalendario = (extraProps = {}) =>
     render(
       <MemoryRouter
         future={{
@@ -67,6 +67,7 @@ describe("Integração Calendario", () => {
           setObjeto={mockSetObjeto}
           deleteObjeto={mockDeleteObjeto}
           podeEditar={true}
+          {...extraProps}
         />
         <ToastContainer />
       </MemoryRouter>,
@@ -124,5 +125,18 @@ describe("Integração Calendario", () => {
     const feriadoLabel = await screen.findByText("FERIADO");
     expect(feriadoLabel).toBeInTheDocument();
     expect(feriadoLabel.closest(".rbc-event-feriado")).toBeInTheDocument();
+  });
+
+  it("busca tipos de sobremesa doce quando isSobremesaDoce é true", async () => {
+    mock.onGet("/medicao-inicial/tipos-sobremesa-doce/").reply(200, [
+      { uuid: "tip-uuid-1", nome: "Sobremesa Doce" },
+      { uuid: "tip-uuid-2", nome: "Sobremesa AF" },
+    ]);
+
+    renderCalendario({ isSobremesaDoce: true });
+
+    expect(
+      await screen.findByText((content) => content.includes("sobremesa")),
+    ).toBeInTheDocument();
   });
 });
