@@ -520,7 +520,16 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                               label="Motivo"
                               options={
                                 values.inclusoes.length > 1
-                                  ? agregarDefault(motivosSimples)
+                                  ? motivoEspecifico
+                                    ? agregarDefault(motivosSimples).filter(
+                                        (motivo) =>
+                                          motivo.nome.includes("Selecione") ||
+                                          motivo.nome.includes("Específico"),
+                                      )
+                                    : agregarDefault(motivosSimples).filter(
+                                        (motivo) =>
+                                          !motivo.nome.includes("Específico"),
+                                      )
                                   : agregarDefault(motivosSimples).concat(
                                       motivosContinuos,
                                     )

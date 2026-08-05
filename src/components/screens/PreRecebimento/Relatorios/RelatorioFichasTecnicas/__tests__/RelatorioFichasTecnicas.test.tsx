@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+import { PERFIL } from "src/constants/shared";
 
 import RelatorioFichasTecnicas from "src/components/screens/PreRecebimento/Relatorios/RelatorioFichasTecnicas";
 
@@ -50,6 +51,7 @@ const renderComponent = () =>
 describe("RelatorioFichasTecnicas", () => {
   beforeEach(() => {
     mock.reset();
+    localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
 
     mock
       .onGet("/cadastro-produtos-edital/lista-completa-logistica/")
@@ -62,6 +64,8 @@ describe("RelatorioFichasTecnicas", () => {
     mock
       .onGet("/ficha-tecnica/listagem-relatorio/")
       .reply(200, mockFichasResponse);
+
+    mock.onGet("/ficha-tecnica/exportar-excel/").reply(200, { detail: "..." });
   });
 
   it("deve renderizar o título do collapse como 'Filtrar Cadastros'", () => {
@@ -127,6 +131,26 @@ describe("RelatorioFichasTecnicas", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Nenhum resultado encontrado"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("deve exibir o modal de download apos clicar em 'Baixar em Excel'", async () => {
+    renderComponent();
+
+    const filtrarBtn = screen.getByText("Filtrar");
+    fireEvent.click(filtrarBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Resultado da Pesquisa")).toBeInTheDocument();
+    });
+
+    const baixarBtn = screen.getByText("Baixar em Excel");
+    fireEvent.click(baixarBtn);
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("modal-solicitacao-download"),
       ).toBeInTheDocument();
     });
   });
