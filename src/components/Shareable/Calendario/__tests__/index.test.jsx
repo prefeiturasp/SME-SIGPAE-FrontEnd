@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, act, cleanup } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 import mock from "src/services/_mock";
@@ -23,6 +23,10 @@ describe("Integração Calendario", () => {
       .reply(200, mockGetTiposUnidadeEscolar);
 
     mock.onGet("/editais/lista-numeros/").reply(200, mockListaNumeros);
+
+    mock
+      .onGet("/medicao-inicial/medicao/feriados-no-mes-com-nome/")
+      .reply(200, { results: [] });
 
     mockGetObjetos.mockResolvedValue({
       status: HTTP_STATUS.OK,
@@ -69,18 +73,56 @@ describe("Integração Calendario", () => {
     );
 
   it("renderiza corretamente após carregar dados", async () => {
-    await act(async () => {
-      renderCalendario();
-    });
+    renderCalendario();
 
     expect(
-      screen.getByText((content) => content.includes("sobremesa")),
+      await screen.findByText((content) => content.includes("sobremesa")),
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Para cadastrar um dia para sobremesa/i),
+      await screen.findByText((content) =>
+        content.includes("cadastrar um dia para"),
+      ),
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/julho 2025/i)).toBeInTheDocument();
+  });
+
+  it("exibe label azul com prefixo 'Sob. AF - ' quando tipo.nome === 'Sobremesa AF'", async () => {
+    mockGetObjetos.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: [
+        {
+          uuid: "evt-1",
+          data: "29/07/2025",
+          tipo_unidade: { iniciais: "ESC", uuid: "123" },
+          tipo: { nome: "Sobremesa AF" },
+          edital_numero: "Edital 001",
+          edital: "999",
+          criado_por: "tester",
+          criado_em: "2025-07-29",
+        },
+      ],
+    });
+
+    renderCalendario();
+
+    const eventoTitulo = await screen.findByText("Sob. AF - ESC");
+    expect(eventoTitulo).toBeInTheDocument();
+    expect(eventoTitulo.closest(".rbc-event-sobremesa-af")).toBeInTheDocument();
+  });
+
+  it("exibe feriado com label laranja quando backend retorna feriados no mes", async () => {
+    mock
+      .onGet("/medicao-inicial/medicao/feriados-no-mes-com-nome/")
+      .reply(200, {
+        results: [{ feriado: "Independência do Brasil", dia: "29" }],
+      });
+
+    renderCalendario();
+
+    const feriadoLabel = await screen.findByText("FERIADO");
+    expect(feriadoLabel).toBeInTheDocument();
+    expect(feriadoLabel.closest(".rbc-event-feriado")).toBeInTheDocument();
   });
 });

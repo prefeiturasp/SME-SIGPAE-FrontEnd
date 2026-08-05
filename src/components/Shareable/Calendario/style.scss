@@ -45,6 +45,14 @@ div.calendario-sobremesa {
     background-color: $green;
   }
 
+  .rbc-event.rbc-event-sobremesa-af {
+    background-color: $blue;
+
+    .rbc-event-content {
+      background-color: $blue;
+    }
+  }
+
   .rbc-event.rbc-event-feriado {
     margin-left: 0.5em;
     background-color: $orange;

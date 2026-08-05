@@ -183,6 +183,15 @@ export const getRelatorioFichasTecnicas = async (params: URLSearchParams) => {
   return response;
 };
 
+export const exportarExcelRelatorioFichasTecnicas = async (
+  params: URLSearchParams,
+) => {
+  const response = await axios.get("/ficha-tecnica/exportar-excel/", {
+    params,
+  });
+  return response;
+};
+
 export const imprimirFichaTecnica = async (uuid: string, numero: string) => {
   const url = `/ficha-tecnica/${uuid}/gerar-pdf-ficha/`;
   const { data } = await axios.get(url, { responseType: "blob" });
