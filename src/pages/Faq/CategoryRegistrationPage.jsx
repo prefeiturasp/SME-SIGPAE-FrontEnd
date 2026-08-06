@@ -98,51 +98,54 @@ const CategoryRegistrationPage = () => {
         />
       }
     >
-      <form className="category-registration-form" onSubmit={handleSubmit}>
-        <div className="category-registration-field">
-          <InputText
-            id="category-name"
-            label="Nome da Categoria"
-            maxlength={100}
-            placeholder="Digite o nome da categoria"
-            required
-            input={{
-              name: "nome",
-              value: categoryName,
-              onChange: (event) => {
-                setCategoryName(event.target.value);
-              },
-            }}
-          />
-        </div>
+      <div className="category-registration-page">
+        <form className="category-registration-form" onSubmit={handleSubmit}>
+          <div className="category-registration-field">
+            <InputText
+              id="category-name"
+              label="Nome da Categoria"
+              maxlength={100}
+              placeholder="Digite o nome da categoria"
+              required
+              input={{
+                name: "nome",
+                value: categoryName,
+                onChange: (event) => {
+                  setCategoryName(event.target.value);
+                },
+              }}
+            />
+          </div>
 
-        <div className="category-registration-actions">
-          <Botao
-            texto="Cancelar"
-            type={BUTTON_TYPE.BUTTON}
-            style={BUTTON_STYLE.GREEN_OUTLINE}
-            className="category-registration-button"
-            onClick={handleCancel}
-          />
+          <div className="category-registration-actions">
+            <Botao
+              texto="Cancelar"
+              type={BUTTON_TYPE.BUTTON}
+              style={BUTTON_STYLE.GREEN_OUTLINE}
+              className="category-registration-button"
+              onClick={handleCancel}
+            />
 
-          <Botao
-            texto={submitting ? "Cadastrando..." : "Cadastrar Categoria"}
-            type={BUTTON_TYPE.SUBMIT}
-            style={BUTTON_STYLE.GREEN}
-            className="category-registration-button"
-            disabled={submitDisabled}
-          />
-        </div>
-      </form>
-      <ModalGenerico
-        show={showDuplicateCategoryModal}
-        titulo="Cadastrar Categoria"
-        texto={<strong>{duplicateCategoryMessage}</strong>}
-        textoBotaoSim="OK"
-        handleClose={closeDuplicateCategoryModal}
-        handleSim={closeDuplicateCategoryModal}
-        unicoBotao
-      />
+            <Botao
+              texto={submitting ? "Cadastrando..." : "Cadastrar Categoria"}
+              type={BUTTON_TYPE.SUBMIT}
+              style={BUTTON_STYLE.GREEN}
+              className="category-registration-button"
+              disabled={submitDisabled}
+            />
+          </div>
+        </form>
+
+        <ModalGenerico
+          show={showDuplicateCategoryModal}
+          titulo="Cadastrar Categoria"
+          texto={<strong>{duplicateCategoryMessage}</strong>}
+          textoBotaoSim="OK"
+          handleClose={closeDuplicateCategoryModal}
+          handleSim={closeDuplicateCategoryModal}
+          unicoBotao
+        />
+      </div>
     </PageNoSidebar>
   );
 };

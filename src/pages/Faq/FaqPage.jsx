@@ -105,84 +105,88 @@ const FaqPage = () => {
         />
       }
     >
-      <div className="row mb-4">
-        <div className="d-none d-md-block col-md-4 col-lg-3" />
-        <div className="col-12 col-md-8 col-lg-9">
-          <div className="d-flex justify-content-end align-items-center gap-3 flex-wrap">
-            {usuarioComAcessoAoCadastroDeCategorias() ? (
+      <div className="faq-page">
+        <div className="row mb-4">
+          <div className="d-none d-md-block col-md-4 col-lg-3" />
+          <div className="col-12 col-md-8 col-lg-9">
+            <div className="d-flex justify-content-end align-items-center gap-3 flex-wrap">
+              {usuarioComAcessoAoCadastroDeCategorias() ? (
+                <Botao
+                  texto="Cadastro de Categoria"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN}
+                  onClick={() => navigate("/ajuda/cadastro-categoria")}
+                />
+              ) : (
+                <></>
+              )}
               <Botao
-                texto="Cadastro de Categoria"
+                texto="Cadastro Dúvidas Frequentes"
                 type={BUTTON_TYPE.BUTTON}
                 style={BUTTON_STYLE.GREEN_OUTLINE}
-                onClick={() => navigate("/ajuda/cadastro-categoria")}
+                onClick={() => {}}
               />
-            ) : (
-              <></>
-            )}
-            <Botao
-              texto="Cadastro Dúvidas Frequentes"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() => {}}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="container-fluid faq-screen px-0">
-        <div className="faq-title-container">
-          <h4 className="faq-title">Como podemos ajudar?</h4>
-        </div>
-
-        <div className="row justify-content-center mb-5">
-          <div className="col-12 col-md-8 col-lg-8 search-input-container p-0 mb-0">
-            <input
-              id="search-input"
-              type="text"
-              placeholder="Pesquisar"
-              value={pattern}
-              onChange={(event) => setPattern(event.target.value)}
-            />
-            <i className="fas fa-search fa-lg" />
-          </div>
-        </div>
-        {loading && (
-          <div className="row justify-content-center">
-            <img src="/assets/image/ajax-loader.gif" alt="ajax-loader" />
-          </div>
-        )}
-
-        {!loading && !!filteredCategories.length && (
-          <div className="row faq-content">
-            <div className="col-12 col-md-4 col-lg-3">
-              <aside className="faq-category-menu">
-                <h5 className="faq-category-menu__title">Categoria</h5>
-
-                <div className="faq-category-menu__items">
-                  {filteredCategories.map((category, index) => {
-                    const isActive = activeCategoryIndex === index;
-
-                    return (
-                      <button
-                        key={category.uuid || category.nome}
-                        type="button"
-                        className={`faq-category-menu__item ${
-                          isActive ? "faq-category-menu__item--active" : ""
-                        }`}
-                        onClick={() => setActiveCategoryIndex(index)}
-                      >
-                        {category.nome}
-                      </button>
-                    );
-                  })}
-                </div>
-              </aside>
-            </div>
-
-            <div className="col-12 col-md-8 col-lg-9">
-              <TabContent items={activeCategory?.perguntas || []} />
             </div>
           </div>
-        )}
+        </div>
+
+        <div className="container-fluid faq-screen px-0">
+          <div className="faq-title-container">
+            <h4 className="faq-title">Como podemos ajudar?</h4>
+          </div>
+
+          <div className="row justify-content-center mb-5">
+            <div className="col-12 col-md-8 col-lg-8 search-input-container p-0 mb-0">
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Pesquisar"
+                value={pattern}
+                onChange={(event) => setPattern(event.target.value)}
+              />
+              <i className="fas fa-search fa-lg" />
+            </div>
+          </div>
+
+          {loading && (
+            <div className="row justify-content-center">
+              <img src="/assets/image/ajax-loader.gif" alt="ajax-loader" />
+            </div>
+          )}
+
+          {!loading && !!filteredCategories.length && (
+            <div className="row faq-content">
+              <div className="col-12 col-md-4 col-lg-3">
+                <aside className="faq-category-menu">
+                  <h5 className="faq-category-menu__title">Categoria</h5>
+
+                  <div className="faq-category-menu__items">
+                    {filteredCategories.map((category, index) => {
+                      const isActive = activeCategoryIndex === index;
+
+                      return (
+                        <button
+                          key={category.uuid || category.nome}
+                          type="button"
+                          className={`faq-category-menu__item ${
+                            isActive ? "faq-category-menu__item--active" : ""
+                          }`}
+                          onClick={() => setActiveCategoryIndex(index)}
+                        >
+                          {category.nome}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </aside>
+              </div>
+
+              <div className="col-12 col-md-8 col-lg-9">
+                <TabContent items={activeCategory?.perguntas || []} />
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </PageNoSidebar>
   );

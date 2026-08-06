@@ -1,35 +1,43 @@
-.category-registration-form {
-  display: flex;
-  flex-direction: column;
-  min-height: 190px;
-  width: 100%;
-}
-
-.category-registration-field {
-  max-width: 440px;
-  width: 100%;
-}
-
-.category-registration-actions {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: auto;
-  padding-top: 3rem;
-}
-
-@media screen and (max-width: 767px) {
-  .category-registration-field {
-    max-width: none;
-  }
-
-  .category-registration-actions {
-    align-items: stretch;
-    flex-direction: column-reverse;
-  }
-
-  .category-registration-button {
+.category-registration-page {
+  .category-registration-form {
+    display: flex;
+    flex-direction: column;
+    min-height: 190px;
     width: 100%;
+
+    .category-registration-field {
+      max-width: 440px;
+      width: 100%;
+    }
+
+    .category-registration-actions {
+      align-items: center;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 3rem;
+
+      .category-registration-button {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .category-registration-form {
+      .category-registration-field {
+        max-width: none;
+      }
+
+      .category-registration-actions {
+        align-items: stretch;
+        flex-direction: column-reverse;
+
+        .category-registration-button {
+          width: 100%;
+        }
+      }
+    }
   }
 }
