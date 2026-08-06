@@ -1,16 +1,16 @@
-.category-registration-page {
-  .category-registration-form {
+.pagina-cadastro-categoria {
+  .formulario-cadastro-categoria {
     display: flex;
     flex-direction: column;
     min-height: 190px;
     width: 100%;
 
-    .category-registration-field {
+    .campo-cadastro-categoria {
       max-width: 440px;
       width: 100%;
     }
 
-    .category-registration-actions {
+    .acoes-cadastro-categoria {
       align-items: center;
       display: flex;
       gap: 1rem;
@@ -18,23 +18,23 @@
       margin-top: auto;
       padding-top: 3rem;
 
-      .category-registration-button {
+      .botao-cadastro-categoria {
         flex-shrink: 0;
       }
     }
   }
 
   @media screen and (max-width: 767px) {
-    .category-registration-form {
-      .category-registration-field {
+    .formulario-cadastro-categoria {
+      .campo-cadastro-categoria {
         max-width: none;
       }
 
-      .category-registration-actions {
+      .acoes-cadastro-categoria {
         align-items: stretch;
         flex-direction: column-reverse;
 
-        .category-registration-button {
+        .botao-cadastro-categoria {
           width: 100%;
         }
       }

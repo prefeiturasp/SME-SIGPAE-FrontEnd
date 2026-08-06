@@ -17,63 +17,64 @@ import "./categoryRegistration.scss";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import HTTP_STATUS from "http-status-codes";
 
-const FAQ_PATH = "/ajuda";
-const CATEGORY_REGISTRATION_PATH = "/ajuda/cadastro-categoria";
+const CAMINHO_FAQ = "/ajuda";
+const CAMINHO_CADASTRO_CATEGORIA = "/ajuda/cadastro-categoria";
 
-const CategoryRegistrationPage = () => {
-  const [categoryName, setCategoryName] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+const PaginaCadastroCategoria = () => {
+  const [nomeCategoria, setNomeCategoria] = useState("");
+  const [cadastrando, setCadastrando] = useState(false);
 
-  const normalizedCategoryName = categoryName.trim();
+  const nomeCategoriaNormalizado = nomeCategoria.trim();
 
-  const submitDisabled = !normalizedCategoryName || submitting;
+  const cadastroDesabilitado = !nomeCategoriaNormalizado || cadastrando;
 
-  const [showDuplicateCategoryModal, setShowDuplicateCategoryModal] =
+  const [exibirModalCategoriaDuplicada, setExibirModalCategoriaDuplicada] =
     useState(false);
-  const [duplicateCategoryMessage, setDuplicateCategoryMessage] = useState("");
+  const [mensagemCategoriaDuplicada, setMensagemCategoriaDuplicada] =
+    useState("");
 
-  const closeDuplicateCategoryModal = () => {
-    setShowDuplicateCategoryModal(false);
+  const fecharModalCategoriaDuplicada = () => {
+    setExibirModalCategoriaDuplicada(false);
   };
 
-  const handleCancel = () => {
-    setCategoryName("");
+  const cancelarCadastro = () => {
+    setNomeCategoria("");
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const cadastrarCategoria = async (evento) => {
+    evento.preventDefault();
 
-    if (submitDisabled) {
+    if (cadastroDesabilitado) {
       return;
     }
 
-    setSubmitting(true);
+    setCadastrando(true);
 
     try {
-      const response = await createFaqCategory({
-        nome: normalizedCategoryName,
+      const resposta = await createFaqCategory({
+        nome: nomeCategoriaNormalizado,
       });
 
-      if (response.status === 201) {
+      if (resposta.status === 201) {
         toastSuccess("Categoria Cadastrada com Sucesso!");
-        setCategoryName("");
+        setNomeCategoria("");
       }
-    } catch (error) {
-      const errorMessage = error.response?.data?.nome?.[0];
+    } catch (erro) {
+      const mensagemErro = erro.response?.data?.nome?.[0];
 
-      const isDuplicateCategory =
-        error.response?.status === HTTP_STATUS.BAD_REQUEST &&
-        errorMessage?.includes("já existe uma categoria");
+      const categoriaDuplicada =
+        erro.response?.status === HTTP_STATUS.BAD_REQUEST &&
+        mensagemErro?.includes("já existe uma categoria");
 
-      if (isDuplicateCategory) {
-        setDuplicateCategoryMessage(errorMessage);
-        setShowDuplicateCategoryModal(true);
+      if (categoriaDuplicada) {
+        setMensagemCategoriaDuplicada(mensagemErro);
+        setExibirModalCategoriaDuplicada(true);
         return;
       }
 
-      toastError(errorMessage || "Não foi possível cadastrar a categoria.");
+      toastError(mensagemErro || "Não foi possível cadastrar a categoria.");
     } finally {
-      setSubmitting(false);
+      setCadastrando(false);
     }
   };
 
@@ -81,68 +82,71 @@ const CategoryRegistrationPage = () => {
     <PageNoSidebar
       titulo="Cadastrar Categoria"
       botaoVoltar
-      voltarPara={FAQ_PATH}
+      voltarPara={CAMINHO_FAQ}
       breadcrumb={
         <Breadcrumb
           home={HOME}
           anteriores={[
             {
-              href: FAQ_PATH,
+              href: CAMINHO_FAQ,
               titulo: "Ajuda",
             },
           ]}
           atual={{
-            href: CATEGORY_REGISTRATION_PATH,
+            href: CAMINHO_CADASTRO_CATEGORIA,
             titulo: "Cadastro de Categoria",
           }}
         />
       }
     >
-      <div className="category-registration-page">
-        <form className="category-registration-form" onSubmit={handleSubmit}>
-          <div className="category-registration-field">
+      <div className="pagina-cadastro-categoria">
+        <form
+          className="formulario-cadastro-categoria"
+          onSubmit={cadastrarCategoria}
+        >
+          <div className="campo-cadastro-categoria">
             <InputText
-              id="category-name"
+              id="nome-categoria"
               label="Nome da Categoria"
               maxlength={100}
               placeholder="Digite o nome da categoria"
               required
               input={{
                 name: "nome",
-                value: categoryName,
-                onChange: (event) => {
-                  setCategoryName(event.target.value);
+                value: nomeCategoria,
+                onChange: (evento) => {
+                  setNomeCategoria(evento.target.value);
                 },
               }}
             />
           </div>
 
-          <div className="category-registration-actions">
+          <div className="acoes-cadastro-categoria">
             <Botao
               texto="Cancelar"
               type={BUTTON_TYPE.BUTTON}
               style={BUTTON_STYLE.GREEN_OUTLINE}
-              className="category-registration-button"
-              onClick={handleCancel}
+              className="botao-cadastro-categoria"
+              onClick={cancelarCadastro}
             />
 
             <Botao
-              texto={submitting ? "Cadastrando..." : "Cadastrar Categoria"}
+              texto={cadastrando ? "Cadastrando..." : "Cadastrar Categoria"}
               type={BUTTON_TYPE.SUBMIT}
               style={BUTTON_STYLE.GREEN}
-              className="category-registration-button"
-              disabled={submitDisabled}
+              className="botao-cadastro-categoria"
+              disabled={cadastroDesabilitado}
             />
           </div>
         </form>
 
         <ModalGenerico
-          show={showDuplicateCategoryModal}
+          show={exibirModalCategoriaDuplicada}
           titulo="Cadastrar Categoria"
-          texto={<strong>{duplicateCategoryMessage}</strong>}
+          texto={<strong>{mensagemCategoriaDuplicada}</strong>}
           textoBotaoSim="OK"
-          handleClose={closeDuplicateCategoryModal}
-          handleSim={closeDuplicateCategoryModal}
+          handleClose={fecharModalCategoriaDuplicada}
+          handleSim={fecharModalCategoriaDuplicada}
           unicoBotao
         />
       </div>
@@ -150,4 +154,4 @@ const CategoryRegistrationPage = () => {
   );
 };
 
-export default CategoryRegistrationPage;
+export default PaginaCadastroCategoria;

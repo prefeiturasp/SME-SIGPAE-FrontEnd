@@ -1,48 +1,44 @@
 @use "src/styles/variables.scss" as *;
 
-.breadcrumb-title {
-  color: #c8c8c8;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.page-title {
-  margin-top: 0.5em;
-
-  .texto-titulo {
-    vertical-align: -webkit-baseline-middle;
-    vertical-align: -moz-middle-with-baseline;
-  }
-}
-
-.page-no-sidebar {
+.pagina-sem-barra-lateral {
   min-height: calc(100vh - 5rem);
   padding: 1.5rem 2rem 2rem;
   width: 100%;
-}
 
-.page-no-sidebar-header {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-  margin: 0.75rem 0 1rem;
-
-  .page-title {
-    margin: 0;
+  .breadcrumb-title {
+    color: #c8c8c8;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
   }
 
-  .float-end {
-    float: none !important;
-  }
-}
+  .cabecalho-pagina-sem-barra-lateral {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 0.75rem 0 1rem;
 
-.page-no-sidebar-card {
-  background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 4px;
-  padding: 1.5rem;
+    .titulo-pagina {
+      margin: 0;
+
+      .texto-titulo {
+        vertical-align: -webkit-baseline-middle;
+        vertical-align: -moz-middle-with-baseline;
+      }
+    }
+
+    .float-end {
+      float: none !important;
+    }
+  }
+
+  .cartao-pagina-sem-barra-lateral {
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
 }
 
 #wrapper {
@@ -71,13 +67,15 @@
     }
   }
 
-  .page-title {
-    color: #fff;
-  }
+  .pagina-sem-barra-lateral {
+    .titulo-pagina {
+      color: #fff;
+    }
 
-  .page-no-sidebar-card {
-    background-color: #464646;
-    border-color: #5a5a5a;
+    .cartao-pagina-sem-barra-lateral {
+      background-color: #464646;
+      border-color: #5a5a5a;
+    }
   }
 }
 
@@ -94,26 +92,28 @@
     }
   }
 
-  .page-no-sidebar {
+  .pagina-sem-barra-lateral {
     padding: 1rem;
   }
 }
 
 @media screen and (max-width: 575px) {
-  .page-no-sidebar-header {
-    align-items: stretch;
-    flex-direction: column;
+  .pagina-sem-barra-lateral {
+    .cabecalho-pagina-sem-barra-lateral {
+      align-items: stretch;
+      flex-direction: column;
 
-    .page-title {
-      font-size: 1.5rem;
+      .titulo-pagina {
+        font-size: 1.5rem;
+      }
+
+      .float-end {
+        align-self: flex-end;
+      }
     }
 
-    .float-end {
-      align-self: flex-end;
+    .cartao-pagina-sem-barra-lateral {
+      padding: 1rem;
     }
-  }
-
-  .page-no-sidebar-card {
-    padding: 1rem;
   }
 }

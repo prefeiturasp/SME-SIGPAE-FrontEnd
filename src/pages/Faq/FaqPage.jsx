@@ -14,26 +14,29 @@ import {
 import { useNavigate } from "react-router-dom";
 import { usuarioComAcessoAoCadastroDeCategorias } from "src/helpers/utilities";
 
-const TabContent = ({ items }) => {
+const ConteudoPerguntas = ({ itens }) => {
   return (
-    <div className="tab-content">
-      {items.length ? (
-        items.map((item, index) => (
+    <div className="conteudo-perguntas">
+      {itens.length ? (
+        itens.map((perguntaFrequente, indice) => (
           <Card
-            key={item.uuid || `${item.pergunta}-${index}`}
-            question={item.pergunta}
-            answer={item.resposta}
+            key={
+              perguntaFrequente.uuid ||
+              `${perguntaFrequente.pergunta}-${indice}`
+            }
+            question={perguntaFrequente.pergunta}
+            answer={perguntaFrequente.resposta}
           />
         ))
       ) : (
-        <div className="no-search-results" />
+        <div className="sem-resultados-busca" />
       )}
     </div>
   );
 };
 
-TabContent.propTypes = {
-  items: arrayOf(
+ConteudoPerguntas.propTypes = {
+  itens: arrayOf(
     shape({
       uuid: string,
       pergunta: string.isRequired,
@@ -42,53 +45,55 @@ TabContent.propTypes = {
   ).isRequired,
 };
 
-const FaqPage = () => {
-  const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]);
-  const [pattern, setPattern] = useState("");
-  const [activeCategoryIndex, setActiveCategoryIndex] = useState(0);
-  const navigate = useNavigate();
+const PaginaFaq = () => {
+  const [carregando, setCarregando] = useState(true);
+  const [categorias, setCategorias] = useState([]);
+  const [categoriasFiltradas, setCategoriasFiltradas] = useState([]);
+  const [termoBusca, setTermoBusca] = useState("");
+  const [indiceCategoriaAtiva, setIndiceCategoriaAtiva] = useState(0);
+  const navegar = useNavigate();
 
   useEffect(() => {
-    async function fetchData() {
+    async function buscarDados() {
       try {
-        const result = await getFaq();
+        const resultado = await getFaq();
 
-        if (result.data) {
-          setCategories(result.data);
+        if (resultado.data) {
+          setCategorias(resultado.data);
         }
       } finally {
-        setLoading(false);
+        setCarregando(false);
       }
     }
 
-    fetchData();
+    buscarDados();
   }, []);
 
   useEffect(() => {
-    const normalizedPattern = pattern.trim().toLowerCase();
+    const termoBuscaNormalizado = termoBusca.trim().toLowerCase();
 
-    if (!normalizedPattern) {
-      setFilteredCategories(categories);
-      setActiveCategoryIndex(0);
+    if (!termoBuscaNormalizado) {
+      setCategoriasFiltradas(categorias);
+      setIndiceCategoriaAtiva(0);
       return;
     }
 
-    const filtered = categories
-      .map((category) => ({
-        ...category,
-        perguntas: category.perguntas.filter((item) =>
-          item.pergunta.toLowerCase().includes(normalizedPattern),
+    const categoriasFiltradasPorBusca = categorias
+      .map((categoria) => ({
+        ...categoria,
+        perguntas: categoria.perguntas.filter((perguntaFrequente) =>
+          perguntaFrequente.pergunta
+            .toLowerCase()
+            .includes(termoBuscaNormalizado),
         ),
       }))
-      .filter((category) => category.perguntas.length > 0);
+      .filter((categoria) => categoria.perguntas.length > 0);
 
-    setFilteredCategories(filtered);
-    setActiveCategoryIndex(0);
-  }, [categories, pattern]);
+    setCategoriasFiltradas(categoriasFiltradasPorBusca);
+    setIndiceCategoriaAtiva(0);
+  }, [categorias, termoBusca]);
 
-  const activeCategory = filteredCategories[activeCategoryIndex];
+  const categoriaAtiva = categoriasFiltradas[indiceCategoriaAtiva];
 
   return (
     <PageNoSidebar
@@ -105,9 +110,10 @@ const FaqPage = () => {
         />
       }
     >
-      <div className="faq-page">
+      <div className="pagina-faq">
         <div className="row mb-4">
           <div className="d-none d-md-block col-md-4 col-lg-3" />
+
           <div className="col-12 col-md-8 col-lg-9">
             <div className="d-flex justify-content-end align-items-center gap-3 flex-wrap">
               {usuarioComAcessoAoCadastroDeCategorias() ? (
@@ -115,11 +121,12 @@ const FaqPage = () => {
                   texto="Cadastro de Categoria"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}
-                  onClick={() => navigate("/ajuda/cadastro-categoria")}
+                  onClick={() => navegar("/ajuda/cadastro-categoria")}
                 />
               ) : (
                 <></>
               )}
+
               <Botao
                 texto="Cadastro Dúvidas Frequentes"
                 type={BUTTON_TYPE.BUTTON}
@@ -130,50 +137,52 @@ const FaqPage = () => {
           </div>
         </div>
 
-        <div className="container-fluid faq-screen px-0">
-          <div className="faq-title-container">
-            <h4 className="faq-title">Como podemos ajudar?</h4>
+        <div className="container-fluid tela-faq px-0">
+          <div className="container-titulo-faq">
+            <h4 className="titulo-faq">Como podemos ajudar?</h4>
           </div>
 
           <div className="row justify-content-center mb-5">
-            <div className="col-12 col-md-8 col-lg-8 search-input-container p-0 mb-0">
+            <div className="col-12 col-md-8 col-lg-8 container-busca-faq p-0 mb-0">
               <input
                 id="search-input"
+                className="campo-busca-faq"
                 type="text"
                 placeholder="Pesquisar"
-                value={pattern}
-                onChange={(event) => setPattern(event.target.value)}
+                value={termoBusca}
+                onChange={(event) => setTermoBusca(event.target.value)}
               />
-              <i className="fas fa-search fa-lg" />
+
+              <i className="fas fa-search fa-lg icone-busca-faq" />
             </div>
           </div>
 
-          {loading && (
+          {carregando && (
             <div className="row justify-content-center">
               <img src="/assets/image/ajax-loader.gif" alt="ajax-loader" />
             </div>
           )}
 
-          {!loading && !!filteredCategories.length && (
-            <div className="row faq-content">
+          {!carregando && !!categoriasFiltradas.length && (
+            <div className="row conteudo-faq">
               <div className="col-12 col-md-4 col-lg-3">
-                <aside className="faq-category-menu">
-                  <h5 className="faq-category-menu__title">Categoria</h5>
+                <aside className="menu-categorias-faq">
+                  <h5 className="menu-categorias-faq__titulo">Categoria</h5>
 
-                  <div className="faq-category-menu__items">
-                    {filteredCategories.map((category, index) => {
-                      const isActive = activeCategoryIndex === index;
+                  <div className="menu-categorias-faq__itens">
+                    {categoriasFiltradas.map((categoria, indice) => {
+                      const estaAtiva = indiceCategoriaAtiva === indice;
 
                       return (
                         <button
-                          key={category.uuid || category.nome}
+                          key={categoria.uuid || categoria.nome}
                           type="button"
-                          className={`faq-category-menu__item ${
-                            isActive ? "faq-category-menu__item--active" : ""
+                          className={`menu-categorias-faq__item ${
+                            estaAtiva ? "menu-categorias-faq__item--ativo" : ""
                           }`}
-                          onClick={() => setActiveCategoryIndex(index)}
+                          onClick={() => setIndiceCategoriaAtiva(indice)}
                         >
-                          {category.nome}
+                          {categoria.nome}
                         </button>
                       );
                     })}
@@ -182,7 +191,7 @@ const FaqPage = () => {
               </div>
 
               <div className="col-12 col-md-8 col-lg-9">
-                <TabContent items={activeCategory?.perguntas || []} />
+                <ConteudoPerguntas itens={categoriaAtiva?.perguntas || []} />
               </div>
             </div>
           )}
@@ -192,4 +201,4 @@ const FaqPage = () => {
   );
 };
 
-export default FaqPage;
+export default PaginaFaq;
