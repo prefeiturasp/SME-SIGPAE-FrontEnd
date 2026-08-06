@@ -196,22 +196,18 @@ const ModalAplicarDesconto = ({
     descontos: DescontoFinanceiro[],
   ): DescontoFinanceiro[] =>
     descontos.map((desconto) => {
-      const payload = {
+      let payload = {
         ...desconto,
         periodo_escolar: null,
       };
 
       if (typeof desconto.faixa_etaria === "string") {
         const [periodo, faixaEtaria] = desconto.faixa_etaria.split("|");
-        const [tipoUnidade, tipoLancamento] =
-          desconto.tipo_lancamento?.split("|") ?? [];
 
-        return {
+        payload = {
           ...payload,
           periodo_escolar: periodo,
           faixa_etaria: faixaEtaria,
-          tipo_lancamento: tipoLancamento,
-          cei_ou_emei: tipoUnidade,
         };
       }
 
@@ -222,7 +218,7 @@ const ModalAplicarDesconto = ({
       ) {
         const [periodo, tipoAlimentacao] = desconto.tipo_alimentacao.split("|");
 
-        return {
+        payload = {
           ...payload,
           periodo_escolar: periodo,
           tipo_alimentacao: tipoAlimentacao,
@@ -233,7 +229,7 @@ const ModalAplicarDesconto = ({
         const [tipoUnidade, tipoLancamento] =
           desconto.tipo_lancamento?.split("|") ?? [];
 
-        return {
+        payload = {
           ...payload,
           tipo_lancamento: tipoLancamento,
           cei_ou_emei: tipoUnidade,
