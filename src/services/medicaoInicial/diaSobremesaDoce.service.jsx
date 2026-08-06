@@ -36,3 +36,12 @@ export const getListaDiasSobremesaDoce = async (params = null) => {
     return data;
   }
 };
+
+export const getTiposSobremesaDoce = async () => {
+  const url = `medicao-inicial/tipos-sobremesa-doce/`;
+  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};

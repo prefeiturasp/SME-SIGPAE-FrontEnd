@@ -16,6 +16,7 @@ import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { getNumerosEditais } from "src/services/edital.service";
 import { getFeriadosNoMesComNome } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { getTiposSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import { ModalFeriado } from "src/components/screens/Cadastros/DiasLetivosSIGPAE/components/ModalFeriado";
 moment.locale("pt-br");
 
@@ -43,6 +44,7 @@ export class Calendario extends React.Component {
       feriadosNoMes: undefined,
       currentFeriado: undefined,
       showModalFeriado: false,
+      tiposSobremesaDoce: undefined,
     };
 
     this.moveEvent = this.moveEvent.bind(this);
@@ -53,14 +55,20 @@ export class Calendario extends React.Component {
     this.getTiposUnidadeEscolarAsync =
       this.getTiposUnidadeEscolarAsync.bind(this);
     this.getFeriadosNoMesAsync = this.getFeriadosNoMesAsync.bind(this);
+    this.getTiposSobremesaDoceAsync =
+      this.getTiposSobremesaDoceAsync.bind(this);
   }
 
   componentDidMount() {
     const { mes, ano } = this.state;
+    const { isSobremesaDoce } = this.props;
     this.getObjetosAsync();
     this.getTiposUnidadeEscolarAsync();
     this.getEditaisAsync();
     this.getFeriadosNoMesAsync(mes, ano);
+    if (isSobremesaDoce) {
+      this.getTiposSobremesaDoceAsync();
+    }
   }
 
   async getObjetosAsync(params) {
@@ -108,6 +116,13 @@ export class Calendario extends React.Component {
     }
   }
 
+  async getTiposSobremesaDoceAsync() {
+    const response = await getTiposSobremesaDoce();
+    if (response.status === HTTP_STATUS.OK) {
+      this.setState({ tiposSobremesaDoce: response.data });
+    }
+  }
+
   async moveEvent({ event, start, end, isAllDay: droppedOnAllDaySlot }) {
     if (event.title === "FERIADO") return;
     const { objetos } = this.state;
@@ -137,12 +152,16 @@ export class Calendario extends React.Component {
     const cadastros_calendario_payload = [];
     nextEvents
       .filter((e) => e.data === getDDMMYYYfromDate(event.start))
-      .forEach((evento) =>
-        cadastros_calendario_payload.push({
+      .forEach((evento) => {
+        const entry = {
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
-        }),
-      );
+        };
+        if (evento.tipo?.uuid) {
+          entry.tipo = evento.tipo.uuid;
+        }
+        cadastros_calendario_payload.push(entry);
+      });
     const payload = {
       cadastros_calendario: cadastros_calendario_payload,
       data: getYYYYMMDDfromDate(event.start),
@@ -153,12 +172,16 @@ export class Calendario extends React.Component {
     const cadastros_calendario_payload2 = [];
     nextEvents
       .filter((e) => e.data === getDDMMYYYfromDate(start))
-      .forEach((evento) =>
-        cadastros_calendario_payload2.push({
+      .forEach((evento) => {
+        const entry = {
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
-        }),
-      );
+        };
+        if (evento.tipo?.uuid) {
+          entry.tipo = evento.tipo.uuid;
+        }
+        cadastros_calendario_payload2.push(entry);
+      });
     const payload2 = {
       cadastros_calendario: cadastros_calendario_payload2,
       data: getYYYYMMDDfromDate(start),
@@ -212,6 +235,7 @@ export class Calendario extends React.Component {
       showModalFeriado,
       mes,
       ano,
+      tiposSobremesaDoce,
     } = this.state;
     const {
       nomeObjeto,
@@ -335,6 +359,7 @@ export class Calendario extends React.Component {
                       event={currentEvent}
                       getObjetosAsync={this.getObjetosAsync}
                       setObjetoAsync={setObjeto}
+                      tiposSobremesaDoce={tiposSobremesaDoce}
                     />
                     {showModalEditar && (
                       <ModalEditar
