@@ -70,7 +70,7 @@ describe("Teste componete ModalConfirmarExclusao", () => {
         }}
       >
         <ModalConfirmarExclusao {...defaultProps} {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   };
 
@@ -88,7 +88,7 @@ describe("Teste componete ModalConfirmarExclusao", () => {
     });
     expect(screen.getByText(/Excluir Sobremesa/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Deseja realmente excluir o cadastro de/)
+      screen.getByText(/Deseja realmente excluir o cadastro de/),
     ).toBeInTheDocument();
     expect(screen.getByText(mockEvent.title)).toBeInTheDocument();
     expect(screen.getByText("15/06/2023")).toBeInTheDocument();
@@ -141,5 +141,43 @@ describe("Teste componete ModalConfirmarExclusao", () => {
     });
 
     expect(screen.queryByText(/Excluir Sobremesa/i)).not.toBeInTheDocument();
+  });
+
+  it("exibe nome do tipo e unidade sem prefixo quando event.tipo.nome === 'Sobremesa AF'", async () => {
+    const eventAf = {
+      uuid: "evt-af",
+      title: "Sob. AF - CCA",
+      tipo_unidade: { iniciais: "CCA", uuid: "uuid-cca" },
+      tipo: { uuid: "uuid-af", nome: "Sobremesa AF" },
+      start: new Date(2023, 5, 15),
+    };
+
+    await act(async () => {
+      renderModalConfirmarExclusao({ event: eventAf });
+    });
+
+    expect(screen.getByText("Excluir Sobremesa AF")).toBeInTheDocument();
+    expect(screen.getAllByText("Sobremesa AF").length).toBe(1);
+    expect(screen.getByText("CCA")).toBeInTheDocument();
+    expect(screen.queryByText("Sob. AF - CCA")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sobremesa Doce ou/i)).not.toBeInTheDocument();
+  });
+
+  it("exibe nome do tipo e unidade sem prefixo quando event.tipo.nome === 'Sobremesa Doce'", async () => {
+    const eventDoce = {
+      uuid: "evt-doce",
+      title: "CCA",
+      tipo_unidade: { iniciais: "CCA", uuid: "uuid-cca" },
+      tipo: { uuid: "uuid-doce", nome: "Sobremesa Doce" },
+      start: new Date(2023, 5, 15),
+    };
+
+    await act(async () => {
+      renderModalConfirmarExclusao({ event: eventDoce });
+    });
+
+    expect(screen.getByText("Excluir Sobremesa Doce")).toBeInTheDocument();
+    expect(screen.getAllByText("Sobremesa Doce").length).toBe(1);
+    expect(screen.getByText("CCA")).toBeInTheDocument();
   });
 });

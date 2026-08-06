@@ -9,8 +9,13 @@ import HTTP_STATUS from "http-status-codes";
 
 import { mockGetTiposUnidadeEscolar } from "src/mocks/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolar";
 import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
-
 jest.mock("moment/dist/locale/pt-br", () => {});
+
+jest.mock("src/components/Shareable/Toast/dialogs", () => ({
+  toastSuccess: jest.fn(),
+  toastError: jest.fn(),
+}));
+
 describe("Integração Calendario", () => {
   const mockGetObjetos = jest.fn();
   const mockSetObjeto = jest.fn();
