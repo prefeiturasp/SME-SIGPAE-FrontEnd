@@ -5,7 +5,8 @@ import FaqPage from "src/pages/Faq/FaqPage";
 import NotificacoesPage from "src/pages/Notificacoes/NotificacoesPage";
 import PainelInicialPage from "src/pages/PainelInicial/PainelInicialPage";
 import PerfilPage from "src/pages/Perfil/PerfilPage";
-import CategoryRegistrationPage from "src/pages/Faq/CategoryRegistrationPage";
+import PaginaFormularioCategoria from "src/pages/Faq/CadastroCategoria/Formulario";
+import PaginaListagemCategorias from "src/pages/Faq/CadastroCategoria/Listagem";
 
 import { rotasAbastecimento } from "../rotas/abastecimento";
 import { rotasCadastros } from "../rotas/cadastros";
@@ -36,7 +37,12 @@ export let rotas = [
   },
   {
     path: "/ajuda/cadastro-categoria",
-    component: CategoryRegistrationPage,
+    component: PaginaListagemCategorias,
+    tipoUsuario: constants.QUALQUER_USUARIO,
+  },
+  {
+    path: "/ajuda/cadastro-categoria/cadastrar",
+    component: PaginaFormularioCategoria,
     tipoUsuario: constants.QUALQUER_USUARIO,
   },
   {

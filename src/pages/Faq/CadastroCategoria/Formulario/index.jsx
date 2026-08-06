@@ -13,14 +13,15 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { HOME } from "src/constants/config";
 import { createFaqCategory } from "src/services/faq.service";
-import "./categoryRegistration.scss";
+import "./style.scss";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import HTTP_STATUS from "http-status-codes";
 
 const CAMINHO_FAQ = "/ajuda";
-const CAMINHO_CADASTRO_CATEGORIA = "/ajuda/cadastro-categoria";
+const CAMINHO_LISTAGEM_CATEGORIAS = "/ajuda/cadastro-categoria";
+const CAMINHO_CADASTRAR_CATEGORIA = "/ajuda/cadastro-categoria/cadastrar";
 
-const PaginaCadastroCategoria = () => {
+const PaginaFormularioCategoria = () => {
   const [nomeCategoria, setNomeCategoria] = useState("");
   const [cadastrando, setCadastrando] = useState(false);
 
@@ -55,7 +56,7 @@ const PaginaCadastroCategoria = () => {
         nome: nomeCategoriaNormalizado,
       });
 
-      if (resposta.status === 201) {
+      if (resposta.status === HTTP_STATUS.CREATED) {
         toastSuccess("Categoria Cadastrada com Sucesso!");
         setNomeCategoria("");
       }
@@ -82,7 +83,7 @@ const PaginaCadastroCategoria = () => {
     <PageNoSidebar
       titulo="Cadastrar Categoria"
       botaoVoltar
-      voltarPara={CAMINHO_FAQ}
+      voltarPara={CAMINHO_LISTAGEM_CATEGORIAS}
       breadcrumb={
         <Breadcrumb
           home={HOME}
@@ -91,10 +92,14 @@ const PaginaCadastroCategoria = () => {
               href: CAMINHO_FAQ,
               titulo: "Ajuda",
             },
+            {
+              href: CAMINHO_LISTAGEM_CATEGORIAS,
+              titulo: "Cadastro de Categoria",
+            },
           ]}
           atual={{
-            href: CAMINHO_CADASTRO_CATEGORIA,
-            titulo: "Cadastro de Categoria",
+            href: CAMINHO_CADASTRAR_CATEGORIA,
+            titulo: "Cadastrar Categoria",
           }}
         />
       }
@@ -154,4 +159,4 @@ const PaginaCadastroCategoria = () => {
   );
 };
 
-export default PaginaCadastroCategoria;
+export default PaginaFormularioCategoria;
