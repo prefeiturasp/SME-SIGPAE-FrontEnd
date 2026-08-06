@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Spin } from "antd";
 import { Field } from "react-final-form";
 import moment from "moment";
@@ -10,7 +10,18 @@ import { Paginacao } from "src/components/Shareable/Paginacao";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
-import { getRelatorioFichasTecnicas } from "src/services/fichaTecnica.service";
+import {
+  exportarExcelRelatorioFichasTecnicas,
+  getRelatorioFichasTecnicas,
+} from "src/services/fichaTecnica.service";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { CentralDeDownloadContext } from "src/context/CentralDeDownloads";
 import { getListaCompletaProdutosLogistica } from "src/services/produto.service";
 import { getEmpresasCronograma } from "src/services/terceirizada.service";
 import { getListaFiltradaAutoCompleteSelect } from "src/helpers/autoCompleteSelect";
@@ -43,6 +54,10 @@ export default () => {
   const [totalizadores, setTotalizadores] = useState(null);
   const [listaProdutos, setListaProdutos] = useState([]);
   const [fornecedores, setFornecedores] = useState([]);
+  const [enviandoArquivo, setEnviandoArquivo] = useState(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState(false);
+  const centralDownloadContext = useContext(CentralDeDownloadContext);
 
   const buscarResultados = async (pageNumber) => {
     setCarregando(true);
@@ -113,6 +128,20 @@ export default () => {
     setFichas([]);
     setConsultaRealizada(false);
     setFiltros({});
+  };
+
+  const baixarRelatorio = async () => {
+    setEnviandoArquivo(true);
+    try {
+      const params = gerarParametrosConsulta(filtros);
+      const response = await exportarExcelRelatorioFichasTecnicas(params);
+      response?.status === 200 && setExibirModalCentralDownloads(true);
+      centralDownloadContext.getQtdeDownloadsNaoLidas();
+    } catch {
+      toastError("Erro ao exportar. Tente novamente mais tarde.");
+    } finally {
+      setEnviandoArquivo(false);
+    }
   };
 
   return (
@@ -260,6 +289,26 @@ export default () => {
                         total={totalResultados}
                         onChange={nextPage}
                       />
+                    </div>
+                  </div>
+
+                  <div className="row mt-4 mb-2">
+                    <div className="col p-0">
+                      <Botao
+                        texto="Baixar em Excel"
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        icon={BUTTON_ICON.FILE_EXCEL}
+                        type={BUTTON_TYPE.BUTTON}
+                        disabled={enviandoArquivo}
+                        onClick={baixarRelatorio}
+                        className="float-end"
+                      />
+                      {exibirModalCentralDownloads && (
+                        <ModalSolicitacaoDownload
+                          show={exibirModalCentralDownloads}
+                          setShow={setExibirModalCentralDownloads}
+                        />
+                      )}
                     </div>
                   </div>
                 </>

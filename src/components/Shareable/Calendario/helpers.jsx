@@ -9,7 +9,7 @@ export const formataComoEventos = (diasSobremesaDoce) => {
   datas.forEach((data) => {
     const tiposUnidadesMesmoDia = [];
     const diasSobremesaDoceMesmoDia = diasSobremesaDoce.filter(
-      (diaSobremesaDoce) => diaSobremesaDoce.data === data
+      (diaSobremesaDoce) => diaSobremesaDoce.data === data,
     );
     diasSobremesaDoceMesmoDia.forEach((diaSobremesaDoce) => {
       if (
@@ -23,7 +23,7 @@ export const formataComoEventos = (diasSobremesaDoce) => {
       const diasSobremesaDoceMesmoDiaETipoUnidade =
         diasSobremesaDoceMesmoDia.filter(
           (diaSobremesaDoce) =>
-            diaSobremesaDoce.tipo_unidade.iniciais === tipoUnidade
+            diaSobremesaDoce.tipo_unidade.iniciais === tipoUnidade,
         );
       let editais_numeros = "";
       let editais_numeros_virgula = "";
@@ -33,32 +33,32 @@ export const formataComoEventos = (diasSobremesaDoce) => {
           editais_numeros += `\x0A${diaSobremesaDoceMesmoDiaETipoUnidade.edital_numero}`;
           editais_numeros_virgula += `, ${diaSobremesaDoceMesmoDiaETipoUnidade.edital_numero}`;
           editais_uuids.push(diaSobremesaDoceMesmoDiaETipoUnidade.edital);
-        }
+        },
       );
+      const primeiro = diasSobremesaDoceMesmoDiaETipoUnidade[0];
+      const tituloBase = primeiro.tipo_unidade.iniciais;
+      const ehSobremesaAF = primeiro.tipo?.nome === "Sobremesa AF";
       eventos.push({
-        title: diasSobremesaDoceMesmoDiaETipoUnidade[0].tipo_unidade.iniciais,
-        tipo_unidade: diasSobremesaDoceMesmoDiaETipoUnidade[0].tipo_unidade,
-        data: diasSobremesaDoceMesmoDiaETipoUnidade[0].data,
+        title: ehSobremesaAF ? `Sob. AF - ${tituloBase}` : tituloBase,
+        tipo_unidade: primeiro.tipo_unidade,
+        tipo: primeiro.tipo,
+        data: primeiro.data,
         start: new Date(
-          parseInt(diasSobremesaDoceMesmoDiaETipoUnidade[0].data.split("/")[2]),
-          parseInt(
-            diasSobremesaDoceMesmoDiaETipoUnidade[0].data.split("/")[1]
-          ) - 1,
-          parseInt(diasSobremesaDoceMesmoDiaETipoUnidade[0].data.split("/")[0]),
-          0
+          parseInt(primeiro.data.split("/")[2]),
+          parseInt(primeiro.data.split("/")[1]) - 1,
+          parseInt(primeiro.data.split("/")[0]),
+          0,
         ),
         end: new Date(
-          parseInt(diasSobremesaDoceMesmoDiaETipoUnidade[0].data.split("/")[2]),
-          parseInt(
-            diasSobremesaDoceMesmoDiaETipoUnidade[0].data.split("/")[1]
-          ) - 1,
-          parseInt(diasSobremesaDoceMesmoDiaETipoUnidade[0].data.split("/")[0]),
-          1
+          parseInt(primeiro.data.split("/")[2]),
+          parseInt(primeiro.data.split("/")[1]) - 1,
+          parseInt(primeiro.data.split("/")[0]),
+          1,
         ),
         allDay: true,
-        criado_por: diasSobremesaDoceMesmoDiaETipoUnidade[0].criado_por,
-        criado_em: diasSobremesaDoceMesmoDiaETipoUnidade[0].criado_em,
-        uuid: diasSobremesaDoceMesmoDiaETipoUnidade[0].uuid,
+        criado_por: primeiro.criado_por,
+        criado_em: primeiro.criado_em,
+        uuid: primeiro.uuid,
         editais_numeros: editais_numeros,
         editais_numeros_virgula: editais_numeros_virgula,
         editais_uuids: editais_uuids,

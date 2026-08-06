@@ -1,34 +1,40 @@
 import React, { useState } from "react";
 import { Collapse } from "react-collapse";
-import { ToggleExpandir } from "./../Shareable/ToggleExpandir";
 import { string } from "prop-types";
+import { ToggleExpandir } from "../Shareable/ToggleExpandir";
 import "./style.scss";
 
-const Card = ({ question, answer }) => {
-  const [collapsed, setCollapsed] = useState(true);
+const Card = ({ question: pergunta, answer: resposta }) => {
+  const [recolhido, setRecolhido] = useState(true);
+
+  const alternarExpansao = () => {
+    setRecolhido((valorAtual) => !valorAtual);
+  };
+
   return (
-    <div className="card faq-card">
-      <div className="container">
-        <div className="row">
-          <div className="col title">{question}</div>
-          <div className="pe-2 toggle-expand">
-            <ToggleExpandir
-              onClick={() => setCollapsed(!collapsed)}
-              ativo={!collapsed}
-            />
+    <div className="card cartao-faq">
+      <div className="borda-cartao-faq" aria-hidden="true" />
+
+      <div className="container-fluid conteudo-cartao-faq">
+        <div className="row align-items-center g-0">
+          <div className="col card-title titulo-cartao-faq">{pergunta}</div>
+
+          <div className="col-auto controle-expandir">
+            <ToggleExpandir onClick={alternarExpansao} ativo={!recolhido} />
           </div>
         </div>
 
-        <Collapse isOpened={!collapsed}>
-          <div className="card-body p-0 pt-3 pb-1">{answer}</div>
+        <Collapse isOpened={!recolhido}>
+          <div className="card-body corpo-cartao-faq">{resposta}</div>
         </Collapse>
       </div>
     </div>
   );
 };
+
 Card.propTypes = {
-  question: string,
-  answer: string,
+  question: string.isRequired,
+  answer: string.isRequired,
 };
 
 export default Card;

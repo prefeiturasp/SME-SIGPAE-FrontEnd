@@ -15,6 +15,9 @@ import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
 import { getTiposUnidadeEscolar } from "src/services/cadastroTipoAlimentacao.service";
 import { getNumerosEditais } from "src/services/edital.service";
+import { getFeriadosNoMesComNome } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import { getTiposSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
+import { ModalFeriado } from "src/components/screens/Cadastros/DiasLetivosSIGPAE/components/ModalFeriado";
 moment.locale("pt-br");
 
 // O Vite 8 mantém a exportação padrão aninhada deste módulo CommonJS.
@@ -38,6 +41,10 @@ export class Calendario extends React.Component {
       mes: moment().month() + 1,
       ano: moment().year(),
       hasNavigatedOnce: false,
+      feriadosNoMes: undefined,
+      currentFeriado: undefined,
+      showModalFeriado: false,
+      tiposSobremesaDoce: undefined,
     };
 
     this.moveEvent = this.moveEvent.bind(this);
@@ -47,12 +54,21 @@ export class Calendario extends React.Component {
     this.getEditaisAsync = this.getEditaisAsync.bind(this);
     this.getTiposUnidadeEscolarAsync =
       this.getTiposUnidadeEscolarAsync.bind(this);
+    this.getFeriadosNoMesAsync = this.getFeriadosNoMesAsync.bind(this);
+    this.getTiposSobremesaDoceAsync =
+      this.getTiposSobremesaDoceAsync.bind(this);
   }
 
   componentDidMount() {
+    const { mes, ano } = this.state;
+    const { isSobremesaDoce } = this.props;
     this.getObjetosAsync();
     this.getTiposUnidadeEscolarAsync();
     this.getEditaisAsync();
+    this.getFeriadosNoMesAsync(mes, ano);
+    if (isSobremesaDoce) {
+      this.getTiposSobremesaDoceAsync();
+    }
   }
 
   async getObjetosAsync(params) {
@@ -93,7 +109,22 @@ export class Calendario extends React.Component {
     }
   }
 
+  async getFeriadosNoMesAsync(mes, ano) {
+    const response = await getFeriadosNoMesComNome({ mes, ano });
+    if (response.status === HTTP_STATUS.OK) {
+      this.setState({ feriadosNoMes: response.data.results });
+    }
+  }
+
+  async getTiposSobremesaDoceAsync() {
+    const response = await getTiposSobremesaDoce();
+    if (response.status === HTTP_STATUS.OK) {
+      this.setState({ tiposSobremesaDoce: response.data });
+    }
+  }
+
   async moveEvent({ event, start, end, isAllDay: droppedOnAllDaySlot }) {
+    if (event.title === "FERIADO") return;
     const { objetos } = this.state;
     const { nomeObjeto, setObjeto, podeEditar } = this.props;
     if (!podeEditar) return;
@@ -121,12 +152,16 @@ export class Calendario extends React.Component {
     const cadastros_calendario_payload = [];
     nextEvents
       .filter((e) => e.data === getDDMMYYYfromDate(event.start))
-      .forEach((evento) =>
-        cadastros_calendario_payload.push({
+      .forEach((evento) => {
+        const entry = {
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
-        }),
-      );
+        };
+        if (evento.tipo?.uuid) {
+          entry.tipo = evento.tipo.uuid;
+        }
+        cadastros_calendario_payload.push(entry);
+      });
     const payload = {
       cadastros_calendario: cadastros_calendario_payload,
       data: getYYYYMMDDfromDate(event.start),
@@ -137,12 +172,16 @@ export class Calendario extends React.Component {
     const cadastros_calendario_payload2 = [];
     nextEvents
       .filter((e) => e.data === getDDMMYYYfromDate(start))
-      .forEach((evento) =>
-        cadastros_calendario_payload2.push({
+      .forEach((evento) => {
+        const entry = {
           editais: evento.editais_uuids,
           tipo_unidades: [evento.tipo_unidade.uuid],
-        }),
-      );
+        };
+        if (evento.tipo?.uuid) {
+          entry.tipo = evento.tipo.uuid;
+        }
+        cadastros_calendario_payload2.push(entry);
+      });
     const payload2 = {
       cadastros_calendario: cadastros_calendario_payload2,
       data: getYYYYMMDDfromDate(start),
@@ -166,6 +205,13 @@ export class Calendario extends React.Component {
   }
 
   handleEvent(event) {
+    if (event.title === "FERIADO") {
+      this.setState({
+        currentFeriado: event,
+        showModalFeriado: true,
+      });
+      return;
+    }
     this.setState({
       currentEvent: event,
       showModalEditar: true,
@@ -184,6 +230,12 @@ export class Calendario extends React.Component {
       showModalConfirmarExclusao,
       editais,
       hasNavigatedOnce,
+      feriadosNoMes,
+      currentFeriado,
+      showModalFeriado,
+      mes,
+      ano,
+      tiposSobremesaDoce,
     } = this.state;
     const {
       nomeObjeto,
@@ -192,6 +244,20 @@ export class Calendario extends React.Component {
       deleteObjeto,
       podeEditar,
     } = this.props;
+
+    const feriadoDias = new Set(
+      (feriadosNoMes || []).map((f) => Number(f.dia)),
+    );
+    const eventosComFeriados = [
+      ...(objetos || []),
+      ...(feriadosNoMes || []).map((item) => ({
+        title: "FERIADO",
+        feriado: item.feriado,
+        start: new Date(ano, mes - 1, Number(item.dia), 0),
+        end: new Date(ano, mes - 1, Number(item.dia), 1),
+        allDay: true,
+      })),
+    ];
 
     return (
       <div className="card calendario-sobremesa mt-3">
@@ -209,8 +275,9 @@ export class Calendario extends React.Component {
             {editais && tiposUnidades && objetos && (
               <>
                 <p>
-                  Para cadastrar um dia para {nomeObjetoMinusculo}, clique sobre
-                  o dia e selecione o tipo de unidade.
+                  Para cadastrar um dia para{" "}
+                  <strong>{nomeObjetoMinusculo}</strong>, clique sobre o dia e
+                  selecione o tipo de unidade.
                 </p>
                 <Spin
                   tip={`Carregando dias de ${nomeObjeto}...`}
@@ -218,6 +285,21 @@ export class Calendario extends React.Component {
                 >
                   <DragAndDropCalendar
                     tooltipAccessor={(e) => e.editais_numeros}
+                    eventPropGetter={(event) => {
+                      if (event.title === "FERIADO") {
+                        return { className: "rbc-event-feriado" };
+                      }
+                      if (event.tipo?.nome === "Sobremesa AF") {
+                        return { className: "rbc-event-sobremesa-af" };
+                      }
+                      return {};
+                    }}
+                    dayPropGetter={(date) => {
+                      if (feriadoDias.has(date.getDate())) {
+                        return { style: { backgroundColor: "#e6e6e6" } };
+                      }
+                      return {};
+                    }}
                     style={{ height: 1000 }}
                     formats={{
                       weekdayFormat: (date, culture, localizer) =>
@@ -226,7 +308,7 @@ export class Calendario extends React.Component {
                     selectable
                     resizable={false}
                     localizer={localizer}
-                    events={objetos}
+                    events={eventosComFeriados}
                     onSelectEvent={this.handleEvent}
                     onEventDrop={this.moveEvent}
                     onSelectSlot={this.handleSelectSlot}
@@ -245,14 +327,17 @@ export class Calendario extends React.Component {
                         this.setState({ hasNavigatedOnce: true });
                         return;
                       }
+                      const novoMes = date.getMonth() + 1;
+                      const novoAno = date.getFullYear();
                       this.setState({
-                        mes: date.getMonth() + 1,
-                        ano: date.getFullYear(),
+                        mes: novoMes,
+                        ano: novoAno,
                       });
                       this.getObjetosAsync({
-                        mes: date.getMonth() + 1,
-                        ano: date.getFullYear(),
+                        mes: novoMes,
+                        ano: novoAno,
                       });
+                      this.getFeriadosNoMesAsync(novoMes, novoAno);
                     }}
                     defaultView={Views.MONTH}
                   />
@@ -274,6 +359,7 @@ export class Calendario extends React.Component {
                       event={currentEvent}
                       getObjetosAsync={this.getObjetosAsync}
                       setObjetoAsync={setObjeto}
+                      tiposSobremesaDoce={tiposSobremesaDoce}
                     />
                     {showModalEditar && (
                       <ModalEditar
@@ -303,6 +389,15 @@ export class Calendario extends React.Component {
                       />
                     )}
                   </>
+                )}
+                {currentFeriado && (
+                  <ModalFeriado
+                    showModal={showModalFeriado}
+                    closeModal={() =>
+                      this.setState({ showModalFeriado: false })
+                    }
+                    event={currentFeriado}
+                  />
                 )}
               </>
             )}
