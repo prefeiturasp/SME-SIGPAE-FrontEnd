@@ -167,7 +167,7 @@ export class Calendario extends React.Component {
       data: getYYYYMMDDfromDate(event.start),
     };
 
-    await setObjeto(payload);
+    const response = await setObjeto(payload);
 
     const cadastros_calendario_payload2 = [];
     nextEvents
@@ -188,15 +188,16 @@ export class Calendario extends React.Component {
     };
 
     const response2 = await setObjeto(payload2);
-    if (response2.status === HTTP_STATUS.CREATED) {
+    if (
+      response &&
+      response.status === HTTP_STATUS.CREATED &&
+      response2.status === HTTP_STATUS.CREATED
+    ) {
       toastSuccess(
         `Dia de ${event.tipo?.nome || nomeObjeto} atualizado com sucesso`,
       );
+      this.getObjetosAsync();
     }
-
-    this.setState({
-      objetos: nextEvents,
-    });
   }
 
   handleSelectSlot(event) {
