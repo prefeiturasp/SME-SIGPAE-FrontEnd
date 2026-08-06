@@ -32,8 +32,8 @@ export const CadastroSobremesaDocePage = () => {
       <Breadcrumb home={"/"} anteriores={anteriores} atual={atual} />
       <Calendario
         getObjetos={getDiasSobremesaDoce}
-        nomeObjeto="Sobremesa Doce ou Agricultura Familiar"
-        nomeObjetoMinusculo="sobremesa doce ou agricultura familiar"
+        nomeObjeto="Sobremesa Doce ou Sobremesa AF"
+        nomeObjetoMinusculo="sobremesa doce ou sobremesa AF"
         setObjeto={setDiaSobremesaDoce}
         deleteObjeto={deleteDiaSobremesaDoce}
         podeEditar={usuarioEhCODAEGestaoAlimentacao()}

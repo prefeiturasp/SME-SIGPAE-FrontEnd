@@ -189,7 +189,9 @@ export class Calendario extends React.Component {
 
     const response2 = await setObjeto(payload2);
     if (response2.status === HTTP_STATUS.CREATED) {
-      toastSuccess(`Dia de ${nomeObjeto} atualizado com sucesso`);
+      toastSuccess(
+        `Dia de ${event.tipo?.nome || nomeObjeto} atualizado com sucesso`,
+      );
     }
 
     this.setState({
