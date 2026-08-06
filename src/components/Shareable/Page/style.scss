@@ -1,23 +1,44 @@
 @use "src/styles/variables.scss" as *;
 
-.breadcrumb-title {
-  font-weight: bold;
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #c8c8c8;
-}
+.pagina-sem-barra-lateral {
+  min-height: calc(100vh - 5rem);
+  padding: 1.5rem 2rem 2rem;
+  width: 100%;
 
-.page-title {
-  margin-top: 0.5em;
-
-  .texto-titulo {
-    vertical-align: -webkit-baseline-middle;
-    vertical-align: -moz-middle-with-baseline;
+  .breadcrumb-title {
+    color: #c8c8c8;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
   }
-}
 
-.page-no-sidebar-card {
-  min-height: 500px;
+  .cabecalho-pagina-sem-barra-lateral {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 0.75rem 0 1rem;
+
+    .titulo-pagina {
+      margin: 0;
+
+      .texto-titulo {
+        vertical-align: -webkit-baseline-middle;
+        vertical-align: -moz-middle-with-baseline;
+      }
+    }
+
+    .float-end {
+      float: none !important;
+    }
+  }
+
+  .cartao-pagina-sem-barra-lateral {
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
 }
 
 #wrapper {
@@ -28,6 +49,7 @@
 #content-wrapper {
   div.content-wrapper-div {
     margin-left: 17rem;
+
     &.toggled {
       margin-left: 5.5rem;
     }
@@ -38,16 +60,25 @@
   #wrapper {
     #content-wrapper {
       background-color: #464646;
+
       div.content-wrapper-div {
         background-color: #464646;
       }
     }
   }
 
-  .page-title {
-    color: #fff;
+  .pagina-sem-barra-lateral {
+    .titulo-pagina {
+      color: #fff;
+    }
+
+    .cartao-pagina-sem-barra-lateral {
+      background-color: #464646;
+      border-color: #5a5a5a;
+    }
   }
 }
+
 .modal-botao-voltar {
   .modal-dialog {
     max-width: 600px !important;
@@ -58,6 +89,31 @@
   #content-wrapper {
     div.content-wrapper-div {
       margin-left: 0;
+    }
+  }
+
+  .pagina-sem-barra-lateral {
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .pagina-sem-barra-lateral {
+    .cabecalho-pagina-sem-barra-lateral {
+      align-items: stretch;
+      flex-direction: column;
+
+      .titulo-pagina {
+        font-size: 1.5rem;
+      }
+
+      .float-end {
+        align-self: flex-end;
+      }
+    }
+
+    .cartao-pagina-sem-barra-lateral {
+      padding: 1rem;
     }
   }
 }

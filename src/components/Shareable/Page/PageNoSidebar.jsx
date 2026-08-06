@@ -1,26 +1,43 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import { Header } from "../Header";
-import Breadcrumb from "../Breadcrumb";
 import BotaoVoltar from "./BotaoVoltar";
+
 import "./style.scss";
 
-const PageNoSidebar = ({ voltarPara, children }) => {
-  const location = useLocation();
+const PageNoSidebar = ({
+  botaoVoltar = true,
+  breadcrumb,
+  children,
+  titulo,
+  voltarPara,
+}) => {
+  const navegar = useNavigate();
+
+  const voltar = () => {
+    voltarPara ? navegar(voltarPara) : navegar(-1);
+  };
 
   return (
     <div id="wrapper">
       <Header toggled={false} />
       <div id="content-wrapper" className="pt-5">
-        <div className={`d-flex flex-column p-4 mt-5`}>
-          <Breadcrumb home={"/"} />
-          <div className="card p-3 page-no-sidebar-card">
-            <div>
-              <BotaoVoltar location={location} to={voltarPara} />
-            </div>
-            {children}
+        <main className="page-no-sidebar pagina-sem-barra-lateral mt-5">
+          {breadcrumb}
+
+          <div className="page-no-sidebar-header cabecalho-pagina-sem-barra-lateral">
+            <h1 className="page-title titulo-pagina">
+              <span className="texto-titulo">{titulo}</span>
+            </h1>
+
+            {botaoVoltar && <BotaoVoltar onClick={voltar} />}
           </div>
-        </div>
+
+          <section className="page-no-sidebar-card cartao-pagina-sem-barra-lateral">
+            {children}
+          </section>
+        </main>
       </div>
     </div>
   );
