@@ -15,6 +15,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { MultiSelect } from "../../../MultiSelect";
+import Select from "src/components/Shareable/Select";
 import { getError } from "src/helpers/utilities";
 import { requiredMultiselect } from "src/helpers/fieldValidators";
 import { getDDMMYYYfromDate, getYYYYMMDDfromDate } from "src/helpers/utilities";
@@ -32,6 +33,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
     objetos,
     nomeObjetoNoCalendario,
     nomeObjetoNoCalendarioMinusculo,
+    tiposSobremesaDoce,
   } = props;
 
   const [cadastrosSalvosNoDia, setCadastrosSalvosNoDia] = useState([]);
@@ -40,12 +42,16 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
     const cadastros_calendario = [];
     objetos
       .filter((obj) => obj.data === getDDMMYYYfromDate(event.start))
-      .forEach((obj) =>
-        cadastros_calendario.push({
+      .forEach((obj) => {
+        const entry = {
           editais: obj.editais_uuids,
           tipo_unidades: [obj.tipo_unidade.uuid],
-        }),
-      );
+        };
+        if (obj.tipo?.uuid) {
+          entry.tipo = obj.tipo.uuid;
+        }
+        cadastros_calendario.push(entry);
+      });
     setCadastrosSalvosNoDia(cadastros_calendario);
   }, [event.start]);
 
@@ -71,6 +77,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
   const DEFAULT_CADASTROS_CALENDARIO = {
     editais: undefined,
     tipo_unidades: undefined,
+    tipo: undefined,
   };
 
   return (
@@ -116,7 +123,27 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                   fields.map((name, index) => (
                     <div key={name}>
                       <div className="row mb-3">
-                        <div className="col-5">
+                        {tiposSobremesaDoce && (
+                          <div className="col-3">
+                            <Field
+                              component={Select}
+                              name={`${name}.tipo`}
+                              options={[
+                                {
+                                  nome: "Selecione o tipo de sobremesa",
+                                  uuid: "",
+                                  disabled: true,
+                                },
+                                ...tiposSobremesaDoce,
+                              ]}
+                              required
+                              validate={(value) =>
+                                !value ? "Campo obrigatório" : undefined
+                              }
+                            />
+                          </div>
+                        )}
+                        <div className={tiposSobremesaDoce ? "col-4" : "col-5"}>
                           <Field
                             component={MultiSelect}
                             name={`${name}.editais`}
@@ -141,7 +168,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                             validate={requiredMultiselect}
                           />
                         </div>
-                        <div className="col-5">
+                        <div className={tiposSobremesaDoce ? "col-3" : "col-5"}>
                           <Field
                             component={MultiSelect}
                             name={`${name}.tipo_unidades`}
