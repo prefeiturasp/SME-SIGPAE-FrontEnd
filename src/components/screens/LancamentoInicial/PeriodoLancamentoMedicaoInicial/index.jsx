@@ -2635,7 +2635,33 @@ export default () => {
         categoriasDeMedicao,
         usuarioEhEscolaCIEJA(),
         location.state.periodo,
-      )
+      ) ||
+      (diasSobremesaAF &&
+        categoriasDeMedicao.some((cat) =>
+          [...weekColumns].some((wc) =>
+            exibirTooltipSobremesaAFDiferenteZero(
+              values,
+              { name: "sobremesa" },
+              wc,
+              cat,
+              diasSobremesaAF,
+              location,
+            ),
+          ),
+        )) ||
+      (diasSobremesaAF &&
+        categoriasDeMedicao.some((cat) =>
+          [...weekColumns].some((wc) =>
+            exibirTooltipSobremesaAFDiferenteZero(
+              values,
+              { name: "repeticao_sobremesa" },
+              wc,
+              cat,
+              diasSobremesaAF,
+              location,
+            ),
+          ),
+        ))
     ) {
       setDisableBotaoSalvarLancamentos(true);
       setExibirTooltip(true);
