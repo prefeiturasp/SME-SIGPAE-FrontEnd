@@ -342,7 +342,7 @@ export default ({
   return (
     <Modal
       onEntered={() => setUpModal()}
-      dialogClassName="modal-50w"
+      dialogClassName="modal-50w modal-observacao-diaria"
       show={showModal}
       onHide={onHideModal}
     >
