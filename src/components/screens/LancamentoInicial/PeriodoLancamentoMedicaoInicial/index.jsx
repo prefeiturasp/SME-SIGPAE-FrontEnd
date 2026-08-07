@@ -120,6 +120,8 @@ import {
   exibirTooltipPadraoRepeticaoDiasSobremesaDoce,
   exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas,
   exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
+  exibirTooltipSobremesaAFDeveSerZero,
+  exibirTooltipSobremesaAFDiferenteZero,
   exibirTooltipRPLAutorizadas,
   exibirTooltipSuspensoesAutorizadas,
   existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao,
@@ -209,6 +211,7 @@ export default () => {
     useState(null);
   const [feriadosNoMes, setFeriadosNoMes] = useState(null);
   const [diasSobremesaDoce, setDiasSobremesaDoce] = useState(null);
+  const [diasSobremesaAF, setDiasSobremesaAF] = useState(null);
   const [showModalObservacaoDiaria, setShowModalObservacaoDiaria] =
     useState(false);
   const [showModalSalvarCorrecoes, setShowModalSalvarCorrecoes] =
@@ -274,6 +277,19 @@ export default () => {
       setDiasSobremesaDoce(response.data);
     } else {
       toastError("Erro ao carregar dias de sobremesa doce");
+    }
+  };
+
+  const getListaDiasSobremesaAFAsync = async (escola_uuid) => {
+    const params = {
+      mes: new Date(location.state.mesAnoSelecionado).getMonth() + 1,
+      ano: new Date(location.state.mesAnoSelecionado).getFullYear(),
+      escola_uuid,
+      tipo: "Sobremesa AF",
+    };
+    const response = await getListaDiasSobremesaDoce(params);
+    if (response.status === HTTP_STATUS.OK) {
+      setDiasSobremesaAF(response.data);
     }
   };
 
@@ -554,6 +570,7 @@ export default () => {
       );
 
       getListaDiasSobremesaDoceAsync(escola.uuid);
+      getListaDiasSobremesaAFAsync(escola.uuid);
       getDiasLetivosSIGPAE(escola.uuid);
       getDiasSuspensaoAtividades(escola.uuid);
 
@@ -2031,6 +2048,7 @@ export default () => {
       categoriasDeMedicao,
       dadosValoresInclusoesAutorizadasState,
       weekColumns,
+      diasSobremesaAF,
       feriadosNoMes,
     );
     if (erro) {
@@ -2408,6 +2426,7 @@ export default () => {
       categoriasDeMedicao,
       dadosValoresInclusoesAutorizadasState,
       weekColumns,
+      diasSobremesaAF,
       feriadosNoMes,
     );
     if (
@@ -4010,6 +4029,7 @@ export default () => {
                                                                 diasFrequenciaZerada,
                                                                 escolaEhEMEBS(),
                                                                 alunosTabSelecionada,
+                                                                diasSobremesaAF,
                                                               )
                                                                 ? textoBotaoObservacao(
                                                                     formValuesAtualizados[
@@ -4094,6 +4114,22 @@ export default () => {
                                                               column,
                                                               categoria,
                                                               diasSobremesaDoce,
+                                                              location,
+                                                            )}
+                                                            exibeTooltipSobremesaAFDeveSerZero={exibirTooltipSobremesaAFDeveSerZero(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              diasSobremesaAF,
+                                                              location,
+                                                            )}
+                                                            exibeTooltipSobremesaAFDiferenteZero={exibirTooltipSobremesaAFDiferenteZero(
+                                                              formValuesAtualizados,
+                                                              row,
+                                                              column,
+                                                              categoria,
+                                                              diasSobremesaAF,
                                                               location,
                                                             )}
                                                             exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo={
