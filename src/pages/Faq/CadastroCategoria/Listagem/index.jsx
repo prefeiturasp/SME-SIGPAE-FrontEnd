@@ -12,39 +12,57 @@ import TabelaCategorias from "./components/TabelaCategorias";
 import "./style.scss";
 import { buscarCategoriasFaq } from "src/services/faq.service";
 import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 
 const CAMINHO_FAQ = "/ajuda";
 const CAMINHO_LISTAGEM_CATEGORIAS = "/ajuda/cadastro-categoria";
 const CAMINHO_CADASTRAR_CATEGORIA = "/ajuda/cadastro-categoria/cadastrar";
 
+const ITENS_POR_PAGINA = 10;
+
 const PaginaListagemCategorias = () => {
   const [categorias, setCategorias] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [totalCategorias, setTotalCategorias] = useState(0);
+
   const navegar = useNavigate();
 
   const acessarCadastroCategoria = () => {
     navegar(CAMINHO_CADASTRAR_CATEGORIA);
   };
 
-  const editarCategoria = () => {};
+  const editarCategoria = (categoria) => {
+    navegar(`${CAMINHO_LISTAGEM_CATEGORIAS}/${categoria.uuid}/editar`);
+  };
+
+  const alterarPagina = (pagina) => {
+    setPaginaAtual(pagina);
+  };
 
   useEffect(() => {
     const buscarCategorias = async () => {
-      try {
-        const resposta = await buscarCategoriasFaq();
+      setCarregando(true);
 
-        setCategorias(resposta.data.results || resposta.data);
+      try {
+        const resposta = await buscarCategoriasFaq({
+          page: paginaAtual,
+          page_size: ITENS_POR_PAGINA,
+        });
+
+        setCategorias(resposta.data.results);
+        setTotalCategorias(resposta.data.count);
       } finally {
         setCarregando(false);
       }
     };
 
     buscarCategorias();
-  }, []);
+  }, [paginaAtual]);
 
   return (
     <PageNoSidebar
-      titulo="Cadastro Dúvidas Frequentes"
+      titulo="Cadastrar Categoria"
       botaoVoltar
       voltarPara={CAMINHO_FAQ}
       breadcrumb={
@@ -72,17 +90,30 @@ const PaginaListagemCategorias = () => {
             onClick={acessarCadastroCategoria}
           />
         </div>
+
         <div className="conteudo-listagem-categorias">
           <h2 className="titulo-listagem-categorias">Categorias Cadastradas</h2>
+
           {carregando ? (
             <div className="carregamento-listagem-categorias">
               <SigpaeLogoLoader />
             </div>
           ) : (
-            <TabelaCategorias
-              categorias={categorias}
-              aoEditar={editarCategoria}
-            />
+            <>
+              <TabelaCategorias
+                categorias={categorias}
+                aoEditar={editarCategoria}
+              />
+
+              {totalCategorias > ITENS_POR_PAGINA && (
+                <Paginacao
+                  current={paginaAtual}
+                  pageSize={ITENS_POR_PAGINA}
+                  total={totalCategorias}
+                  onChange={alterarPagina}
+                />
+              )}
+            </>
           )}
         </div>
       </div>
