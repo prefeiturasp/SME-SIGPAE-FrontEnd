@@ -13,6 +13,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { useNavigate } from "react-router-dom";
 import { usuarioComAcessoAoCadastroDeCategorias } from "src/helpers/utilities";
+import { CADASTRO_CATEGORIA } from "src/configs/constants";
 
 const ConteudoPerguntas = ({ itens }) => {
   return (
@@ -121,7 +122,7 @@ const PaginaFaq = () => {
                   texto="Cadastro de Categoria"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}
-                  onClick={() => navegar("/ajuda/cadastro-categoria")}
+                  onClick={() => navegar(CADASTRO_CATEGORIA)}
                 />
               ) : (
                 <></>

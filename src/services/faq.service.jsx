@@ -16,3 +16,14 @@ export const buscarCategoriasFaq = async (parametros) => {
     params: parametros,
   });
 };
+
+export const buscarCategoriaFaq = async (uuid) => {
+  return axios.get(`/${ENDPOINT.CATEGORIA_PERGUNTAS_FREQUENTES}/${uuid}/`);
+};
+
+export const atualizarCategoriaFaq = async (uuid, dados) => {
+  return axios.patch(
+    `/${ENDPOINT.CATEGORIA_PERGUNTAS_FREQUENTES}/${uuid}/`,
+    dados,
+  );
+};

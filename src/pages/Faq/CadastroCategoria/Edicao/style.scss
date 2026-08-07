@@ -1,0 +1,46 @@
+.pagina-edicao-categoria {
+  .formulario-edicao-categoria {
+    display: flex;
+    flex-direction: column;
+    min-height: 190px;
+    width: 100%;
+
+    .campo-edicao-categoria {
+      max-width: 440px;
+      width: 100%;
+    }
+
+    .acoes-edicao-categoria {
+      align-items: center;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 3rem;
+    }
+  }
+
+  .carregamento-edicao-categoria {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 350px;
+  }
+
+  @media screen and (max-width: 767px) {
+    .formulario-edicao-categoria {
+      .campo-edicao-categoria {
+        max-width: none;
+      }
+
+      .acoes-edicao-categoria {
+        align-items: stretch;
+        flex-direction: column-reverse;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
