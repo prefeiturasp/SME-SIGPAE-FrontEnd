@@ -1,0 +1,84 @@
+@use "src/styles/variables.scss" as *;
+
+.tabela-categorias {
+  width: 100%;
+
+  .container-tabela-categorias {
+    overflow-x: auto;
+    width: 100%;
+
+    table {
+      border-collapse: collapse;
+      table-layout: fixed;
+      width: 100%;
+
+      thead {
+        background-color: #f2f4f5;
+
+        th {
+          color: #42474a;
+          font-size: 14px;
+          font-weight: 700;
+          padding: 0.75rem;
+          text-align: left;
+        }
+      }
+
+      th,
+      td {
+        border: 1px solid #d5dce1;
+      }
+
+      tbody {
+        td {
+          color: #42474a;
+          font-size: 14px;
+          padding: 0.5rem 0.75rem;
+          vertical-align: middle;
+        }
+      }
+
+      .coluna-acoes {
+        text-align: center;
+        width: 100px;
+
+        .acoes-categoria {
+          align-items: center;
+          display: flex;
+          gap: 0.75rem;
+          justify-content: center;
+
+          .botao-acao {
+            align-items: center;
+            background-color: transparent;
+            border: 0;
+            color: $green;
+            cursor: pointer;
+            display: flex;
+            font-size: 16px;
+            justify-content: center;
+            padding: 0.25rem;
+
+            &:hover {
+              opacity: 0.75;
+            }
+
+            &:focus-visible {
+              border-radius: 2px;
+              outline: 2px solid $green;
+              outline-offset: 2px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .container-tabela-categorias {
+      table {
+        min-width: 600px;
+      }
+    }
+  }
+}

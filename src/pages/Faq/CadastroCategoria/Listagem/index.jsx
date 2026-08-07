@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import Botao from "src/components/Shareable/Botao";
@@ -8,18 +8,39 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
 import { HOME } from "src/constants/config";
+import TabelaCategorias from "./components/TabelaCategorias";
 import "./style.scss";
+import { buscarCategoriasFaq } from "src/services/faq.service";
+import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 
 const CAMINHO_FAQ = "/ajuda";
 const CAMINHO_LISTAGEM_CATEGORIAS = "/ajuda/cadastro-categoria";
 const CAMINHO_CADASTRAR_CATEGORIA = "/ajuda/cadastro-categoria/cadastrar";
 
 const PaginaListagemCategorias = () => {
+  const [categorias, setCategorias] = useState([]);
+  const [carregando, setCarregando] = useState(true);
   const navegar = useNavigate();
 
   const acessarCadastroCategoria = () => {
     navegar(CAMINHO_CADASTRAR_CATEGORIA);
   };
+
+  const editarCategoria = () => {};
+
+  useEffect(() => {
+    const buscarCategorias = async () => {
+      try {
+        const resposta = await buscarCategoriasFaq();
+
+        setCategorias(resposta.data.results || resposta.data);
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    buscarCategorias();
+  }, []);
 
   return (
     <PageNoSidebar
@@ -50,6 +71,19 @@ const PaginaListagemCategorias = () => {
             style={BUTTON_STYLE.GREEN}
             onClick={acessarCadastroCategoria}
           />
+        </div>
+        <div className="conteudo-listagem-categorias">
+          <h2 className="titulo-listagem-categorias">Categorias Cadastradas</h2>
+          {carregando ? (
+            <div className="carregamento-listagem-categorias">
+              <SigpaeLogoLoader />
+            </div>
+          ) : (
+            <TabelaCategorias
+              categorias={categorias}
+              aoEditar={editarCategoria}
+            />
+          )}
         </div>
       </div>
     </PageNoSidebar>

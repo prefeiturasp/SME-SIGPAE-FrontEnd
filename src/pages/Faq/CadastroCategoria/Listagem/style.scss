@@ -21,6 +21,15 @@
     }
   }
 
+  .carregamento-listagem-categorias {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 350px;
+    transform: translateY(-40px);
+    width: 100%;
+  }
+
   @media screen and (max-width: 575px) {
     .acoes-listagem-categorias {
       button {
