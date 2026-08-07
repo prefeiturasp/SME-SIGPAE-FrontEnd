@@ -114,6 +114,7 @@ export type DescontoFinanceiro = {
   total_desconto?: number;
   periodo_escolar?: string;
   tipo_alimentacao?: string | TipoAlimentacao;
+  cei_ou_emei?: string;
 };
 
 export interface DescontoFinanceiroResponse {

@@ -18,6 +18,11 @@ export const ModalEditar = ({ ...props }) => {
     nomeObjetoNoCalendarioMinusculo,
   } = props;
 
+  const tipoDisplay = event.tipo?.nome || nomeObjetoNoCalendario;
+  const tipoMinusculo =
+    event.tipo?.nome?.toLowerCase() || nomeObjetoNoCalendarioMinusculo;
+  const unidadeDisplay = event.tipo_unidade?.iniciais || event.title;
+
   return (
     <Modal
       dialogClassName="modal-editar-sobremesa modal-50w"
@@ -29,16 +34,16 @@ export const ModalEditar = ({ ...props }) => {
       </Modal.Header>
       <Modal.Body>
         <p>
-          <strong>{nomeObjetoNoCalendario}</strong> para a unidade{" "}
-          <strong>{event.title}</strong> dos editais{" "}
+          <strong>{tipoDisplay}</strong> para a unidade{" "}
+          <strong>{unidadeDisplay}</strong> dos editais{" "}
           <strong>{event.editais_numeros_virgula}</strong> cadastrada para o dia{" "}
           <strong>{getDDMMYYYfromDate(event.start)}</strong>, por{" "}
           {event.criado_por.nome} em {event.criado_em}.
         </p>
         <p>
-          Para alterar o dia de {nomeObjetoNoCalendarioMinusculo} no tipo de
-          unidade, você pode apenas arrastar o item para a nova data ou excluir
-          este cadastro e criar um novo cadastro no dia desejado.
+          Para alterar o dia de {tipoMinusculo} no tipo de unidade, você pode
+          apenas arrastar o item para a nova data ou excluir este cadastro e
+          criar um novo cadastro no dia desejado.
         </p>
       </Modal.Body>
       <div className="footer">

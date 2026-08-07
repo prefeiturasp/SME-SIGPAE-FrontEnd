@@ -50,7 +50,6 @@ const DEFAULT_EMPENHO: DescontoFinanceiro = {
 };
 
 const TIPO_LANCAMENTO_OPTIONS = [
-  { uuid: "", nome: "Selecione o tipo" },
   { uuid: "ALIMENTACOES", nome: "ALIMENTAÇÕES" },
   { uuid: "DIETAS_TIPO_A", nome: "DIETA ESPECIAL TIPO A" },
   { uuid: "DIETAS_TIPO_B", nome: "DIETA ESPECIAL TIPO B" },
@@ -86,6 +85,7 @@ const ModalAplicarDesconto = ({
     relatorioConsolidado?.grupo_unidade_escolar?.nome.toUpperCase();
 
   const ehCei = grupoNome?.includes("GRUPO 1");
+  const ehCemei = grupoNome?.includes("GRUPO 2");
   const ehEmef = grupoNome?.includes("GRUPO 4");
 
   const alimentacoesDietaA = tiposAlimentacao.filter((item) =>
@@ -98,21 +98,37 @@ const ModalAplicarDesconto = ({
     ["LANCHE", "LANCHE 4H"].includes(normalizar(item.nome).toUpperCase()),
   );
 
-  const getValoresDescontos = (desconto: DescontoFinanceiro) => ({
-    ...desconto,
-    faixa_etaria:
-      desconto.faixa_etaria && desconto.periodo_escolar
-        ? `${desconto.periodo_escolar}|${getUuid(desconto.faixa_etaria)}`
-        : null,
-    tipo_alimentacao:
-      !desconto.tipo_alimentacao && !desconto.faixa_etaria
-        ? "kit_lanche"
-        : !ehEmef || !desconto.periodo_escolar
-          ? getUuid(desconto.tipo_alimentacao)
-          : `${desconto.periodo_escolar}|${getUuid(desconto.tipo_alimentacao)}`,
-    clausula_desconto: getUuid(desconto.clausula_desconto),
-    unidades_educacionais: desconto.unidades_educacionais?.map(getUuid) ?? [],
-  });
+  const getValoresDescontos = (
+    desconto: DescontoFinanceiro,
+  ): DescontoFinanceiro => {
+    let tipoAlimentacao = getUuid(desconto.tipo_alimentacao);
+
+    if (!desconto.tipo_alimentacao && !desconto.faixa_etaria) {
+      tipoAlimentacao = "kit_lanche";
+    } else if (ehEmef && desconto.periodo_escolar) {
+      tipoAlimentacao = `${desconto.periodo_escolar}|${tipoAlimentacao}`;
+    }
+
+    const payload: DescontoFinanceiro = {
+      ...desconto,
+      faixa_etaria:
+        desconto.faixa_etaria && desconto.periodo_escolar
+          ? `${desconto.periodo_escolar}|${getUuid(desconto.faixa_etaria)}`
+          : null,
+      tipo_alimentacao: tipoAlimentacao,
+      clausula_desconto: getUuid(desconto.clausula_desconto),
+      unidades_educacionais: desconto.unidades_educacionais?.map(getUuid) ?? [],
+    };
+
+    if (desconto.cei_ou_emei && desconto.cei_ou_emei !== "N/A") {
+      return {
+        ...payload,
+        tipo_lancamento: `${desconto.cei_ou_emei}|${getUuid(desconto.tipo_lancamento)}`,
+      };
+    }
+
+    return payload;
+  };
 
   const initialValues = useMemo(() => {
     return {
@@ -157,7 +173,8 @@ const ModalAplicarDesconto = ({
   };
 
   const getOpcoesAlimentacao = (tipoLancamento: string) => {
-    switch (tipoLancamento) {
+    const tipo = tipoLancamento.replace("CEI|", "").replace("EMEI|", "");
+    switch (tipo) {
       case "ALIMENTACOES":
         return [
           ...adicionarOpcaoRefeicaoEJA(tiposAlimentacao),
@@ -177,40 +194,56 @@ const ModalAplicarDesconto = ({
 
   const formatarPayload = (
     descontos: DescontoFinanceiro[],
-  ): DescontoFinanceiro[] => {
-    return descontos.map((desconto) => {
-      if (desconto.faixa_etaria && typeof desconto.faixa_etaria === "string") {
-        const [periodo, faixaUuid] = desconto.faixa_etaria?.split("|") || [
-          "",
-          "",
-        ];
-        return {
-          ...desconto,
+  ): DescontoFinanceiro[] =>
+    descontos.map((desconto) => {
+      let payload = {
+        ...desconto,
+        periodo_escolar: null,
+      };
+
+      if (typeof desconto.faixa_etaria === "string") {
+        const [periodo, faixaEtaria] = desconto.faixa_etaria.split("|");
+
+        payload = {
+          ...payload,
           periodo_escolar: periodo,
-          faixa_etaria: faixaUuid,
+          faixa_etaria: faixaEtaria,
         };
-      } else if (
+      }
+
+      if (
         ehEmef &&
         typeof desconto.tipo_alimentacao === "string" &&
         desconto.tipo_alimentacao.includes("NOITE")
       ) {
-        const [periodo, tipoAlimentacaoUuid] = desconto.tipo_alimentacao?.split(
-          "|",
-        ) || ["", ""];
-        return {
-          ...desconto,
+        const [periodo, tipoAlimentacao] = desconto.tipo_alimentacao.split("|");
+
+        payload = {
+          ...payload,
           periodo_escolar: periodo,
-          tipo_alimentacao: tipoAlimentacaoUuid,
+          tipo_alimentacao: tipoAlimentacao,
         };
       }
-      return { ...desconto, periodo_escolar: null };
+
+      if (ehCemei) {
+        const [tipoUnidade, tipoLancamento] =
+          desconto.tipo_lancamento?.split("|") ?? [];
+
+        payload = {
+          ...payload,
+          tipo_lancamento: tipoLancamento,
+          cei_ou_emei: tipoUnidade,
+        };
+      }
+
+      return payload;
     });
-  };
 
   const onSubmit = async (values: {
     cadastros_desconto: DescontoFinanceiro[];
   }) => {
     const payload = formatarPayload(values?.cadastros_desconto ?? []);
+
     const response = await cadastroDescontoFinanceiro(
       payload,
       relatorioFinanceiro,
@@ -243,13 +276,14 @@ const ModalAplicarDesconto = ({
     alimentacaoSelecionada: string,
   ) => {
     if (!tipoLancamento) return 0;
-
+    const tipo = tipoLancamento.replace("CEI|", "").replace("EMEI|", "");
     let campo = null;
 
-    if (ehCei && faixaSelecionada) {
+    if ((ehCei || ehCemei) && faixaSelecionada) {
       const [periodo, faixaUuid] = faixaSelecionada.split("|");
 
       const faixa = faixasEtarias.find((f) => f.uuid === faixaUuid);
+
       if (!faixa) return 0;
 
       const nomeFaixa = normalizar(faixa.__str__);
@@ -261,9 +295,8 @@ const ModalAplicarDesconto = ({
           .toUpperCase();
 
         return (
-          nomeTabela?.includes(
-            tipoLancamento.replaceAll("_", " ").toUpperCase(),
-          ) && tabela.periodo_escolar === periodo
+          nomeTabela?.includes(tipo.replaceAll("_", " ").toUpperCase()) &&
+          tabela.periodo_escolar === periodo
         );
       });
 
@@ -296,13 +329,13 @@ const ModalAplicarDesconto = ({
           .replace(/[\u0300-\u036f]/g, "")
           .toUpperCase();
 
-        return nomeTabela?.includes(
-          tipoLancamento.replaceAll("_", " ").toUpperCase(),
+        return (
+          nomeTabela?.includes(tipo.replaceAll("_", " ").toUpperCase()) &&
+          tabela.periodo_escolar === (ehRefeicaoEja ? "NOITE" : null)
         );
       });
 
       if (!tabela) return 0;
-
       if (!ehEmef || !nomeTipo.includes("refeicao"))
         campo = tabela.valores?.find(
           (item) =>
@@ -453,17 +486,57 @@ const ModalAplicarDesconto = ({
                               <Field
                                 dataTestId={`tipo_lancamento_${index}`}
                                 component={Select}
-                                options={TIPO_LANCAMENTO_OPTIONS}
+                                options={
+                                  ehCemei
+                                    ? [
+                                        { uuid: "", nome: "Selecione o tipo" },
+                                        ...TIPO_LANCAMENTO_OPTIONS.map(
+                                          (option) => ({
+                                            ...option,
+                                            uuid: `CEI|${option.uuid}`,
+                                            nome: `${option.nome} - CEI`,
+                                          }),
+                                        ),
+                                        ...TIPO_LANCAMENTO_OPTIONS.map(
+                                          (option) => ({
+                                            ...option,
+                                            uuid: `EMEI|${option.uuid}`,
+                                            nome: `${option.nome} - EMEI`,
+                                          }),
+                                        ),
+                                      ]
+                                    : [
+                                        { uuid: "", nome: "Selecione o tipo" },
+                                        ...TIPO_LANCAMENTO_OPTIONS,
+                                      ]
+                                }
                                 label="Tipo de Lançamento"
                                 name={`${name}.tipo_lancamento`}
                                 id="tipo_lancamento"
                                 placeholder="Selecione o tipo"
                                 required
                                 validate={required}
+                                onChangeEffect={(e) => {
+                                  if (e.target?.value?.includes("EMEI")) {
+                                    form.change(`${name}.faixa_etaria`, null);
+                                    form.change(
+                                      `${name}.periodo_escolar`,
+                                      null,
+                                    );
+                                  } else if (e.target?.value?.includes("CEI"))
+                                    form.change(
+                                      `${name}.tipo_alimentacao`,
+                                      null,
+                                    );
+                                }}
                               />
                             </div>
                             <div className="col-4">
-                              {ehCei ? (
+                              {ehCei ||
+                              (ehCemei &&
+                                values.cadastros_desconto[
+                                  index
+                                ]?.tipo_lancamento?.includes("CEI")) ? (
                                 <Field
                                   component={Select}
                                   options={faixasEtariasOptions}

@@ -7,24 +7,34 @@ export const formataComoEventos = (diasSobremesaDoce) => {
     }
   });
   datas.forEach((data) => {
-    const tiposUnidadesMesmoDia = [];
+    const grupos = [];
     const diasSobremesaDoceMesmoDia = diasSobremesaDoce.filter(
       (diaSobremesaDoce) => diaSobremesaDoce.data === data,
     );
     diasSobremesaDoceMesmoDia.forEach((diaSobremesaDoce) => {
-      if (
-        !tiposUnidadesMesmoDia.includes(diaSobremesaDoce.tipo_unidade.iniciais)
-      ) {
-        tiposUnidadesMesmoDia.push(diaSobremesaDoce.tipo_unidade.iniciais);
+      const chaveTipo = diaSobremesaDoce.tipo?.uuid || "_sem_tipo";
+      const jaExiste = grupos.some(
+        (g) =>
+          g.iniciais === diaSobremesaDoce.tipo_unidade.iniciais &&
+          g.tipoUuid === chaveTipo,
+      );
+      if (!jaExiste) {
+        grupos.push({
+          iniciais: diaSobremesaDoce.tipo_unidade.iniciais,
+          tipoUuid: chaveTipo,
+        });
       }
     });
 
-    tiposUnidadesMesmoDia.forEach((tipoUnidade) => {
+    grupos.forEach((chave) => {
       const diasSobremesaDoceMesmoDiaETipoUnidade =
-        diasSobremesaDoceMesmoDia.filter(
-          (diaSobremesaDoce) =>
-            diaSobremesaDoce.tipo_unidade.iniciais === tipoUnidade,
-        );
+        diasSobremesaDoceMesmoDia.filter((diaSobremesaDoce) => {
+          const chaveTipo = diaSobremesaDoce.tipo?.uuid || "_sem_tipo";
+          return (
+            diaSobremesaDoce.tipo_unidade.iniciais === chave.iniciais &&
+            chaveTipo === chave.tipoUuid
+          );
+        });
       let editais_numeros = "";
       let editais_numeros_virgula = "";
       let editais_uuids = [];
