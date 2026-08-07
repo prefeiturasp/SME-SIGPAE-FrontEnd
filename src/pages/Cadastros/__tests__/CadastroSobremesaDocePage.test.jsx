@@ -70,11 +70,11 @@ describe("CadastroSobremesaDocePage", () => {
 
     expect(screen.getByTestId("calendario")).toBeInTheDocument();
     expect(
-      screen.getByText("Nome Objeto: Sobremesa Doce ou Agricultura Familiar"),
+      screen.getByText("Nome Objeto: Sobremesa Doce ou Sobremesa AF"),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Nome Objeto (minúsculo): sobremesa doce ou agricultura familiar",
+        "Nome Objeto (minúsculo): sobremesa doce ou sobremesa AF",
       ),
     ).toBeInTheDocument();
   });
