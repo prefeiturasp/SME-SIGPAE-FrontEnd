@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Header } from "../Header";
 import BotaoVoltar from "./BotaoVoltar";
 
-import "./style.scss";
+import "./PageNoSidebar.scss";
 
 const PageNoSidebar = ({
   botaoVoltar = true,

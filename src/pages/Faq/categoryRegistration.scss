@@ -2,7 +2,7 @@
   .formulario-cadastro-categoria {
     display: flex;
     flex-direction: column;
-    min-height: 190px;
+    min-height: calc(500px - 3rem);
     width: 100%;
 
     .campo-cadastro-categoria {
