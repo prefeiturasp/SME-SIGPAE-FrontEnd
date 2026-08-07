@@ -179,6 +179,108 @@ describe("Testes de comportamento do componente ModalAplicarDesconto", () => {
     });
   };
 
+  describe("Testes de formulário Grupo 2 (CEMEI)", () => {
+    const setShowModal = jest.fn();
+    const onSave = jest.fn();
+
+    const tiposAlimentacao =
+      mockGetTiposUnidadeEscolarTiposAlimentacao.results.find(
+        (e) => e.iniciais === "CEMEI",
+      ).periodos_escolares[0].tipos_alimentacao;
+
+    const unidadesEducacionais = mockEscolasParaFiltros
+      .filter(({ nome }) => nome.includes("CEMEI"))
+      .slice(0, 3)
+      .map(({ uuid, nome }) => ({
+        value: uuid,
+        label: nome,
+      }));
+
+    const grupoCEMEI = mockGetGrupoUnidadeEscolar.results.find((grupo) =>
+      grupo.nome.includes("Grupo 2"),
+    );
+
+    const defaultProps = {
+      showModal: true,
+      setShowModal,
+      relatorioFinanceiro: mockRelatorioFinanceiroTipoAlimentacao.uuid,
+      onSave,
+      descontos: [],
+      unidadesEducacionais: unidadesEducacionais,
+      faixasEtarias: mockFaixasEtarias.results,
+      relatorioConsolidado: {
+        ...mockRelatorioFinanceiroTipoAlimentacao,
+        grupo_unidade_escolar: grupoCEMEI,
+      },
+      tiposAlimentacao: tiposAlimentacao,
+    };
+
+    const setup = (props = {}) => {
+      render(
+        <MemoryRouter>
+          <ModalAplicarDesconto {...defaultProps} {...props} />
+        </MemoryRouter>,
+      );
+    };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+
+      mock
+        .onGet("/medicao-inicial/clausulas-de-descontos/")
+        .reply(200, mockClausulasDeDesconto);
+    });
+
+    it("deve carregar opção CEI e EMEI dos tipos de lançamento", async () => {
+      setup();
+
+      await setMultiSelect(
+        "unidades_educacionais_0",
+        unidadesEducacionais[0].label,
+      );
+
+      let options = within(
+        screen.getByTestId("tipo_lancamento_0"),
+      ).getAllByRole("option");
+      let optionTexts = options.map((option) => option.textContent);
+
+      expect(optionTexts).toEqual(
+        expect.arrayContaining([
+          "ALIMENTAÇÕES - CEI",
+          "DIETA ESPECIAL TIPO A - CEI",
+          "DIETA ESPECIAL TIPO B - CEI",
+          "ALIMENTAÇÕES - EMEI",
+          "DIETA ESPECIAL TIPO A - EMEI",
+          "DIETA ESPECIAL TIPO B - EMEI",
+        ]),
+      );
+    });
+
+    it("deve exibir os campos com base no tipo de lançamento", async () => {
+      setup();
+
+      setSelect("tipo_lancamento_0", "CEI|ALIMENTACOES");
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Faixa Etária para Desconto/i),
+        ).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText("Alimentações")).not.toBeInTheDocument();
+
+      setSelect("tipo_lancamento_0", "EMEI|ALIMENTACOES");
+
+      await waitFor(() => {
+        expect(screen.getByText("Alimentações")).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByText(/Faixa Etária para Desconto/i),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   describe("Testes de formulário Grupo 3 (EMEI)", () => {
     const setShowModal = jest.fn();
     const onSave = jest.fn();
@@ -213,14 +315,12 @@ describe("Testes de comportamento do componente ModalAplicarDesconto", () => {
       tiposAlimentacao: tiposAlimentacao,
     };
 
-    const setup = async (props = {}) => {
+    const setup = (props = {}) => {
       render(
         <MemoryRouter>
           <ModalAplicarDesconto {...defaultProps} {...props} />
         </MemoryRouter>,
       );
-
-      await waitFor(() => expect(mock.history.get.length).toBeGreaterThan(0));
     };
 
     beforeEach(() => {
@@ -337,14 +437,12 @@ describe("Testes de comportamento do componente ModalAplicarDesconto", () => {
       tiposAlimentacao: tiposAlimentacao,
     };
 
-    const setup = async (props = {}) => {
+    const setup = (props = {}) => {
       render(
         <MemoryRouter>
           <ModalAplicarDesconto {...defaultProps} {...props} />
         </MemoryRouter>,
       );
-
-      await waitFor(() => expect(mock.history.get.length).toBeGreaterThan(0));
     };
 
     beforeEach(() => {
