@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, useNavigate } from "react-router-dom";
+import { CADASTRO_CATEGORIA } from "src/configs/constants";
 import { usuarioComAcessoAoCadastroDeCategorias } from "../../../helpers/utilities";
 import { getFaq } from "../../../services/faq.service";
 import FaqPage from "../FaqPage";
@@ -307,7 +308,6 @@ describe("Testes do componente FaqPage", () => {
     );
 
     expect(navigateMock).toHaveBeenCalledTimes(1);
-
-    expect(navigateMock).toHaveBeenCalledWith("/ajuda/cadastro-categoria");
+    expect(navigateMock).toHaveBeenCalledWith(CADASTRO_CATEGORIA);
   });
 });
