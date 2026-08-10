@@ -126,6 +126,7 @@ import {
   exibirTooltipSuspensoesAutorizadas,
   existeAlgumLancheEmergencialAutorizadoTipoAlimentacaoNaSemanaSemObservacao,
   existeAlgumCampoComFrequenciaAlimentacaoZeroESemObservacao,
+  existeSobremesaAFSemObservacaoNaSemana,
   validacoesTabelaAlimentacao,
   validacoesTabelaEtecAlimentacao,
   validacoesTabelasDietas,
@@ -531,6 +532,16 @@ export default () => {
       weekColumns,
       alteracoesLancheEmergencialAutorizadas,
       permissoesLancamentosEspeciaisPorDia,
+    );
+  };
+
+  const existeWarningSobremesaAF = (values = formValuesAtualizados) => {
+    return existeSobremesaAFSemObservacaoNaSemana(
+      values,
+      categoriasDeMedicao,
+      weekColumns,
+      diasSobremesaAF,
+      location,
     );
   };
 
@@ -1858,6 +1869,21 @@ export default () => {
     categoriasDeMedicao,
     alteracoesLancheEmergencialAutorizadas,
     permissoesLancamentosEspeciaisPorDia,
+  ]);
+
+  useEffect(() => {
+    if (
+      formValuesAtualizados &&
+      existeWarningSobremesaAF(formValuesAtualizados)
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
+  }, [
+    formValuesAtualizados,
+    weekColumns,
+    categoriasDeMedicao,
+    diasSobremesaAF,
   ]);
 
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {

@@ -3,6 +3,16 @@ import {
   escolaNaoPossuiAlunosRegulares,
 } from "src/helpers/utilities";
 import { ALUNOS_EMEBS } from "../constants";
+
+const observacaoVazia = (observacoesValue) => {
+  if (!observacoesValue) return true;
+  const texto = observacoesValue
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, "")
+    .trim();
+  return texto === "";
+};
+
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   ehGrupoRecreioNasFerias,
@@ -2279,7 +2289,7 @@ export const exibirTooltipSobremesaAFDiferenteZero = (
     Number(value) > 0 &&
     (row.name === "sobremesa" || row.name === "repeticao_sobremesa") &&
     ehDiaSobremesaAF(diasSobremesaAF, column, location) &&
-    !observacoesValue
+    observacaoVazia(observacoesValue)
   );
 };
 
@@ -2310,8 +2320,44 @@ export const sobremesaAFComValorMaiorQueZeroESemObservacao = (
     diaAF &&
     ((sobremesaValue && Number(sobremesaValue) > 0) ||
       (repeticaoValue && Number(repeticaoValue) > 0)) &&
-    !observacoesValue
+    observacaoVazia(observacoesValue)
   );
+};
+
+export const existeSobremesaAFSemObservacaoNaSemana = (
+  values,
+  categoriasDeMedicao,
+  weekColumns,
+  diasSobremesaAF,
+  location,
+) => {
+  if (!diasSobremesaAF || !values || !weekColumns?.length) return false;
+
+  const categoriaAlimentacao = categoriasDeMedicao.find(
+    (categoria) => categoria.nome === "ALIMENTAÇÃO",
+  );
+  if (!categoriaAlimentacao) return false;
+
+  return weekColumns.some((column) => {
+    return (
+      exibirTooltipSobremesaAFDiferenteZero(
+        values,
+        { name: "sobremesa" },
+        column,
+        categoriaAlimentacao,
+        diasSobremesaAF,
+        location,
+      ) ||
+      exibirTooltipSobremesaAFDiferenteZero(
+        values,
+        { name: "repeticao_sobremesa" },
+        column,
+        categoriaAlimentacao,
+        diasSobremesaAF,
+        location,
+      )
+    );
+  });
 };
 
 export const exibirTooltipRepeticaoDiasSobremesaDoceDreCodae = (
