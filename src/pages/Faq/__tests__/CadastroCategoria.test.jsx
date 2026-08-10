@@ -5,11 +5,11 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { createFaqCategory } from "src/services/faq.service";
+import { criarCategoriaFaq } from "src/services/faq.service";
 import PaginaFormularioCategoria from "../CadastroCategoria/Formulario";
 
 jest.mock("src/services/faq.service", () => ({
-  createFaqCategory: jest.fn(),
+  criarCategoriaFaq: jest.fn(),
 }));
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
@@ -165,13 +165,13 @@ describe("PaginaFormularioCategoria", () => {
 
     fireEvent.submit(form);
 
-    expect(createFaqCategory).not.toHaveBeenCalled();
+    expect(criarCategoriaFaq).not.toHaveBeenCalled();
   });
 
   it("envia o nome sem espaços externos e limpa o campo após o sucesso", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockResolvedValue({
+    criarCategoriaFaq.mockResolvedValue({
       status: 201,
       data: {
         nome: "Alimentação Escolar",
@@ -191,7 +191,7 @@ describe("PaginaFormularioCategoria", () => {
     );
 
     await waitFor(() => {
-      expect(createFaqCategory).toHaveBeenCalledWith({
+      expect(criarCategoriaFaq).toHaveBeenCalledWith({
         nome: "Alimentação Escolar",
       });
     });
@@ -219,13 +219,13 @@ describe("PaginaFormularioCategoria", () => {
     );
 
     expect(input).toHaveValue("");
-    expect(createFaqCategory).not.toHaveBeenCalled();
+    expect(criarCategoriaFaq).not.toHaveBeenCalled();
   });
 
   it("exibe o modal ao tentar cadastrar uma categoria duplicada", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockRejectedValue({
+    criarCategoriaFaq.mockRejectedValue({
       response: {
         status: 400,
         data: {
@@ -261,7 +261,7 @@ describe("PaginaFormularioCategoria", () => {
   it("fecha o modal de categoria duplicada ao clicar em OK", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockRejectedValue({
+    criarCategoriaFaq.mockRejectedValue({
       response: {
         status: 400,
         data: {
@@ -303,7 +303,7 @@ describe("PaginaFormularioCategoria", () => {
   it("exibe toast para erros diferentes de categoria duplicada", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockRejectedValue({
+    criarCategoriaFaq.mockRejectedValue({
       response: {
         status: 500,
         data: {

@@ -12,7 +12,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { HOME } from "src/constants/config";
-import { createFaqCategory } from "src/services/faq.service";
+import { criarCategoriaFaq } from "src/services/faq.service";
 import "./style.scss";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import HTTP_STATUS from "http-status-codes";
@@ -52,7 +52,7 @@ const PaginaFormularioCategoria = () => {
     setCadastrando(true);
 
     try {
-      const resposta = await createFaqCategory({
+      const resposta = await criarCategoriaFaq({
         nome: nomeCategoriaNormalizado,
       });
 
