@@ -10,6 +10,7 @@ import {
   exibirTooltipSobremesaAFDiferenteZero,
   sobremesaAFComValorMaiorQueZeroESemObservacao,
   ehDiaSobremesaAF,
+  existeSobremesaAFSemObservacaoNaSemana,
 } from "../validacoes";
 
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
@@ -2296,6 +2297,23 @@ describe("Sobremesa AF - validações", () => {
       expect(result).toBe(false);
     });
 
+    it("retorna true quando observacao é HTML vazio do CKEditor", () => {
+      const formValues = {
+        sobremesa__dia_05__categoria_1: "5",
+        observacoes__dia_05__categoria_1: "<p></p>\n",
+      };
+      const row = { name: "sobremesa" };
+      const result = exibirTooltipSobremesaAFDiferenteZero(
+        formValues,
+        row,
+        { dia: "05" },
+        categoria,
+        diasSobremesaAF,
+        mockLocation,
+      );
+      expect(result).toBe(true);
+    });
+
     it("retorna false quando nao é dia AF", () => {
       const formValues = {
         sobremesa__dia_15__categoria_1: "5",
@@ -2430,6 +2448,88 @@ describe("Sobremesa AF - validações", () => {
         mockLocation,
       );
       expect(result).toBe(false);
+    });
+  });
+
+  describe("existeSobremesaAFSemObservacaoNaSemana", () => {
+    const categorias = [{ nome: "ALIMENTAÇÃO", id: 1 }];
+    const weekCols = [{ dia: "05" }, { dia: "06" }];
+
+    it("retorna true quando ha valeur > 0 em dia AF sem observacao", () => {
+      const values = {
+        sobremesa__dia_05__categoria_1: "5",
+      };
+      expect(
+        existeSobremesaAFSemObservacaoNaSemana(
+          values,
+          categorias,
+          weekCols,
+          diasSobremesaAF,
+          mockLocation,
+        ),
+      ).toBe(true);
+    });
+
+    it("retorna false quando ha valeur > 0 mas com observacao", () => {
+      const values = {
+        sobremesa__dia_05__categoria_1: "5",
+        observacoes__dia_05__categoria_1: "Justificativa",
+      };
+      expect(
+        existeSobremesaAFSemObservacaoNaSemana(
+          values,
+          categorias,
+          weekCols,
+          diasSobremesaAF,
+          mockLocation,
+        ),
+      ).toBe(false);
+    });
+
+    it("retorna false quando ha valeur 0", () => {
+      const values = {
+        sobremesa__dia_05__categoria_1: "0",
+      };
+      expect(
+        existeSobremesaAFSemObservacaoNaSemana(
+          values,
+          categorias,
+          weekCols,
+          diasSobremesaAF,
+          mockLocation,
+        ),
+      ).toBe(false);
+    });
+
+    it("retorna false quando observacao é HTML vazio do CKEditor", () => {
+      const values = {
+        sobremesa__dia_05__categoria_1: "5",
+        observacoes__dia_05__categoria_1: "<p></p>\n",
+      };
+      expect(
+        existeSobremesaAFSemObservacaoNaSemana(
+          values,
+          categorias,
+          weekCols,
+          diasSobremesaAF,
+          mockLocation,
+        ),
+      ).toBe(true);
+    });
+
+    it("retorna false quando diasSobremesaAF é null", () => {
+      const values = {
+        sobremesa__dia_05__categoria_1: "5",
+      };
+      expect(
+        existeSobremesaAFSemObservacaoNaSemana(
+          values,
+          categorias,
+          weekCols,
+          null,
+          mockLocation,
+        ),
+      ).toBe(false);
     });
   });
 });
