@@ -206,7 +206,7 @@ describe("Teste de funcionalidade e comportamentos do ModalAplicarDesconto", () 
       expect(screen.queryByTestId("botao-cancelar")).not.toBeInTheDocument();
     });
 
-    it("deve permitir adicionar múltiplos descontos", () => {
+    it("deve permitir adicionar e remover descontos", () => {
       setup(defaultProps);
 
       const botaoAdicionar = screen.getByTestId("botao-adicionar");
@@ -215,6 +215,10 @@ describe("Teste de funcionalidade e comportamentos do ModalAplicarDesconto", () 
       fireEvent.click(botaoAdicionar);
 
       expect(screen.getAllByTestId(/botao_remover_/i)).toHaveLength(3);
+
+      fireEvent.click(screen.getByTestId("botao_remover_0"));
+
+      expect(screen.getAllByTestId(/botao_remover_/i)).toHaveLength(2);
     });
   });
 
