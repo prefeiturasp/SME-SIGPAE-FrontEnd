@@ -55,6 +55,17 @@ const TIPO_LANCAMENTO_OPTIONS = [
   { uuid: "DIETAS_TIPO_B", nome: "DIETA ESPECIAL TIPO B" },
 ];
 
+const TIPOS_UNIDADE = {
+  CEMEI: [
+    { prefixo: "CEI", nome: "CEI" },
+    { prefixo: "EMEI", nome: "EMEI" },
+  ],
+  EMEBS: [
+    { prefixo: "INFANTIL", nome: "INFANTIL" },
+    { prefixo: "FUNDAMENTAL", nome: "FUNDAMENTAL" },
+  ],
+};
+
 type Props = {
   showModal: boolean;
   setShowModal: (_e: boolean) => void;
@@ -87,6 +98,7 @@ const ModalAplicarDesconto = ({
   const ehCei = grupoNome?.includes("GRUPO 1");
   const ehCemei = grupoNome?.includes("GRUPO 2");
   const ehEmef = grupoNome?.includes("GRUPO 4");
+  const ehEmebs = grupoNome?.includes("GRUPO 5");
 
   const alimentacoesDietaA = tiposAlimentacao.filter((item) =>
     ["REFEICAO", "LANCHE", "LANCHE 4H"].includes(
@@ -123,7 +135,19 @@ const ModalAplicarDesconto = ({
     if (desconto.cei_ou_emei && desconto.cei_ou_emei !== "N/A") {
       return {
         ...payload,
-        tipo_lancamento: `${desconto.cei_ou_emei}|${getUuid(desconto.tipo_lancamento)}`,
+        tipo_lancamento: `${desconto.cei_ou_emei}|${getUuid(
+          desconto.tipo_lancamento,
+        )}`,
+      };
+    } else if (
+      desconto.infantil_ou_fundamental &&
+      desconto.infantil_ou_fundamental !== "N/A"
+    ) {
+      return {
+        ...payload,
+        tipo_lancamento: `${desconto.infantil_ou_fundamental}|${getUuid(
+          desconto.tipo_lancamento,
+        )}`,
       };
     }
 
@@ -173,7 +197,10 @@ const ModalAplicarDesconto = ({
   };
 
   const getOpcoesAlimentacao = (tipoLancamento: string) => {
-    const tipo = tipoLancamento.replace("CEI|", "").replace("EMEI|", "");
+    const tipo = tipoLancamento?.includes("|")
+      ? tipoLancamento.split("|")[1]
+      : tipoLancamento;
+
     switch (tipo) {
       case "ALIMENTACOES":
         return [
@@ -190,6 +217,36 @@ const ModalAplicarDesconto = ({
       default:
         return [];
     }
+  };
+
+  const getTiposLancamentoOptions = () => {
+    if (ehCemei) {
+      return [
+        { uuid: "", nome: "Selecione o tipo" },
+        ...TIPOS_UNIDADE.CEMEI.flatMap(({ prefixo, nome }) =>
+          TIPO_LANCAMENTO_OPTIONS.map((option) => ({
+            ...option,
+            uuid: `${prefixo}|${option.uuid}`,
+            nome: `${option.nome} - ${nome}`,
+          })),
+        ),
+      ];
+    }
+
+    if (ehEmebs) {
+      return [
+        { uuid: "", nome: "Selecione o tipo" },
+        ...TIPOS_UNIDADE.EMEBS.flatMap(({ prefixo, nome }) =>
+          TIPO_LANCAMENTO_OPTIONS.map((option) => ({
+            ...option,
+            uuid: `${prefixo}|${option.uuid}`,
+            nome: `${option.nome} - ${nome}`,
+          })),
+        ),
+      ];
+    }
+
+    return [{ uuid: "", nome: "Selecione o tipo" }, ...TIPO_LANCAMENTO_OPTIONS];
   };
 
   const formatarPayload = (
@@ -236,6 +293,17 @@ const ModalAplicarDesconto = ({
         };
       }
 
+      if (ehEmebs) {
+        const [turma, tipoLancamento] =
+          desconto.tipo_lancamento?.split("|") ?? [];
+
+        payload = {
+          ...payload,
+          tipo_lancamento: tipoLancamento,
+          infantil_ou_fundamental: turma,
+        };
+      }
+
       return payload;
     });
 
@@ -262,8 +330,12 @@ const ModalAplicarDesconto = ({
     const response = await getClausulasParaDescontos(undefined, {
       edital: relatorioConsolidado?.edital?.uuid,
     });
-    if (response.status === HTTP_STATUS.OK) setClausulas(response.data.results);
-    else toastError("Erro ao carregar cláusulas para descontos.");
+
+    if (response.status === HTTP_STATUS.OK) {
+      setClausulas(response.data.results);
+    } else {
+      toastError("Erro ao carregar cláusulas para descontos.");
+    }
   };
 
   useEffect(() => {
@@ -276,7 +348,11 @@ const ModalAplicarDesconto = ({
     alimentacaoSelecionada: string,
   ) => {
     if (!tipoLancamento) return 0;
-    const tipo = tipoLancamento.replace("CEI|", "").replace("EMEI|", "");
+
+    const [tipo, lancamento] = tipoLancamento.includes("|")
+      ? tipoLancamento.split("|")
+      : [null, tipoLancamento];
+
     let campo = null;
 
     if ((ehCei || ehCemei) && faixaSelecionada) {
@@ -295,7 +371,7 @@ const ModalAplicarDesconto = ({
           .toUpperCase();
 
         return (
-          nomeTabela?.includes(tipo.replaceAll("_", " ").toUpperCase()) &&
+          nomeTabela?.includes(lancamento.replaceAll("_", " ").toUpperCase()) &&
           tabela.periodo_escolar === periodo
         );
       });
@@ -311,16 +387,18 @@ const ModalAplicarDesconto = ({
       let nomeTipo = "";
       const ehRefeicaoEja = alimentacaoSelecionada.includes("NOITE");
 
-      if (alimentacaoSelecionada === "kit_lanche") nomeTipo = "kit lanche";
-      else {
-        const tipo = tiposAlimentacao.find(
+      if (alimentacaoSelecionada === "kit_lanche") {
+        nomeTipo = "kit lanche";
+      } else {
+        const tipoAlimentacao = tiposAlimentacao.find(
           (t) =>
             t.uuid ===
             (ehRefeicaoEja
               ? alimentacaoSelecionada.replace("NOITE|", "")
               : alimentacaoSelecionada),
         );
-        nomeTipo = normalizar(tipo?.nome);
+
+        nomeTipo = normalizar(tipoAlimentacao?.nome);
       }
 
       const tabela = relatorioConsolidado.tabelas?.find((tabela) => {
@@ -329,20 +407,25 @@ const ModalAplicarDesconto = ({
           .replace(/[\u0300-\u036f]/g, "")
           .toUpperCase();
 
+        const corresponde =
+          nomeTabela?.includes(lancamento.replaceAll("_", " ").toUpperCase()) &&
+          (!ehEmebs || nomeTabela?.includes(tipo?.toUpperCase()));
+
         return (
-          nomeTabela?.includes(tipo.replaceAll("_", " ").toUpperCase()) &&
+          corresponde &&
           tabela.periodo_escolar === (ehRefeicaoEja ? "NOITE" : null)
         );
       });
 
       if (!tabela) return 0;
-      if (!ehEmef || !nomeTipo.includes("refeicao"))
+
+      if (!ehEmef || !nomeTipo.includes("refeicao")) {
         campo = tabela.valores?.find(
           (item) =>
             normalizar(item.nome_campo).replaceAll("_", " ") === nomeTipo &&
             item.tipo_valor === "UNITARIO",
         );
-      else {
+      } else {
         const tipoRefeicao = ehRefeicaoEja ? "eja" : "emef";
 
         campo = tabela.valores?.find(
@@ -430,6 +513,7 @@ const ModalAplicarDesconto = ({
                   Informe abaixo os descontos que devem ser aplicados nos
                   lançamentos do Grupo 1:
                 </b>
+
                 <FieldArray name="cadastros_desconto">
                   {({ fields }) => (
                     <>
@@ -438,6 +522,7 @@ const ModalAplicarDesconto = ({
                           {fields.length > 1 && (
                             <div className="position-relative mb-3 mt-4">
                               <hr className="m-0" />
+
                               <div
                                 style={{
                                   position: "absolute",
@@ -481,35 +566,13 @@ const ModalAplicarDesconto = ({
                               />
                             </div>
                           </div>
+
                           <div className="row mt-2">
                             <div className="col-4">
                               <Field
                                 dataTestId={`tipo_lancamento_${index}`}
                                 component={Select}
-                                options={
-                                  ehCemei
-                                    ? [
-                                        { uuid: "", nome: "Selecione o tipo" },
-                                        ...TIPO_LANCAMENTO_OPTIONS.map(
-                                          (option) => ({
-                                            ...option,
-                                            uuid: `CEI|${option.uuid}`,
-                                            nome: `${option.nome} - CEI`,
-                                          }),
-                                        ),
-                                        ...TIPO_LANCAMENTO_OPTIONS.map(
-                                          (option) => ({
-                                            ...option,
-                                            uuid: `EMEI|${option.uuid}`,
-                                            nome: `${option.nome} - EMEI`,
-                                          }),
-                                        ),
-                                      ]
-                                    : [
-                                        { uuid: "", nome: "Selecione o tipo" },
-                                        ...TIPO_LANCAMENTO_OPTIONS,
-                                      ]
-                                }
+                                options={getTiposLancamentoOptions()}
                                 label="Tipo de Lançamento"
                                 name={`${name}.tipo_lancamento`}
                                 id="tipo_lancamento"
@@ -523,14 +586,16 @@ const ModalAplicarDesconto = ({
                                       `${name}.periodo_escolar`,
                                       null,
                                     );
-                                  } else if (e.target?.value?.includes("CEI"))
+                                  } else if (e.target?.value?.includes("CEI")) {
                                     form.change(
                                       `${name}.tipo_alimentacao`,
                                       null,
                                     );
+                                  }
                                 }}
                               />
                             </div>
+
                             <div className="col-4">
                               {ehCei ||
                               (ehCemei &&
@@ -568,12 +633,16 @@ const ModalAplicarDesconto = ({
                                 />
                               )}
                             </div>
+
                             <div className="col-4">
                               <Field
                                 dataTestId={`clausula_desconto_${index}`}
                                 component={Select}
                                 options={[
-                                  { uuid: "", nome: "Selecione a cláusula" },
+                                  {
+                                    uuid: "",
+                                    nome: "Selecione a cláusula",
+                                  },
                                   ...clausulas.map((clausula) => ({
                                     uuid: clausula.uuid,
                                     nome: `${clausula.numero_clausula}. ${clausula.item_clausula} - (${clausula.porcentagem_desconto}%)`,
@@ -587,6 +656,7 @@ const ModalAplicarDesconto = ({
                               />
                             </div>
                           </div>
+
                           <div className="row mt-2">
                             <div className="col-4">
                               <Field
@@ -600,6 +670,7 @@ const ModalAplicarDesconto = ({
                                 apenasNumeros
                               />
                             </div>
+
                             <div className="col-4">
                               <Field
                                 dataTestId={`valor_unitario_${index}`}
@@ -610,6 +681,7 @@ const ModalAplicarDesconto = ({
                                 prefix="R$"
                               />
                             </div>
+
                             <div className="col-4">
                               <Field
                                 dataTestId={`total_desconto_${index}`}
@@ -623,6 +695,7 @@ const ModalAplicarDesconto = ({
                           </div>
                         </div>
                       ))}
+
                       {fields.length > 1 && (
                         <div className="row mt-4">
                           <div className="col-12">
@@ -639,6 +712,7 @@ const ModalAplicarDesconto = ({
                           </div>
                         </div>
                       )}
+
                       <div className="row mt-4 justify-content-center">
                         <div className="col-auto">
                           <Botao
@@ -665,6 +739,7 @@ const ModalAplicarDesconto = ({
                   className="ms-3"
                   onClick={() => setCancelar(true)}
                 />
+
                 <Botao
                   dataTestId="botao-salvar"
                   texto="Salvar Descontos"
@@ -678,6 +753,7 @@ const ModalAplicarDesconto = ({
           );
         }}
       />
+
       <ModalCancelar
         showModal={cancelar}
         setShowModal={setCancelar}
