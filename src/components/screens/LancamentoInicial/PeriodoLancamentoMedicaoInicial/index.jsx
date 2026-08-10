@@ -1843,6 +1843,22 @@ export default () => {
       setDisableBotaoSalvarLancamentos(bloquearBotao);
       setExibirTooltip(bloquearBotao);
     }
+
+    if (diasSobremesaAF && existeWarningSobremesaAF(formValuesAtualizados)) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+      return;
+    }
+
+    if (
+      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
+        formValuesAtualizados,
+      )
+    ) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+      return;
+    }
   }, [
     formValuesAtualizados,
     formErrorsAtualizados,
@@ -1851,39 +1867,9 @@ export default () => {
     alunosTabSelecionada,
     categoriasDeMedicao,
     feriadosNoMes,
-  ]);
-
-  useEffect(() => {
-    if (
-      formValuesAtualizados &&
-      existeWarningLancheEmergencialAutorizadoTipoAlimentacao(
-        formValuesAtualizados,
-      )
-    ) {
-      setDisableBotaoSalvarLancamentos(true);
-      setExibirTooltip(true);
-    }
-  }, [
-    formValuesAtualizados,
-    weekColumns,
-    categoriasDeMedicao,
+    diasSobremesaAF,
     alteracoesLancheEmergencialAutorizadas,
     permissoesLancamentosEspeciaisPorDia,
-  ]);
-
-  useEffect(() => {
-    if (
-      formValuesAtualizados &&
-      existeWarningSobremesaAF(formValuesAtualizados)
-    ) {
-      setDisableBotaoSalvarLancamentos(true);
-      setExibirTooltip(true);
-    }
-  }, [
-    formValuesAtualizados,
-    weekColumns,
-    categoriasDeMedicao,
-    diasSobremesaAF,
   ]);
 
   const onSubmitObservacao = async (values, dia, categoria, form, errors) => {
