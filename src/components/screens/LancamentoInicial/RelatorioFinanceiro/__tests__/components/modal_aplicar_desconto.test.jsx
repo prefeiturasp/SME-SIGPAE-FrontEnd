@@ -163,7 +163,7 @@ describe("Teste de funcionalidade e comportamentos do ModalAplicarDesconto", () 
       expect(screen.getByTestId("botao_remover_1")).toBeInTheDocument();
     });
 
-    it("deve abrir modal de cancelamento ao clicar no botão cancelar", () => {
+    it("deve abrir modal de cancelamento ao clicar no botão cancelar", async () => {
       setup({
         ...defaultProps,
         descontos: [
@@ -183,6 +183,18 @@ describe("Teste de funcionalidade e comportamentos do ModalAplicarDesconto", () 
       expect(
         screen.getByText("Cancelar Aplicação de descontos"),
       ).toBeInTheDocument();
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /Sim/i,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText("Cancelar Aplicação de descontos"),
+        ).not.toBeInTheDocument();
+      });
     });
 
     it("não deve renderizar conteúdo interno quando fechado", () => {
