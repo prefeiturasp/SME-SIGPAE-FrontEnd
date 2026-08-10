@@ -18,6 +18,8 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import HTTP_STATUS from "http-status-codes";
 import "./style.scss";
 
 const CAMINHO_FAQ = "/ajuda";
@@ -25,7 +27,10 @@ const CAMINHO_LISTAGEM_CATEGORIAS = "/ajuda/cadastro-categoria";
 
 const PaginaEdicaoCategoria = () => {
   const { uuid } = useParams();
-
+  const [exibirModalCategoriaDuplicada, setExibirModalCategoriaDuplicada] =
+    useState(false);
+  const [mensagemCategoriaDuplicada, setMensagemCategoriaDuplicada] =
+    useState("");
   const [nomeCategoria, setNomeCategoria] = useState("");
   const [nomeCategoriaOriginal, setNomeCategoriaOriginal] = useState("");
   const [carregando, setCarregando] = useState(true);
@@ -62,8 +67,15 @@ const PaginaEdicaoCategoria = () => {
       setNomeCategoriaOriginal(resposta.data.nome);
 
       toastSuccess("Categoria Atualizada com Sucesso!");
-    } catch {
-      toastError("Houve um erro ao atualizar a categoria");
+    } catch (erro) {
+      const mensagemErro = erro.response?.data?.nome?.[0];
+      const categoriaDuplicada =
+        erro.response?.status === HTTP_STATUS.BAD_REQUEST;
+      if (categoriaDuplicada) {
+        setMensagemCategoriaDuplicada(mensagemErro);
+        setExibirModalCategoriaDuplicada(true);
+        return;
+      }
     } finally {
       setSalvando(false);
     }
@@ -85,6 +97,10 @@ const PaginaEdicaoCategoria = () => {
 
     carregarCategoria();
   }, [uuid]);
+
+  const fecharModalCategoriaDuplicada = () => {
+    setExibirModalCategoriaDuplicada(false);
+  };
 
   return (
     <PageNoSidebar
@@ -147,6 +163,17 @@ const PaginaEdicaoCategoria = () => {
           </div>
         )}
       </div>
+      {exibirModalCategoriaDuplicada && (
+        <ModalGenerico
+          show={exibirModalCategoriaDuplicada}
+          titulo="Atualizar Categoria"
+          texto={<strong>{mensagemCategoriaDuplicada}</strong>}
+          textoBotaoSim="OK"
+          handleClose={fecharModalCategoriaDuplicada}
+          handleSim={fecharModalCategoriaDuplicada}
+          unicoBotao
+        />
+      )}
     </PageNoSidebar>
   );
 };
