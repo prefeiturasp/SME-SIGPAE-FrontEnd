@@ -123,8 +123,8 @@ const PaginaEdicaoCategoria = () => {
                 label="Nome da Categoria"
                 name="nomeCategoria"
                 required
-                value={nomeCategoria}
-                onChange={alterarNomeCategoria}
+                valorInicial={nomeCategoria}
+                inputOnChange={alterarNomeCategoria}
               />
             </div>
 
