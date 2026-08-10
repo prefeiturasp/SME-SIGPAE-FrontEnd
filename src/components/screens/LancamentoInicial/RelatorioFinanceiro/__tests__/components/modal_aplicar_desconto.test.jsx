@@ -412,4 +412,38 @@ describe("Teste de funcionalidade e comportamentos doModalAplicarDesconto", () =
       );
     });
   });
+
+  describe("Grupo 5 - EMEBS", () => {
+    const unidadesEducacionais = getUnidadesEducacionais("EMEBS");
+    const tiposAlimentacao = getTiposAlimentacao("EMEBS");
+    const grupoEMEBS = getGrupoUnidadeEscolar("Grupo 5");
+
+    const defaultProps = createDefaultProps({
+      relatorioFinanceiro: mockRelatorioFinanceiroTipoAlimentacao.uuid,
+      relatorioConsolidado: {
+        ...mockRelatorioFinanceiroTipoAlimentacao,
+        grupo_unidade_escolar: grupoEMEBS,
+      },
+      unidadesEducacionais,
+      tiposAlimentacao,
+    });
+
+    beforeEach(() => {
+      mockAplicarDescontos(mockRelatorioFinanceiroTipoAlimentacao.uuid);
+    });
+
+    it("deve carregar tipos de lançamento com base no grupo EMEBS", () => {
+      setup(defaultProps);
+
+      expect(getOptions("tipo_lancamento_0")).toEqual([
+        "Selecione o tipo",
+        "ALIMENTAÇÕES - INFANTIL",
+        "DIETA ESPECIAL TIPO A - INFANTIL",
+        "DIETA ESPECIAL TIPO B - INFANTIL",
+        "ALIMENTAÇÕES - FUNDAMENTAL",
+        "DIETA ESPECIAL TIPO A - FUNDAMENTAL",
+        "DIETA ESPECIAL TIPO B - FUNDAMENTAL",
+      ]);
+    });
+  });
 });
