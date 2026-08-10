@@ -20,7 +20,7 @@ import {
 
 import ModalAplicarDesconto from "../../components/ModalAplicarDesconto";
 
-describe("Teste de funcionalidade e comportamentos doModalAplicarDesconto", () => {
+describe("Teste de funcionalidade e comportamentos do ModalAplicarDesconto", () => {
   const setup = (props) =>
     render(
       <MemoryRouter>
