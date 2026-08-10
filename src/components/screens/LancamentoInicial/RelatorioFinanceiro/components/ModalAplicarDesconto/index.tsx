@@ -103,6 +103,7 @@ const ModalAplicarDesconto = ({
   const ehCemei = grupoNome?.includes("GRUPO 2");
   const ehEmef = grupoNome?.includes("GRUPO 4");
   const ehEmebs = grupoNome?.includes("GRUPO 5");
+  const ehCieja = grupoNome?.includes("GRUPO 6");
 
   const alimentacoesDietaA = tiposAlimentacao.filter((item) =>
     ["REFEICAO", "LANCHE", "LANCHE 4H"].includes(
@@ -110,9 +111,13 @@ const ModalAplicarDesconto = ({
     ),
   );
 
-  const alimentacoesDietaB = tiposAlimentacao.filter((item) =>
-    ["LANCHE", "LANCHE 4H"].includes(normalizar(item.nome).toUpperCase()),
-  );
+  const alimentacoesDietaB = tiposAlimentacao.filter((item) => {
+    const nome = normalizar(item.nome).toUpperCase();
+
+    return ehCieja
+      ? nome === "LANCHE 4H"
+      : ["LANCHE", "LANCHE 4H"].includes(nome);
+  });
 
   const initialValues = useMemo(() => {
     return {
