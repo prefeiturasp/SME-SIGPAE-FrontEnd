@@ -115,6 +115,7 @@ export const ConferenciaDosLancamentos = () => {
   const [feriadosNoMes, setFeriadosNoMes] = useState();
   const [diasCalendario, setDiasCalendario] = useState({});
   const [diasSobremesaDoce, setDiasSobremesaDoce] = useState();
+  const [diasSobremesaAF, setDiasSobremesaAF] = useState();
 
   const visualizarModal = () => {
     setShowModal(true);
@@ -466,11 +467,27 @@ export const ConferenciaDosLancamentos = () => {
     }
   };
 
+  const getListaDiasSobremesaAFAsync = async () => {
+    const escola_uuid = location.state.escolaUuid;
+    const params = {
+      mes: Number(mesSolicitacao),
+      ano: Number(anoSolicitacao),
+      escola_uuid,
+      tipo: "Sobremesa AF",
+    };
+    const response = await getListaDiasSobremesaDoce(params);
+    if (response.status === HTTP_STATUS.OK) {
+      setDiasSobremesaAF(response.data);
+    }
+  };
+
   useEffect(() => {
     if (mesSolicitacao && anoSolicitacao) {
       !feriadosNoMes && getFeriadosNoMesAsync(mesSolicitacao, anoSolicitacao);
       !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
         getListaDiasSobremesaDoceAsync();
+      !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
+        getListaDiasSobremesaAFAsync();
     }
   }, [mesSolicitacao, anoSolicitacao]);
 
@@ -1132,6 +1149,7 @@ export const ConferenciaDosLancamentos = () => {
                               feriadosNoMes={feriadosNoMes}
                               diasCalendario={diasCalendario[chaveCalendario]}
                               diasSobremesaDoce={diasSobremesaDoce}
+                              diasSobremesaAF={diasSobremesaAF}
                               diasLetivosSIGPAE={diasLetivosSIGPAE}
                               diasSuspensaoAtividades={diasSuspensaoAtividades}
                             />,

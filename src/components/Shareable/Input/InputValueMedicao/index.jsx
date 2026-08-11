@@ -66,6 +66,7 @@ export const InputText = (props) => {
     exibirTooltipPeriodosZeradosNoProgramasProjetos,
     exibirTooltipRefeicaoSimultanea,
     exibirTooltipFeriado,
+    exibeTooltipSobremesaAFDreCodae,
   } = props;
 
   const inputProps = {
@@ -222,6 +223,19 @@ export const InputText = (props) => {
           />
         </Tooltip>
       )}
+      {exibeTooltipSobremesaAFDreCodae &&
+        (!input.value || Number(input.value) === 0) && (
+          <Tooltip title={"Dia de sobremesa AF."}>
+            <i className="fas fa-info icone-info-success" />
+          </Tooltip>
+        )}
+      {exibeTooltipSobremesaAFDreCodae &&
+        input.value &&
+        Number(input.value) > 0 && (
+          <Tooltip title={"Dia de sobremesa AF. Verifique a justificativa."}>
+            <i className="fas fa-info icone-info-warning" />
+          </Tooltip>
+        )}
       {exibeTooltipRepeticao && (
         <Tooltip
           title={`${
