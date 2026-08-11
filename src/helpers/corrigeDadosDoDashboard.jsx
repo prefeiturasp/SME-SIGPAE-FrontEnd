@@ -34,6 +34,9 @@ export default (results) => {
       }
     }
 
+    const removeAcentos = (s) =>
+      s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
     // Merge de CEI/CEMEI nas categorias base (usando includes para ser resiliente a encoding)
     const CHAVES_BASE = [
       { base: "Inclusão de Alimentação", cei: "CEI", cemei: "CEMEI" },
@@ -42,10 +45,11 @@ export default (results) => {
     ];
 
     for (const { base, cei, cemei } of CHAVES_BASE) {
+      const baseNormalizada = removeAcentos(base.toLowerCase());
       const chavesRelacionadas = Object.keys(results).filter(
         (k) =>
           k !== base &&
-          k.toLowerCase().includes(base.toLowerCase()) &&
+          removeAcentos(k.toLowerCase()).includes(baseNormalizada) &&
           (k.includes(cei) || k.includes(cemei)),
       );
       if (chavesRelacionadas.length > 0) {
