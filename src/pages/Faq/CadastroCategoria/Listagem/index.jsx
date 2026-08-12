@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import Botao from "src/components/Shareable/Botao";
@@ -10,13 +10,22 @@ import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
 import { HOME } from "src/constants/config";
 import TabelaCategorias from "./components/TabelaCategorias";
 import "./style.scss";
-import { buscarCategoriasFaq } from "src/services/faq.service";
+import {
+  buscarCategoriasFaq,
+  excluirCategoriaFaq,
+} from "src/services/faq.service";
 import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";
 import { Paginacao } from "src/components/Shareable/Paginacao";
+import * as constants from "src/configs/constants";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 
-const CAMINHO_FAQ = "/ajuda";
-const CAMINHO_LISTAGEM_CATEGORIAS = "/ajuda/cadastro-categoria";
-const CAMINHO_CADASTRAR_CATEGORIA = "/ajuda/cadastro-categoria/cadastrar";
+const CAMINHO_FAQ = `/${constants.AJUDA}`;
+const CAMINHO_LISTAGEM_CATEGORIAS = `/${constants.AJUDA}/${constants.CADASTRO_CATEGORIA}`;
+const CAMINHO_CADASTRAR_CATEGORIA = `/${constants.AJUDA}/${constants.CADASTRO_CATEGORIA}/${constants.CADASTRAR_CATEGORIA}`;
 
 const ITENS_POR_PAGINA = 10;
 
@@ -25,6 +34,9 @@ const PaginaListagemCategorias = () => {
   const [carregando, setCarregando] = useState(true);
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [totalCategorias, setTotalCategorias] = useState(0);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  const [exibirModalExclusao, setExibirModalExclusao] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
 
   const navegar = useNavigate();
 
@@ -33,32 +45,72 @@ const PaginaListagemCategorias = () => {
   };
 
   const editarCategoria = (categoria) => {
-    navegar(`${CAMINHO_LISTAGEM_CATEGORIAS}/${categoria.uuid}/editar`);
+    navegar(
+      `${CAMINHO_LISTAGEM_CATEGORIAS}/${categoria.uuid}/${constants.EDITAR_CATEGORIA}`,
+    );
+  };
+
+  const abrirModalExclusao = (categoria) => {
+    setCategoriaSelecionada(categoria);
+    setExibirModalExclusao(true);
+  };
+
+  const fecharModalExclusao = () => {
+    setExibirModalExclusao(false);
+    setCategoriaSelecionada(null);
   };
 
   const alterarPagina = (pagina) => {
     setPaginaAtual(pagina);
   };
 
-  useEffect(() => {
-    const buscarCategorias = async () => {
-      setCarregando(true);
+  const buscarCategorias = useCallback(async () => {
+    setCarregando(true);
 
-      try {
-        const resposta = await buscarCategoriasFaq({
-          page: paginaAtual,
-          page_size: ITENS_POR_PAGINA,
-        });
+    try {
+      const resposta = await buscarCategoriasFaq({
+        page: paginaAtual,
+        page_size: ITENS_POR_PAGINA,
+      });
 
-        setCategorias(resposta.data.results);
-        setTotalCategorias(resposta.data.count);
-      } finally {
-        setCarregando(false);
-      }
-    };
-
-    buscarCategorias();
+      setCategorias(resposta.data.results);
+      setTotalCategorias(resposta.data.count);
+    } finally {
+      setCarregando(false);
+    }
   }, [paginaAtual]);
+
+  const confirmarExclusao = async () => {
+    if (!categoriaSelecionada || excluindo) {
+      return;
+    }
+
+    setExcluindo(true);
+
+    try {
+      await excluirCategoriaFaq(categoriaSelecionada.uuid);
+
+      setExibirModalExclusao(false);
+      setCategoriaSelecionada(null);
+
+      toastSuccess("Categoria Excluída com Sucesso!");
+
+      if (categorias.length === 1 && paginaAtual > 1) {
+        setPaginaAtual((pagina) => pagina - 1);
+        return;
+      }
+
+      await buscarCategorias();
+    } catch {
+      toastError("Houve um erro ao excluir a categoria");
+    } finally {
+      setExcluindo(false);
+    }
+  };
+
+  useEffect(() => {
+    buscarCategorias();
+  }, [buscarCategorias]);
 
   return (
     <PageNoSidebar
@@ -103,6 +155,7 @@ const PaginaListagemCategorias = () => {
               <TabelaCategorias
                 categorias={categorias}
                 aoEditar={editarCategoria}
+                aoExcluir={abrirModalExclusao}
               />
 
               {totalCategorias > ITENS_POR_PAGINA && (
@@ -117,6 +170,23 @@ const PaginaListagemCategorias = () => {
           )}
         </div>
       </div>
+
+      <ModalGenerico
+        show={exibirModalExclusao}
+        titulo="Excluir Categoria"
+        texto={
+          <>
+            <p>
+              Ao excluir a Categoria, todas as questões vinculadas serão
+              removidas.
+            </p>
+            <p>Deseja realmente excluir a Categoria?</p>
+          </>
+        }
+        handleClose={fecharModalExclusao}
+        handleSim={confirmarExclusao}
+        loading={excluindo}
+      />
     </PageNoSidebar>
   );
 };
