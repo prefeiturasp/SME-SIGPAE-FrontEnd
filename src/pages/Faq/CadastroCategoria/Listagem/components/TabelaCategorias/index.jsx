@@ -1,5 +1,4 @@
 import React from "react";
-import { arrayOf, func, shape, string } from "prop-types";
 import "./style.scss";
 
 const TabelaCategorias = ({ categorias, aoEditar, aoExcluir }) => {
@@ -10,7 +9,7 @@ const TabelaCategorias = ({ categorias, aoEditar, aoExcluir }) => {
           <thead>
             <tr>
               <th>Nome da Categoria</th>
-              <th className="coluna-acoes"></th>
+              <th className="coluna-acoes">Ações</th>
             </tr>
           </thead>
 
@@ -49,21 +48,6 @@ const TabelaCategorias = ({ categorias, aoEditar, aoExcluir }) => {
       </div>
     </div>
   );
-};
-
-TabelaCategorias.propTypes = {
-  categorias: arrayOf(
-    shape({
-      uuid: string.isRequired,
-      nome: string.isRequired,
-    }),
-  ).isRequired,
-  aoEditar: func.isRequired,
-  aoExcluir: func,
-};
-
-TabelaCategorias.defaultProps = {
-  aoExcluir: undefined,
 };
 
 export default TabelaCategorias;
