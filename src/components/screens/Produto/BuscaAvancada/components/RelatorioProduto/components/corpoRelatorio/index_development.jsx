@@ -116,7 +116,7 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
         <article className="flex-botoes-relatorio">
           <div className="row col-12">
             <div className="col-12 d-flex justify-content-between align-items-center px-0">
-              <span className="title">Status do Produto</span>
+              <div className="titulo-secao-relatorio">Status do Produto</div>
               <div className="d-flex align-items-center">
                 <Botao
                   type={BUTTON_TYPE.BUTTON}
@@ -219,7 +219,7 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
         </article>
         <hr />
         <article className="informacoes-gerais">
-          <div className="title">Identificação do Produto</div>
+          <div className="titulo-secao-relatorio">Identificação do Produto</div>
 
           <div className="linha-marca-fabricante">
             <div className="linha-informacao">
@@ -271,7 +271,7 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
         </article>
         <hr />
         <article className="informacoes-gerais">
-          <div className="title">Informações nutricionais</div>
+          <div className="titulo-secao-relatorio">Informações nutricionais</div>
 
           <div className="grid-marca-fabricante-info info-sem-grid">
             <div className="label-relatorio">Porção</div>
@@ -333,7 +333,9 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
         </article>
         <hr />
         <article className="informacoes-gerais">
-          <div className="title">Informação do Produto (classificação)</div>
+          <div className="titulo-secao-relatorio">
+            Informação do Produto (classificação)
+          </div>
 
           <div className="info-sem-grid">
             <div className="label-relatorio">Tipo</div>

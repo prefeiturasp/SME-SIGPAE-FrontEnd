@@ -49,13 +49,36 @@ jest.mock("src/components/Shareable/MultiSelect", () => ({
           value={selected}
           onChange={(e) =>
             onSelectedChange(
-              Array.from(e.target.selectedOptions, (o) => o.value)
+              Array.from(e.target.selectedOptions, (o) => o.value),
             )
           }
         >
           {options.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  },
+}));
+
+jest.mock("src/components/Shareable/Select", () => ({
+  __esModule: true,
+  default: ({ options = [], input, required }) => {
+    const name = input?.name || "no-name";
+    return (
+      <div>
+        <select
+          data-testid={`select-${name}`}
+          value={input?.value || ""}
+          onChange={(e) => input?.onChange(e)}
+          required={required}
+        >
+          {options.map((opt, idx) => (
+            <option key={idx} value={opt.uuid} disabled={opt.disabled}>
+              {opt.nome}
             </option>
           ))}
         </select>
@@ -109,7 +132,7 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
         }}
       >
         <ModalCadastrarNoCalendario {...defaultProps} {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   };
 
@@ -127,7 +150,7 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     });
     expect(screen.getByText(/Cadastrar dia de Sobremesa/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/Cadastro de sobremesa para o dia/)
+      screen.getByText(/Cadastro de sobremesa para o dia/),
     ).toBeInTheDocument();
     expect(screen.getByText("15/06/2023")).toBeInTheDocument();
     expect(screen.getByText(/EMEF/i)).toBeInTheDocument();
@@ -151,11 +174,11 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     });
 
     const editalSelect = screen.getByTestId(
-      "multiselect-cadastros_calendario[0].editais"
+      "multiselect-cadastros_calendario[0].editais",
     );
     fireEvent.change(editalSelect, { target: { value: "6789" } });
     const unidadeSelect = screen.getByTestId(
-      "multiselect-cadastros_calendario[0].tipo_unidades"
+      "multiselect-cadastros_calendario[0].tipo_unidades",
     );
     fireEvent.change(unidadeSelect, { target: { value: "1234" } });
 
@@ -166,7 +189,7 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
 
     const { toastSuccess } = require("src/components/Shareable/Toast/dialogs");
     expect(toastSuccess).toHaveBeenCalledWith(
-      "Dia de Sobremesa criado com sucesso"
+      "Dia de Sobremesa criado com sucesso",
     );
     expect(defaultProps.closeModal).toHaveBeenCalled();
     expect(defaultProps.getObjetosAsync).toHaveBeenCalled();
@@ -178,11 +201,11 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     });
 
     const editalSelect = screen.getByTestId(
-      "multiselect-cadastros_calendario[0].editais"
+      "multiselect-cadastros_calendario[0].editais",
     );
     fireEvent.change(editalSelect, { target: { value: "6789" } });
     const unidadeSelect = screen.getByTestId(
-      "multiselect-cadastros_calendario[0].tipo_unidades"
+      "multiselect-cadastros_calendario[0].tipo_unidades",
     );
     fireEvent.change(unidadeSelect, { target: { value: "1234" } });
 
@@ -208,7 +231,7 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     });
 
     const selects = screen.getAllByTestId(
-      /multiselect-cadastros_calendario\[\d+\].editais/
+      /multiselect-cadastros_calendario\[\d+\].editais/,
     );
     expect(selects.length).toBe(2);
 
@@ -217,7 +240,7 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
       fireEvent.click(remover);
     });
     const selectsAposRemover = screen.getAllByTestId(
-      /multiselect-cadastros_calendario\[\d+\].editais/
+      /multiselect-cadastros_calendario\[\d+\].editais/,
     );
     expect(selectsAposRemover.length).toBe(1);
   });
@@ -235,9 +258,86 @@ describe("Teste componete ModalCadastrarNoCalendario", () => {
     });
     const { toastSuccess } = require("src/components/Shareable/Toast/dialogs");
     expect(toastSuccess).toHaveBeenCalledWith(
-      "Dia de Sobremesa atualizado com sucesso"
+      "Dia de Sobremesa atualizado com sucesso",
     );
     expect(defaultProps.closeModal).toHaveBeenCalled();
     expect(defaultProps.getObjetosAsync).toHaveBeenCalled();
+  });
+
+  it("exibe seletor de tipo de sobremesa quando tiposSobremesaDoce é fornecido", async () => {
+    const tipos = [
+      { uuid: "tip-uuid-1", nome: "Sobremesa Doce" },
+      { uuid: "tip-uuid-2", nome: "Sobremesa AF" },
+    ];
+
+    await act(async () => {
+      renderModalCadastrarNoCalendario({ tiposSobremesaDoce: tipos });
+    });
+
+    const tipoSelect = screen.getByTestId(
+      "select-cadastros_calendario[0].tipo",
+    );
+    expect(tipoSelect).toBeInTheDocument();
+    expect(
+      screen.getByText("Selecione o tipo de sobremesa"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Sobremesa AF")).toBeInTheDocument();
+  });
+
+  it("nao exibe seletor de tipo de sobremesa quando tiposSobremesaDoce nao é fornecido", async () => {
+    await act(async () => {
+      renderModalCadastrarNoCalendario();
+    });
+
+    expect(
+      screen.queryByTestId("select-cadastros_calendario[0].tipo"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("envia tipo no payload ao cadastrar com tipo de sobremesa selecionado", async () => {
+    const tipos = [
+      { uuid: "tip-uuid-1", nome: "Sobremesa Doce" },
+      { uuid: "tip-uuid-2", nome: "Sobremesa AF" },
+    ];
+    const setObjetoSpy = jest
+      .fn()
+      .mockResolvedValue({ status: HTTP_STATUS.CREATED });
+
+    await act(async () => {
+      renderModalCadastrarNoCalendario({
+        tiposSobremesaDoce: tipos,
+        setObjetoAsync: setObjetoSpy,
+      });
+    });
+
+    const tipoSelect = screen.getByTestId(
+      "select-cadastros_calendario[0].tipo",
+    );
+    fireEvent.change(tipoSelect, { target: { value: "tip-uuid-2" } });
+
+    const editalSelect = screen.getByTestId(
+      "multiselect-cadastros_calendario[0].editais",
+    );
+    fireEvent.change(editalSelect, { target: { value: "6789" } });
+
+    const unidadeSelect = screen.getByTestId(
+      "multiselect-cadastros_calendario[0].tipo_unidades",
+    );
+    fireEvent.change(unidadeSelect, { target: { value: "1234" } });
+
+    const cadastrar = screen.getByText("Cadastrar");
+    await act(async () => {
+      fireEvent.click(cadastrar);
+    });
+
+    expect(setObjetoSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cadastros_calendario: expect.arrayContaining([
+          expect.objectContaining({
+            tipo: "tip-uuid-2",
+          }),
+        ]),
+      }),
+    );
   });
 });

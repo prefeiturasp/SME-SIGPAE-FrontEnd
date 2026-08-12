@@ -19,7 +19,6 @@ import {
   TIPOS_EMBALAGENS,
   UNIDADES_MEDIDA,
 } from "src/configs/constants";
-import { ENVIRONMENT } from "src/constants/config";
 import {
   usuarioEhAdministradorCONTRATOS,
   usuarioEhCodaeDilog,
@@ -107,24 +106,22 @@ const MenuCadastros = () => {
             Recreio nas Férias
           </LeafItem>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
-            Sobremesa Doce
+            Sobremesa Doce e AF
           </LeafItem>
           <LeafItem
             to={`/${CONFIGURACOES}/${CADASTROS}/${SUSPENSAO_ATIVIDADES}`}
           >
             Suspensão de Atividades
           </LeafItem>
-          {!ENVIRONMENT.includes("production") && (
-            <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}`}>
-              Dias Letivos
-            </LeafItem>
-          )}
+          <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}`}>
+            Dias Letivos
+          </LeafItem>
         </>
       )}
       {usuarioEhMedicao() && (
         <>
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${SOBREMESA_DOCE}`}>
-            Sobremesa Doce
+            Sobremesa Doce e AF
           </LeafItem>
           <LeafItem
             to={`/${CONFIGURACOES}/${CADASTROS}/${SUSPENSAO_ATIVIDADES}`}

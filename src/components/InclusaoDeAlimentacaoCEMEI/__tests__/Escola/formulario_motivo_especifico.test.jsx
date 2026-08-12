@@ -248,4 +248,60 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
       ).toBeInTheDocument();
     });
   });
+
+  it("Oculta 'Evento Específico' no segundo select quando o primeiro motivo não é específico", async () => {
+    const selectMotivo0 = screen.getByTestId("select-motivo-0");
+    const selectElement0 = selectMotivo0.querySelector("select");
+
+    const motivoNaoEspecifico = mockMotivosInclusaoNormal.results.find(
+      (motivo) =>
+        !motivo.nome.includes("Evento Específico") &&
+        !motivo.nome.includes("Selecione"),
+    );
+
+    fireEvent.change(selectElement0, {
+      target: { value: motivoNaoEspecifico.uuid },
+    });
+
+    const botaoAdicionarDia = screen
+      .getByText("Adicionar dia")
+      .closest("button");
+    fireEvent.click(botaoAdicionarDia);
+
+    const selectMotivo1 = screen.getByTestId("select-motivo-1");
+    const selectElement1 = selectMotivo1.querySelector("select");
+
+    const options = Array.from(selectElement1.options).map(
+      (option) => option.text,
+    );
+
+    expect(options).not.toContain("Evento Específico");
+  });
+
+  it("Exibe somente 'Selecione' e 'Evento Específico' no segundo select quando o primeiro motivo é específico", async () => {
+    await setMotivoValueEventoEspecifico(0);
+
+    const botaoAdicionarDia = screen
+      .getByText("Adicionar dia")
+      .closest("button");
+    fireEvent.click(botaoAdicionarDia);
+
+    const selectMotivo1 = screen.getByTestId("select-motivo-1");
+    const selectElement1 = selectMotivo1.querySelector("select");
+
+    const options = Array.from(selectElement1.options).map(
+      (option) => option.text,
+    );
+
+    expect(options).toEqual(
+      expect.arrayContaining(["Selecione", "Evento Específico"]),
+    );
+
+    expect(
+      options.every(
+        (option) =>
+          option.includes("Selecione") || option.includes("Evento Específico"),
+      ),
+    ).toBe(true);
+  });
 });

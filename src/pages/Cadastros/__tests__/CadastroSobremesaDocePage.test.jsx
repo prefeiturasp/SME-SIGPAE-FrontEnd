@@ -57,7 +57,9 @@ describe("CadastroSobremesaDocePage", () => {
   it("renderiza corretamente todos os elementos da página", () => {
     render(<CadastroSobremesaDocePage />);
 
-    const textos = screen.getAllByText("Sobremesa Doce");
+    const textos = screen.getAllByText((content) =>
+      content.includes("Sobremesa Doce"),
+    );
     expect(textos.length).toBeGreaterThan(0);
 
     expect(screen.getByText("Voltar")).toBeInTheDocument();
@@ -67,9 +69,13 @@ describe("CadastroSobremesaDocePage", () => {
     expect(screen.getByText("Cadastros")).toBeInTheDocument();
 
     expect(screen.getByTestId("calendario")).toBeInTheDocument();
-    expect(screen.getByText("Nome Objeto: Sobremesa Doce")).toBeInTheDocument();
     expect(
-      screen.getByText("Nome Objeto (minúsculo): sobremesa doce")
+      screen.getByText("Nome Objeto: Sobremesa Doce ou Sobremesa AF"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Nome Objeto (minúsculo): sobremesa doce ou sobremesa AF",
+      ),
     ).toBeInTheDocument();
   });
 });

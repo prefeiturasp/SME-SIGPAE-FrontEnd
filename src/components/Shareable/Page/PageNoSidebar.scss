@@ -1,0 +1,53 @@
+@use "src/styles/variables.scss" as *;
+
+.pagina-sem-barra-lateral {
+  min-height: calc(100vh);
+  padding: 1.5rem 2rem 2rem;
+  width: 100%;
+
+  .page-no-sidebar-header {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 0.75rem 0 1rem;
+
+    .page-title {
+      margin: 0;
+    }
+
+    .float-end {
+      float: none !important;
+    }
+  }
+
+  .page-no-sidebar-card {
+    background-color: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    padding: 1.5rem;
+  }
+
+  @media screen and (max-width: 991px) {
+    padding: 1rem;
+  }
+
+  @media screen and (max-width: 575px) {
+    .page-no-sidebar-header {
+      align-items: stretch;
+      flex-direction: column;
+
+      .page-title {
+        font-size: 1.5rem;
+      }
+
+      .float-end {
+        align-self: flex-end;
+      }
+    }
+
+    .page-no-sidebar-card {
+      padding: 1rem;
+    }
+  }
+}

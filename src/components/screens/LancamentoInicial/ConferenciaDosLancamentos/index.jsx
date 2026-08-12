@@ -115,6 +115,7 @@ export const ConferenciaDosLancamentos = () => {
   const [feriadosNoMes, setFeriadosNoMes] = useState();
   const [diasCalendario, setDiasCalendario] = useState({});
   const [diasSobremesaDoce, setDiasSobremesaDoce] = useState();
+  const [diasSobremesaAF, setDiasSobremesaAF] = useState();
 
   const visualizarModal = () => {
     setShowModal(true);
@@ -286,17 +287,21 @@ export const ConferenciaDosLancamentos = () => {
       "MEDICAO_CORRIGIDA_PELA_UE",
     ].includes(solicitacao.ocorrencia.status);
 
+  const statusOcorrenciaEsperadoSolicitarCorrecaoCODAE = [
+    "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
+    "MEDICAO_APROVADA_PELA_DRE",
+    "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    "MEDICAO_APROVADA_PELA_CODAE",
+    "MEDICAO_CORRIGIDA_PARA_CODAE",
+  ].includes(solicitacao?.ocorrencia?.status);
+
   const desabilitarSolicitarCorrecaoOcorrenciaCODAE =
-    usuarioMedicaoOuManifestacaoTemPermissao &&
-    solicitacao &&
-    solicitacao.ocorrencia &&
-    ![
-      "OCORRENCIA_EXCLUIDA_PELA_ESCOLA",
-      "MEDICAO_APROVADA_PELA_DRE",
-      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-      "MEDICAO_APROVADA_PELA_CODAE",
-      "MEDICAO_CORRIGIDA_PARA_CODAE",
-    ].includes(solicitacao.ocorrencia.status);
+    (statusOcorrenciaEsperadoSolicitarCorrecaoCODAE &&
+      !usuarioEhCODAENutriManifestacao()) ||
+    (usuarioEhCODAENutriManifestacao() &&
+      solicitacao &&
+      solicitacao.ocorrencia &&
+      !statusOcorrenciaEsperadoSolicitarCorrecaoCODAE);
 
   const statusOcorrenciaEsperadoCODAE = [
     "MEDICAO_APROVADA_PELA_DRE",
@@ -462,11 +467,27 @@ export const ConferenciaDosLancamentos = () => {
     }
   };
 
+  const getListaDiasSobremesaAFAsync = async () => {
+    const escola_uuid = location.state.escolaUuid;
+    const params = {
+      mes: Number(mesSolicitacao),
+      ano: Number(anoSolicitacao),
+      escola_uuid,
+      tipo: "Sobremesa AF",
+    };
+    const response = await getListaDiasSobremesaDoce(params);
+    if (response.status === HTTP_STATUS.OK) {
+      setDiasSobremesaAF(response.data);
+    }
+  };
+
   useEffect(() => {
     if (mesSolicitacao && anoSolicitacao) {
       !feriadosNoMes && getFeriadosNoMesAsync(mesSolicitacao, anoSolicitacao);
       !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
         getListaDiasSobremesaDoceAsync();
+      !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
+        getListaDiasSobremesaAFAsync();
     }
   }, [mesSolicitacao, anoSolicitacao]);
 
@@ -1027,7 +1048,6 @@ export const ConferenciaDosLancamentos = () => {
                                         type={BUTTON_TYPE.BUTTON}
                                         style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
                                         disabled={
-                                          !usuarioEhCODAENutriManifestacao() ||
                                           (ocorrencia?.status ===
                                             "MEDICAO_CORRECAO_SOLICITADA" &&
                                             !solicitacao?.com_ocorrencias) ||
@@ -1129,6 +1149,7 @@ export const ConferenciaDosLancamentos = () => {
                               feriadosNoMes={feriadosNoMes}
                               diasCalendario={diasCalendario[chaveCalendario]}
                               diasSobremesaDoce={diasSobremesaDoce}
+                              diasSobremesaAF={diasSobremesaAF}
                               diasLetivosSIGPAE={diasLetivosSIGPAE}
                               diasSuspensaoAtividades={diasSuspensaoAtividades}
                             />,

@@ -94,7 +94,7 @@ describe("Teste Relatório Inclusão de Alimentação CEMEI - Visão Escola - Mo
     expect(
       screen.getByText("Solicitação de Inclusão de Alimentação"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Evento Específico")).toBeInTheDocument();
+    expect(screen.getAllByText("Evento Específico")[0]).toBeInTheDocument();
 
     expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
   });

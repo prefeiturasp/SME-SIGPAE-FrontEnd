@@ -212,12 +212,25 @@ describe("DetalharCodaeDocumentosRecebimento", () => {
     });
   });
 
-  describe("Download de Laudo", () => {
+  describe("Laudo enviado pelo Fornecedor", () => {
     it("renderiza botão de download do laudo", async () => {
       await setup();
 
       await waitFor(() => {
         expect(screen.getByText("Laudo Analisado")).toBeInTheDocument();
+      });
+    });
+
+    it("exibe botão 'Visualizar Anexo' quando documento não está aprovado", async () => {
+      mock
+        .onGet(/\/documentos-de-recebimento\/.*\/?/)
+        .reply(200, mockDadosDocumentoCorrecao);
+
+      await setup();
+
+      await waitFor(() => {
+        const botoes = screen.getAllByText("Visualizar Anexo");
+        expect(botoes.length).toBeGreaterThan(0);
       });
     });
   });
