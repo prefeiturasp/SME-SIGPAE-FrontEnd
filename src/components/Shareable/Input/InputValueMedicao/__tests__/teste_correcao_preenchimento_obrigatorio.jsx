@@ -173,3 +173,97 @@ describe("InputValueMedicao - validação Preenchimento obrigatório.", () => {
     expect(iconElement).toBeInTheDocument();
   });
 });
+
+describe("InputValueMedicao - Sobremesa AF DreCodae", () => {
+  it("exibe tooltip verde quando exibeTooltipSobremesaAFDreCodae true e valor indefinido", () => {
+    render(
+      <InputText
+        className="teste"
+        name="sobremesa__dia_05__categoria_1"
+        input={{ name: "sobremesa__dia_05__categoria_1", value: undefined }}
+        meta={{}}
+        exibeTooltipSobremesaAFDreCodae={true}
+      />,
+    );
+    const iconElement = document.querySelector(".fa-info.icone-info-success");
+    expect(iconElement).toBeInTheDocument();
+  });
+
+  it("exibe tooltip verde quando exibeTooltipSobremesaAFDreCodae true e valor é 0", () => {
+    render(
+      <InputText
+        className="teste"
+        name="sobremesa__dia_05__categoria_1"
+        input={{ name: "sobremesa__dia_05__categoria_1", value: "0" }}
+        meta={{}}
+        exibeTooltipSobremesaAFDreCodae={true}
+      />,
+    );
+    const iconElement = document.querySelector(".fa-info.icone-info-success");
+    expect(iconElement).toBeInTheDocument();
+  });
+
+  it("exibe tooltip laranja quando exibeTooltipSobremesaAFDreCodae true e valor > 0", () => {
+    render(
+      <InputText
+        className="teste"
+        name="sobremesa__dia_05__categoria_1"
+        input={{ name: "sobremesa__dia_05__categoria_1", value: "5" }}
+        meta={{}}
+        exibeTooltipSobremesaAFDreCodae={true}
+      />,
+    );
+    const iconElement = document.querySelector(".fa-info.icone-info-warning");
+    expect(iconElement).toBeInTheDocument();
+  });
+
+  it("exibe tooltip verde para repeticao_sobremesa quando valor é 0", () => {
+    render(
+      <InputText
+        className="teste"
+        name="repeticao_sobremesa__dia_05__categoria_1"
+        input={{
+          name: "repeticao_sobremesa__dia_05__categoria_1",
+          value: "0",
+        }}
+        meta={{}}
+        exibeTooltipSobremesaAFDreCodae={true}
+      />,
+    );
+    const iconElement = document.querySelector(".fa-info.icone-info-success");
+    expect(iconElement).toBeInTheDocument();
+  });
+
+  it("exibe tooltip laranja para repeticao_sobremesa quando valor > 0", () => {
+    render(
+      <InputText
+        className="teste"
+        name="repeticao_sobremesa__dia_05__categoria_1"
+        input={{
+          name: "repeticao_sobremesa__dia_05__categoria_1",
+          value: "3",
+        }}
+        meta={{}}
+        exibeTooltipSobremesaAFDreCodae={true}
+      />,
+    );
+    const iconElement = document.querySelector(".fa-info.icone-info-warning");
+    expect(iconElement).toBeInTheDocument();
+  });
+
+  it("nao exibe tooltip quando exibeTooltipSobremesaAFDreCodae é false", () => {
+    render(
+      <InputText
+        className="teste"
+        name="sobremesa__dia_05__categoria_1"
+        input={{ name: "sobremesa__dia_05__categoria_1", value: "0" }}
+        meta={{}}
+        exibeTooltipSobremesaAFDreCodae={false}
+      />,
+    );
+    const iconSuccess = document.querySelector(".fa-info.icone-info-success");
+    const iconWarning = document.querySelector(".fa-info.icone-info-warning");
+    expect(iconSuccess).not.toBeInTheDocument();
+    expect(iconWarning).not.toBeInTheDocument();
+  });
+});

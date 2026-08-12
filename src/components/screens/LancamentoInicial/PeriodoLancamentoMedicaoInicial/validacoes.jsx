@@ -3,6 +3,16 @@ import {
   escolaNaoPossuiAlunosRegulares,
 } from "src/helpers/utilities";
 import { ALUNOS_EMEBS } from "../constants";
+
+const observacaoVazia = (observacoesValue) => {
+  if (!observacoesValue) return true;
+  const texto = observacoesValue
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, "")
+    .trim();
+  return texto === "";
+};
+
 import { getDiasCalendario } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   ehGrupoRecreioNasFerias,
@@ -603,6 +613,7 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
   diasFrequenciaZerada,
   escolaEmebs,
   alunosTabSelecionada,
+  diasSobremesaAF,
 ) => {
   return (
     repeticaoSobremesaDoceComValorESemObservacao(
@@ -610,6 +621,13 @@ export const botaoAdicionarObrigatorioTabelaAlimentacao = (
       dia,
       categoria,
       diasSobremesaDoce,
+      location,
+    ) ||
+    sobremesaAFComValorMaiorQueZeroESemObservacao(
+      formValuesAtualizados,
+      dia,
+      categoria,
+      diasSobremesaAF,
       location,
     ) ||
     campoFrequenciaValor0ESemObservacao(
@@ -764,6 +782,7 @@ export const validarFormulario = (
   categoriasDeMedicao,
   dadosValoresInclusoesAutorizadasState,
   weekColumns,
+  diasSobremesaAF,
 ) => {
   let erro = false;
 
@@ -800,6 +819,23 @@ export const validarFormulario = (
         } é de sobremesa doce. Justifique o lançamento de repetição nas observações`;
       }
     });
+    if (diasSobremesaAF) {
+      diasSobremesaAF.forEach((dia) => {
+        if (
+          sobremesaAFComValorMaiorQueZeroESemObservacao(
+            values_,
+            dia.split("-")[2],
+            categoria,
+            diasSobremesaAF,
+            location,
+          )
+        ) {
+          erro = `Dia ${
+            dia.split("-")[2]
+          } é de sobremesa AF. Justifique o lançamento diferente de 0 (zero) nas observações`;
+        }
+      });
+    }
   });
 
   let arrayDiasInclusoesAutorizadasEmValues = [];
@@ -2196,6 +2232,132 @@ export const exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero = (
     Number(sobremesaValue) > 0 &&
     !observacoesValue
   );
+};
+
+export const ehDiaSobremesaAF = (diasSobremesaAF, column, location) => {
+  if (!diasSobremesaAF) return false;
+  return diasSobremesaAF.includes(
+    `${new Date(location.state.mesAnoSelecionado).getFullYear()}-${(
+      new Date(location.state.mesAnoSelecionado).getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}-${column.dia}`,
+  );
+};
+
+export const exibirTooltipSobremesaAFDeveSerZero = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  diasSobremesaAF,
+  location,
+) => {
+  if (!diasSobremesaAF) return false;
+  const value =
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    [null, undefined, ""].includes(value) &&
+    (row.name === "sobremesa" || row.name === "repeticao_sobremesa") &&
+    ehDiaSobremesaAF(diasSobremesaAF, column, location)
+  );
+};
+
+export const exibirTooltipSobremesaAFDiferenteZero = (
+  formValuesAtualizados,
+  row,
+  column,
+  categoria,
+  diasSobremesaAF,
+  location,
+) => {
+  if (!diasSobremesaAF) return false;
+  const value =
+    formValuesAtualizados[
+      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+  const observacoesValue =
+    formValuesAtualizados[
+      `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+    ];
+
+  return (
+    value &&
+    Number(value) > 0 &&
+    (row.name === "sobremesa" || row.name === "repeticao_sobremesa") &&
+    ehDiaSobremesaAF(diasSobremesaAF, column, location) &&
+    observacaoVazia(observacoesValue)
+  );
+};
+
+export const sobremesaAFComValorMaiorQueZeroESemObservacao = (
+  values,
+  dia,
+  categoria,
+  diasSobremesaAF,
+  location,
+) => {
+  if (!diasSobremesaAF) return false;
+  const sobremesaValue =
+    values[`sobremesa__dia_${dia}__categoria_${categoria.id}`];
+  const repeticaoValue =
+    values[`repeticao_sobremesa__dia_${dia}__categoria_${categoria.id}`];
+  const observacoesValue =
+    values[`observacoes__dia_${dia}__categoria_${categoria.id}`];
+
+  const diaAF = diasSobremesaAF.includes(
+    `${new Date(location.state.mesAnoSelecionado).getFullYear()}-${(
+      new Date(location.state.mesAnoSelecionado).getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}-${dia.toString().padStart(2, "0")}`,
+  );
+
+  return (
+    diaAF &&
+    ((sobremesaValue && Number(sobremesaValue) > 0) ||
+      (repeticaoValue && Number(repeticaoValue) > 0)) &&
+    observacaoVazia(observacoesValue)
+  );
+};
+
+export const existeSobremesaAFSemObservacaoNaSemana = (
+  values,
+  categoriasDeMedicao,
+  weekColumns,
+  diasSobremesaAF,
+  location,
+) => {
+  if (!diasSobremesaAF || !values || !weekColumns?.length) return false;
+
+  const categoriaAlimentacao = categoriasDeMedicao.find(
+    (categoria) => categoria.nome === "ALIMENTAÇÃO",
+  );
+  if (!categoriaAlimentacao) return false;
+
+  return weekColumns.some((column) => {
+    return (
+      exibirTooltipSobremesaAFDiferenteZero(
+        values,
+        { name: "sobremesa" },
+        column,
+        categoriaAlimentacao,
+        diasSobremesaAF,
+        location,
+      ) ||
+      exibirTooltipSobremesaAFDiferenteZero(
+        values,
+        { name: "repeticao_sobremesa" },
+        column,
+        categoriaAlimentacao,
+        diasSobremesaAF,
+        location,
+      )
+    );
+  });
 };
 
 export const exibirTooltipRepeticaoDiasSobremesaDoceDreCodae = (
