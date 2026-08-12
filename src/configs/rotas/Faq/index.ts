@@ -1,8 +1,8 @@
 import { usuarioComAcessoAoCadastroDeCategorias } from "src/helpers/utilities";
 import FaqPage from "src/pages/Faq/FaqPage";
-import PaginaEdicaoCategoria from "src/pages/Faq/CadastroCategoria/Edicao";
-import PaginaFormularioCategoria from "src/pages/Faq/CadastroCategoria/Formulario";
-import PaginaListagemCategorias from "src/pages/Faq/CadastroCategoria/Listagem";
+import PaginaListagemCategorias from "src/components/screens/Faq/CadastroCategoria/Listagem";
+import PaginaEdicaoCategoria from "src/components/screens/Faq/CadastroCategoria/Edicao";
+import PaginaCadastroCategoria from "src/components/screens/Faq/CadastroCategoria/Formulario";
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
 
@@ -19,7 +19,7 @@ export const rotasFaq: Array<RotaInterface> = [
   },
   {
     path: `/${constants.AJUDA}/${constants.CADASTRO_CATEGORIA}/${constants.CADASTRAR_CATEGORIA}`,
-    component: PaginaFormularioCategoria,
+    component: PaginaCadastroCategoria,
     tipoUsuario: usuarioComAcessoAoCadastroDeCategorias(),
   },
   {
