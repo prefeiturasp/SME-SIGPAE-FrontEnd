@@ -8,4 +8,5 @@ export { default as MenuLancamentoInicial } from "./MenuLancamentoInicial";
 export { default as MenuPesquisaDesenvolvimento } from "./MenuPesquisaDesenvolvimento";
 export { default as MenuLogistica } from "./MenuLogistica";
 export { default as MenuPreRecebimento } from "./MenuPreRecebimento";
+export { default as MenuPosRecebimento } from "./MenuPosRecebimento";
 export { default as MenuRecebimento } from "./MenuRecebimento";

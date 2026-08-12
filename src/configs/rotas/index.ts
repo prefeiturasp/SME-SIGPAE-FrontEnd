@@ -5,7 +5,6 @@ import FaqPage from "src/pages/Faq/FaqPage";
 import NotificacoesPage from "src/pages/Notificacoes/NotificacoesPage";
 import PainelInicialPage from "src/pages/PainelInicial/PainelInicialPage";
 import PerfilPage from "src/pages/Perfil/PerfilPage";
-import CategoryRegistrationPage from "src/pages/Faq/CategoryRegistrationPage";
 
 import { rotasAbastecimento } from "../rotas/abastecimento";
 import { rotasCadastros } from "../rotas/cadastros";
@@ -15,6 +14,7 @@ import { rotasGestaoDeAlimentacao } from "../rotas/gestaoDeAlimentacao";
 import { rotasGestaoDeProdutos } from "../rotas/gestaoDeProdutos";
 import { rotasMedicaoInicial } from "../rotas/medicaoInicial";
 import { rotasPreRecebimento } from "../rotas/preRecebimento";
+import { rotasPosRecebimento } from "../rotas/posRecebimento";
 import { rotasRecebimento } from "../rotas/recebimento";
 import { rotasSupervisao } from "../rotas/supervisao";
 
@@ -32,11 +32,6 @@ export let rotas = [
   {
     path: `/ajuda`,
     component: FaqPage,
-    tipoUsuario: constants.QUALQUER_USUARIO,
-  },
-  {
-    path: "/ajuda/cadastro-categoria",
-    component: CategoryRegistrationPage,
     tipoUsuario: constants.QUALQUER_USUARIO,
   },
   {
@@ -58,6 +53,7 @@ rotas = rotas.concat(rotasMedicaoInicial);
 rotas = rotas.concat(rotasSupervisao);
 rotas = rotas.concat(rotasAbastecimento);
 rotas = rotas.concat(rotasPreRecebimento);
+rotas = rotas.concat(rotasPosRecebimento);
 rotas = rotas.concat(rotasRecebimento);
 rotas = rotas.concat(rotasCadastros);
 rotas = rotas.concat(rotasConfiguracoes);

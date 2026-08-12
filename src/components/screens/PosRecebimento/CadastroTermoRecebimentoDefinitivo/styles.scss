@@ -1,0 +1,26 @@
+.card-cadastro-termo-recebimento-definitivo {
+  .bloco-cronograma {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+  }
+
+  .required-asterisk {
+    color: #b40c02;
+    padding-right: 5px;
+  }
+
+  .col-form-label {
+    color: #686868 !important;
+  }
+
+  // Unidade de medida do campo "Quantidade Total Recebida": margens para
+  // não ficar colada na borda e acompanhar o valor digitado.
+  .input-com-sufixo .suffix {
+    margin-left: 0.5rem;
+    padding-right: 0.75rem;
+    color: #686868;
+    white-space: nowrap;
+  }
+}
