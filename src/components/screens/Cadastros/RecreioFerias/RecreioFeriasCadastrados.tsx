@@ -51,7 +51,10 @@ export const RecreioFeriasCadastrados = () => {
         .includes(termo);
       const dataFimMatch = recreio.data_fim?.toLowerCase().includes(termo);
 
-      const quantidade = recreio.unidades_participantes?.length.toString();
+      const uuidsUnicas = new Set(
+        recreio.unidades_participantes?.map((u) => u.unidade_educacional?.uuid),
+      );
+      const quantidade = uuidsUnicas.size.toString();
       const quantidadeMatch = quantidade?.includes(termo);
 
       return tituloMatch || dataInicioMatch || dataFimMatch || quantidadeMatch;
@@ -104,7 +107,7 @@ export const RecreioFeriasCadastrados = () => {
             {recreioFeriasFiltrados.map((recreio) => {
               const periodoEditavel = isPeriodoEditavel(
                 recreio.data_inicio,
-                recreio.data_fim
+                recreio.data_fim,
               );
 
               return (
@@ -115,10 +118,19 @@ export const RecreioFeriasCadastrados = () => {
                       {recreio.data_inicio} até {recreio.data_fim}
                     </td>
                     <td className="ps-4">
-                      {recreio.unidades_participantes.length}{" "}
-                      {recreio.unidades_participantes.length === 1
-                        ? "UE"
-                        : "UEs"}
+                      {(() => {
+                        const uuidsUnicas = new Set(
+                          recreio.unidades_participantes.map(
+                            (u) => u.unidade_educacional?.uuid,
+                          ),
+                        );
+                        const count = uuidsUnicas.size;
+                        return (
+                          <>
+                            {count} {count === 1 ? "UE" : "UEs"}
+                          </>
+                        );
+                      })()}
                     </td>
                     <td>
                       {periodoEditavel ? (
