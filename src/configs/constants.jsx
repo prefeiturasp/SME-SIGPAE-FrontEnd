@@ -414,5 +414,10 @@ export const WEEK = [
   },
 ];
 
-export const USUARIO_PODE_ATUALIZAR_FOTO_DEV_HOM = "7924488";
-export const USUARIO_PODE_ATUALIZAR_FOTO_PROD = "marlon.amcom";
+export const USUARIO_PODE_ATUALIZAR_FOTO_DEV_HOM = "16161610191";
+export const USUARIO_PODE_ATUALIZAR_FOTO_PROD = "16161610191";
+
+export const AJUDA = "ajuda";
+export const CADASTRO_CATEGORIA = "cadastro-categoria";
+export const CADASTRAR_CATEGORIA = "cadastrar";
+export const EDITAR_CATEGORIA = "editar";
