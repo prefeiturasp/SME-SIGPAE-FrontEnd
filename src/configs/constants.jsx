@@ -333,6 +333,10 @@ export const AGUARDANDO_DILOG = "aguardando-dilog";
 export const ASSINADO_CODAE = "assinado-codae";
 
 export const RECEBIMENTO = "recebimento";
+export const POS_RECEBIMENTO = "pos-recebimento";
+export const TERMO_RECEBIMENTO_DEFINITIVO = "termo-recebimento-definitivo";
+export const CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO =
+  "cadastro-termo-recebimento-definitivo";
 export const QUESTOES_POR_PRODUTO = "questoes-por-produto";
 export const ATRIBUIR_QUESTOES_CONFERENCIA = "atribuir-questoes-conferencia";
 export const EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA =
@@ -412,3 +416,8 @@ export const WEEK = [
 
 export const USUARIO_PODE_ATUALIZAR_FOTO_DEV_HOM = "16161610191";
 export const USUARIO_PODE_ATUALIZAR_FOTO_PROD = "16161610191";
+
+export const AJUDA = "ajuda";
+export const CADASTRO_CATEGORIA = "cadastro-categoria";
+export const CADASTRAR_CATEGORIA = "cadastrar";
+export const EDITAR_CATEGORIA = "editar";

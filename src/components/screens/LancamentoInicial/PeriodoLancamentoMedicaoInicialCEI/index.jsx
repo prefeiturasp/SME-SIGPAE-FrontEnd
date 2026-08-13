@@ -2403,8 +2403,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   };
 
   const exibeBotaoAdicionarObservacao = (dia) => {
+    const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
+      (inclusao) => Number(inclusao.dia) === Number(dia),
+    );
+
     if (ehSolicitacoesAlimentacaoLocation || ehProgramasEProjetosLocation) {
-      return !validacaoSemana(dia);
+      return !validacaoSemana(dia) && temInclusaoAutorizadaNoDia;
     }
 
     if (ehRecreioNasFerias()) {
@@ -2416,9 +2420,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     }
 
-    const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
-      (inclusao) => Number(inclusao.dia) === Number(dia),
-    );
     return (
       !validacaoSemana(dia) &&
       (validacaoDiaLetivo(dia) || temInclusaoAutorizadaNoDia)

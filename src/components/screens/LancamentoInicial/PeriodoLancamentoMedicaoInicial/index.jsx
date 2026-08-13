@@ -3123,8 +3123,9 @@ export default () => {
     return (
       (!validacaoSemana(dia) &&
         (temDiaHabilitadoParaLancamentoETEC ||
-          validacaoDiaLetivo(dia) ||
-          temInclusaoAutorizadaNoDia ||
+          (ehProgramasEProjetos
+            ? temInclusaoAutorizadaNoDia
+            : validacaoDiaLetivo(dia) || temInclusaoAutorizadaNoDia) ||
           (temKitLancheAutorizadoNoDia &&
             ehCategoriaSolicitacoesDeAlimentacao) ||
           (temLancheEmergencialAutorizadoNoDia &&

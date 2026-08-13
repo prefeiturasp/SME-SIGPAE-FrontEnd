@@ -5,11 +5,11 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { createFaqCategory } from "src/services/faq.service";
-import CategoryRegistrationPage from "../CategoryRegistrationPage";
+import { criarCategoriaFaq } from "src/services/faq.service";
+import CadastroCategoria from "src/components/screens/Faq/CadastroCategoria/Cadastro";
 
 jest.mock("src/services/faq.service", () => ({
-  createFaqCategory: jest.fn(),
+  criarCategoriaFaq: jest.fn(),
 }));
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
@@ -38,6 +38,7 @@ jest.mock(
     ({ id, input, label, maxlength, placeholder, required }) => (
       <div>
         <label htmlFor={id}>{label}</label>
+
         <input
           id={id}
           name={input.name}
@@ -94,24 +95,20 @@ const MENSAGEM_CATEGORIA_DUPLICADA =
   "Não é possível cadastrar a categoria, pois já existe uma categoria " +
   "com esse nome. Altere o nome informado e tente novamente.";
 
-describe("CategoryRegistrationPage", () => {
+describe("CadastroCategoria", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it("renderiza os elementos da tela de cadastro", () => {
-    render(<CategoryRegistrationPage />);
-
-    expect(
-      screen.getByRole("heading", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeInTheDocument();
+    render(<CadastroCategoria />);
 
     expect(screen.getByLabelText("Nome da Categoria")).toBeInTheDocument();
 
     expect(
-      screen.getByRole("button", { name: "Cancelar" }),
+      screen.getByRole("button", {
+        name: "Cancelar",
+      }),
     ).toBeInTheDocument();
 
     expect(
@@ -122,7 +119,7 @@ describe("CategoryRegistrationPage", () => {
   });
 
   it("mantém o botão de cadastro desabilitado com o campo vazio", () => {
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     expect(
       screen.getByRole("button", {
@@ -134,7 +131,7 @@ describe("CategoryRegistrationPage", () => {
   it("habilita o botão após informar o nome da categoria", async () => {
     const user = userEvent.setup();
 
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     await user.type(
       screen.getByLabelText("Nome da Categoria"),
@@ -149,7 +146,7 @@ describe("CategoryRegistrationPage", () => {
   });
 
   it("não envia o formulário quando o nome contém somente espaços", () => {
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
     const form = input.closest("form");
@@ -162,20 +159,20 @@ describe("CategoryRegistrationPage", () => {
 
     fireEvent.submit(form);
 
-    expect(createFaqCategory).not.toHaveBeenCalled();
+    expect(criarCategoriaFaq).not.toHaveBeenCalled();
   });
 
   it("envia o nome sem espaços externos e limpa o campo após o sucesso", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockResolvedValue({
+    criarCategoriaFaq.mockResolvedValue({
       status: 201,
       data: {
         nome: "Alimentação Escolar",
       },
     });
 
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
 
@@ -188,7 +185,7 @@ describe("CategoryRegistrationPage", () => {
     );
 
     await waitFor(() => {
-      expect(createFaqCategory).toHaveBeenCalledWith({
+      expect(criarCategoriaFaq).toHaveBeenCalledWith({
         nome: "Alimentação Escolar",
       });
     });
@@ -203,7 +200,7 @@ describe("CategoryRegistrationPage", () => {
   it("limpa o campo ao clicar em Cancelar", async () => {
     const user = userEvent.setup();
 
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
 
@@ -216,13 +213,13 @@ describe("CategoryRegistrationPage", () => {
     );
 
     expect(input).toHaveValue("");
-    expect(createFaqCategory).not.toHaveBeenCalled();
+    expect(criarCategoriaFaq).not.toHaveBeenCalled();
   });
 
   it("exibe o modal ao tentar cadastrar uma categoria duplicada", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockRejectedValue({
+    criarCategoriaFaq.mockRejectedValue({
       response: {
         status: 400,
         data: {
@@ -231,7 +228,7 @@ describe("CategoryRegistrationPage", () => {
       },
     });
 
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
 
@@ -258,7 +255,7 @@ describe("CategoryRegistrationPage", () => {
   it("fecha o modal de categoria duplicada ao clicar em OK", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockRejectedValue({
+    criarCategoriaFaq.mockRejectedValue({
       response: {
         status: 400,
         data: {
@@ -267,7 +264,7 @@ describe("CategoryRegistrationPage", () => {
       },
     });
 
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     await user.type(
       screen.getByLabelText("Nome da Categoria"),
@@ -300,7 +297,7 @@ describe("CategoryRegistrationPage", () => {
   it("exibe toast para erros diferentes de categoria duplicada", async () => {
     const user = userEvent.setup();
 
-    createFaqCategory.mockRejectedValue({
+    criarCategoriaFaq.mockRejectedValue({
       response: {
         status: 500,
         data: {
@@ -309,7 +306,7 @@ describe("CategoryRegistrationPage", () => {
       },
     });
 
-    render(<CategoryRegistrationPage />);
+    render(<CadastroCategoria />);
 
     await user.type(
       screen.getByLabelText("Nome da Categoria"),

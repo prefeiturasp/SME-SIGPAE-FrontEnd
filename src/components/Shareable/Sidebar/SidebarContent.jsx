@@ -42,6 +42,7 @@ import {
   usuarioEscolaEhGestaoDireta,
   usuarioEscolaEhGestaoParceira,
   usuarioEhCronograma,
+  usuarioEhCronogramaOuCodae,
   usuarioEhDilogAbastecimento,
 } from "src/helpers/utilities";
 
@@ -53,6 +54,7 @@ import {
   MenuGestaoDeProduto,
   MenuLancamentoInicial,
   MenuLogistica,
+  MenuPosRecebimento,
   MenuPreRecebimento,
   MenuRecebimento,
   MenuRelatorios,
@@ -213,6 +215,8 @@ export const SidebarContent = () => {
     usuarioEhCodaeDilog() ||
     usuarioEhDilogDiretoria();
 
+  const exibirMenuPosRecebimento = usuarioEhCronogramaOuCodae();
+
   const exibirMenuSupervisao =
     (usuarioEhNutricionistaSupervisao() ||
       usuarioEhCODAEGestaoAlimentacao() ||
@@ -247,6 +251,7 @@ export const SidebarContent = () => {
     exibirMenuLogistica && <MenuLogistica key={8} {..._props} />,
     exibirMenuPreRecebimento && <MenuPreRecebimento key={9} {..._props} />,
     exibirMenuRecebimento && <MenuRecebimento key={10} {..._props} />,
+    exibirMenuPosRecebimento && <MenuPosRecebimento key={12} {..._props} />,
     exibirConfiguracoes && <MenuConfiguracoes key={11} {..._props} />,
   ];
 };

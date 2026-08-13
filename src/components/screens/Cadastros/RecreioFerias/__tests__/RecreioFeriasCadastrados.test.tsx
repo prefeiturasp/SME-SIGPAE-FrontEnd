@@ -64,7 +64,7 @@ const renderComponent = () =>
         >
           <RecreioFeriasCadastrados />
         </MeusDadosContext.Provider>
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 
@@ -79,11 +79,11 @@ describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
     (loteService.getLotesAsync as jest.Mock).mockImplementation(
       (setter: any) => {
         setter(mockLotes);
-      }
+      },
     );
 
     (escolaService.getEscolasTercTotal as jest.Mock).mockResolvedValue(
-      mockEscolas
+      mockEscolas,
     );
 
     (
@@ -95,7 +95,7 @@ describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
     await renderComponent();
 
     expect(
-      screen.getByText("Título do Recreio Cadastrado")
+      screen.getByText("Título do Recreio Cadastrado"),
     ).toBeInTheDocument();
     expect(screen.getByText("Período de Realização")).toBeInTheDocument();
     expect(screen.getByText("Qtde. de Unidades")).toBeInTheDocument();
@@ -109,7 +109,10 @@ describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
         titulo: "Recreio A",
         data_inicio: "01/01/2025",
         data_fim: "05/01/2025",
-        unidades_participantes: [{ uuid: "u1" }, { uuid: "u2" }],
+        unidades_participantes: [
+          { unidade_educacional: { uuid: "escola-1" } },
+          { unidade_educacional: { uuid: "escola-2" } },
+        ],
       },
       {
         id: "r2",
@@ -117,7 +120,7 @@ describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
         titulo: "Recreio B",
         data_inicio: "10/01/2025",
         data_fim: "12/01/2025",
-        unidades_participantes: [{ uuid: "u3" }],
+        unidades_participantes: [{ unidade_educacional: { uuid: "escola-3" } }],
       },
     ];
 
@@ -147,7 +150,7 @@ describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
         titulo: "Editavel",
         data_inicio: "01/01/2026",
         data_fim: "02/01/2026",
-        unidades_participantes: [{}],
+        unidades_participantes: [{ unidade_educacional: { uuid: "escola-1" } }],
       },
       {
         id: "r2",
@@ -155,7 +158,7 @@ describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
         titulo: "Nao Editavel",
         data_inicio: "01/01/2020",
         data_fim: "02/01/2020",
-        unidades_participantes: [{}],
+        unidades_participantes: [{ unidade_educacional: { uuid: "escola-2" } }],
       },
     ];
 
@@ -175,7 +178,7 @@ describe("CadastroRecreioFerias - Fluxo de Interação do Usuário", () => {
 
     const links = screen.getAllByRole("link", { hidden: true });
     expect(
-      links.some((l) => l.getAttribute("href")?.includes("uuid=uuid-edit"))
+      links.some((l) => l.getAttribute("href")?.includes("uuid=uuid-edit")),
     ).toBe(true);
 
     const naoEditavelRow = screen.getByText("Nao Editavel").closest("tr");
