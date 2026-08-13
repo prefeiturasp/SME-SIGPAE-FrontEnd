@@ -14,7 +14,6 @@ import { IconeDocumentosRecebimento } from "src/components/Shareable/Icones/Icon
 import { IconeAlteracoesCronograma } from "src/components/Shareable/Icones/IconeAlteracoesCronograma";
 import { IconeLayoutEmbalagem } from "src/components/Shareable/Icones/IconeLayoutEmbalagem";
 import { IconeCalendarioCronograma } from "src/components/Shareable/Icones/iconeCalendarioCronograma";
-import { IconeCalendarioPontoaPonto } from "src/components/Shareable/Icones/IconeCalendarioPontoaPonto";
 import { IconeFichaDeRecebimento } from "src/components/Shareable/Icones/IconeFichaDeRecebimento";
 import { IconeDocumentoDeRecebimento } from "src/components/Shareable/Icones/IconeDocumentoDeRecebimento";
 import { IconeVerificarAlteracoesDeCronograma } from "src/components/Shareable/Icones/IconeVerificarAlteracoesDeCronograma";
@@ -187,7 +186,7 @@ const PainelInicial = () => {
               )
             }
           >
-            <IconeCalendarioPontoaPonto />
+            <IconeCalendarioPontoAPonto />
           </CardLogo>
         </Col>
       )}
