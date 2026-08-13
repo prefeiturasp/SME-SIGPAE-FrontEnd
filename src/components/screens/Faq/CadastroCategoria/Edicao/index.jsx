@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import InputText from "src/components/Shareable/Input/InputText";
-import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
-import { HOME } from "src/constants/config";
 import {
   atualizarCategoriaFaq,
   buscarCategoriaFaq,
@@ -22,10 +19,7 @@ import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import HTTP_STATUS from "http-status-codes";
 import "./style.scss";
 
-const CAMINHO_FAQ = "/ajuda";
-const CAMINHO_LISTAGEM_CATEGORIAS = "/ajuda/cadastro-categoria";
-
-const PaginaEdicaoCategoria = () => {
+const EdicaoCategoria = () => {
   const { uuid } = useParams();
   const [exibirModalCategoriaDuplicada, setExibirModalCategoriaDuplicada] =
     useState(false);
@@ -71,6 +65,7 @@ const PaginaEdicaoCategoria = () => {
       const mensagemErro = erro.response?.data?.nome?.[0];
       const categoriaDuplicada =
         erro.response?.status === HTTP_STATUS.BAD_REQUEST;
+
       if (categoriaDuplicada) {
         setMensagemCategoriaDuplicada(mensagemErro);
         setExibirModalCategoriaDuplicada(true);
@@ -103,30 +98,7 @@ const PaginaEdicaoCategoria = () => {
   };
 
   return (
-    <PageNoSidebar
-      titulo="Editar Categoria"
-      botaoVoltar
-      voltarPara={CAMINHO_LISTAGEM_CATEGORIAS}
-      breadcrumb={
-        <Breadcrumb
-          home={HOME}
-          anteriores={[
-            {
-              href: CAMINHO_FAQ,
-              titulo: "Ajuda",
-            },
-            {
-              href: CAMINHO_LISTAGEM_CATEGORIAS,
-              titulo: "Cadastro de Categoria",
-            },
-          ]}
-          atual={{
-            href: "#",
-            titulo: "Editar Categoria",
-          }}
-        />
-      }
-    >
+    <>
       <div className="pagina-edicao-categoria">
         {carregando ? (
           <div className="carregamento-edicao-categoria">
@@ -174,8 +146,8 @@ const PaginaEdicaoCategoria = () => {
           unicoBotao
         />
       )}
-    </PageNoSidebar>
+    </>
   );
 };
 
-export default PaginaEdicaoCategoria;
+export default EdicaoCategoria;

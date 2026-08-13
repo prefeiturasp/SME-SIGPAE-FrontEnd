@@ -6,7 +6,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { criarCategoriaFaq } from "src/services/faq.service";
-import PaginaFormularioCategoria from "../CadastroCategoria/Formulario";
+import CadastroCategoria from "src/components/screens/Faq/CadastroCategoria/Cadastro";
 
 jest.mock("src/services/faq.service", () => ({
   criarCategoriaFaq: jest.fn(),
@@ -95,19 +95,13 @@ const MENSAGEM_CATEGORIA_DUPLICADA =
   "Não é possível cadastrar a categoria, pois já existe uma categoria " +
   "com esse nome. Altere o nome informado e tente novamente.";
 
-describe("PaginaFormularioCategoria", () => {
+describe("CadastroCategoria", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it("renderiza os elementos da tela de cadastro", () => {
-    render(<PaginaFormularioCategoria />);
-
-    expect(
-      screen.getByRole("heading", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeInTheDocument();
+    render(<CadastroCategoria />);
 
     expect(screen.getByLabelText("Nome da Categoria")).toBeInTheDocument();
 
@@ -125,7 +119,7 @@ describe("PaginaFormularioCategoria", () => {
   });
 
   it("mantém o botão de cadastro desabilitado com o campo vazio", () => {
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     expect(
       screen.getByRole("button", {
@@ -137,7 +131,7 @@ describe("PaginaFormularioCategoria", () => {
   it("habilita o botão após informar o nome da categoria", async () => {
     const user = userEvent.setup();
 
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     await user.type(
       screen.getByLabelText("Nome da Categoria"),
@@ -152,7 +146,7 @@ describe("PaginaFormularioCategoria", () => {
   });
 
   it("não envia o formulário quando o nome contém somente espaços", () => {
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
     const form = input.closest("form");
@@ -178,7 +172,7 @@ describe("PaginaFormularioCategoria", () => {
       },
     });
 
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
 
@@ -206,7 +200,7 @@ describe("PaginaFormularioCategoria", () => {
   it("limpa o campo ao clicar em Cancelar", async () => {
     const user = userEvent.setup();
 
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
 
@@ -234,7 +228,7 @@ describe("PaginaFormularioCategoria", () => {
       },
     });
 
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     const input = screen.getByLabelText("Nome da Categoria");
 
@@ -270,7 +264,7 @@ describe("PaginaFormularioCategoria", () => {
       },
     });
 
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     await user.type(
       screen.getByLabelText("Nome da Categoria"),
@@ -312,7 +306,7 @@ describe("PaginaFormularioCategoria", () => {
       },
     });
 
-    render(<PaginaFormularioCategoria />);
+    render(<CadastroCategoria />);
 
     await user.type(
       screen.getByLabelText("Nome da Categoria"),

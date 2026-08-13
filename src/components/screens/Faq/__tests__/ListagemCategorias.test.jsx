@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import PaginaListagemCategorias from "../CadastroCategoria/Listagem";
+import ListagemCategorias from "../CadastroCategoria/Listagem";
 import {
   buscarCategoriasFaq,
   excluirCategoriaFaq,
@@ -119,24 +119,8 @@ describe("Página de listagem de categorias", () => {
     buscarCategoriasFaq.mockResolvedValue(respostaCategorias);
   });
 
-  it("deve acessar o cadastro de uma nova categoria", async () => {
-    render(<PaginaListagemCategorias />);
-
-    await screen.findByText("Dieta Especial");
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Cadastrar Categoria",
-      }),
-    );
-
-    expect(mockNavigate).toHaveBeenCalledWith(
-      "/ajuda/cadastro-categoria/cadastrar",
-    );
-  });
-
   it("deve acessar a edição da categoria selecionada", async () => {
-    render(<PaginaListagemCategorias />);
+    render(<ListagemCategorias />);
 
     fireEvent.click(
       await screen.findByRole("button", {
@@ -150,7 +134,7 @@ describe("Página de listagem de categorias", () => {
   });
 
   it("deve cancelar a exclusão da categoria", async () => {
-    render(<PaginaListagemCategorias />);
+    render(<ListagemCategorias />);
 
     fireEvent.click(
       await screen.findByRole("button", {
@@ -185,7 +169,7 @@ describe("Página de listagem de categorias", () => {
       status: 204,
     });
 
-    render(<PaginaListagemCategorias />);
+    render(<ListagemCategorias />);
 
     fireEvent.click(
       await screen.findByRole("button", {
@@ -223,7 +207,7 @@ describe("Página de listagem de categorias", () => {
       new Error("Erro ao excluir categoria"),
     );
 
-    render(<PaginaListagemCategorias />);
+    render(<ListagemCategorias />);
 
     fireEvent.click(
       await screen.findByRole("button", {
@@ -254,7 +238,7 @@ describe("Página de listagem de categorias", () => {
       },
     });
 
-    render(<PaginaListagemCategorias />);
+    render(<ListagemCategorias />);
 
     fireEvent.click(
       await screen.findByRole("button", {
@@ -300,7 +284,7 @@ describe("Página de listagem de categorias", () => {
       status: 204,
     });
 
-    render(<PaginaListagemCategorias />);
+    render(<ListagemCategorias />);
 
     fireEvent.click(
       await screen.findByRole("button", {
@@ -359,7 +343,7 @@ describe("Página de listagem de categorias", () => {
         }),
     );
 
-    render(<PaginaListagemCategorias />);
+    render(<ListagemCategorias />);
 
     fireEvent.click(
       await screen.findByRole("button", {

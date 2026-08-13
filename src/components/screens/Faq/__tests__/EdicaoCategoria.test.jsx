@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import PaginaEdicaoCategoria from "../CadastroCategoria/Edicao";
+import EdicaoCategoria from "../CadastroCategoria/Edicao";
 import {
   atualizarCategoriaFaq,
   buscarCategoriaFaq,
@@ -108,7 +108,7 @@ describe("Página de edição de categoria", () => {
       new Error("Erro ao carregar categoria"),
     );
 
-    render(<PaginaEdicaoCategoria />);
+    render(<EdicaoCategoria />);
 
     await waitFor(() => {
       expect(toastError).toHaveBeenCalledWith(
@@ -120,7 +120,7 @@ describe("Página de edição de categoria", () => {
   });
 
   it("deve manter salvar alterações desabilitado enquanto o nome não for alterado", async () => {
-    render(<PaginaEdicaoCategoria />);
+    render(<EdicaoCategoria />);
 
     await screen.findByDisplayValue("Dieta Especial");
 
@@ -136,7 +136,7 @@ describe("Página de edição de categoria", () => {
   });
 
   it("deve restaurar o nome original ao cancelar a edição", async () => {
-    render(<PaginaEdicaoCategoria />);
+    render(<EdicaoCategoria />);
 
     const campoNome = await screen.findByRole("textbox", {
       name: "Nome da Categoria",
@@ -174,7 +174,7 @@ describe("Página de edição de categoria", () => {
       },
     });
 
-    render(<PaginaEdicaoCategoria />);
+    render(<EdicaoCategoria />);
 
     const campoNome = await screen.findByRole("textbox", {
       name: "Nome da Categoria",
@@ -223,7 +223,7 @@ describe("Página de edição de categoria", () => {
       },
     });
 
-    render(<PaginaEdicaoCategoria />);
+    render(<EdicaoCategoria />);
 
     const campoNome = await screen.findByRole("textbox", {
       name: "Nome da Categoria",
