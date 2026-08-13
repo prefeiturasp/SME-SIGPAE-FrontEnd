@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockCategoriasMedicao } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/categoriasMedicao";
@@ -32,9 +32,12 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
     mock
       .onGet("/medicao-inicial/dias-sobremesa-doce/lista-dias/")
       .reply(200, []);
-    mock
-      .onGet("/escola-solicitacoes/inclusoes-autorizadas/")
-      .reply(200, mockInclusoesAutorizadasCEUGESTAO_ProgramasProjetos);
+    mock.onGet("/escola-solicitacoes/inclusoes-autorizadas/").reply(200, {
+      results:
+        mockInclusoesAutorizadasCEUGESTAO_ProgramasProjetos.results.filter(
+          (inclusao) => inclusao.dia !== "29",
+        ),
+    });
     mock
       .onGet("/log-quantidade-dietas-autorizadas/")
       .reply(200, mockLogQuantidadeDietasAutorizadasCEUGESTAO_TARDE);
@@ -124,5 +127,17 @@ describe("Teste <PeriodoLancamentoMedicaoInicial> - Programas e Projetos - Usuá
 
   it("renderiza label `ALIMENTAÇÃO`", async () => {
     expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+  });
+
+  it("deve exibir o botão 'adicionar observação' somente se existir inclusão", async () => {
+    const semana = screen.getByText("Semana 5");
+    fireEvent.click(semana);
+
+    expect(
+      screen.getByTestId(`botao-observacao__dia_28__categoria_1`),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByTestId(`botao-observacao__dia_29__categoria_1`),
+    ).not.toBeInTheDocument();
   });
 });

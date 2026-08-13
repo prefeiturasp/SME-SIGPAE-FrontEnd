@@ -564,34 +564,7 @@ export const desabilitarField = (
       );
     }
   }
-  if (ehProgramasEProjetos || location.state?.periodoEspecifico) {
-    return (
-      validacaoSemana(dia) ||
-      rowName === "numero_de_alunos" ||
-      rowName === "dietas_autorizadas" ||
-      (nomeCategoria === "ALIMENTAÇÃO" &&
-        !values[`numero_de_alunos__dia_${dia}__categoria_${categoria}`]) ||
-      (nomeCategoria.includes("DIETA ESPECIAL") &&
-        !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]) ||
-      Number(
-        values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
-      ) === 0 ||
-      !values[
-        `numero_de_alunos__dia_${dia}__categoria_${
-          categoriasDeMedicao.find((cat) => cat.nome === "ALIMENTAÇÃO").id
-        }`
-      ] ||
-      (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd") &&
-        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)) ||
-      validaAlimentacoesEDietasEscolaSemAlunosRegulares(
-        inclusoesAutorizadas,
-        rowName,
-        dia,
-        nomeCategoria,
-      )
-    );
-  }
+
   if (ehProgramasEProjetos && dadosValoresInclusoesAutorizadasState) {
     if (feriadosNoMes.includes(dia)) {
       return true;
@@ -629,6 +602,35 @@ export const desabilitarField = (
         return false;
       }
     }
+  }
+
+  if (ehProgramasEProjetos || location.state?.periodoEspecifico) {
+    return (
+      validacaoSemana(dia) ||
+      rowName === "numero_de_alunos" ||
+      rowName === "dietas_autorizadas" ||
+      (nomeCategoria === "ALIMENTAÇÃO" &&
+        !values[`numero_de_alunos__dia_${dia}__categoria_${categoria}`]) ||
+      (nomeCategoria.includes("DIETA ESPECIAL") &&
+        !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]) ||
+      Number(
+        values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
+      ) === 0 ||
+      !values[
+        `numero_de_alunos__dia_${dia}__categoria_${
+          categoriasDeMedicao.find((cat) => cat.nome === "ALIMENTAÇÃO").id
+        }`
+      ] ||
+      (mesConsiderado === mesAtual &&
+        Number(dia) >= format(mesAnoDefault, "dd") &&
+        !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)) ||
+      validaAlimentacoesEDietasEscolaSemAlunosRegulares(
+        inclusoesAutorizadas,
+        rowName,
+        dia,
+        nomeCategoria,
+      )
+    );
   }
 
   if (grupoRecreio) {
