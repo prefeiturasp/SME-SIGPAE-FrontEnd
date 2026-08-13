@@ -30,6 +30,16 @@ jest.mock("src/components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
+jest.mock(
+  "src/components/screens/Faq/CadastroCategoria/components/BotaoCadastrarCategoria",
+  () => ({
+    __esModule: true,
+    default: () => (
+      <div data-testid="botao-cadastrar-categoria">Cadastrar Categoria</div>
+    ),
+  }),
+);
+
 jest.mock("src/components/screens/Faq/CadastroCategoria/Listagem", () => ({
   __esModule: true,
   default: () => (
@@ -62,6 +72,8 @@ describe("ListagemCategoriasPage", () => {
     expect(screen.getByTestId("atual-titulo")).toHaveTextContent(
       "Cadastro de Categoria",
     );
+
+    expect(screen.getByTestId("botao-cadastrar-categoria")).toBeInTheDocument();
 
     expect(
       screen.getByTestId("pagina-listagem-categorias"),

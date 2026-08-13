@@ -36,10 +36,10 @@ jest.mock("src/components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("src/components/screens/Faq/CadastroCategoria/Formulario", () => ({
+jest.mock("src/components/screens/Faq/CadastroCategoria/Cadastro", () => ({
   __esModule: true,
   default: () => (
-    <div data-testid="pagina-formulario-categoria">Formulário de Categoria</div>
+    <div data-testid="cadastro-categoria">Cadastro de Categoria</div>
   ),
 }));
 
@@ -79,8 +79,6 @@ describe("CadastroCategoriaPage", () => {
       "Cadastrar Categoria",
     );
 
-    expect(
-      screen.getByTestId("pagina-formulario-categoria"),
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("cadastro-categoria")).toBeInTheDocument();
   });
 });
