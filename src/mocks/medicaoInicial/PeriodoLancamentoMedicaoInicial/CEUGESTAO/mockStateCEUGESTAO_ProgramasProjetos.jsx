@@ -1,9 +1,9 @@
 export const mockStateCEUGESTAO_ProgramasProjetos = {
   frequenciasDietasEscolaSemAlunoRegular: [],
-  grupo: undefined,
+  grupo: "Programas e Projetos",
   justificativa_periodo: null,
   mesAnoSelecionado: new Date("2024-11-01T00:00:00-03:00"),
-  periodo: "Programas e Projetos",
+  periodo: undefined,
   periodoEspecifico: null,
   periodosInclusaoContinua: undefined,
   status_periodo: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
