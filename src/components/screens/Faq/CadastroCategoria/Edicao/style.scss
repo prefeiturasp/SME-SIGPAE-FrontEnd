@@ -2,7 +2,7 @@
   .formulario-edicao-categoria {
     display: flex;
     flex-direction: column;
-    min-height: 190px;
+    min-height: 430px;
     width: 100%;
 
     .campo-edicao-categoria {
@@ -16,7 +16,6 @@
       gap: 1rem;
       justify-content: flex-end;
       margin-top: auto;
-      padding-top: 3rem;
     }
   }
 
