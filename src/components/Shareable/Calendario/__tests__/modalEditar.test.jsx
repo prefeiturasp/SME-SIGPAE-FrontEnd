@@ -145,7 +145,7 @@ describe("Teste componete ModalEditar", () => {
     expect(screen.queryByText("Sob. AF - CCA")).not.toBeInTheDocument();
     expect(screen.queryByText(/Sobremesa Doce ou/i)).not.toBeInTheDocument();
     expect(
-      screen.getByText(/alterar o dia de sobremesa af/i),
+      screen.getByText(/alterar o dia de sobremesa AF/i),
     ).toBeInTheDocument();
   });
 

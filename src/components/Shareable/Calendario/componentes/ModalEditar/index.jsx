@@ -20,7 +20,8 @@ export const ModalEditar = ({ ...props }) => {
 
   const tipoDisplay = event.tipo?.nome || nomeObjetoNoCalendario;
   const tipoMinusculo =
-    event.tipo?.nome?.toLowerCase() || nomeObjetoNoCalendarioMinusculo;
+    event.tipo?.nome?.toLowerCase()?.replace("sobremesa af", "sobremesa AF") ||
+    nomeObjetoNoCalendarioMinusculo;
   const unidadeDisplay = event.tipo_unidade?.iniciais || event.title;
 
   return (
