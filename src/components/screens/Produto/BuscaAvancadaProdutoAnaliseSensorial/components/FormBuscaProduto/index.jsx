@@ -30,17 +30,21 @@ function reducer(state, { type: actionType, payload }) {
   switch (actionType) {
     case "popularDados":
       return { ...state, dados: payload };
+
     case "atualizarFiltro": {
       if (!payload.searchText.length) {
         return { ...state, [payload.filtro]: [] };
       }
+
       const reg = new RegExp(payload.searchText, "i");
       const filtrado = state.dados[payload.filtro].filter((el) => reg.test(el));
+
       return { ...state, [payload.filtro]: filtrado };
     }
 
     case "resetar":
       return { ...initialState, dados: state.dados };
+
     default:
       // eslint-disable-next-line no-console
       console.error("Invalid action type: ", actionType);
@@ -65,12 +69,13 @@ const FormBuscaProduto = ({ onSubmit }) => {
             marcas: marcas.data.results.map((el) => el.nome),
             fabricantes: fabricantes.data.results.map((el) => el.nome),
             terceirizadas: terceirizadas.data.results.map(
-              (el) => el.nome_fantasia
+              (el) => el.nome_fantasia,
             ),
           },
         });
       });
     }
+
     fetchData();
   }, []);
 
@@ -92,6 +97,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
           <div className="form-row">
             <div className="col-md-6 col-xl-6">
               <Field
+                dataTestId="nome-produto"
                 component={AutoCompleteField}
                 dataSource={state.produtos}
                 label="Nome do Produto"
@@ -103,6 +109,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
             </div>
             <div className="col-md-6 col-xl-6">
               <Field
+                dataTestId="nome-terceirizada"
                 component={AutoCompleteField}
                 dataSource={state.terceirizadas}
                 label="Nome da empresa solicitante (Terceirizada)"
@@ -115,6 +122,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
           <div className="form-row">
             <div className="col-md-4 col-xl-4">
               <Field
+                dataTestId="nome-marca"
                 component={AutoCompleteField}
                 dataSource={state.marcas}
                 className="input-busca-produto"
@@ -126,6 +134,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
             </div>
             <div className="col-md-4 col-xl-4">
               <Field
+                dataTestId="nome-fabricante"
                 component={AutoCompleteField}
                 dataSource={state.fabricantes}
                 label="Fabricante do Produto"
@@ -142,6 +151,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
               <div className="row">
                 <div className="col mt-1">
                   <Field
+                    dataTestId="data-inicial"
                     component={InputComData}
                     name="data_analise_inicial"
                     className="data-inicial"
@@ -157,6 +167,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
                 </div>
                 <div className="col mt-1">
                   <Field
+                    dataTestId="data-final"
                     component={InputComData}
                     name="data_analise_final"
                     labelClassName="datepicker-fixed-padding"
@@ -175,6 +186,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
           </div>
           <div className="mt-4 mb-4">
             <Botao
+              dataTestId="botao-consultar"
               texto="Consultar"
               type={BUTTON_TYPE.SUBMIT}
               style={BUTTON_STYLE.GREEN}
@@ -182,6 +194,7 @@ const FormBuscaProduto = ({ onSubmit }) => {
             />
 
             <Botao
+              dataTestId="botao-limpar-filtros"
               texto="Limpar Filtros"
               type={BUTTON_TYPE.BUTTON}
               style={BUTTON_STYLE.GREEN_OUTLINE}
