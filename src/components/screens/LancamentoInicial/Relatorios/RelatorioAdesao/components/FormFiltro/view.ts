@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useRef, useState } from "react";
 
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 
@@ -54,6 +54,7 @@ export default ({ form, onChange }: Args) => {
   const [gruposUnidades, setGruposUnidades] = useState<
     Array<GrupoUnidadeEscolar>
   >([]);
+  const excluirTipoUnidadeUuidsRef = useRef<Array<string>>([]);
   const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
   const [periodosEscolares, setPeriodosEscolares] = useState([]);
   const [tiposAlimentacao, setTiposAlimentacao] = useState([]);
@@ -120,11 +121,7 @@ export default ({ form, onChange }: Args) => {
         const excluirTipoUnidadeUuids = grupo1
           ? grupo1.tipos_unidades.map((tipo) => tipo.uuid)
           : [];
-
-        const responseEscolas = await getEscolasParaFiltros({
-          excluir_tipo_unidade__uuid: excluirTipoUnidadeUuids,
-          tipo_gestao__nome: "TERC TOTAL",
-        });
+        excluirTipoUnidadeUuidsRef.current = excluirTipoUnidadeUuids;
 
         const gruposUnidades = responseGruposUnidades.data.results.filter(
           (grupo) => grupo.nome !== "Grupo 1",
@@ -134,24 +131,7 @@ export default ({ form, onChange }: Args) => {
           formataTiposUnidadesTreeData(gruposUnidades, null),
         );
 
-        let escolas = responseEscolas.data.filter(
-          (escola) =>
-            ![
-              "CEI",
-              "CEI DIRET",
-              "CEI INDIR",
-              "CEI CEU",
-              "CCI",
-              "CCI/CIPS",
-              "CEU CEI",
-              "CEU CEMEI",
-              "CEMEI",
-            ].includes(escola.tipo_unidade.iniciais),
-        );
-        setUnidadesEducacionais(escolas);
-        setUnidadesEducacionaisOpcoes(
-          formataUnidadesEducacionaisOpcoes(escolas),
-        );
+        await buscaEscolas([], []);
 
         const periodos = formataPeriodosEscolaresOpcoes(
           usuarioEhEscolaTerceirizadaQualquerPerfil() && uuidInstituicao
@@ -181,9 +161,7 @@ export default ({ form, onChange }: Args) => {
                 );
               }
               setLotesOpcoes(formatarOpcoesLote(lotes_));
-              setUnidadesEducacionaisOpcoes(
-                formataUnidadesEducacionaisOpcoes(escolas),
-              );
+              buscaEscolas([], []);
               setPeriodosEscolaresOpcoes(periodos);
               setTiposAlimentacaoOpcoes(tipos);
               setTiposUnidadesTreeData(
@@ -315,6 +293,40 @@ export default ({ form, onChange }: Args) => {
     });
   };
 
+  const buscaEscolas = async (
+    lotesSelecionados: Array<string>,
+    tiposUnidadesSelecionadas: Array<string>,
+  ) => {
+    setBuscandoOpcoes((prev) => ({
+      ...prev,
+      buscandoUnidadesEducacionais: true,
+    }));
+
+    const params: Record<string, string | Array<string>> = {
+      excluir_tipo_unidade__uuid: excluirTipoUnidadeUuidsRef.current,
+      tipo_gestao__nome: "TERC TOTAL",
+    };
+    if (lotesSelecionados?.length) {
+      params["lote__uuid"] = lotesSelecionados;
+    }
+    if (tiposUnidadesSelecionadas?.length) {
+      params["tipo_unidade__uuid"] = tiposUnidadesSelecionadas;
+    }
+
+    const response = await getEscolasParaFiltros(params);
+
+    const escolas = response.data;
+
+    setUnidadesEducacionais(escolas);
+    setUnidadesEducacionaisOpcoes(formataUnidadesEducacionaisOpcoes(escolas));
+    setBuscandoOpcoes((prev) => ({
+      ...prev,
+      buscandoUnidadesEducacionais: false,
+    }));
+
+    return escolas;
+  };
+
   const onChangeMesAno = (e: ChangeEvent<HTMLInputElement>, form: FormApi) => {
     const mesAno = e.target.value;
 
@@ -355,6 +367,8 @@ export default ({ form, onChange }: Args) => {
     onChange({
       tipos_unidades: iniciais,
     });
+
+    buscaEscolas(form.getState().values.lotes || [], tiposUnidadesSelecionadas);
   };
 
   const onChangeLotes = (lotes: Array<string>) => {
@@ -369,19 +383,7 @@ export default ({ form, onChange }: Args) => {
       unidade_educacional: undefined,
     });
 
-    let escolas = unidadesEducacionais;
-
-    if (lotes.length === 0) {
-      setUnidadesEducacionaisOpcoes(formataUnidadesEducacionaisOpcoes(escolas));
-    } else {
-      setUnidadesEducacionaisOpcoes(
-        formataUnidadesEducacionaisOpcoes(
-          escolas.filter(
-            (escola) => escola.lote && lotes.includes(escola.lote.uuid),
-          ),
-        ),
-      );
-    }
+    buscaEscolas(lotes, form.getState().values.tipos_unidades || []);
   };
 
   const onChangeUnidadeEducacional = async (escolaLabel: string) => {
