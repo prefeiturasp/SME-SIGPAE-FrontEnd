@@ -117,6 +117,16 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
     expect(screen.queryAllByText("Relatório de Adesão")).toHaveLength(2);
   });
 
+  it("pré-seleciona DRE/Lote e Tipo de Unidade da escola", async () => {
+    await waitFor(() => {
+      expect(screen.getByText("IP - 3567-3")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("EMEF")).toBeInTheDocument();
+    });
+  });
+
   it("Filtra por mês de referência e período de lançamento", async () => {
     expect(screen.getByText("Filtrar Resultados")).toBeInTheDocument();
 
