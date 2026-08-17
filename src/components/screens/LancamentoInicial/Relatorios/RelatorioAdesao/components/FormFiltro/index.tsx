@@ -1,4 +1,4 @@
-import { Skeleton, TreeSelect } from "antd";
+import { Skeleton, Spin, TreeSelect } from "antd";
 import { FormApi } from "final-form";
 import { Field } from "react-final-form";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
@@ -106,9 +106,7 @@ export default (props: Props) => {
           )}
         </div>
         <div className="col-8">
-          {view.buscandoOpcoes.buscandoUnidadesEducacionais ? (
-            <Skeleton paragraph={false} active />
-          ) : (
+          <Spin spinning={view.buscandoOpcoes.buscandoUnidadesEducacionais}>
             <Field
               component={AutoCompleteSelectField}
               dataTestId="select-unidade-educacional"
@@ -122,7 +120,7 @@ export default (props: Props) => {
                 !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
               }
             />
-          )}
+          </Spin>
         </div>
       </div>
       <div className="row">
