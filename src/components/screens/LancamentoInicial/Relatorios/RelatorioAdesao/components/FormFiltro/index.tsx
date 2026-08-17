@@ -70,7 +70,9 @@ export default (props: Props) => {
                 view.onChangeLotes(values_.map((value_) => value_.value));
               }}
               placeholder="Selecione a DRE/Lote"
-              disabled={!values.mes}
+              disabled={
+                !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
+              }
             />
           )}
         </div>
@@ -97,7 +99,9 @@ export default (props: Props) => {
                     treeNodeFilterProp="title"
                     placeholder="Selecione os tipos de unidade"
                     style={{ width: "100%" }}
-                    disabled={!values.mes}
+                    disabled={
+                      !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
+                    }
                   />
                 </div>
               )}

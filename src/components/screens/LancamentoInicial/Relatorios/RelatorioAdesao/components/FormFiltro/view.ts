@@ -202,7 +202,10 @@ export default ({ form, onChange }: Args) => {
     } else if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
       const escolaInstituicaoMeusDados = meusDados?.vinculo_atual?.instituicao;
       const dreUuidMeusDados =
-        meusDados?.vinculo_atual?.instituicao?.diretoria_regional.uuid;
+        escolaInstituicaoMeusDados?.diretoria_regional?.uuid;
+      const loteUuids =
+        escolaInstituicaoMeusDados?.lotes?.map((lote) => lote.uuid) || [];
+      const tipoUnidadeUuid = escolaInstituicaoMeusDados?.tipo_unidade_escolar;
       const escola = unidadesEducacionais.find(
         (escola) => escola.codigo_eol === escolaInstituicaoMeusDados.codigo_eol,
       );
@@ -213,11 +216,10 @@ export default ({ form, onChange }: Args) => {
         lotes &&
         unidadesEducacionais
       ) {
-        setLotesOpcoes(
-          formatarOpcoesLote(
-            lotes?.filter((lote) => escola?.lote?.uuid === lote.uuid),
-          ),
+        const lotesDaEscola = lotes?.filter((lote) =>
+          loteUuids.includes(lote.uuid),
         );
+        setLotesOpcoes(formatarOpcoesLote(lotesDaEscola));
         setUnidadesEducacionaisOpcoes(
           formataUnidadesEducacionaisOpcoes(
             unidadesEducacionais?.filter(
@@ -225,16 +227,38 @@ export default ({ form, onChange }: Args) => {
             ),
           ),
         );
+
+        const grupoDaEscola = gruposUnidades.find((grupo) =>
+          grupo.tipos_unidades.some((tipo) => tipo.uuid === tipoUnidadeUuid),
+        );
+        setTiposUnidadesTreeData(
+          formataTiposUnidadesTreeData(
+            gruposUnidades,
+            grupoDaEscola ? [grupoDaEscola] : null,
+          ),
+        );
+
         const labelEscola = `${escola?.codigo_eol} - ${escola?.nome} - ${
           escola?.lote ? escola?.lote?.nome : ""
         }`;
         form.change("unidade_educacional", [escola.uuid]);
-        onChange({ unidade_educacional: [labelEscola] });
+        form.change("lotes", loteUuids);
+        form.change("tipos_unidades", tipoUnidadeUuid ? [tipoUnidadeUuid] : []);
+
+        onChange({
+          lotes: formatarOpcoesLote(lotesDaEscola).map((lote) => lote.label),
+          tipos_unidades:
+            escolaInstituicaoMeusDados?.tipo_unidade_escolar_iniciais
+              ? [escolaInstituicaoMeusDados.tipo_unidade_escolar_iniciais]
+              : [],
+          unidade_educacional: [labelEscola],
+        });
+
         localStorage.setItem("labelEscolaLote", labelEscola);
         localStorage.setItem("escolaLoteUuid", escola?.lote?.uuid);
       }
     }
-  }, [meusDados, lotes, unidadesEducacionais]);
+  }, [meusDados, lotes, unidadesEducacionais, gruposUnidades]);
 
   const formataMesesAnosOpcoes = (mesesAnos) => {
     return [{ nome: "Selecione o mês de referência", uuid: "" }].concat(
