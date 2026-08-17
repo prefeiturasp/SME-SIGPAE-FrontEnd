@@ -37,7 +37,7 @@ export default () => {
       mes_ano: values.mes,
       lotes: values.lotes,
       tipos_unidades: values.tipos_unidades,
-      escola: values.unidade_educacional,
+      escola__uuid: values.unidade_educacional,
       periodos_escolares: values.periodos,
       tipos_alimentacao: values.tipos_alimentacao,
       periodo_lancamento_de: values.periodo_lancamento_de,
@@ -74,8 +74,9 @@ export default () => {
     setFiltrosSelecionados((prev) => {
       let values_ = values;
       if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-        values_["unidade_educacional"] =
-          localStorage.getItem("labelEscolaLote");
+        values_["unidade_educacional"] = [
+          localStorage.getItem("labelEscolaLote"),
+        ];
       }
       if (prev) return { ...prev, ...values_ };
       return values_;

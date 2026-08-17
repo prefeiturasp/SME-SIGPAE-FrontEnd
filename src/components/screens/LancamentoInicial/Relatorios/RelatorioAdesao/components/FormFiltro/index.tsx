@@ -1,7 +1,6 @@
 import { Skeleton, Spin, TreeSelect } from "antd";
 import { FormApi } from "final-form";
 import { Field } from "react-final-form";
-import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
 import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
@@ -108,14 +107,24 @@ export default (props: Props) => {
         <div className="col-8">
           <Spin spinning={view.buscandoOpcoes.buscandoUnidadesEducacionais}>
             <Field
-              component={AutoCompleteSelectField}
-              dataTestId="select-unidade-educacional"
-              label="Unidade Educacional"
+              component={MultiselectRaw}
+              label="Unidades Educacionais"
               name="unidade_educacional"
-              placeholder="Selecione uma Unidade Educacional"
+              dataTestId="select-unidade-educacional"
+              selected={values.unidade_educacional || []}
               options={view.unidadesEducacionaisOpcoes}
-              filterOption={view.filtraUnidadesEducacionaisOpcoes}
-              onSelect={view.onChangeUnidadeEducacional}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>,
+              ) => {
+                form.change(
+                  `unidade_educacional`,
+                  values_.map((value_) => value_.value),
+                );
+                view.onChangeUnidadesEducacionais(
+                  values_.map((value_) => value_.value),
+                );
+              }}
+              placeholder="Selecione as unidades educacionais"
               disabled={
                 !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
               }

@@ -43,7 +43,10 @@ export default (props: Props) => {
               </b>
             )}
             {filtros.unidade_educacional && (
-              <b className="text-dark"> | {filtros.unidade_educacional}</b>
+              <b className="text-dark">
+                {" "}
+                | {filtros.unidade_educacional.join(", ")}
+              </b>
             )}
             {renderPeriodoLancamento(
               filtros.periodo_lancamento_de,

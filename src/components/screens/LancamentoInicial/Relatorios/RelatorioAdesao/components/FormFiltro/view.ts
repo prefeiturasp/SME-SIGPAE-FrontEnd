@@ -56,8 +56,6 @@ export default ({ form, onChange }: Args) => {
   >([]);
   const excluirTipoUnidadeUuidsRef = useRef<Array<string>>([]);
   const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
-  const [periodosEscolares, setPeriodosEscolares] = useState([]);
-  const [tiposAlimentacao, setTiposAlimentacao] = useState([]);
 
   const [buscandoOpcoes, setBuscandoOpcoes] = useState({
     buscandoMesesAnos: false,
@@ -139,7 +137,6 @@ export default ({ form, onChange }: Args) => {
             : responsePeriodos.data.results,
         );
 
-        setPeriodosEscolares(periodos);
         setPeriodosEscolaresOpcoes(periodos);
 
         const tipos = formataTiposAlimentacoesOpcoes(
@@ -147,7 +144,6 @@ export default ({ form, onChange }: Args) => {
             ? responseAlimentacoes.data
             : responseAlimentacoes.data.results,
         );
-        setTiposAlimentacao(tipos);
         setTiposAlimentacaoOpcoes(tipos);
 
         form.subscribe(
@@ -232,9 +228,9 @@ export default ({ form, onChange }: Args) => {
         const labelEscola = `${escola?.codigo_eol} - ${escola?.nome} - ${
           escola?.lote ? escola?.lote?.nome : ""
         }`;
-        form.change("unidade_educacional", labelEscola);
-        labelEscola && onChangeUnidadeEducacional(labelEscola);
-        labelEscola && localStorage.setItem("labelEscolaLote", labelEscola);
+        form.change("unidade_educacional", [escola.uuid]);
+        onChange({ unidade_educacional: [labelEscola] });
+        localStorage.setItem("labelEscolaLote", labelEscola);
         localStorage.setItem("escolaLoteUuid", escola?.lote?.uuid);
       }
     }
@@ -386,50 +382,12 @@ export default ({ form, onChange }: Args) => {
     buscaEscolas(lotes, form.getState().values.tipos_unidades || []);
   };
 
-  const onChangeUnidadeEducacional = async (escolaLabel: string) => {
-    limpaCampos(["periodos", "tipos_alimentacao"]);
-
+  const onChangeUnidadesEducacionais = (uuids: Array<string>) => {
     onChange({
-      unidade_educacional: escolaLabel,
+      unidade_educacional: unidadesEducacionaisOpcoes
+        .filter((opcao) => uuids.includes(opcao.value.toString()))
+        .map((opcao) => opcao.label),
     });
-
-    if (!escolaLabel) {
-      setPeriodosEscolaresOpcoes(periodosEscolares);
-      setTiposAlimentacaoOpcoes(tiposAlimentacao);
-      return;
-    }
-
-    const escola = unidadesEducacionais.find((escola) =>
-      escolaLabel.includes(escola.codigo_eol),
-    );
-
-    if (escola) {
-      setBuscandoOpcoes((prev) => ({
-        ...prev,
-        buscandoPeriodosEscolares: true,
-        buscandoTiposAlimentacao: true,
-      }));
-
-      const [responsePeriodosEscolares, responseTiposAlimentacao] =
-        await Promise.all([
-          getEscolaPeriodosEscolares(escola.uuid),
-          getEscolaTiposAlimentacao(escola.uuid),
-        ]);
-
-      setPeriodosEscolaresOpcoes(
-        formataPeriodosEscolaresOpcoes(responsePeriodosEscolares.data),
-      );
-
-      setTiposAlimentacaoOpcoes(
-        formataTiposAlimentacoesOpcoes(responseTiposAlimentacao.data),
-      );
-
-      setBuscandoOpcoes((prev) => ({
-        ...prev,
-        buscandoPeriodosEscolares: false,
-        buscandoTiposAlimentacao: false,
-      }));
-    }
   };
 
   const onChangePeriodoLancamentoDe = (periodoLancamentoDe: string) => {
@@ -445,25 +403,13 @@ export default ({ form, onChange }: Args) => {
   };
 
   const formataUnidadesEducacionaisOpcoes = (escolas): Array<Option> => {
-    return [{ label: "Selecione uma Unidade Educacional", value: "" }].concat(
-      escolas.map((escola): Option => {
-        const label = `${escola.codigo_eol} - ${escola.nome} - ${
-          escola.lote ? escola.lote.nome : ""
-        }`;
+    return escolas.map((escola): Option => {
+      const label = `${escola.codigo_eol} - ${escola.nome} - ${
+        escola.lote ? escola.lote.nome : ""
+      }`;
 
-        return { label, value: label };
-      }),
-    );
-  };
-
-  const filtraUnidadesEducacionaisOpcoes = (
-    inputValue: string,
-    option: Option,
-  ) => {
-    return (
-      option.value &&
-      option.label.toUpperCase().includes(inputValue.toUpperCase())
-    );
+      return { label, value: escola.uuid };
+    });
   };
 
   const validaMesAno = (mesAno: string) => {
@@ -483,10 +429,6 @@ export default ({ form, onChange }: Args) => {
     form.change(nomeCampo, undefined);
   };
 
-  const limpaCampos = (nomeCampos: Array<string>) => {
-    nomeCampos.forEach((nomeCampo) => limpaCampo(nomeCampo));
-  };
-
   return {
     mesesAnosOpcoes,
     lotesOpcoes,
@@ -497,8 +439,7 @@ export default ({ form, onChange }: Args) => {
     onChangeMesAno,
     onChangeLotes,
     onChangeTiposUnidades,
-    onChangeUnidadeEducacional,
-    filtraUnidadesEducacionaisOpcoes,
+    onChangeUnidadesEducacionais,
     buscandoOpcoes,
     validaMesAno,
     onChangePeriodoLancamentoDe,
