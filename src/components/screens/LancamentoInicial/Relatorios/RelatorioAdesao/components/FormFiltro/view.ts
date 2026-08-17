@@ -5,6 +5,7 @@ import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   formatarOpcoesLote,
   usuarioEhDRE,
+  usuarioEhEmpresa,
   usuarioEhEscolaTerceirizadaQualquerPerfil,
 } from "src/helpers/utilities";
 
@@ -93,7 +94,9 @@ export default ({ form, onChange }: Args) => {
         status: "MEDICAO_APROVADA_PELA_CODAE",
         eh_relatorio_adesao: true,
       }),
-      getLotesSimples(),
+      getLotesSimples(
+        usuarioEhEmpresa() ? { terceirizada__uuid: uuidInstituicao } : null,
+      ),
       getGrupoUnidadeEscolar(),
       endpointPeriodosEscolares,
       endpointTiposDeAlimentacao,
