@@ -7,12 +7,14 @@ import {
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import { Card } from "src/components/Faq";
-import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
+import {
+  AJUDA,
+  CADASTRO_CATEGORIA,
+  CADASTRO_DUVIDAS_FREQUENTES,
+} from "src/configs/constants";
 import { usuarioComAcessoAoCadastroDeCategorias } from "src/helpers/utilities";
 import { getFaq } from "src/services/faq.service";
 import "./style.scss";
-
-const CAMINHO_CADASTRO_CATEGORIA = `/${AJUDA}/${CADASTRO_CATEGORIA}`;
 
 const ConteudoPerguntas = ({ itens }) => {
   return (
@@ -108,7 +110,7 @@ const Faq = () => {
                 texto="Cadastro de Categoria"
                 type={BUTTON_TYPE.BUTTON}
                 style={BUTTON_STYLE.GREEN}
-                onClick={() => navegar(CAMINHO_CADASTRO_CATEGORIA)}
+                onClick={() => navegar(`/${AJUDA}/${CADASTRO_CATEGORIA}`)}
               />
             )}
 
@@ -116,7 +118,9 @@ const Faq = () => {
               texto="Cadastro Dúvidas Frequentes"
               type={BUTTON_TYPE.BUTTON}
               style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() => {}}
+              onClick={() =>
+                navegar(`/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`)
+              }
             />
           </div>
         </div>

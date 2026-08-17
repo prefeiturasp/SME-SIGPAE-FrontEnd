@@ -3,6 +3,7 @@ import FaqPage from "src/pages/Faq/FaqPage";
 import ListagemCategoriasPage from "src/pages/Faq/ListagemCategoriasPage";
 import CadastroCategoriaPage from "src/pages/Faq/CadastroCategoriaPage";
 import EdicaoCategoriaPage from "src/pages/Faq/EdicaoCategoriaPage";
+import { ListagemDuvidasFrequentes } from "src/pages/Faq/DuvidasFrequentes/Listagem";
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
 
@@ -25,6 +26,11 @@ export const rotasFaq: Array<RotaInterface> = [
   {
     path: `/${constants.AJUDA}/${constants.CADASTRO_CATEGORIA}/:uuid/${constants.EDITAR_CATEGORIA}`,
     component: EdicaoCategoriaPage,
+    tipoUsuario: usuarioComAcessoAoCadastroDeCategorias(),
+  },
+  {
+    path: `/${constants.AJUDA}/${constants.CADASTRO_DUVIDAS_FREQUENTES}`,
+    component: ListagemDuvidasFrequentes,
     tipoUsuario: usuarioComAcessoAoCadastroDeCategorias(),
   },
 ];

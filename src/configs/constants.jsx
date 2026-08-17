@@ -421,3 +421,4 @@ export const AJUDA = "ajuda";
 export const CADASTRO_CATEGORIA = "cadastro-categoria";
 export const CADASTRAR_CATEGORIA = "cadastrar";
 export const EDITAR_CATEGORIA = "editar";
+export const CADASTRO_DUVIDAS_FREQUENTES = "cadastro-duvidas-frequentes";
