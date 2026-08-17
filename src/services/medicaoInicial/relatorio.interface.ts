@@ -12,8 +12,8 @@ type RelatorioAdesaoPeriodo = {
 
 export interface RelatorioAdesaoParams {
   mes_ano: string;
-  diretoria_regional: string;
   lotes: Array<string>;
+  tipos_unidades: Array<string>;
   escola: string;
   periodos_escolares: Array<string>;
   tipos_alimentacao: Array<string>;

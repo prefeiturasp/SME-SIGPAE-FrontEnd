@@ -1,13 +1,10 @@
-import { Skeleton } from "antd";
+import { Skeleton, TreeSelect } from "antd";
 import { FormApi } from "final-form";
 import { Field } from "react-final-form";
 import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
-import {
-  usuarioEhDRE,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "src/helpers/utilities";
+import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
 
 import useView from "./view";
 
@@ -15,6 +12,8 @@ import { ChangeEvent } from "react";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { IFiltros } from "../../types";
 import { validateDataFinal, validateDataInicial } from "./helpers";
+
+const { SHOW_CHILD } = TreeSelect;
 
 type Props = {
   form: FormApi;
@@ -52,33 +51,12 @@ export default (props: Props) => {
           )}
         </div>
         <div className="col-8">
-          {view.buscandoOpcoes.buscandoDiretoriasRegionais ? (
-            <Skeleton paragraph={false} active />
-          ) : (
-            <Field
-              component={Select}
-              label="DRE"
-              dataTestId="select-dre"
-              name="dre"
-              placeholder="Selecione uma DRE"
-              options={view.diretoriasRegionaisOpcoes}
-              naoDesabilitarPrimeiraOpcao
-              onChangeEffect={view.onChangeDRE}
-              disabled={
-                usuarioEhDRE() || usuarioEhEscolaTerceirizadaQualquerPerfil()
-              }
-            />
-          )}
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-4">
           {view.buscandoOpcoes.buscandoLotes ? (
             <Skeleton paragraph={false} active />
           ) : (
             <Field
               component={MultiselectRaw}
-              label="Lotes"
+              label="DRE/Lote"
               name="lotes"
               dataTestId="select-lotes"
               selected={values.lotes || []}
@@ -92,8 +70,39 @@ export default (props: Props) => {
                 );
                 view.onChangeLotes(values_.map((value_) => value_.value));
               }}
-              placeholder="Selecione os lotes"
+              placeholder="Selecione a DRE/Lote"
+              disabled={!values.mes}
             />
+          )}
+        </div>
+      </div>
+      <div className="row">
+        <div className="col-4">
+          {view.buscandoOpcoes.buscandoTiposUnidades ? (
+            <Skeleton paragraph={false} active />
+          ) : (
+            <Field name="tipos_unidades">
+              {({ input }) => (
+                <div className="input">
+                  <label className="col-form-label">Tipo de Unidade</label>
+                  <TreeSelect
+                    data-testid="select-tipos-unidades"
+                    treeData={view.tiposUnidadesTreeData}
+                    value={input.value || []}
+                    onChange={(value: Array<string>) => {
+                      input.onChange(value);
+                      view.onChangeTiposUnidades(value);
+                    }}
+                    treeCheckable
+                    showCheckedStrategy={SHOW_CHILD}
+                    treeNodeFilterProp="title"
+                    placeholder="Selecione os tipos de unidade"
+                    style={{ width: "100%" }}
+                    disabled={!values.mes}
+                  />
+                </div>
+              )}
+            </Field>
           )}
         </div>
         <div className="col-8">
@@ -109,7 +118,9 @@ export default (props: Props) => {
               options={view.unidadesEducacionaisOpcoes}
               filterOption={view.filtraUnidadesEducacionaisOpcoes}
               onSelect={view.onChangeUnidadeEducacional}
-              disabled={usuarioEhEscolaTerceirizadaQualquerPerfil()}
+              disabled={
+                !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
+              }
             />
           )}
         </div>
@@ -135,6 +146,7 @@ export default (props: Props) => {
                 );
               }}
               placeholder="Selecione os períodos"
+              disabled={!values.mes}
             />
           )}
         </div>
@@ -158,6 +170,7 @@ export default (props: Props) => {
                 );
               }}
               placeholder="Selecione os períodos"
+              disabled={!values.mes}
             />
           )}
         </div>

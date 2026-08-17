@@ -33,16 +33,21 @@ export default (props: Props) => {
             <b>Adesão das Alimentações Servidas</b>
             <b className="mx-2">-</b>
             {filtros.mes && <b className="text-dark">{filtros.mes}</b>}
-            {filtros.dre && <b className="text-dark"> | {filtros.dre}</b>}
             {filtros.lotes && (
               <b className="text-dark"> | {filtros.lotes.join(", ")}</b>
+            )}
+            {filtros.tipos_unidades && (
+              <b className="text-dark">
+                {" "}
+                | {filtros.tipos_unidades.join(", ")}
+              </b>
             )}
             {filtros.unidade_educacional && (
               <b className="text-dark"> | {filtros.unidade_educacional}</b>
             )}
             {renderPeriodoLancamento(
               filtros.periodo_lancamento_de,
-              filtros.periodo_lancamento_ate
+              filtros.periodo_lancamento_ate,
             )}
           </>
         )}
@@ -61,7 +66,7 @@ export default (props: Props) => {
                     total_servido: d.total_servido,
                     total_frequencia: d.total_frequencia,
                     total_adesao: d.total_adesao,
-                  })
+                  }),
                 )}
               />
             ))}
