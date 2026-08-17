@@ -116,7 +116,9 @@ export default ({ form, onChange }: Args) => {
         setLotes(lotes);
         setLotesOpcoes(formatarOpcoesLote(lotes));
 
-        const gruposUnidades = responseGruposUnidades.data.results;
+        const gruposUnidades = responseGruposUnidades.data.results.filter(
+          (grupo) => grupo.nome !== "Grupo 1",
+        );
         setGruposUnidades(gruposUnidades);
         setTiposUnidadesTreeData(
           formataTiposUnidadesTreeData(gruposUnidades, null),
