@@ -1,6 +1,7 @@
 import React from "react";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
+import CadastroDuvidasFrequentes from "src/components/screens/Faq/DuvidasFrequentes/Cadastro";
 import { AJUDA, CADASTRO_DUVIDAS_FREQUENTES } from "src/configs/constants";
 import { HOME } from "src/constants/config";
 
@@ -17,7 +18,7 @@ export const CadastrarDuvidasFrequentes = () => (
   <PageNoSidebar
     titulo="Cadastrar Dúvidas Frequentes"
     botaoVoltar
-    voltarPara={caminhoFaq}
+    voltarPara={caminhoCadastroDuvidasFrequentes}
     breadcrumb={
       <Breadcrumb
         home={HOME}
@@ -34,5 +35,7 @@ export const CadastrarDuvidasFrequentes = () => (
         atual={atual}
       />
     }
-  ></PageNoSidebar>
+  >
+    <CadastroDuvidasFrequentes />
+  </PageNoSidebar>
 );

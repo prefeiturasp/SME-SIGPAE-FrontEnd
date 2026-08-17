@@ -1,0 +1,98 @@
+@use "src/styles/variables.scss" as *;
+
+.cadastro-duvidas-frequentes {
+  width: 100%;
+
+  .formulario-cadastro-duvidas-frequentes {
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+    width: 100%;
+
+    .linha-formulario {
+      display: flex;
+      gap: 1.5rem;
+      width: 100%;
+
+      .campo-formulario {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    .campo-formulario {
+      margin-bottom: 1.5rem;
+      width: 100%;
+
+      .required-asterisk {
+        color: $red;
+        margin-right: 0.25rem;
+      }
+
+      label {
+        margin-bottom: 0.5rem;
+      }
+
+      .select {
+        width: 100%;
+      }
+    }
+
+    .campo-titulo {
+      width: 100%;
+    }
+
+    .campo-descricao {
+      width: 100%;
+
+      .ck-editor {
+        width: 100%;
+
+        .ck-editor__editable_inline {
+          min-height: 220px;
+        }
+      }
+    }
+
+    .acoes-cadastro-duvidas-frequentes {
+      align-items: center;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 1rem;
+
+      button {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .mensagem-modal-cancelamento {
+    p {
+      margin-bottom: 0.75rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .formulario-cadastro-duvidas-frequentes {
+      .linha-formulario {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .acoes-cadastro-duvidas-frequentes {
+        align-items: stretch;
+        flex-direction: column-reverse;
+
+        button {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

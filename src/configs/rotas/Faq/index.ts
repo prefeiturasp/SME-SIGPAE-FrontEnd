@@ -3,7 +3,7 @@ import FaqPage from "src/pages/Faq/FaqPage";
 import ListagemCategoriasPage from "src/pages/Faq/ListagemCategoriasPage";
 import CadastroCategoriaPage from "src/pages/Faq/CadastroCategoriaPage";
 import EdicaoCategoriaPage from "src/pages/Faq/EdicaoCategoriaPage";
-import { ListagemDuvidasFrequentes } from "src/pages/Faq/DuvidasFrequentes/Listagem";
+import { ListagemDuvidasFrequentes } from "src/pages/Faq/DuvidasFrequentes/Listagem/ListagemDuvidasFrequentesPage";
 import { CadastrarDuvidasFrequentes } from "src/pages/Faq/DuvidasFrequentes/Cadastro/CadastroDuvidasFrequentesPage";
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
