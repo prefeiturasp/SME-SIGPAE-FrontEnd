@@ -33,6 +33,8 @@ export const InputText = (props) => {
     apenasNumeros,
     exibeTooltipPadraoRepeticaoDiasSobremesaDoce,
     exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero,
+    exibeTooltipSobremesaAFDeveSerZero,
+    exibeTooltipSobremesaAFDiferenteZero,
     exibeTooltipErroQtdMaiorQueAutorizado,
     numeroDeInclusoesAutorizadas,
     exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo,
@@ -64,6 +66,7 @@ export const InputText = (props) => {
     exibirTooltipPeriodosZeradosNoProgramasProjetos,
     exibirTooltipRefeicaoSimultanea,
     exibirTooltipFeriado,
+    exibeTooltipSobremesaAFDreCodae,
   } = props;
 
   const inputProps = {
@@ -149,6 +152,7 @@ export const InputText = (props) => {
         exibeTooltipLancheEmergTabelaEtec ||
         exibeTooltipInclusoesAutorizadasComZero ||
         exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero ||
+        exibeTooltipSobremesaAFDiferenteZero ||
         exibeTooltipDietasInclusaoDiaNaoLetivoCEI ||
         exibeTooltipAlimentacoesAutorizadasDiaNaoLetivoCEI ||
         exibirTooltipPeriodosZeradosNoProgramasProjetos ||
@@ -199,6 +203,39 @@ export const InputText = (props) => {
           <i className="fas fa-info icone-info-warning" />
         </Tooltip>
       )}
+      {exibeTooltipSobremesaAFDeveSerZero && (
+        <Tooltip title={"Dia de sobremesa AF. Deve ser apontado 0 (zero)."}>
+          <i
+            data-testid={`tooltip-sobremesa-af-deve-ser-zero_${input.name}`}
+            className="fas fa-info icone-info-success"
+          />
+        </Tooltip>
+      )}
+      {exibeTooltipSobremesaAFDiferenteZero && (
+        <Tooltip
+          title={
+            "Dia de sobremesa AF. Justifique o lançamento diferente de 0 (zero)."
+          }
+        >
+          <i
+            data-testid={`tooltip-sobremesa-af-diferente-zero_${input.name}`}
+            className="fas fa-info icone-info-warning"
+          />
+        </Tooltip>
+      )}
+      {exibeTooltipSobremesaAFDreCodae &&
+        (!input.value || Number(input.value) === 0) && (
+          <Tooltip title={"Dia de sobremesa AF."}>
+            <i className="fas fa-info icone-info-success" />
+          </Tooltip>
+        )}
+      {exibeTooltipSobremesaAFDreCodae &&
+        input.value &&
+        Number(input.value) > 0 && (
+          <Tooltip title={"Dia de sobremesa AF. Verifique a justificativa."}>
+            <i className="fas fa-info icone-info-warning" />
+          </Tooltip>
+        )}
       {exibeTooltipRepeticao && (
         <Tooltip
           title={`${

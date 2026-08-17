@@ -35,6 +35,9 @@ export const ModalConfirmarExclusao = ({ ...props }) => {
     }
   };
 
+  const tipoDisplay = event.tipo?.nome || nomeObjetoNoCalendario;
+  const unidadeDisplay = event.tipo_unidade?.iniciais || event.title;
+
   return (
     <Modal
       dialogClassName="modal-editar-sobremesa modal-50w"
@@ -45,13 +48,13 @@ export const ModalConfirmarExclusao = ({ ...props }) => {
         {({ handleSubmit, submitting }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Header closeButton>
-              <Modal.Title>Excluir {nomeObjetoNoCalendario}</Modal.Title>
+              <Modal.Title>Excluir {tipoDisplay}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <p>
                 Deseja realmente excluir o cadastro de{" "}
-                <strong>{nomeObjetoNoCalendario}</strong> para a unidade{" "}
-                <strong>{event.title}</strong> no dia{" "}
+                <strong>{tipoDisplay}</strong> para a unidade{" "}
+                <strong>{unidadeDisplay}</strong> no dia{" "}
                 <strong>{getDDMMYYYfromDate(event.start)}</strong>?
               </p>
             </Modal.Body>

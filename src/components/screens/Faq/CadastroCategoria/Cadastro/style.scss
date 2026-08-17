@@ -1,0 +1,43 @@
+.pagina-cadastro-categoria {
+  .formulario-cadastro-categoria {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(500px - 3rem);
+    width: 100%;
+
+    .campo-cadastro-categoria {
+      max-width: 440px;
+      width: 100%;
+    }
+
+    .acoes-cadastro-categoria {
+      align-items: center;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 3rem;
+
+      .botao-cadastro-categoria {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .formulario-cadastro-categoria {
+      .campo-cadastro-categoria {
+        max-width: none;
+      }
+
+      .acoes-cadastro-categoria {
+        align-items: stretch;
+        flex-direction: column-reverse;
+
+        .botao-cadastro-categoria {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

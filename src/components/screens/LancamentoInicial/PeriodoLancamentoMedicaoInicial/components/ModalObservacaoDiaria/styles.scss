@@ -1,15 +1,24 @@
 @use "src/styles/variables.scss" as *;
 
-.data_lancamento_modal {
-  &::placeholder {
-    color: $blackInput !important;
+.modal-observacao-diaria {
+  label {
+    color: $blackInput;
   }
-}
 
-.botoes-modal-footer {
-  justify-content: space-between !important;
+  .data_lancamento_modal {
+    opacity: 1;
 
-  .botoes-right {
-    justify-content: flex-end !important;
+    &::placeholder {
+      color: $blackInput !important;
+      opacity: 1;
+    }
+  }
+
+  .botoes-modal-footer {
+    justify-content: space-between !important;
+
+    .botoes-right {
+      justify-content: flex-end !important;
+    }
   }
 }

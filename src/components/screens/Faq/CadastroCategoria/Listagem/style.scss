@@ -1,0 +1,40 @@
+@use "src/styles/variables.scss" as *;
+
+.pagina-listagem-categorias {
+  min-height: 430px;
+
+  .acoes-listagem-categorias {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 1.5rem;
+  }
+
+  .conteudo-listagem-categorias {
+    width: 100%;
+
+    .titulo-listagem-categorias {
+      color: $green;
+      font-size: 14px;
+      font-weight: 700;
+      margin: 0 0 0.75rem;
+    }
+  }
+
+  .carregamento-listagem-categorias {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 350px;
+    transform: translateY(-40px);
+    width: 100%;
+  }
+
+  @media screen and (max-width: 575px) {
+    .acoes-listagem-categorias {
+      button {
+        width: 100%;
+      }
+    }
+  }
+}

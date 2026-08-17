@@ -32,6 +32,14 @@ import { useEffect, useState } from "react";
 import { getProtocoloPadrao } from "src/services/dietaEspecial.service";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
+const AtualizaNomeProtocoloPadrao = ({ form, protocoloPadrao }) => {
+  useEffect(() => {
+    form.change("nome_protocolo_padrao", protocoloPadrao?.nome_protocolo || "");
+  }, [form, protocoloPadrao?.nome_protocolo]);
+
+  return null;
+};
+
 const CorpoRelatorio = ({
   dietaEspecial,
   dietaCancelada,
@@ -395,12 +403,15 @@ const CorpoRelatorio = ({
 
   return (
     <Form
-      key={protocoloPadrao?.nome_protocolo || "sem-protocolo"}
       onSubmit={onSubmit}
       initialValues={initialValues()}
       mutators={{ ...arrayMutators }}
-      render={({ values }) => (
+      render={({ form, values }) => (
         <form>
+          <AtualizaNomeProtocoloPadrao
+            form={form}
+            protocoloPadrao={protocoloPadrao}
+          />
           {["CODAE_NEGOU_PEDIDO", "CODAE_NEGOU_CANCELAMENTO"].includes(
             dietaEspecial.status_solicitacao,
           ) && [

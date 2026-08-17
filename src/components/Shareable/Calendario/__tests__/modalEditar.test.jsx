@@ -55,7 +55,7 @@ describe("Teste componete ModalEditar", () => {
         }}
       >
         <ModalEditar {...defaultProps} {...props} />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   };
 
@@ -88,11 +88,11 @@ describe("Teste componete ModalEditar", () => {
     expect(screen.getByText(/para a unidade/)).toBeInTheDocument();
     expect(screen.getByText(mockEvent.title)).toBeInTheDocument();
     expect(
-      screen.getByText(mockEvent.editais_numeros_virgula)
+      screen.getByText(mockEvent.editais_numeros_virgula),
     ).toBeInTheDocument();
     expect(screen.getByText(/Sergio/i)).toBeInTheDocument();
     expect(
-      screen.getByText(new RegExp(mockEvent.criado_em, "i"))
+      screen.getByText(new RegExp(mockEvent.criado_em, "i")),
     ).toBeInTheDocument();
     expect(screen.getAllByText("15/06/2023")).toHaveLength(1);
   });
@@ -121,7 +121,54 @@ describe("Teste componete ModalEditar", () => {
       renderModalEditar({ showModal: false });
     });
     expect(
-      screen.queryByText("Informações de cadastro")
+      screen.queryByText("Informações de cadastro"),
     ).not.toBeInTheDocument();
+  });
+
+  it("exibe nome do tipo e unidade sem prefixo quando event.tipo.nome === 'Sobremesa AF'", async () => {
+    const eventAf = {
+      title: "Sob. AF - CCA",
+      tipo_unidade: { iniciais: "CCA", uuid: "uuid-cca" },
+      tipo: { uuid: "uuid-af", nome: "Sobremesa AF" },
+      editais_numeros_virgula: "EDITAL 001, EDITAL 002",
+      start: new Date(2023, 5, 15),
+      criado_por: { nome: "Sergio" },
+      criado_em: "15/06/2023 10:00",
+    };
+
+    await act(async () => {
+      renderModalEditar({ event: eventAf });
+    });
+
+    expect(screen.getAllByText("Sobremesa AF").length).toBe(1);
+    expect(screen.getByText("CCA")).toBeInTheDocument();
+    expect(screen.queryByText("Sob. AF - CCA")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Sobremesa Doce ou/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/alterar o dia de sobremesa AF/i),
+    ).toBeInTheDocument();
+  });
+
+  it("exibe nome do tipo e unidade sem prefixo quando event.tipo.nome === 'Sobremesa Doce'", async () => {
+    const eventDoce = {
+      title: "CCA",
+      tipo_unidade: { iniciais: "CCA", uuid: "uuid-cca" },
+      tipo: { uuid: "uuid-doce", nome: "Sobremesa Doce" },
+      editais_numeros_virgula: "EDITAL 001, EDITAL 002",
+      start: new Date(2023, 5, 15),
+      criado_por: { nome: "Sergio" },
+      criado_em: "15/06/2023 10:00",
+    };
+
+    await act(async () => {
+      renderModalEditar({ event: eventDoce });
+    });
+
+    expect(screen.getAllByText("Sobremesa Doce").length).toBe(1);
+    expect(screen.getByText("CCA")).toBeInTheDocument();
+    expect(screen.queryByText(/Sobremesa Doce ou/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/alterar o dia de sobremesa doce/i),
+    ).toBeInTheDocument();
   });
 });

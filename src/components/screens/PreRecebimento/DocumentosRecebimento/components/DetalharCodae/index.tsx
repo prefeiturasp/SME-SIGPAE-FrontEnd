@@ -14,11 +14,15 @@ import {
 } from "src/services/documentosRecebimento.service";
 import InputText from "src/components/Shareable/Input/InputText";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
-import { DocumentosRecebimentoParaAnalise } from "src/interfaces/pre_recebimento.interface";
+import {
+  DocumentosRecebimentoParaAnalise,
+  TiposDocumentos,
+} from "src/interfaces/pre_recebimento.interface";
 import OutrosDocumentos from "../OutrosDocumentos";
 import BotaoAnexo from "src/components/PreRecebimento/BotaoAnexo";
 import { formataMilharDecimal } from "src/helpers/utilities";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import ArquivosTipoRecebimento from "../ArquivosTipoDocumento";
 
 export default () => {
   const navigate = useNavigate();
@@ -27,6 +31,7 @@ export default () => {
   const [objeto, setObjeto] = useState<DocumentosRecebimentoParaAnalise>(
     {} as DocumentosRecebimentoParaAnalise,
   );
+  const [laudo, setLaudo] = useState<TiposDocumentos>({} as TiposDocumentos);
   const [aprovado, setAprovado] = useState(true);
 
   const voltarPaginaPainel = () =>
@@ -42,7 +47,10 @@ export default () => {
     const laudoIndex = objeto.tipos_de_documentos.findIndex(
       (tipo) => tipo.tipo_documento === "LAUDO",
     );
-    objeto.tipos_de_documentos.splice(laudoIndex, 1)[0];
+    if (laudoIndex !== -1) {
+      const laudo = objeto.tipos_de_documentos.splice(laudoIndex, 1)[0];
+      setLaudo(laudo);
+    }
 
     setObjeto(objeto);
     setAprovado(objeto.status === "Aprovado");
@@ -146,14 +154,18 @@ export default () => {
           <div className="subtitulo-documento">
             Laudo enviado pelo Fornecedor:
           </div>
-          <div className="row mt-2">
-            <div className="col-4">
-              <BotaoAnexo
-                textoBotao="Laudo Analisado"
-                onClick={() => baixarArquivoLaudo(objeto)}
-              />
+          {aprovado ? (
+            <div className="row mt-2">
+              <div className="col-4">
+                <BotaoAnexo
+                  textoBotao="Laudo Analisado"
+                  onClick={() => baixarArquivoLaudo(objeto)}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <ArquivosTipoRecebimento lista={laudo} />
+          )}
 
           <hr />
 

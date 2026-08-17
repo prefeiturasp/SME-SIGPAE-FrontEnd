@@ -1,33 +1,49 @@
 @use "src/styles/variables.scss" as *;
 
-.faq-card {
+.cartao-faq {
+  background-color: #fff;
+  border: 1px solid #dedede;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 8%);
   margin-bottom: 1rem;
-  padding-top: 0.6rem;
-  padding-bottom: 0.6rem;
+  min-height: 48px;
+  overflow: hidden;
+  position: relative;
 
-  .toggle-expand {
+  .borda-cartao-faq {
+    background-color: #198459;
+    bottom: 0;
+    left: 0;
     position: absolute;
-    right: 10px;
-    top: 10px;
+    top: 0;
+    width: 6px;
   }
 
-  .title {
-    color: $blueButtonFont;
-    font-size: 16px;
-    line-height: 19px;
+  .conteudo-cartao-faq {
+    padding: 0.75rem 1rem 0.75rem 1.5rem;
+
+    .titulo-cartao-faq {
+      color: $blackInput;
+      font-size: 14px;
+      line-height: 20px;
+      margin: 0;
+      padding-right: 1rem;
+    }
+
+    .controle-expandir {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .corpo-cartao-faq {
+      border-top: 1px solid #eee;
+      color: $blackInput;
+      font-size: 14px;
+      line-height: 20px;
+      margin-top: 0.75rem;
+      padding: 0.75rem 0 0;
+    }
   }
-
-  .card-body {
-    color: $blackInput;
-    font-size: 14px;
-    line-height: 16px;
-  }
-}
-
-.faq-row {
-  border: 1px solid red;
-}
-
-.fa-col {
-  border: 1px solid blue;
 }

@@ -107,6 +107,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     feriadosNoMes,
     diasCalendario,
     diasSobremesaDoce,
+    diasSobremesaAF,
     periodosGruposMedicao,
     diasLetivosSIGPAE,
     diasSuspensaoAtividades,
@@ -1796,6 +1797,17 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                               column,
                                               row,
                                               categoria,
+                                            )
+                                          }
+                                          exibeTooltipSobremesaAFDreCodae={
+                                            !ehEscolaTipoCEI({
+                                              nome: solicitacao.escola,
+                                            }) &&
+                                            (row.name === "sobremesa" ||
+                                              row.name ===
+                                                "repeticao_sobremesa") &&
+                                            diasSobremesaAF?.includes(
+                                              `${anoSolicitacao}-${mesSolicitacao}-${column.dia}`,
                                             )
                                           }
                                           exibeTooltipInclusaoAlimentacaoAutorizadaDreCodae={

@@ -1423,3 +1423,11 @@ export const usuarioPodeVisualizarLinhaDoTempoFichaTecnica = () => {
     usuarioEhDilog()
   );
 };
+
+export const usuarioComAcessoAoCadastroDeCategorias = () => {
+  return [
+    PERFIL.ADMINISTRADOR_CODAE_GABINETE,
+    PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+    PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+  ].includes(localStorage.getItem("perfil"));
+};
