@@ -6,10 +6,10 @@ import { HOME } from "src/constants/config";
 import BotaoCadastrarDuvidasFrequentes from "src/components/screens/Faq/DuvidasFrequentes/components/BotaoCadastroDuvidasFrequentes/index.jsx";
 
 const caminhoFaq = `/${AJUDA}`;
-const caminhoListagemCategorias = `/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`;
+const caminhoListagemDuvidasFrequentes = `/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`;
 
 const atual = {
-  href: caminhoListagemCategorias,
+  href: caminhoListagemDuvidasFrequentes,
   titulo: "Cadastro Dúvidas Frequentes",
 };
 
