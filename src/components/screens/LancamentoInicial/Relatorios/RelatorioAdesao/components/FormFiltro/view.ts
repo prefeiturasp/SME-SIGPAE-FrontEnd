@@ -95,15 +95,13 @@ export default ({ form, onChange }: Args) => {
         eh_relatorio_adesao: true,
       }),
       getLotesSimples(),
-      getEscolasParaFiltros(),
       getGrupoUnidadeEscolar(),
       endpointPeriodosEscolares,
       endpointTiposDeAlimentacao,
     ]).then(
-      ([
+      async ([
         responseMesesAnos,
         responseLotes,
-        responseEscolas,
         responseGruposUnidades,
         responsePeriodos,
         responseAlimentacoes,
@@ -115,6 +113,18 @@ export default ({ form, onChange }: Args) => {
         const lotes = responseLotes.data.results;
         setLotes(lotes);
         setLotesOpcoes(formatarOpcoesLote(lotes));
+
+        const grupo1 = responseGruposUnidades.data.results.find(
+          (grupo) => grupo.nome === "Grupo 1",
+        );
+        const excluirTipoUnidadeUuids = grupo1
+          ? grupo1.tipos_unidades.map((tipo) => tipo.uuid)
+          : [];
+
+        const responseEscolas = await getEscolasParaFiltros({
+          excluir_tipo_unidade__uuid: excluirTipoUnidadeUuids,
+          tipo_gestao__nome: "TERC TOTAL",
+        });
 
         const gruposUnidades = responseGruposUnidades.data.results.filter(
           (grupo) => grupo.nome !== "Grupo 1",
