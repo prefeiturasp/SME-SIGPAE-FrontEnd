@@ -357,7 +357,7 @@ export default ({ form, onChange }: Args) => {
       mes: mesAno
         ? mesesAnosOpcoes
             .find((m) => m.uuid === e.target.value)
-            .nome.replace("-", "")
+            .nome.replace(/\s*-\s*/g, " ")
             .toUpperCase()
         : undefined,
     });

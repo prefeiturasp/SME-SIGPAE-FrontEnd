@@ -33,10 +33,10 @@ export default (props: Props) => {
             <b>Adesão das Alimentações Servidas</b>
             <b className="mx-2">-</b>
             {filtros.mes && <b className="text-dark">{filtros.mes}</b>}
-            {filtros.lotes && (
+            {filtros.lotes?.length > 0 && (
               <b className="text-dark"> | {filtros.lotes.join(", ")}</b>
             )}
-            {filtros.tipos_unidades && (
+            {filtros.tipos_unidades?.length > 0 && (
               <b className="text-dark">
                 {" "}
                 | {filtros.tipos_unidades.join(", ")}
@@ -48,7 +48,7 @@ export default (props: Props) => {
                 | {escola.codigo_eol} - {escola.nome}
               </b>
             )}
-            {filtros.unidade_educacional && !escola && (
+            {filtros.unidade_educacional?.length > 0 && !escola && (
               <b className="text-dark">
                 {" "}
                 | {filtros.unidade_educacional.join(", ")}
