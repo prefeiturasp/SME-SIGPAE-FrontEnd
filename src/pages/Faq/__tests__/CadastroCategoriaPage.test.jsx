@@ -6,7 +6,7 @@ import {
   CADASTRO_CATEGORIA,
 } from "src/configs/constants";
 import { HOME } from "src/constants/config";
-import CadastroCategoriaPage from "../CadastroCategoriaPage";
+import CadastroCategoriaPage from "../Categorias/CadastroCategoriaPage";
 
 jest.mock("src/components/Shareable/Page/PageNoSidebar", () => ({
   __esModule: true,
@@ -36,7 +36,7 @@ jest.mock("src/components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("src/components/screens/Faq/CadastroCategoria/Cadastro", () => ({
+jest.mock("src/components/screens/Faq/Categorias/Cadastro", () => ({
   __esModule: true,
   default: () => (
     <div data-testid="cadastro-categoria">Cadastro de Categoria</div>

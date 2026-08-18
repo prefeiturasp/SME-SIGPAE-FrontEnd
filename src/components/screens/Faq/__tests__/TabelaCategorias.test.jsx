@@ -1,6 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import TabelaCategorias from "../CadastroCategoria/Listagem/components/TabelaCategorias";
+import TabelaCategorias from "../Categorias/components/TabelaCategorias";
 
 const categorias = [
   {

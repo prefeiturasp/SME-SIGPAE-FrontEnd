@@ -1,7 +1,7 @@
 import React from "react";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
-import EdicaoCategoria from "src/components/screens/Faq/CadastroCategoria/Edicao";
+import EdicaoCategoria from "src/components/screens/Faq/Categorias/Edicao";
 import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
 import { HOME } from "src/constants/config";
 

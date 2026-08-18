@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
 import { HOME } from "src/constants/config";
-import EdicaoCategoriaPage from "../EdicaoCategoriaPage";
+import EdicaoCategoriaPage from "../Categorias/EdicaoCategoriaPage";
 
 jest.mock("src/components/Shareable/Page/PageNoSidebar", () => ({
   __esModule: true,
@@ -32,7 +32,7 @@ jest.mock("src/components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("src/components/screens/Faq/CadastroCategoria/Edicao", () => ({
+jest.mock("src/components/screens/Faq/Categorias/Edicao", () => ({
   __esModule: true,
   default: () => (
     <div data-testid="pagina-edicao-categoria">Edição de Categoria</div>

@@ -6,7 +6,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { criarCategoriaFaq } from "src/services/faq.service";
-import CadastroCategoria from "src/components/screens/Faq/CadastroCategoria/Cadastro";
+import CadastroCategoria from "src/components/screens/Faq/Categorias/Cadastro";
 
 jest.mock("src/services/faq.service", () => ({
   criarCategoriaFaq: jest.fn(),

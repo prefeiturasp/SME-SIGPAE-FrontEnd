@@ -1,24 +1,28 @@
 import React from "react";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
-import ListagemCategorias from "src/components/screens/Faq/CadastroCategoria/Listagem";
-import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
+import CadastroCategoria from "src/components/screens/Faq/Categorias/Cadastro";
+import {
+  AJUDA,
+  CADASTRAR_CATEGORIA,
+  CADASTRO_CATEGORIA,
+} from "src/configs/constants";
 import { HOME } from "src/constants/config";
-import BotaoCadastrarCategoria from "src/components/screens/Faq/CadastroCategoria/components/BotaoCadastrarCategoria";
 
 const caminhoFaq = `/${AJUDA}`;
 const caminhoListagemCategorias = `/${AJUDA}/${CADASTRO_CATEGORIA}`;
+const caminhoCadastrarCategoria = `/${AJUDA}/${CADASTRO_CATEGORIA}/${CADASTRAR_CATEGORIA}`;
 
 const atual = {
-  href: caminhoListagemCategorias,
-  titulo: "Cadastro de Categoria",
+  href: caminhoCadastrarCategoria,
+  titulo: "Cadastrar Categoria",
 };
 
 export default () => (
   <PageNoSidebar
     titulo="Cadastrar Categoria"
     botaoVoltar
-    voltarPara={caminhoFaq}
+    voltarPara={caminhoListagemCategorias}
     breadcrumb={
       <Breadcrumb
         home={HOME}
@@ -27,12 +31,15 @@ export default () => (
             href: caminhoFaq,
             titulo: "Ajuda",
           },
+          {
+            href: caminhoListagemCategorias,
+            titulo: "Cadastro de Categoria",
+          },
         ]}
         atual={atual}
       />
     }
   >
-    <BotaoCadastrarCategoria />
-    <ListagemCategorias />
+    <CadastroCategoria />
   </PageNoSidebar>
 );
