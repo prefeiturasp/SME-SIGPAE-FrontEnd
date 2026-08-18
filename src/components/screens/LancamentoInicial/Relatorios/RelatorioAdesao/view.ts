@@ -2,10 +2,7 @@ import HTTP_STATUS from "http-status-codes";
 import { useState } from "react";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
-import {
-  usuarioEhDRE,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "src/helpers/utilities";
+import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
 
 import { RelatorioAdesaoResponse } from "src/services/medicaoInicial/relatorio.interface";
 import RelatorioService from "src/services/medicaoInicial/relatorio.service";
@@ -38,9 +35,9 @@ export default () => {
 
     const response = await RelatorioService.getRelatorioAdesao({
       mes_ano: values.mes,
-      diretoria_regional: values.dre,
       lotes: values.lotes,
-      escola: values.unidade_educacional,
+      tipos_unidades: values.tipos_unidades,
+      escola__uuid: values.unidade_educacional,
       periodos_escolares: values.periodos,
       tipos_alimentacao: values.tipos_alimentacao,
       periodo_lancamento_de: values.periodo_lancamento_de,
@@ -50,7 +47,7 @@ export default () => {
       setResultado(response.data);
     } else {
       toastError(
-        "Não foi possível obter os resultados. Tente novamente mais tarde."
+        "Não foi possível obter os resultados. Tente novamente mais tarde.",
       );
     }
 
@@ -58,20 +55,11 @@ export default () => {
   };
 
   const limparFiltro = () => {
-    if (usuarioEhDRE()) {
+    if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
       setFiltrosSelecionados({
-        dre: localStorage.getItem("nome_instituicao"),
-      });
-      setFiltros({
-        dre: localStorage.getItem("nome_instituicao"),
-      });
-    } else if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-      setFiltrosSelecionados({
-        dre: localStorage.getItem("dre_nome"),
         unidade_educacional: filtrosSelecionados["unidade_educacional"],
       });
       setFiltros({
-        dre: localStorage.getItem("dre_nome"),
         unidade_educacional: filtrosSelecionados["unidade_educacional"],
       });
     } else {
@@ -86,9 +74,9 @@ export default () => {
     setFiltrosSelecionados((prev) => {
       let values_ = values;
       if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-        values_["dre"] = localStorage.getItem("dre_nome");
-        values_["unidade_educacional"] =
-          localStorage.getItem("labelEscolaLote");
+        values_["unidade_educacional"] = [
+          localStorage.getItem("labelEscolaLote"),
+        ];
       }
       if (prev) return { ...prev, ...values_ };
       return values_;
