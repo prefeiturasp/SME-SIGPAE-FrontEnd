@@ -19,7 +19,7 @@ import { mockGetPeriodoEscolar } from "src/mocks/services/dietaEspecial.service/
 import { mockEscolasParaFiltros } from "src/mocks/services/escola.service/escolasParaFiltros";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
-import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
+import { mockRelatorioAdesaoPaginadoPorPagina } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesaoPaginado";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
 import mock from "src/services/_mock";
 
@@ -259,7 +259,10 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
 
     mock
       .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
-      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+      .reply((config) => {
+        const page = config.params?.page || 1;
+        return [200, mockRelatorioAdesaoPaginadoPorPagina[page]];
+      });
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);
@@ -272,6 +275,56 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       expect(
         relatorioRequests[relatorioRequests.length - 1].params.escola__uuid,
       ).toEqual(["5cd1d36b-460e-46d6-b105-5138993aa4e8"]);
+    });
+  });
+
+  it("exibe o nome e código EOL da escola retornada pelo backend e pagina os resultados por escola", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("select-unidade-educacional"),
+      ).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+
+    const selectUnidades = screen.getByTestId("select-unidade-educacional");
+    const selectControlUnidades = within(selectUnidades).getByRole("combobox");
+    fireEvent.mouseDown(selectControlUnidades);
+    fireEvent.click(screen.getByText("015423 - EMEF PRESTES MAIA - LOTE 13"));
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply((config) => {
+        const page = config.params?.page || 1;
+        return [200, mockRelatorioAdesaoPaginadoPorPagina[page]];
+      });
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/^\| 015423 - EMEF PRESTES MAIA/),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+    expect(screen.getAllByText("LANCHE").length).toBeGreaterThan(0);
+
+    const itemPagina2 = document.querySelector(".ant-pagination-item-2");
+    expect(itemPagina2).toBeInTheDocument();
+    fireEvent.click(itemPagina2);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/^\| 017981 - EMEF PERICLES EUGENIO DA SILVA RAMOS/),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Nenhum resultado foi encontrado para esta busca."),
+      ).toBeInTheDocument();
     });
   });
 });
