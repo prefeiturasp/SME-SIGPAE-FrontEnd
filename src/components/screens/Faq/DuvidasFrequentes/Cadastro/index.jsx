@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { AutoComplete, Input } from "antd";
+import React, { useState } from "react";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -7,32 +6,33 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import CKEditorField from "src/components/Shareable/CKEditorField";
 import InputText from "src/components/Shareable/Input/InputText";
-import { MultiSelect } from "src/components/Shareable/MultiSelect";
 import { ModalPadraoSimNao } from "src/components/Shareable/ModalPadraoSimNao";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { formatarParaMultiselect, getError } from "src/helpers/utilities";
-import {
-  buscarOpcoesCategoriasFaq,
-  criarPerguntaFrequente,
-} from "src/services/faq.service";
-import { getPerfilListagem } from "src/services/perfil.service";
+import { getError } from "src/helpers/utilities";
+import { criarPerguntaFrequente } from "src/services/faq.service";
+import CamposAcesso from "../components/CamposAcesso";
+import SeletorCategorias from "../components/SeletorCategorias";
+import { useOpcoesCadastroDuvida } from "../hooks/useOpcoesCadastroDuvida";
 import "./style.scss";
 
 const CadastroDuvidasFrequentes = () => {
   const [categoria, setCategoria] = useState(null);
   const [buscaCategoria, setBuscaCategoria] = useState("");
-  const [categorias, setCategorias] = useState([]);
-  const [carregandoCategorias, setCarregandoCategorias] = useState(true);
   const [perfisAcesso, setPerfisAcesso] = useState([]);
-  const [opcoesPerfisAcesso, setOpcoesPerfisAcesso] = useState([]);
-  const [carregandoPerfis, setCarregandoPerfis] = useState(true);
   const [titulo, setTitulo] = useState("");
   const [descricaoDetalhada, setDescricaoDetalhada] = useState("");
   const [exibirModalCancelamento, setExibirModalCancelamento] = useState(false);
   const [cadastrando, setCadastrando] = useState(false);
+
+  const {
+    categorias,
+    carregandoCategorias,
+    opcoesPerfisAcesso,
+    carregandoPerfis,
+  } = useOpcoesCadastroDuvida();
 
   const formularioPreenchido =
     buscaCategoria.trim() ||
@@ -120,62 +120,6 @@ const CadastroDuvidasFrequentes = () => {
     }
   };
 
-  useEffect(() => {
-    let requisicaoAtiva = true;
-
-    const carregarCategorias = async () => {
-      try {
-        const resposta = await buscarOpcoesCategoriasFaq();
-
-        if (requisicaoAtiva) {
-          setCategorias(resposta.data);
-        }
-      } catch {
-        if (requisicaoAtiva) {
-          toastError("Não foi possível carregar as categorias.");
-        }
-      } finally {
-        if (requisicaoAtiva) {
-          setCarregandoCategorias(false);
-        }
-      }
-    };
-
-    carregarCategorias();
-
-    return () => {
-      requisicaoAtiva = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let requisicaoAtiva = true;
-
-    const carregarPerfis = async () => {
-      try {
-        const resposta = await getPerfilListagem();
-
-        if (requisicaoAtiva) {
-          setOpcoesPerfisAcesso(formatarParaMultiselect(resposta.data.results));
-        }
-      } catch {
-        if (requisicaoAtiva) {
-          toastError("Não foi possível carregar os perfis de acesso.");
-        }
-      } finally {
-        if (requisicaoAtiva) {
-          setCarregandoPerfis(false);
-        }
-      }
-    };
-
-    carregarPerfis();
-
-    return () => {
-      requisicaoAtiva = false;
-    };
-  }, []);
-
   return (
     <div className="cadastro-duvidas-frequentes">
       <form
@@ -183,63 +127,21 @@ const CadastroDuvidasFrequentes = () => {
         onSubmit={cadastrarDuvida}
       >
         <div className="linha-formulario">
-          <div className="campo-formulario campo-categoria">
-            <label htmlFor="categoria" className="col-form-label">
-              <span className="required-asterisk">*</span>
-              Categoria
-            </label>
+          <SeletorCategorias
+            buscaCategoria={buscaCategoria}
+            categorias={categorias}
+            carregandoCategorias={carregandoCategorias}
+            onBuscaCategoriaChange={alterarBuscaCategoria}
+            onCategoriaSelect={selecionarCategoria}
+          />
 
-            <AutoComplete
-              id="categoria"
-              className="autocomplete-select autocomplete-categoria"
-              value={buscaCategoria}
-              options={categorias.map((item) => ({
-                value: item.nome,
-                label: item.nome,
-                uuid: item.uuid,
-              }))}
-              onChange={alterarBuscaCategoria}
-              onSelect={selecionarCategoria}
-              filterOption={(textoDigitado, opcao) =>
-                opcao.label
-                  .toLocaleLowerCase("pt-BR")
-                  .includes(textoDigitado.toLocaleLowerCase("pt-BR"))
-              }
-              notFoundContent={
-                carregandoCategorias
-                  ? "Carregando categorias..."
-                  : "Nenhuma categoria encontrada."
-              }
-            >
-              <Input
-                name="categoria"
-                placeholder="Digite ou selecione a Categoria"
-                autoComplete="off"
-                required
-              />
-            </AutoComplete>
-          </div>
-
-          <div className="campo-formulario">
-            <MultiSelect
-              label="Perfis de Acesso"
-              name="perfisAcesso"
-              required
-              options={opcoesPerfisAcesso}
-              selected={perfisAcesso}
-              onSelectedChange={setPerfisAcesso}
-              disabled={!categoria || carregandoPerfis}
-              meta={{
-                touched: false,
-                error: null,
-              }}
-              overrideStrings={{
-                selectSomeItems: "Selecione os Perfis de Acesso",
-                allItemsAreSelected: "Todos os itens estão selecionados",
-                selectAll: "Todos",
-              }}
-            />
-          </div>
+          <CamposAcesso
+            categoriaSelecionada={Boolean(categoria)}
+            carregandoPerfis={carregandoPerfis}
+            onPerfisChange={setPerfisAcesso}
+            opcoesPerfisAcesso={opcoesPerfisAcesso}
+            perfisAcesso={perfisAcesso}
+          />
         </div>
 
         <div className="campo-formulario campo-titulo">
@@ -252,6 +154,7 @@ const CadastroDuvidasFrequentes = () => {
               name: "titulo",
               value: titulo,
               onChange: alterarTitulo,
+              onBlur: () => {},
             }}
           />
         </div>
