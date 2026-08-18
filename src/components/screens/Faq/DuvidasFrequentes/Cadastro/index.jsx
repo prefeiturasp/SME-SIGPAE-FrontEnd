@@ -9,9 +9,15 @@ import CKEditorField from "src/components/Shareable/CKEditorField";
 import InputText from "src/components/Shareable/Input/InputText";
 import { MultiSelect } from "src/components/Shareable/MultiSelect";
 import { ModalPadraoSimNao } from "src/components/Shareable/ModalPadraoSimNao";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { formatarParaMultiselect } from "src/helpers/utilities";
-import { buscarOpcoesCategoriasFaq } from "src/services/faq.service";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { formatarParaMultiselect, getError } from "src/helpers/utilities";
+import {
+  buscarOpcoesCategoriasFaq,
+  criarPerguntaFrequente,
+} from "src/services/faq.service";
 import { getPerfilListagem } from "src/services/perfil.service";
 import "./style.scss";
 
@@ -26,6 +32,7 @@ const CadastroDuvidasFrequentes = () => {
   const [titulo, setTitulo] = useState("");
   const [descricaoDetalhada, setDescricaoDetalhada] = useState("");
   const [exibirModalCancelamento, setExibirModalCancelamento] = useState(false);
+  const [cadastrando, setCadastrando] = useState(false);
 
   const formularioPreenchido =
     buscaCategoria.trim() ||
@@ -80,9 +87,37 @@ const CadastroDuvidasFrequentes = () => {
     setTitulo(evento.target.value);
   };
 
-  const cadastrarDuvida = (evento) => {
+  const cadastrarDuvida = async (evento) => {
     evento.preventDefault();
-    if (!formularioValido) return;
+
+    if (!formularioValido || cadastrando) return;
+
+    const todosOsPerfis = perfisAcesso.length === opcoesPerfisAcesso.length;
+
+    setCadastrando(true);
+
+    try {
+      await criarPerguntaFrequente({
+        categoria: categoria.uuid,
+        perfis: todosOsPerfis ? [] : perfisAcesso,
+        todos_os_perfis: todosOsPerfis,
+        pergunta: titulo.trim(),
+        resposta: descricaoDetalhada.trim(),
+      });
+
+      toastSuccess("Dúvida Frequente Cadastrada com Sucesso!");
+      limparFormulario();
+    } catch (erro) {
+      const dadosErro = erro.response?.data;
+
+      toastError(
+        dadosErro
+          ? getError(dadosErro)
+          : "Não foi possível cadastrar a dúvida frequente.",
+      );
+    } finally {
+      setCadastrando(false);
+    }
   };
 
   useEffect(() => {
@@ -179,7 +214,7 @@ const CadastroDuvidasFrequentes = () => {
               <Input
                 name="categoria"
                 placeholder="Digite ou selecione a Categoria"
-                plete="off"
+                autoComplete="off"
                 required
               />
             </AutoComplete>
@@ -213,8 +248,11 @@ const CadastroDuvidasFrequentes = () => {
             name="titulo"
             placeholder="Descreva o Título da Dúvida"
             required
-            valorInicial={titulo}
-            inputOnChange={alterarTitulo}
+            input={{
+              name: "titulo",
+              value: titulo,
+              onChange: alterarTitulo,
+            }}
           />
         </div>
 
@@ -248,7 +286,7 @@ const CadastroDuvidasFrequentes = () => {
             texto="Cadastrar Dúvida"
             type={BUTTON_TYPE.SUBMIT}
             style={BUTTON_STYLE.GREEN}
-            disabled={!formularioValido}
+            disabled={!formularioValido || cadastrando}
           />
         </div>
       </form>

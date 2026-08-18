@@ -106,22 +106,23 @@ const Faq = () => {
         <div className="col-12 col-md-8 col-lg-9">
           <div className="d-flex justify-content-end align-items-center gap-3 flex-wrap">
             {usuarioComAcessoAoCadastroDeCategorias() && (
-              <Botao
-                texto="Cadastro de Categoria"
-                type={BUTTON_TYPE.BUTTON}
-                style={BUTTON_STYLE.GREEN}
-                onClick={() => navegar(`/${AJUDA}/${CADASTRO_CATEGORIA}`)}
-              />
+              <>
+                <Botao
+                  texto="Cadastro de Categoria"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN}
+                  onClick={() => navegar(`/${AJUDA}/${CADASTRO_CATEGORIA}`)}
+                />
+                <Botao
+                  texto="Cadastro Dúvidas Frequentes"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                  onClick={() =>
+                    navegar(`/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`)
+                  }
+                />
+              </>
             )}
-
-            <Botao
-              texto="Cadastro Dúvidas Frequentes"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() =>
-                navegar(`/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`)
-              }
-            />
           </div>
         </div>
       </div>

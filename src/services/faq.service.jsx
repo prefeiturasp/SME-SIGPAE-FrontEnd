@@ -11,6 +11,10 @@ export const criarCategoriaFaq = async (data) => {
   return axios.post(`/${ENDPOINT.CATEGORIA_PERGUNTAS_FREQUENTES}/`, data);
 };
 
+export const criarPerguntaFrequente = async (dados) => {
+  return axios.post(`/${ENDPOINT.PERGUNTAS_FREQUENTES}/`, dados);
+};
+
 export const buscarCategoriasFaq = async (parametros) => {
   return axios.get(`/${ENDPOINT.CATEGORIA_PERGUNTAS_FREQUENTES}/`, {
     params: parametros,
