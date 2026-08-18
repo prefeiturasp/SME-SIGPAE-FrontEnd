@@ -19,6 +19,7 @@ import { mockGetPeriodoEscolar } from "src/mocks/services/dietaEspecial.service/
 import { mockEscolasParaFiltros } from "src/mocks/services/escola.service/escolasParaFiltros";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
+import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
 import { mockRelatorioAdesaoPaginadoPorPagina } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesaoPaginado";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
 import mock from "src/services/_mock";
@@ -241,6 +242,106 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       .closest(".ant-select-tree-treenode")
       .querySelector(".ant-select-tree-checkbox");
     expect(checkboxGrupo4).toHaveClass("ant-select-tree-checkbox-disabled");
+  });
+
+  it("exibe a label do grupo na filtragem quando o grupo inteiro é selecionado", async () => {
+    await waitFor(() => {
+      expect(screen.getByTestId("select-lotes")).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+
+    const selectTiposUnidades = screen.getByTestId("select-tipos-unidades");
+    const input = selectTiposUnidades.querySelector(
+      ".ant-select-selection-search-input",
+    );
+
+    await act(async () => {
+      fireEvent.mouseDown(input);
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector(".ant-select-dropdown"),
+      ).toBeInTheDocument();
+    });
+
+    const tituloGrupo2 = screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)");
+    const checkboxGrupo2 = tituloGrupo2
+      .closest(".ant-select-tree-treenode")
+      .querySelector(".ant-select-tree-checkbox");
+    fireEvent.click(checkboxGrupo2);
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/^\| Grupo 2 \(CEMEI, CEU CEMEI\)/),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("exibe as iniciais na filtragem quando apenas parte do grupo é selecionada", async () => {
+    await waitFor(() => {
+      expect(screen.getByTestId("select-lotes")).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+
+    const selectTiposUnidades = screen.getByTestId("select-tipos-unidades");
+    const input = selectTiposUnidades.querySelector(
+      ".ant-select-selection-search-input",
+    );
+
+    await act(async () => {
+      fireEvent.mouseDown(input);
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector(".ant-select-dropdown"),
+      ).toBeInTheDocument();
+    });
+
+    const tituloGrupo2 = screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)");
+    const treenodeGrupo2 = tituloGrupo2.closest(".ant-select-tree-treenode");
+    const switcherGrupo2 = treenodeGrupo2.querySelector(
+      ".ant-select-tree-switcher",
+    );
+    fireEvent.click(switcherGrupo2);
+
+    await waitFor(() => {
+      expect(screen.getByText("CEMEI")).toBeInTheDocument();
+    });
+
+    const tituloCEMEI = screen.getByText("CEMEI");
+    const checkboxCEMEI = tituloCEMEI
+      .closest(".ant-select-tree-treenode")
+      .querySelector(".ant-select-tree-checkbox");
+    fireEvent.click(checkboxCEMEI);
+
+    mock
+      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/^\| CEMEI/)).toBeInTheDocument();
+      expect(screen.queryByText(/^\| Grupo 2/)).not.toBeInTheDocument();
+    });
   });
 
   it("envia escola__uuid com as unidades educacionais selecionadas ao filtrar", async () => {
