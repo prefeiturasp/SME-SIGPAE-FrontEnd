@@ -10,7 +10,9 @@ import InputText from "src/components/Shareable/Input/InputText";
 import { MultiSelect } from "src/components/Shareable/MultiSelect";
 import { ModalPadraoSimNao } from "src/components/Shareable/ModalPadraoSimNao";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { formatarParaMultiselect } from "src/helpers/utilities";
 import { buscarOpcoesCategoriasFaq } from "src/services/faq.service";
+import { getPerfilListagem } from "src/services/perfil.service";
 import "./style.scss";
 
 const CadastroDuvidasFrequentes = () => {
@@ -19,11 +21,11 @@ const CadastroDuvidasFrequentes = () => {
   const [categorias, setCategorias] = useState([]);
   const [carregandoCategorias, setCarregandoCategorias] = useState(true);
   const [perfisAcesso, setPerfisAcesso] = useState([]);
+  const [opcoesPerfisAcesso, setOpcoesPerfisAcesso] = useState([]);
+  const [carregandoPerfis, setCarregandoPerfis] = useState(true);
   const [titulo, setTitulo] = useState("");
   const [descricaoDetalhada, setDescricaoDetalhada] = useState("");
   const [exibirModalCancelamento, setExibirModalCancelamento] = useState(false);
-
-  const opcoesPerfisAcesso = [];
 
   const formularioPreenchido =
     buscaCategoria.trim() ||
@@ -111,6 +113,34 @@ const CadastroDuvidasFrequentes = () => {
     };
   }, []);
 
+  useEffect(() => {
+    let requisicaoAtiva = true;
+
+    const carregarPerfis = async () => {
+      try {
+        const resposta = await getPerfilListagem();
+
+        if (requisicaoAtiva) {
+          setOpcoesPerfisAcesso(formatarParaMultiselect(resposta.data.results));
+        }
+      } catch {
+        if (requisicaoAtiva) {
+          toastError("Não foi possível carregar os perfis de acesso.");
+        }
+      } finally {
+        if (requisicaoAtiva) {
+          setCarregandoPerfis(false);
+        }
+      }
+    };
+
+    carregarPerfis();
+
+    return () => {
+      requisicaoAtiva = false;
+    };
+  }, []);
+
   return (
     <div className="cadastro-duvidas-frequentes">
       <form
@@ -163,7 +193,7 @@ const CadastroDuvidasFrequentes = () => {
               options={opcoesPerfisAcesso}
               selected={perfisAcesso}
               onSelectedChange={setPerfisAcesso}
-              disabled={!categoria}
+              disabled={!categoria || carregandoPerfis}
               meta={{
                 touched: false,
                 error: null,
