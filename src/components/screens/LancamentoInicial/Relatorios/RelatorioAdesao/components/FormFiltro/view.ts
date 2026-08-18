@@ -366,6 +366,31 @@ export default ({ form, onChange }: Args) => {
     form.change("periodo_lancamento_ate", undefined);
   };
 
+  const formataLabelTiposUnidades = (
+    grupos: Array<GrupoUnidadeEscolar>,
+    tiposUnidadesSelecionadas: Array<string>,
+  ): Array<string> => {
+    return grupos
+      .map((grupo) => {
+        const tiposDoGrupo = grupo.tipos_unidades;
+        const uuidsDoGrupo = tiposDoGrupo.map((tipo) => tipo.uuid);
+        const selecionadosNoGrupo = uuidsDoGrupo.filter((uuid) =>
+          tiposUnidadesSelecionadas.includes(uuid),
+        );
+        if (selecionadosNoGrupo.length === 0) return null;
+        if (selecionadosNoGrupo.length === uuidsDoGrupo.length) {
+          return `${grupo.nome} (${tiposDoGrupo
+            .map((tipo) => tipo.iniciais)
+            .join(", ")})`;
+        }
+        return tiposDoGrupo
+          .filter((tipo) => tiposUnidadesSelecionadas.includes(tipo.uuid))
+          .map((tipo) => tipo.iniciais)
+          .join(", ");
+      })
+      .filter((label): label is string => Boolean(label));
+  };
+
   const onChangeTiposUnidades = (tiposUnidadesSelecionadas: Array<string>) => {
     const gruposSelecionados = gruposUnidades.filter((grupo) =>
       grupo.tipos_unidades.some((tipo) =>
@@ -380,15 +405,11 @@ export default ({ form, onChange }: Args) => {
       ),
     );
 
-    const iniciais = tiposUnidadesSelecionadas.map((uuid) => {
-      const tipo = gruposUnidades
-        .flatMap((grupo) => grupo.tipos_unidades)
-        .find((tipo) => tipo.uuid === uuid);
-      return tipo ? tipo.iniciais : uuid;
-    });
-
     onChange({
-      tipos_unidades: iniciais,
+      tipos_unidades: formataLabelTiposUnidades(
+        gruposUnidades,
+        tiposUnidadesSelecionadas,
+      ),
     });
 
     buscaEscolas(form.getState().values.lotes || [], tiposUnidadesSelecionadas);
