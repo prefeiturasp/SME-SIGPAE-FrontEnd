@@ -10,13 +10,13 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 import { mockTiposAlimentacao } from "src/mocks/InclusaoAlimentacao/mockTiposAlimentacao";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockMeusDadosCogestor } from "src/mocks/meusDados/cogestor";
 import { mockGetPeriodoEscolar } from "src/mocks/services/dietaEspecial.service/mockGetPeriodoEscolar";
 import { mockEscolasParaFiltros } from "src/mocks/services/escola.service/escolasParaFiltros";
+import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
 import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
@@ -32,8 +32,8 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/meses-anos/")
       .reply(200, mockMesesAnosRelatorioAdesao);
     mock
-      .onGet("/diretorias-regionais-simplissima/")
-      .reply(200, mockDiretoriaRegionalSimplissima);
+      .onGet("/grupos-unidade-escolar/")
+      .reply(200, mockGetGrupoUnidadeEscolar);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
@@ -41,7 +41,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
     localStorage.setItem(
       "uuid_instituicao",
-      mockMeusDadosCogestor.vinculo_atual.instituicao.uuid
+      mockMeusDadosCogestor.vinculo_atual.instituicao.uuid,
     );
 
     await act(async () => {
@@ -61,7 +61,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
             <RelatorioAdesaoPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -73,12 +73,6 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
   it("Filtra por mês de referência e período de lançamento", async () => {
     expect(screen.getByText("Filtrar Resultados")).toBeInTheDocument();
 
-    const selectDRE = screen.getByTestId("select-dre");
-    const selectElementDRE = selectDRE.querySelector("select");
-    expect(selectElementDRE).toHaveValue(
-      mockMeusDadosCogestor.vinculo_atual.instituicao.uuid
-    );
-
     const selectMesReferencia = screen.getByTestId("select-mes-referencia");
     const selectElementMesReferencia =
       selectMesReferencia.querySelector("select");
@@ -88,7 +82,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     expect(selectElementMesReferencia).toHaveValue("12_2023");
 
     const divInputPeriodoLancamentoDe = screen.getByTestId(
-      "div-periodo-lancamento-de"
+      "div-periodo-lancamento-de",
     );
     const inputElementPeriodoLancamentoDe =
       divInputPeriodoLancamentoDe.querySelector("input");
@@ -97,7 +91,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     });
 
     const divInputPeriodoLancamentoAte = screen.getByTestId(
-      "div-periodo-lancamento-ate"
+      "div-periodo-lancamento-ate",
     );
     const inputElementPeriodoLancamentoAte =
       divInputPeriodoLancamentoAte.querySelector("input");
@@ -114,7 +108,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Adesão das Alimentações Servidas")
+        screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
       expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
     });
@@ -126,12 +120,9 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Adesão das Alimentações Servidas")
+        screen.queryByText("Adesão das Alimentações Servidas"),
       ).not.toBeInTheDocument();
       expect(selectElementMesReferencia).toHaveValue("");
-      expect(selectElementDRE).toHaveValue(
-        mockMeusDadosCogestor.vinculo_atual.instituicao.uuid
-      );
     });
   });
 
@@ -145,7 +136,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     expect(selectElementMesReferencia).toHaveValue("12_2023");
 
     const divInputPeriodoLancamentoDe = screen.getByTestId(
-      "div-periodo-lancamento-de"
+      "div-periodo-lancamento-de",
     );
     const inputElementPeriodoLancamentoDe =
       divInputPeriodoLancamentoDe.querySelector("input");
@@ -162,7 +153,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Se preencher o campo `De`, `Até` é obrigatório")
+        screen.getByText("Se preencher o campo `De`, `Até` é obrigatório"),
       ).toBeInTheDocument();
     });
   });
@@ -177,7 +168,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     expect(selectElementMesReferencia).toHaveValue("12_2023");
 
     const divInputPeriodoLancamentoDe = screen.getByTestId(
-      "div-periodo-lancamento-de"
+      "div-periodo-lancamento-de",
     );
     const inputElementPeriodoLancamentoDe =
       divInputPeriodoLancamentoDe.querySelector("input");
@@ -186,7 +177,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     });
 
     const divInputPeriodoLancamentoAte = screen.getByTestId(
-      "div-periodo-lancamento-ate"
+      "div-periodo-lancamento-ate",
     );
     const inputElementPeriodoLancamentoAte =
       divInputPeriodoLancamentoAte.querySelector("input");
@@ -202,8 +193,8 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Não foi possível obter os resultados. Tente novamente mais tarde."
-        )
+          "Não foi possível obter os resultados. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });

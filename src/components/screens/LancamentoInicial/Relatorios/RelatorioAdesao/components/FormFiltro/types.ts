@@ -22,3 +22,22 @@ export type Option = {
   label: string;
   value: any;
 };
+
+export type TipoUnidade = {
+  uuid: string;
+  iniciais: string;
+};
+
+export type GrupoUnidadeEscolar = {
+  uuid: string;
+  nome: string;
+  tipos_unidades: TipoUnidade[];
+};
+
+export type TiposUnidadesTreeNode = {
+  title: string;
+  value: string;
+  key: string;
+  disabled?: boolean;
+  children?: TiposUnidadesTreeNode[];
+};
