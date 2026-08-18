@@ -17,6 +17,10 @@ export const buscarCategoriasFaq = async (parametros) => {
   });
 };
 
+export const buscarOpcoesCategoriasFaq = async () => {
+  return axios.get(`/${ENDPOINT.CATEGORIA_PERGUNTAS_FREQUENTES}/opcoes/`);
+};
+
 export const buscarCategoriaFaq = async (uuid) => {
   return axios.get(`/${ENDPOINT.CATEGORIA_PERGUNTAS_FREQUENTES}/${uuid}/`);
 };

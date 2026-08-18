@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { AutoComplete, Input } from "antd";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -8,20 +9,24 @@ import CKEditorField from "src/components/Shareable/CKEditorField";
 import InputText from "src/components/Shareable/Input/InputText";
 import { MultiSelect } from "src/components/Shareable/MultiSelect";
 import { ModalPadraoSimNao } from "src/components/Shareable/ModalPadraoSimNao";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { buscarOpcoesCategoriasFaq } from "src/services/faq.service";
 import "./style.scss";
 
 const CadastroDuvidasFrequentes = () => {
-  const [categoria, setCategoria] = useState("");
+  const [categoria, setCategoria] = useState(null);
+  const [buscaCategoria, setBuscaCategoria] = useState("");
+  const [categorias, setCategorias] = useState([]);
+  const [carregandoCategorias, setCarregandoCategorias] = useState(true);
   const [perfisAcesso, setPerfisAcesso] = useState([]);
   const [titulo, setTitulo] = useState("");
   const [descricaoDetalhada, setDescricaoDetalhada] = useState("");
   const [exibirModalCancelamento, setExibirModalCancelamento] = useState(false);
 
-  const categorias = [];
   const opcoesPerfisAcesso = [];
 
   const formularioPreenchido =
-    categoria ||
+    buscaCategoria.trim() ||
     perfisAcesso.length > 0 ||
     titulo.trim() ||
     descricaoDetalhada.trim();
@@ -33,7 +38,8 @@ const CadastroDuvidasFrequentes = () => {
     descricaoDetalhada.trim();
 
   const limparFormulario = () => {
-    setCategoria("");
+    setCategoria(null);
+    setBuscaCategoria("");
     setPerfisAcesso([]);
     setTitulo("");
     setDescricaoDetalhada("");
@@ -57,14 +63,15 @@ const CadastroDuvidasFrequentes = () => {
     setExibirModalCancelamento(false);
   };
 
-  const alterarCategoria = (evento) => {
-    const valor = evento.target.value;
+  const alterarBuscaCategoria = (valor) => {
+    setBuscaCategoria(valor);
+    setCategoria(null);
+    setPerfisAcesso([]);
+  };
 
-    setCategoria(valor);
-
-    if (!valor) {
-      setPerfisAcesso([]);
-    }
+  const selecionarCategoria = (_, opcao) => {
+    setCategoria({ uuid: opcao.uuid, nome: opcao.label });
+    setBuscaCategoria(opcao.label);
   };
 
   const alterarTitulo = (evento) => {
@@ -76,6 +83,34 @@ const CadastroDuvidasFrequentes = () => {
     if (!formularioValido) return;
   };
 
+  useEffect(() => {
+    let requisicaoAtiva = true;
+
+    const carregarCategorias = async () => {
+      try {
+        const resposta = await buscarOpcoesCategoriasFaq();
+
+        if (requisicaoAtiva) {
+          setCategorias(resposta.data);
+        }
+      } catch {
+        if (requisicaoAtiva) {
+          toastError("Não foi possível carregar as categorias.");
+        }
+      } finally {
+        if (requisicaoAtiva) {
+          setCarregandoCategorias(false);
+        }
+      }
+    };
+
+    carregarCategorias();
+
+    return () => {
+      requisicaoAtiva = false;
+    };
+  }, []);
+
   return (
     <div className="cadastro-duvidas-frequentes">
       <form
@@ -83,28 +118,41 @@ const CadastroDuvidasFrequentes = () => {
         onSubmit={cadastrarDuvida}
       >
         <div className="linha-formulario">
-          <div className="campo-formulario">
+          <div className="campo-formulario campo-categoria">
             <label htmlFor="categoria" className="col-form-label">
               <span className="required-asterisk">*</span>
               Categoria
             </label>
 
-            <select
+            <AutoComplete
               id="categoria"
-              name="categoria"
-              className="form-control"
-              value={categoria}
-              onChange={alterarCategoria}
-              required
+              className="autocomplete-select autocomplete-categoria"
+              value={buscaCategoria}
+              options={categorias.map((item) => ({
+                value: item.nome,
+                label: item.nome,
+                uuid: item.uuid,
+              }))}
+              onChange={alterarBuscaCategoria}
+              onSelect={selecionarCategoria}
+              filterOption={(textoDigitado, opcao) =>
+                opcao.label
+                  .toLocaleLowerCase("pt-BR")
+                  .includes(textoDigitado.toLocaleLowerCase("pt-BR"))
+              }
+              notFoundContent={
+                carregandoCategorias
+                  ? "Carregando categorias..."
+                  : "Nenhuma categoria encontrada."
+              }
             >
-              <option value="">Selecione a Categoria</option>
-
-              {categorias.map((item) => (
-                <option key={item.uuid} value={item.uuid}>
-                  {item.nome}
-                </option>
-              ))}
-            </select>
+              <Input
+                name="categoria"
+                placeholder="Digite ou selecione a Categoria"
+                plete="off"
+                required
+              />
+            </AutoComplete>
           </div>
 
           <div className="campo-formulario">
