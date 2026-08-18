@@ -403,7 +403,6 @@ export default () => {
   const trataTabelaAlimentacaoEscolaSemAlunosRegulares = (
     tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
     tiposAlimentacaoInclusaoContinua,
-    periodoPossuiLanche4h = false,
   ) => {
     if (!tiposAlimentacaoInclusaoContinua.includes("refeicao")) {
       const indexRefeicao1Oferta =
@@ -454,20 +453,15 @@ export default () => {
       );
     }
 
-    if (
-      !tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
-      !periodoPossuiLanche4h
-    ) {
+    if (!tiposAlimentacaoInclusaoContinua.includes("lanche_4h")) {
       const indexLanche4h =
         tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.findIndex(
           (ali) => ali.nome === "Lanche 4h",
         );
-      if (indexLanche4h !== -1) {
-        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
-          indexLanche4h,
-          1,
-        );
-      }
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.splice(
+        indexLanche4h,
+        1,
+      );
     }
     if (
       !tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
@@ -703,10 +697,6 @@ export default () => {
       const tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares =
         deepCopy(tiposAlimentacaoFormatadas);
 
-      const periodoPossuiLanche4h = tiposAlimentacaoFormatadas.some(
-        (taf) => taf.nome === "Lanche 4h",
-      );
-
       if (
         tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
         !tiposAlimentacaoFormatadas.find((taf) => taf.nome === "Lanche 4h")
@@ -764,7 +754,6 @@ export default () => {
         trataTabelaAlimentacaoEscolaSemAlunosRegulares(
           tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
           tiposAlimentacaoInclusaoContinua,
-          periodoPossuiLanche4h,
         ),
       );
 
