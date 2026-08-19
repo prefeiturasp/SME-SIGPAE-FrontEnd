@@ -100,7 +100,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -145,7 +145,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -185,7 +185,7 @@ describe("Teste Relatório de Adesão - Visão DRE", () => {
       target: { value: "20/12/2023" },
     });
 
-    mock.onGet("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
+    mock.onPost("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);

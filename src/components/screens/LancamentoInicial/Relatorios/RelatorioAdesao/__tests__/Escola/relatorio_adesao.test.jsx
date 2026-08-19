@@ -156,7 +156,7 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
       target: { value: "20/12/2023" },
     });
 
-    mock.onGet("/medicao-inicial/relatorios/relatorio-adesao/").reply(200, {
+    mock.onPost("/medicao-inicial/relatorios/relatorio-adesao/").reply(200, {
       next: null,
       previous: null,
       count: 1,
@@ -217,7 +217,7 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -257,7 +257,7 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
       target: { value: "20/12/2023" },
     });
 
-    mock.onGet("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
+    mock.onPost("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);

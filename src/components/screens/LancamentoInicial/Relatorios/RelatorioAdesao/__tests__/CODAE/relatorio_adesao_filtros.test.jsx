@@ -273,7 +273,7 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     fireEvent.click(checkboxGrupo2);
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -329,7 +329,7 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     fireEvent.click(checkboxCEMEI);
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -359,9 +359,9 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     fireEvent.click(screen.getByText("015423 - EMEF PRESTES MAIA - LOTE 13"));
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply((config) => {
-        const page = config.params?.page || 1;
+        const page = JSON.parse(config.data).page || 1;
         return [200, mockRelatorioAdesaoPaginadoPorPagina[page]];
       });
 
@@ -369,12 +369,13 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     fireEvent.click(botaoFiltrar);
 
     await waitFor(() => {
-      const relatorioRequests = mock.history.get.filter((r) =>
+      const relatorioRequests = mock.history.post.filter((r) =>
         r.url.endsWith("/relatorio-adesao/"),
       );
       expect(relatorioRequests.length).toBeGreaterThan(0);
       expect(
-        relatorioRequests[relatorioRequests.length - 1].params.escola__uuid,
+        JSON.parse(relatorioRequests[relatorioRequests.length - 1].data)
+          .escola__uuid,
       ).toEqual(["5cd1d36b-460e-46d6-b105-5138993aa4e8"]);
     });
   });
@@ -394,9 +395,9 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     fireEvent.click(screen.getByText("015423 - EMEF PRESTES MAIA - LOTE 13"));
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply((config) => {
-        const page = config.params?.page || 1;
+        const page = JSON.parse(config.data).page || 1;
         return [200, mockRelatorioAdesaoPaginadoPorPagina[page]];
       });
 
