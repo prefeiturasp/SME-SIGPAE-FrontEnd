@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import BotaoCadastrarCategoria from "../Categorias/components/BotaoCadastrarCategoria";
+import BotaoCadastrarCategoria from "src/components/screens/Faq/Categorias/components/BotaoCadastrarCategoria";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

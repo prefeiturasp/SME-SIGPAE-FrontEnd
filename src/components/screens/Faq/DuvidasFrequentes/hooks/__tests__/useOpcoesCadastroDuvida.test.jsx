@@ -3,7 +3,7 @@ import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { formatarParaMultiselect } from "src/helpers/utilities";
 import { buscarOpcoesCategoriasFaq } from "src/services/faq.service";
 import { getPerfilListagem } from "src/services/perfil.service";
-import { useOpcoesCadastroDuvida } from "../DuvidasFrequentes/hooks/useOpcoesCadastroDuvida";
+import { useOpcoesCadastroDuvida } from "src/components/screens/Faq/DuvidasFrequentes/hooks/useOpcoesCadastroDuvida";
 
 jest.mock("src/services/faq.service", () => ({
   buscarOpcoesCategoriasFaq: jest.fn(),
@@ -33,7 +33,7 @@ describe("useOpcoesCadastroDuvida", () => {
     const categorias = [
       { uuid: UUID_CATEGORIA, nome: "Gestão de Alimentação" },
     ];
-    const perfis = [{ uuid: UUID_PERFIL, nome: "Escola" }];
+    const perfis = [{ uuid: UUID_PERFIL, nome: "Escola", ativo: true }];
     const opcoesPerfis = [{ value: UUID_PERFIL, label: "Escola" }];
 
     buscarOpcoesCategoriasFaq.mockResolvedValue({ data: categorias });

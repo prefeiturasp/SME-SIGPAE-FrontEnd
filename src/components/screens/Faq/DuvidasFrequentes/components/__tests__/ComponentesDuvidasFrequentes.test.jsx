@@ -1,9 +1,9 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import BotaoCadastrarDuvidasFrequentes from "../DuvidasFrequentes/components/BotaoCadastroDuvidasFrequentes";
-import CamposAcesso from "../DuvidasFrequentes/components/CamposAcesso";
-import SeletorCategorias from "../DuvidasFrequentes/components/SeletorCategorias";
+import BotaoCadastrarDuvidasFrequentes from "src/components/screens/Faq/DuvidasFrequentes/components/BotaoCadastroDuvidasFrequentes";
+import CamposAcesso from "src/components/screens/Faq/DuvidasFrequentes/components/CamposAcesso";
+import SeletorCategorias from "src/components/screens/Faq/DuvidasFrequentes/components/SeletorCategorias";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),

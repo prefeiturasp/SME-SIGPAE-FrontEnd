@@ -1,14 +1,14 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import CadastroDuvidasFrequentes from "../DuvidasFrequentes/Cadastro";
+import CadastroDuvidasFrequentes from "src/components/screens/Faq/DuvidasFrequentes/Cadastro";
 import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { getError } from "src/helpers/utilities";
 import { criarPerguntaFrequente } from "src/services/faq.service";
-import { useOpcoesCadastroDuvida } from "../DuvidasFrequentes/hooks/useOpcoesCadastroDuvida";
+import { useOpcoesCadastroDuvida } from "src/components/screens/Faq/DuvidasFrequentes/hooks/useOpcoesCadastroDuvida";
 
 jest.mock("src/services/faq.service", () => ({
   criarPerguntaFrequente: jest.fn(),
@@ -23,9 +23,12 @@ jest.mock("src/helpers/utilities", () => ({
   getError: jest.fn(),
 }));
 
-jest.mock("../DuvidasFrequentes/hooks/useOpcoesCadastroDuvida", () => ({
-  useOpcoesCadastroDuvida: jest.fn(),
-}));
+jest.mock(
+  "src/components/screens/Faq/DuvidasFrequentes/hooks/useOpcoesCadastroDuvida",
+  () => ({
+    useOpcoesCadastroDuvida: jest.fn(),
+  }),
+);
 
 jest.mock("src/components/Shareable/Botao", () => ({
   __esModule: true,
@@ -71,69 +74,75 @@ jest.mock("src/components/Shareable/CKEditorField", () => ({
   ),
 }));
 
-jest.mock("../DuvidasFrequentes/components/SeletorCategorias", () => ({
-  __esModule: true,
-  default: ({
-    buscaCategoria,
-    categorias,
-    onBuscaCategoriaChange,
-    onCategoriaSelect,
-  }) => (
-    <label>
-      Categoria
-      <input
-        aria-label="Categoria"
-        value={buscaCategoria}
-        onChange={(evento) => onBuscaCategoriaChange(evento.target.value)}
-      />
-      {categorias.map((categoria) => (
-        <button
-          key={categoria.uuid}
-          type="button"
-          onClick={() =>
-            onCategoriaSelect(categoria.nome, {
-              label: categoria.nome,
-              uuid: categoria.uuid,
-              value: categoria.nome,
-            })
-          }
-        >
-          Selecionar {categoria.nome}
-        </button>
-      ))}
-    </label>
-  ),
-}));
+jest.mock(
+  "src/components/screens/Faq/DuvidasFrequentes/components/SeletorCategorias",
+  () => ({
+    __esModule: true,
+    default: ({
+      buscaCategoria,
+      categorias,
+      onBuscaCategoriaChange,
+      onCategoriaSelect,
+    }) => (
+      <label>
+        Categoria
+        <input
+          aria-label="Categoria"
+          value={buscaCategoria}
+          onChange={(evento) => onBuscaCategoriaChange(evento.target.value)}
+        />
+        {categorias.map((categoria) => (
+          <button
+            key={categoria.uuid}
+            type="button"
+            onClick={() =>
+              onCategoriaSelect(categoria.nome, {
+                label: categoria.nome,
+                uuid: categoria.uuid,
+                value: categoria.nome,
+              })
+            }
+          >
+            Selecionar {categoria.nome}
+          </button>
+        ))}
+      </label>
+    ),
+  }),
+);
 
-jest.mock("../DuvidasFrequentes/components/CamposAcesso", () => ({
-  __esModule: true,
-  default: ({
-    categoriaSelecionada,
-    onPerfisChange,
-    opcoesPerfisAcesso,
-    perfisAcesso,
-  }) => (
-    <fieldset disabled={!categoriaSelecionada}>
-      <legend>Perfis de Acesso</legend>
-      {opcoesPerfisAcesso.map((perfil) => (
-        <label key={perfil.value}>
-          <input
-            type="checkbox"
-            checked={perfisAcesso.includes(perfil.value)}
-            onChange={() => {
-              const perfisAtualizados = perfisAcesso.includes(perfil.value)
-                ? perfisAcesso.filter((uuid) => uuid !== perfil.value)
-                : [...perfisAcesso, perfil.value];
+jest.mock(
+  "src/components/screens/Faq/DuvidasFrequentes/components/CamposAcesso",
+  () => ({
+    __esModule: true,
+    default: ({
+      categoriaSelecionada,
+      onPerfisChange,
+      opcoesPerfisAcesso,
+      perfisAcesso,
+    }) => (
+      <fieldset disabled={!categoriaSelecionada}>
+        <legend>Perfis de Acesso</legend>
+        {opcoesPerfisAcesso.map((perfil) => (
+          <label key={perfil.value}>
+            <input
+              type="checkbox"
+              checked={perfisAcesso.includes(perfil.value)}
+              onChange={() => {
+                const perfisAtualizados = perfisAcesso.includes(perfil.value)
+                  ? perfisAcesso.filter((uuid) => uuid !== perfil.value)
+                  : [...perfisAcesso, perfil.value];
 
-              onPerfisChange(perfisAtualizados);
-            }}
-          />
-          {perfil.label}
-        </label>
-      ))}
-    </fieldset>
-  ),
-}));
+                onPerfisChange(perfisAtualizados);
+              }}
+            />
+            {perfil.label}
+          </label>
+        ))}
+      </fieldset>
+    ),
+  }),
+);
 
 jest.mock("src/components/Shareable/ModalPadraoSimNao", () => ({
   ModalPadraoSimNao: ({
