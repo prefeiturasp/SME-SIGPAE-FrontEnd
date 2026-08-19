@@ -36,7 +36,10 @@ export const useOpcoesCadastroDuvida = () => {
         const resposta = await getPerfilListagem();
 
         if (requisicaoAtiva) {
-          setOpcoesPerfisAcesso(formatarParaMultiselect(resposta.data.results));
+          let perfilAtivo = resposta.data.results.filter(
+            (perfil) => perfil.ativo === true,
+          );
+          setOpcoesPerfisAcesso(formatarParaMultiselect(perfilAtivo));
         }
       } catch {
         if (requisicaoAtiva) {
