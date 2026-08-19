@@ -156,9 +156,21 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
       target: { value: "20/12/2023" },
     });
 
-    mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
-      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+    mock.onPost("/medicao-inicial/relatorios/relatorio-adesao/").reply(200, {
+      next: null,
+      previous: null,
+      count: 1,
+      page_size: 1,
+      results: [
+        {
+          escola: {
+            nome: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+            codigo_eol: "017981",
+          },
+          resultados: mockRelatorioAdesao10a20Dezenbro2023,
+        },
+      ],
+    });
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);
@@ -168,6 +180,9 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
         screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
       expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
+      expect(
+        screen.getByText(/^\| 017981 - EMEF PERICLES EUGENIO DA SILVA RAMOS/),
+      ).toBeInTheDocument();
     });
 
     const botaoLimparFiltros = screen
@@ -202,7 +217,7 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -242,7 +257,7 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
       target: { value: "20/12/2023" },
     });
 
-    mock.onGet("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
+    mock.onPost("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);
