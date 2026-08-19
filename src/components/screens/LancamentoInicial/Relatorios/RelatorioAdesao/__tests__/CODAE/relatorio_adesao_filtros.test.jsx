@@ -20,6 +20,7 @@ import { mockEscolasParaFiltros } from "src/mocks/services/escola.service/escola
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
 import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
+import { mockRelatorioAdesaoPaginadoPorPagina } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesaoPaginado";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
 import mock from "src/services/_mock";
 
@@ -243,6 +244,106 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     expect(checkboxGrupo4).toHaveClass("ant-select-tree-checkbox-disabled");
   });
 
+  it("exibe a label do grupo na filtragem quando o grupo inteiro é selecionado", async () => {
+    await waitFor(() => {
+      expect(screen.getByTestId("select-lotes")).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+
+    const selectTiposUnidades = screen.getByTestId("select-tipos-unidades");
+    const input = selectTiposUnidades.querySelector(
+      ".ant-select-selection-search-input",
+    );
+
+    await act(async () => {
+      fireEvent.mouseDown(input);
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector(".ant-select-dropdown"),
+      ).toBeInTheDocument();
+    });
+
+    const tituloGrupo2 = screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)");
+    const checkboxGrupo2 = tituloGrupo2
+      .closest(".ant-select-tree-treenode")
+      .querySelector(".ant-select-tree-checkbox");
+    fireEvent.click(checkboxGrupo2);
+
+    mock
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/^\| Grupo 2 \(CEMEI, CEU CEMEI\)/),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("exibe as iniciais na filtragem quando apenas parte do grupo é selecionada", async () => {
+    await waitFor(() => {
+      expect(screen.getByTestId("select-lotes")).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+
+    const selectTiposUnidades = screen.getByTestId("select-tipos-unidades");
+    const input = selectTiposUnidades.querySelector(
+      ".ant-select-selection-search-input",
+    );
+
+    await act(async () => {
+      fireEvent.mouseDown(input);
+    });
+
+    await waitFor(() => {
+      expect(
+        document.querySelector(".ant-select-dropdown"),
+      ).toBeInTheDocument();
+    });
+
+    const tituloGrupo2 = screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)");
+    const treenodeGrupo2 = tituloGrupo2.closest(".ant-select-tree-treenode");
+    const switcherGrupo2 = treenodeGrupo2.querySelector(
+      ".ant-select-tree-switcher",
+    );
+    fireEvent.click(switcherGrupo2);
+
+    await waitFor(() => {
+      expect(screen.getByText("CEMEI")).toBeInTheDocument();
+    });
+
+    const tituloCEMEI = screen.getByText("CEMEI");
+    const checkboxCEMEI = tituloCEMEI
+      .closest(".ant-select-tree-treenode")
+      .querySelector(".ant-select-tree-checkbox");
+    fireEvent.click(checkboxCEMEI);
+
+    mock
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/^\| CEMEI/)).toBeInTheDocument();
+      expect(screen.queryByText(/^\| Grupo 2/)).not.toBeInTheDocument();
+    });
+  });
+
   it("envia escola__uuid com as unidades educacionais selecionadas ao filtrar", async () => {
     await waitFor(() => {
       expect(
@@ -258,20 +359,74 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     fireEvent.click(screen.getByText("015423 - EMEF PRESTES MAIA - LOTE 13"));
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
-      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply((config) => {
+        const page = JSON.parse(config.data).page || 1;
+        return [200, mockRelatorioAdesaoPaginadoPorPagina[page]];
+      });
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);
 
     await waitFor(() => {
-      const relatorioRequests = mock.history.get.filter((r) =>
+      const relatorioRequests = mock.history.post.filter((r) =>
         r.url.endsWith("/relatorio-adesao/"),
       );
       expect(relatorioRequests.length).toBeGreaterThan(0);
       expect(
-        relatorioRequests[relatorioRequests.length - 1].params.escola__uuid,
+        JSON.parse(relatorioRequests[relatorioRequests.length - 1].data)
+          .escola__uuid,
       ).toEqual(["5cd1d36b-460e-46d6-b105-5138993aa4e8"]);
+    });
+  });
+
+  it("exibe o nome e código EOL da escola retornada pelo backend e pagina os resultados por escola", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("select-unidade-educacional"),
+      ).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+
+    const selectUnidades = screen.getByTestId("select-unidade-educacional");
+    const selectControlUnidades = within(selectUnidades).getByRole("combobox");
+    fireEvent.mouseDown(selectControlUnidades);
+    fireEvent.click(screen.getByText("015423 - EMEF PRESTES MAIA - LOTE 13"));
+
+    mock
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply((config) => {
+        const page = JSON.parse(config.data).page || 1;
+        return [200, mockRelatorioAdesaoPaginadoPorPagina[page]];
+      });
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/^\| 015423 - EMEF PRESTES MAIA/),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+    expect(screen.getAllByText("LANCHE").length).toBeGreaterThan(0);
+
+    const itemPagina2 = document.querySelector(".ant-pagination-item-2");
+    expect(itemPagina2).toBeInTheDocument();
+    fireEvent.click(itemPagina2);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/^\| 017981 - EMEF PERICLES EUGENIO DA SILVA RAMOS/),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Nenhum resultado foi encontrado para esta busca."),
+      ).toBeInTheDocument();
     });
   });
 });
