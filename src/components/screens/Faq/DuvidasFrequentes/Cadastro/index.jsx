@@ -105,7 +105,7 @@ const CadastroDuvidasFrequentes = () => {
         resposta: descricaoDetalhada.trim(),
       });
 
-      toastSuccess("Dúvida Frequente Cadastrada com Sucesso!");
+      toastSuccess("Dúvida frequente cadastrada com sucesso!");
       limparFormulario();
     } catch (erro) {
       const dadosErro = erro.response?.data;

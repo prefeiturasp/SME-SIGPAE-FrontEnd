@@ -240,7 +240,7 @@ describe("Cadastro de dúvidas frequentes", () => {
     });
 
     expect(toastSuccess).toHaveBeenCalledWith(
-      "Dúvida Frequente Cadastrada com Sucesso!",
+      "Dúvida frequente cadastrada com sucesso!",
     );
     expect(screen.getByLabelText("Título")).toHaveValue("");
     expect(screen.getByLabelText("Descrição Detalhada")).toHaveValue("");
