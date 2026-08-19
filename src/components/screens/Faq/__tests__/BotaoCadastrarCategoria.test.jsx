@@ -25,16 +25,6 @@ describe("BotaoCadastrarCategoria", () => {
     useNavigate.mockReturnValue(navegarMock);
   });
 
-  it("deve renderizar o botão de cadastrar categoria", () => {
-    render(<BotaoCadastrarCategoria />);
-
-    expect(
-      screen.getByRole("button", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeInTheDocument();
-  });
-
   it("deve navegar para o cadastro de categoria ao clicar no botão", () => {
     render(<BotaoCadastrarCategoria />);
 

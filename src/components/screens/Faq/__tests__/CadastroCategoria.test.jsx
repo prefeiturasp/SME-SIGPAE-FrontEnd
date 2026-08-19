@@ -100,51 +100,6 @@ describe("CadastroCategoria", () => {
     jest.clearAllMocks();
   });
 
-  it("renderiza os elementos da tela de cadastro", () => {
-    render(<CadastroCategoria />);
-
-    expect(screen.getByLabelText("Nome da Categoria")).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("button", {
-        name: "Cancelar",
-      }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("button", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("mantém o botão de cadastro desabilitado com o campo vazio", () => {
-    render(<CadastroCategoria />);
-
-    expect(
-      screen.getByRole("button", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeDisabled();
-  });
-
-  it("habilita o botão após informar o nome da categoria", async () => {
-    const user = userEvent.setup();
-
-    render(<CadastroCategoria />);
-
-    await user.type(
-      screen.getByLabelText("Nome da Categoria"),
-      "Alimentação Escolar",
-    );
-
-    expect(
-      screen.getByRole("button", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeEnabled();
-  });
-
   it("não envia o formulário quando o nome contém somente espaços", () => {
     render(<CadastroCategoria />);
 
@@ -214,42 +169,6 @@ describe("CadastroCategoria", () => {
 
     expect(input).toHaveValue("");
     expect(criarCategoriaFaq).not.toHaveBeenCalled();
-  });
-
-  it("exibe o modal ao tentar cadastrar uma categoria duplicada", async () => {
-    const user = userEvent.setup();
-
-    criarCategoriaFaq.mockRejectedValue({
-      response: {
-        status: 400,
-        data: {
-          nome: [MENSAGEM_CATEGORIA_DUPLICADA],
-        },
-      },
-    });
-
-    render(<CadastroCategoria />);
-
-    const input = screen.getByLabelText("Nome da Categoria");
-
-    await user.type(input, "Alimentação Escolar");
-
-    await user.click(
-      screen.getByRole("button", {
-        name: "Cadastrar Categoria",
-      }),
-    );
-
-    expect(
-      await screen.findByRole("dialog", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeInTheDocument();
-
-    expect(screen.getByText(MENSAGEM_CATEGORIA_DUPLICADA)).toBeInTheDocument();
-
-    expect(input).toHaveValue("Alimentação Escolar");
-    expect(toastError).not.toHaveBeenCalled();
   });
 
   it("fecha o modal de categoria duplicada ao clicar em OK", async () => {

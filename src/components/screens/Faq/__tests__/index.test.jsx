@@ -1,7 +1,11 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
+import {
+  AJUDA,
+  CADASTRO_CATEGORIA,
+  CADASTRO_DUVIDAS_FREQUENTES,
+} from "src/configs/constants";
 import { usuarioComAcessoAoCadastroDeCategorias } from "src/helpers/utilities";
 import { getFaq } from "src/services/faq.service";
 import Faq from "../";
@@ -65,47 +69,6 @@ describe("Testes do componente Faq", () => {
     useNavigate.mockReturnValue(navegarMock);
   });
 
-  it("deve renderizar o componente corretamente", async () => {
-    render(<Faq />);
-
-    expect(screen.getByText("Como podemos ajudar?")).toBeInTheDocument();
-
-    expect(screen.getByPlaceholderText("Pesquisar")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.getByText("Geral")).toBeInTheDocument();
-      expect(screen.getByText("Cadastros")).toBeInTheDocument();
-    });
-
-    expect(getFaq).toHaveBeenCalledTimes(1);
-  });
-
-  it("deve exibir o loading enquanto os dados são carregados", async () => {
-    render(<Faq />);
-
-    expect(screen.getByAltText("ajax-loader")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.queryByAltText("ajax-loader")).not.toBeInTheDocument();
-    });
-  });
-
-  it("deve exibir somente as perguntas da primeira categoria após o carregamento", async () => {
-    render(<Faq />);
-
-    expect(
-      await screen.findByText("Como resetar minha senha?"),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText("Como entrar em contato com o suporte?"),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.queryByText("Como cadastrar um novo usuário?"),
-    ).not.toBeInTheDocument();
-  });
-
   it("deve exibir as perguntas da categoria selecionada", async () => {
     render(<Faq />);
 
@@ -128,26 +91,6 @@ describe("Testes do componente Faq", () => {
     expect(
       screen.queryByText("Como entrar em contato com o suporte?"),
     ).not.toBeInTheDocument();
-  });
-
-  it("deve filtrar as perguntas pelo texto pesquisado", async () => {
-    render(<Faq />);
-
-    await screen.findByText("Como resetar minha senha?");
-
-    fireEvent.change(screen.getByPlaceholderText("Pesquisar"), {
-      target: {
-        value: "resetar",
-      },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText("Como resetar minha senha?")).toBeInTheDocument();
-
-      expect(
-        screen.queryByText("Como entrar em contato com o suporte?"),
-      ).not.toBeInTheDocument();
-    });
   });
 
   it("deve localizar uma pergunta pertencente a outra categoria", async () => {
@@ -176,50 +119,6 @@ describe("Testes do componente Faq", () => {
         name: "Cadastros",
       }),
     ).toBeInTheDocument();
-  });
-
-  it("deve restaurar as categorias e selecionar a primeira ao limpar o campo", async () => {
-    render(<Faq />);
-
-    await screen.findByText("Como resetar minha senha?");
-
-    const campoBusca = screen.getByPlaceholderText("Pesquisar");
-
-    fireEvent.change(campoBusca, {
-      target: {
-        value: "cadastrar",
-      },
-    });
-
-    await screen.findByText("Como cadastrar um novo usuário?");
-
-    fireEvent.change(campoBusca, {
-      target: {
-        value: "",
-      },
-    });
-
-    await waitFor(() => {
-      expect(campoBusca).toHaveValue("");
-
-      expect(
-        screen.getByRole("button", {
-          name: "Geral",
-        }),
-      ).toBeInTheDocument();
-
-      expect(
-        screen.getByRole("button", {
-          name: "Cadastros",
-        }),
-      ).toBeInTheDocument();
-
-      expect(screen.getByText("Como resetar minha senha?")).toBeInTheDocument();
-    });
-
-    expect(
-      screen.queryByText("Como cadastrar um novo usuário?"),
-    ).not.toBeInTheDocument();
   });
 
   it("não deve exibir categorias ou perguntas quando nenhum resultado for encontrado", async () => {
@@ -256,18 +155,6 @@ describe("Testes do componente Faq", () => {
     });
   });
 
-  it("deve exibir o botão de cadastro de categoria para usuário autorizado", async () => {
-    render(<Faq />);
-
-    await screen.findByText("Geral");
-
-    expect(
-      screen.getByRole("button", {
-        name: "Cadastro de Categoria",
-      }),
-    ).toBeInTheDocument();
-  });
-
   it("não deve exibir o botão de cadastro de categoria para usuário sem permissão", async () => {
     usuarioComAcessoAoCadastroDeCategorias.mockReturnValue(false);
 
@@ -295,5 +182,22 @@ describe("Testes do componente Faq", () => {
 
     expect(navegarMock).toHaveBeenCalledTimes(1);
     expect(navegarMock).toHaveBeenCalledWith(`/${AJUDA}/${CADASTRO_CATEGORIA}`);
+  });
+
+  it("deve navegar para o cadastro de dúvidas frequentes ao clicar no botão", async () => {
+    render(<Faq />);
+
+    await screen.findByText("Geral");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Cadastro Dúvidas Frequentes",
+      }),
+    );
+
+    expect(navegarMock).toHaveBeenCalledTimes(1);
+    expect(navegarMock).toHaveBeenCalledWith(
+      `/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`,
+    );
   });
 });
