@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useParams } from "react-router-dom";
-import EdicaoCategoria from "../CadastroCategoria/Edicao";
+import EdicaoCategoria from "src/components/screens/Faq/Categorias/Edicao";
 import {
   atualizarCategoriaFaq,
   buscarCategoriaFaq,

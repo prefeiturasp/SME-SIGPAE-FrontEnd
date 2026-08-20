@@ -25,7 +25,10 @@ const Card = ({ question: pergunta, answer: resposta }) => {
         </div>
 
         <Collapse isOpened={!recolhido}>
-          <div className="card-body corpo-cartao-faq">{resposta}</div>
+          <div
+            className="card-body corpo-cartao-faq"
+            dangerouslySetInnerHTML={{ __html: resposta }}
+          />
         </Collapse>
       </div>
     </div>

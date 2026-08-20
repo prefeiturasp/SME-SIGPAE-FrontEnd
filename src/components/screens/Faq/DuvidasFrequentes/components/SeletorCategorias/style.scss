@@ -1,0 +1,25 @@
+@use "src/styles/variables.scss" as *;
+
+.seletor-categorias {
+  .autocomplete-categoria {
+    height: 38px;
+    width: 100%;
+
+    .ant-select-selector,
+    .ant-select-selection-search,
+    .ant-input {
+      border-radius: 0.35rem !important;
+      height: 100%;
+    }
+
+    .ant-input {
+      border: 1px solid $grayInputBorder;
+      font-weight: 400;
+
+      &:focus {
+        box-shadow: 0 0 0 0.2rem rgba(23, 100, 210, 0.23);
+        outline: 0;
+      }
+    }
+  }
+}

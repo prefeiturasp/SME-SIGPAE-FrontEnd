@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import TabelaCategorias from "./components/TabelaCategorias";
+import TabelaCategorias from "../components/TabelaCategorias";
 import "./style.scss";
 import {
   buscarCategoriasFaq,

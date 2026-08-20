@@ -1,22 +1,21 @@
 import React from "react";
 import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
-import ListagemCategorias from "src/components/screens/Faq/CadastroCategoria/Listagem";
-import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
+import { AJUDA, CADASTRO_DUVIDAS_FREQUENTES } from "src/configs/constants";
 import { HOME } from "src/constants/config";
-import BotaoCadastrarCategoria from "src/components/screens/Faq/CadastroCategoria/components/BotaoCadastrarCategoria";
+import BotaoCadastrarDuvidasFrequentes from "src/components/screens/Faq/DuvidasFrequentes/components/BotaoCadastroDuvidasFrequentes";
 
 const caminhoFaq = `/${AJUDA}`;
-const caminhoListagemCategorias = `/${AJUDA}/${CADASTRO_CATEGORIA}`;
+const caminhoListagemDuvidasFrequentes = `/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`;
 
 const atual = {
-  href: caminhoListagemCategorias,
-  titulo: "Cadastro de Categoria",
+  href: caminhoListagemDuvidasFrequentes,
+  titulo: "Cadastro Dúvidas Frequentes",
 };
 
-export default () => (
+export const ListagemDuvidasFrequentes = () => (
   <PageNoSidebar
-    titulo="Cadastrar Categoria"
+    titulo="Cadastro Dúvidas Frequentes"
     botaoVoltar
     voltarPara={caminhoFaq}
     breadcrumb={
@@ -32,7 +31,6 @@ export default () => (
       />
     }
   >
-    <BotaoCadastrarCategoria />
-    <ListagemCategorias />
+    <BotaoCadastrarDuvidasFrequentes />
   </PageNoSidebar>
 );

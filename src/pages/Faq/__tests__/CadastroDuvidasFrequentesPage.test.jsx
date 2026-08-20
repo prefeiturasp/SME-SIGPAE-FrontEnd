@@ -1,16 +1,12 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import {
-  AJUDA,
-  CADASTRAR_CATEGORIA,
-  CADASTRO_CATEGORIA,
-} from "src/configs/constants";
+import { AJUDA, CADASTRO_DUVIDAS_FREQUENTES } from "src/configs/constants";
 import { HOME } from "src/constants/config";
-import CadastroCategoriaPage from "../Categorias/CadastroCategoriaPage";
+import { CadastrarDuvidasFrequentes } from "../DuvidasFrequentes/CadastroDuvidasFrequentesPage";
 
 jest.mock("src/components/Shareable/Page/PageNoSidebar", () => ({
   __esModule: true,
-  default: ({ titulo, botaoVoltar, voltarPara, breadcrumb, children }) => (
+  default: ({ botaoVoltar, breadcrumb, children, titulo, voltarPara }) => (
     <main>
       <span data-testid="titulo">{titulo}</span>
       <span data-testid="botao-voltar">{String(botaoVoltar)}</span>
@@ -23,7 +19,7 @@ jest.mock("src/components/Shareable/Page/PageNoSidebar", () => ({
 
 jest.mock("src/components/Shareable/Breadcrumb", () => ({
   __esModule: true,
-  default: ({ home, anteriores, atual }) => (
+  default: ({ atual, anteriores, home }) => (
     <div data-testid="breadcrumb">
       <span data-testid="breadcrumb-home">{home}</span>
       <span data-testid="ajuda-href">{anteriores[0].href}</span>
@@ -36,49 +32,44 @@ jest.mock("src/components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock("src/components/screens/Faq/Categorias/Cadastro", () => ({
+jest.mock("src/components/screens/Faq/DuvidasFrequentes/Cadastro", () => ({
   __esModule: true,
   default: () => (
-    <div data-testid="cadastro-categoria">Cadastro de Categoria</div>
+    <div data-testid="cadastro-duvidas-frequentes">
+      Cadastro de Dúvidas Frequentes
+    </div>
   ),
 }));
 
-describe("CadastroCategoriaPage", () => {
-  it("deve renderizar a página de cadastro de categoria corretamente", () => {
-    render(<CadastroCategoriaPage />);
+describe("CadastroDuvidasFrequentesPage", () => {
+  it("deve renderizar a página de cadastro de dúvidas frequentes corretamente", () => {
+    render(<CadastrarDuvidasFrequentes />);
+
+    const caminhoListagem = `/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`;
+    const caminhoCadastro = `${caminhoListagem}/${CADASTRO_DUVIDAS_FREQUENTES}`;
 
     expect(screen.getByTestId("titulo")).toHaveTextContent(
-      "Cadastrar Categoria",
+      "Cadastrar Dúvidas Frequentes",
     );
-
     expect(screen.getByTestId("botao-voltar")).toHaveTextContent("true");
-
     expect(screen.getByTestId("voltar-para")).toHaveTextContent(
-      `/${AJUDA}/${CADASTRO_CATEGORIA}`,
+      caminhoListagem,
     );
-
     expect(screen.getByTestId("breadcrumb-home")).toHaveTextContent(HOME);
-
     expect(screen.getByTestId("ajuda-href")).toHaveTextContent(`/${AJUDA}`);
-
     expect(screen.getByTestId("ajuda-titulo")).toHaveTextContent("Ajuda");
-
     expect(screen.getByTestId("listagem-href")).toHaveTextContent(
-      `/${AJUDA}/${CADASTRO_CATEGORIA}`,
+      caminhoListagem,
     );
-
     expect(screen.getByTestId("listagem-titulo")).toHaveTextContent(
-      "Cadastro de Categoria",
+      "Cadastro Dúvidas Frequentes",
     );
-
-    expect(screen.getByTestId("atual-href")).toHaveTextContent(
-      `/${AJUDA}/${CADASTRO_CATEGORIA}/${CADASTRAR_CATEGORIA}`,
-    );
-
+    expect(screen.getByTestId("atual-href")).toHaveTextContent(caminhoCadastro);
     expect(screen.getByTestId("atual-titulo")).toHaveTextContent(
-      "Cadastrar Categoria",
+      "Cadastrar Dúvidas Frequentes",
     );
-
-    expect(screen.getByTestId("cadastro-categoria")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("cadastro-duvidas-frequentes"),
+    ).toBeInTheDocument();
   });
 });

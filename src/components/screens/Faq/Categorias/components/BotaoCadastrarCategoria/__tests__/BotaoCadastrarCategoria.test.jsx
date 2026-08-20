@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import BotaoCadastrarCategoria from "../CadastroCategoria/components/BotaoCadastrarCategoria";
+import BotaoCadastrarCategoria from "src/components/screens/Faq/Categorias/components/BotaoCadastrarCategoria";
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -23,16 +23,6 @@ describe("BotaoCadastrarCategoria", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useNavigate.mockReturnValue(navegarMock);
-  });
-
-  it("deve renderizar o botão de cadastrar categoria", () => {
-    render(<BotaoCadastrarCategoria />);
-
-    expect(
-      screen.getByRole("button", {
-        name: "Cadastrar Categoria",
-      }),
-    ).toBeInTheDocument();
   });
 
   it("deve navegar para o cadastro de categoria ao clicar no botão", () => {

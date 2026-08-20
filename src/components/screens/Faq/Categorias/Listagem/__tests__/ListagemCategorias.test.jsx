@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import ListagemCategorias from "../CadastroCategoria/Listagem";
+import ListagemCategorias from "src/components/screens/Faq/Categorias/Listagem";
 import {
   buscarCategoriasFaq,
   excluirCategoriaFaq,
