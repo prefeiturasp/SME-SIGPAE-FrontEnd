@@ -1,0 +1,37 @@
+@use "src/styles/variables.scss" as *;
+
+.pagina-listagem-duvidas-frequentes {
+  min-height: 430px;
+
+  .acao-cadastro-duvida {
+    margin-bottom: 2rem;
+  }
+
+  .titulo-listagem-duvidas {
+    color: $green;
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+  }
+
+  .carregamento-listagem-duvidas {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 300px;
+  }
+
+  .sem-duvidas-cadastradas {
+    border: 1px solid #d5dce1;
+    color: #686868;
+    margin: 0;
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 575px) {
+    .acao-cadastro-duvida button {
+      width: 100%;
+    }
+  }
+}

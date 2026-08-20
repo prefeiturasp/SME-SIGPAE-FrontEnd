@@ -15,6 +15,12 @@ export const criarPerguntaFrequente = async (dados) => {
   return axios.post(`/${ENDPOINT.PERGUNTAS_FREQUENTES}/`, dados);
 };
 
+export const listarPerguntasFrequentes = async (parametros) => {
+  return axios.get(`/${ENDPOINT.PERGUNTAS_FREQUENTES}/`, {
+    params: parametros,
+  });
+};
+
 export const buscarPerguntaFrequente = async (uuid) => {
   return axios.get(`/${ENDPOINT.PERGUNTAS_FREQUENTES}/${uuid}/`);
 };

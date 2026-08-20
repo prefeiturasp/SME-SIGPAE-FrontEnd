@@ -1,0 +1,70 @@
+@use "src/styles/variables.scss" as *;
+
+.tabela-duvidas-frequentes {
+  width: 100%;
+
+  .container-tabela-duvidas {
+    overflow-x: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+
+    thead {
+      background-color: #f2f4f5;
+    }
+
+    th,
+    td {
+      border: 1px solid #d5dce1;
+      color: #42474a;
+      font-size: 14px;
+      padding: 0.65rem 0.5rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      font-weight: 700;
+    }
+
+    .coluna-acoes {
+      text-align: center;
+      width: 72px;
+    }
+  }
+
+  .acoes-duvida {
+    align-items: center;
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+  }
+
+  .botao-acao {
+    background: transparent;
+    border: 0;
+    color: $green;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0.25rem;
+
+    &:hover {
+      opacity: 0.75;
+    }
+
+    &:focus-visible {
+      border-radius: 2px;
+      outline: 2px solid $green;
+      outline-offset: 2px;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    table {
+      min-width: 760px;
+    }
+  }
+}
