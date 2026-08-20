@@ -68,6 +68,15 @@ const TabelaDuvidasFrequentes = ({
                   >
                     <i className="fas fa-edit" aria-hidden="true" />
                   </button>
+                  <button
+                    type="button"
+                    className="botao-acao"
+                    title="Excluir"
+                    aria-label={`Excluir dúvida ${duvida.pergunta}`}
+                    disabled
+                  >
+                    <i className="fas fa-trash" aria-hidden="true" />
+                  </button>
                 </div>
               </td>
             </tr>
