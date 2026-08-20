@@ -11,6 +11,7 @@ import {
 import { listarPerguntasFrequentes } from "src/services/faq.service";
 import BotaoCadastrarDuvidasFrequentes from "../components/BotaoCadastroDuvidasFrequentes";
 import TabelaDuvidasFrequentes from "../components/TabelaDuvidasFrequentes";
+import { formatarDuvidasParaTabela } from "../components/TabelaDuvidasFrequentes/helpers";
 import "./style.scss";
 
 const ITENS_POR_PAGINA = 10;
@@ -35,7 +36,7 @@ const ListagemDuvidasFrequentes = () => {
       const resposta = await listarPerguntasFrequentes(parametros);
       const dados = resposta.data;
 
-      setDuvidas(dados.results || dados);
+      setDuvidas(formatarDuvidasParaTabela(dados.results || dados));
       setTotalDuvidas(dados.count ?? dados.length);
     } catch {
       setDuvidas([]);
