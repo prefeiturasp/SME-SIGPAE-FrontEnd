@@ -102,6 +102,10 @@
   display: flex;
   justify-content: center;
   min-height: 500px;
+
+  .sigpae-logo-loader {
+    position: static;
+  }
 }
 
 .erro-carregamento-duvida {
