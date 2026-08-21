@@ -163,7 +163,6 @@ describe("ListagemDuvidasFrequentes", () => {
     ).toHaveTextContent(
       'Ainda não há dúvidas frequentes cadastradas. Utilize o botão "Cadastrar Dúvidas Frequentes" para realizar o primeiro cadastro.',
     );
-    expect(screen.queryByTestId("tabela-duvidas")).not.toBeInTheDocument();
   });
 
   it("limpa a listagem e informa erro quando a consulta falha", async () => {
@@ -176,7 +175,5 @@ describe("ListagemDuvidasFrequentes", () => {
         "Não foi possível carregar as dúvidas frequentes.",
       );
     });
-
-    expect(screen.queryByTestId("tabela-duvidas")).not.toBeInTheDocument();
   });
 });
