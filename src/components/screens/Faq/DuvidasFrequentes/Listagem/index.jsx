@@ -85,11 +85,14 @@ const ListagemDuvidasFrequentes = () => {
           )}
         </>
       ) : (
-        <p className="sem-duvidas-cadastradas">
-          Ainda não há dúvidas frequentes cadastradas. Utilize o botão
-          &quot;Cadastrar Dúvidas Frequentes&quot; para realizar o primeiro
-          cadastro.
-        </p>
+        <>
+          <p className="sem-duvidas-cadastradas">
+            Ainda não há dúvidas frequentes cadastradas. Utilize o botão
+            &quot;Cadastrar Dúvidas Frequentes&quot; para realizar o primeiro
+            cadastro.
+          </p>
+          <TabelaDuvidasFrequentes duvidas={duvidas} aoEditar={editarDuvida} />
+        </>
       )}
     </div>
   );
