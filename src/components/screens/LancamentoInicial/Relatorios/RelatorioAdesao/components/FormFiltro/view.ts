@@ -30,7 +30,6 @@ import {
   GrupoUnidadeEscolar,
   TiposUnidadesTreeNode,
 } from "./types";
-import { FormApi } from "final-form";
 
 export default ({ form, onChange }: Args) => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -350,8 +349,24 @@ export default ({ form, onChange }: Args) => {
     return escolas;
   };
 
-  const onChangeMesAno = (e: ChangeEvent<HTMLInputElement>, form: FormApi) => {
+  const onChangeMesAno = (e: ChangeEvent<HTMLInputElement>) => {
     const mesAno = e.target.value;
+    const ehEscola = usuarioEhEscolaTerceirizadaQualquerPerfil();
+
+    limpaCampo("periodo_lancamento_de");
+    limpaCampo("periodo_lancamento_ate");
+    limpaCampo("periodos");
+    limpaCampo("tipos_alimentacao");
+
+    if (!ehEscola) {
+      limpaCampo("lotes");
+      limpaCampo("tipos_unidades");
+      limpaCampo("unidade_educacional");
+      setTiposUnidadesTreeData(
+        formataTiposUnidadesTreeData(gruposUnidades, null),
+      );
+      buscaEscolas([], []);
+    }
 
     onChange({
       mes: mesAno
@@ -360,10 +375,18 @@ export default ({ form, onChange }: Args) => {
             .nome.replace(/\s*-\s*/g, " ")
             .toUpperCase()
         : undefined,
+      periodos: undefined,
+      tipos_alimentacao: undefined,
+      periodo_lancamento_de: undefined,
+      periodo_lancamento_ate: undefined,
+      ...(ehEscola
+        ? {}
+        : {
+            lotes: undefined,
+            tipos_unidades: undefined,
+            unidade_educacional: undefined,
+          }),
     });
-
-    form.change("periodo_lancamento_de", undefined);
-    form.change("periodo_lancamento_ate", undefined);
   };
 
   const formataLabelTiposUnidades = (

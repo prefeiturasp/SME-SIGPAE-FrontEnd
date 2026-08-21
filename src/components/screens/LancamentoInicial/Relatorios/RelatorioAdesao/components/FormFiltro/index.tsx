@@ -44,7 +44,7 @@ export default (props: Props) => {
               naoDesabilitarPrimeiraOpcao
               validate={view.validaMesAno}
               onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
-                view.onChangeMesAno(e, form)
+                view.onChangeMesAno(e)
               }
             />
           )}
