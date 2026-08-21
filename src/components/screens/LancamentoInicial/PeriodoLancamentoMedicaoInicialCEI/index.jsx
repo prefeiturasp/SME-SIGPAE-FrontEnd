@@ -435,21 +435,29 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           location,
         );
       setInclusoesAutorizadas(response_inclusoes_autorizadas);
+      let response_log_matriculados_por_faixa_etaria_dia_inclusoes = [];
       if (response_inclusoes_autorizadas.length > 0 && periodo === "PARCIAL") {
-        const params = {
-          escola_uuid: escola.uuid,
-          nome_periodo_escolar: "INTEGRAL",
-          mes: mes,
-          ano: ano,
-          dias: response_inclusoes_autorizadas
-            .map((inclusao) => inclusao.dia)
-            .join(","),
-        };
-        const response_log_matriculados_por_faixa_etaria_dia_inclusoes =
-          await getLogMatriculadosPorFaixaEtariaDia(params);
-        setValoresMatriculadosFaixaEtariaDiaInclusoes(
-          response_log_matriculados_por_faixa_etaria_dia_inclusoes.data,
-        );
+        const inclusoesParaSobrescreverLogs =
+          response_inclusoes_autorizadas.filter(
+            (inclusao) => inclusao.periodo !== "INTEGRAL",
+          );
+        if (inclusoesParaSobrescreverLogs.length > 0) {
+          const params = {
+            escola_uuid: escola.uuid,
+            nome_periodo_escolar: "INTEGRAL",
+            mes: mes,
+            ano: ano,
+            dias: inclusoesParaSobrescreverLogs
+              .map((inclusao) => inclusao.dia)
+              .join(","),
+          };
+          const response = await getLogMatriculadosPorFaixaEtariaDia(params);
+          response_log_matriculados_por_faixa_etaria_dia_inclusoes =
+            response.data;
+          setValoresMatriculadosFaixaEtariaDiaInclusoes(
+            response_log_matriculados_por_faixa_etaria_dia_inclusoes,
+          );
+        }
       }
 
       let response_alteracoes_alimentacao_autorizadas = [];
@@ -787,7 +795,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         response_log_dietas_autorizadas_emei_da_cemei.data,
         response_kit_lanches_autorizadas,
         response_inclusoes_autorizadas,
-        valoresMatriculadosFaixaEtariaDiaInclusoes,
+        response_log_matriculados_por_faixa_etaria_dia_inclusoes,
       );
 
       let items = exibirAbaDasSemanas(mesAnoSelecionado);
