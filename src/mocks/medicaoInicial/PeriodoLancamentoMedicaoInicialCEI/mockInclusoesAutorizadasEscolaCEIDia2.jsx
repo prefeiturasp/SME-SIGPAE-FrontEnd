@@ -1,7 +1,7 @@
-export const mockInclusoesAutorizadasEscolaCEI = {
+export const mockInclusoesAutorizadasEscolaCEIDia2 = {
   results: [
     {
-      dia: 9,
+      dia: 2,
       periodo: "PARCIAL",
       faixas_etarias: [
         "0c914b27-c7cd-4682-a439-a4874745b005",
