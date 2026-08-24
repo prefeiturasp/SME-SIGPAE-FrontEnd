@@ -69,7 +69,7 @@ export default ({ setFiltros }: Props) => {
   };
 
   return (
-    <div className="filtros-fichas-tecnicas">
+    <div className="filtros-termos-recebimento">
       <CollapseFiltros onSubmit={onSubmit} onClear={onClear}>
         {(values: Record<string, any>) => (
           <>

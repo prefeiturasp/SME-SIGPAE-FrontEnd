@@ -46,7 +46,7 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
   };
 
   return (
-    <div className="listagem-fichas-tecnicas">
+    <div className="listagem-termos-recebimento">
       <header>
         <div className="row mt-3">
           <div className="col-5 px-0">
