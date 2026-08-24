@@ -121,3 +121,13 @@ export const cadastraTermoRecebimentoDefinitivo = async (
     throw error;
   }
 };
+
+export const listarTermosRecebimentoDefinitivo = async (
+  params: URLSearchParams,
+) => {
+  try {
+    return await axios.get("/pos-recebimento/termos/", { params });
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
