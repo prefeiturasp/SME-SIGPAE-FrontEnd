@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { gerarParametrosConsulta, usuarioEhDRE } from "src/helpers/utilities";
+import {
+  gerarParametrosConsulta,
+  usuarioEhDRE,
+  usuarioEhMedicao,
+} from "src/helpers/utilities";
 import { getListRelatoriosVisitaSupervisao } from "src/services/imr/painelGerencial";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { Filtros } from "./components/Filtros";
@@ -33,7 +37,8 @@ export const PainelRelatorios = () => {
   const perfilNutriSupervisao =
     JSON.parse(localStorage.getItem("perfil")) ===
     "COORDENADOR_SUPERVISAO_NUTRICAO";
-  const podeVisualizarRelatorio = perfilNutriSupervisao || usuarioEhDRE();
+  const podeVisualizarRelatorio =
+    perfilNutriSupervisao || usuarioEhDRE() || usuarioEhMedicao();
 
   const buscarResultados = async (
     filtros_: FiltrosRelatoriosVisitasInterface,

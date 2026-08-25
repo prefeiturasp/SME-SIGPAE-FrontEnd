@@ -3,6 +3,7 @@ import {
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
   usuarioEhDRE,
+  usuarioEhMedicao,
 } from "src/helpers/utilities";
 import { ListaRelatoriosFiscalizacaoTerceirizadasPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/ListaRelatoriosPage";
 import { NovoRelatorioFiscalizacaoPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioFiscalizacaoPage";
@@ -20,7 +21,8 @@ export const rotasSupervisao: Array<RotaInterface> = [
       usuarioEhNutricionistaSupervisao() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhDRE(),
+      usuarioEhDRE() ||
+      usuarioEhMedicao(),
   },
   {
     path: `/${constants.SUPERVISAO}/${constants.TERCEIRIZADAS}/${constants.RELATORIO_FISCALIZACAO_TERCEIRIZADAS}`,
@@ -40,6 +42,9 @@ export const rotasSupervisao: Array<RotaInterface> = [
   {
     path: `/${constants.SUPERVISAO}/${constants.TERCEIRIZADAS}/${constants.RELATORIO_FISCALIZACAO_TERCEIRIZADAS}/${constants.DETALHAR_RELATORIO_FISCALIZACAO}`,
     component: DetalharRelatorioFiscalizacaoPage,
-    tipoUsuario: usuarioEhNutricionistaSupervisao() || usuarioEhDRE(),
+    tipoUsuario:
+      usuarioEhNutricionistaSupervisao() ||
+      usuarioEhDRE() ||
+      usuarioEhMedicao(),
   },
 ];
