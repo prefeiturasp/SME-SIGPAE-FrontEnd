@@ -222,7 +222,8 @@ export const SidebarContent = () => {
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhMedicao() ||
       usuarioEhCODAENutriManifestacao() ||
-      usuarioEhCODAEGabinete()) &&
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria()) &&
     !ENVIRONMENT.includes("production");
 
   const _props = {

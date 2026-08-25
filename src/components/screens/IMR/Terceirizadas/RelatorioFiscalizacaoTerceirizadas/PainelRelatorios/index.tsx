@@ -4,6 +4,7 @@ import { Spin } from "antd";
 import {
   gerarParametrosConsulta,
   usuarioEhCODAEGabinete,
+  usuarioEhDinutreDiretoria,
   usuarioEhDRE,
   usuarioEhMedicao,
 } from "src/helpers/utilities";
@@ -41,6 +42,7 @@ export const PainelRelatorios = () => {
   const podeVisualizarRelatorio =
     perfilNutriSupervisao ||
     usuarioEhCODAEGabinete() ||
+    usuarioEhDinutreDiretoria() ||
     usuarioEhDRE() ||
     usuarioEhMedicao();
 

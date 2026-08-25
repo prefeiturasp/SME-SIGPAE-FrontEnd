@@ -11,6 +11,7 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
   usuarioEhMedicao,
   usuarioEhNutricionistaSupervisao,
 } from "../../../../helpers/utilities";
@@ -22,7 +23,8 @@ export const MenuSupervisao = ({ ...props }) => {
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhMedicao() ||
     usuarioEhCODAENutriManifestacao() ||
-    usuarioEhCODAEGabinete();
+    usuarioEhCODAEGabinete() ||
+    usuarioEhDinutreDiretoria();
 
   const exibirCadastroNovoRelatorio = usuarioEhNutricionistaSupervisao();
 
