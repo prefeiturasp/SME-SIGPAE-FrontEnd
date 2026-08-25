@@ -3,6 +3,7 @@ import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import {
   gerarParametrosConsulta,
+  usuarioEhCODAEGabinete,
   usuarioEhDRE,
   usuarioEhMedicao,
 } from "src/helpers/utilities";
@@ -38,7 +39,10 @@ export const PainelRelatorios = () => {
     JSON.parse(localStorage.getItem("perfil")) ===
     "COORDENADOR_SUPERVISAO_NUTRICAO";
   const podeVisualizarRelatorio =
-    perfilNutriSupervisao || usuarioEhDRE() || usuarioEhMedicao();
+    perfilNutriSupervisao ||
+    usuarioEhCODAEGabinete() ||
+    usuarioEhDRE() ||
+    usuarioEhMedicao();
 
   const buscarResultados = async (
     filtros_: FiltrosRelatoriosVisitasInterface,

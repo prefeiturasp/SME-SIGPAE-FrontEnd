@@ -2,6 +2,7 @@ import {
   usuarioEhNutricionistaSupervisao,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhCODAEGabinete,
   usuarioEhDRE,
   usuarioEhMedicao,
 } from "src/helpers/utilities";
@@ -21,6 +22,7 @@ export const rotasSupervisao: Array<RotaInterface> = [
       usuarioEhNutricionistaSupervisao() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
+      usuarioEhCODAEGabinete() ||
       usuarioEhDRE() ||
       usuarioEhMedicao(),
   },
@@ -44,6 +46,7 @@ export const rotasSupervisao: Array<RotaInterface> = [
     component: DetalharRelatorioFiscalizacaoPage,
     tipoUsuario:
       usuarioEhNutricionistaSupervisao() ||
+      usuarioEhCODAEGabinete() ||
       usuarioEhDRE() ||
       usuarioEhMedicao(),
   },
