@@ -50,6 +50,7 @@ export const rotasSupervisao: Array<RotaInterface> = [
     component: DetalharRelatorioFiscalizacaoPage,
     tipoUsuario:
       usuarioEhNutricionistaSupervisao() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhDinutreDiretoria() ||

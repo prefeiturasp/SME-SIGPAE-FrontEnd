@@ -4,6 +4,7 @@ import { Spin } from "antd";
 import {
   gerarParametrosConsulta,
   usuarioEhCODAEGabinete,
+  usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
   usuarioEhDinutreDiretoria,
   usuarioEhDRE,
@@ -44,6 +45,7 @@ export const PainelRelatorios = () => {
   const podeVisualizarRelatorio =
     perfilNutriSupervisao ||
     usuarioEhCODAEGabinete() ||
+    usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhDinutreDiretoria() ||
     usuarioEhDRE() ||
