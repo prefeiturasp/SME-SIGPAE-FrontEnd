@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
-import { gerarParametrosConsulta } from "src/helpers/utilities";
+import { gerarParametrosConsulta, usuarioEhDRE } from "src/helpers/utilities";
 import { getListRelatoriosVisitaSupervisao } from "src/services/imr/painelGerencial";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import { Filtros } from "./components/Filtros";
@@ -33,10 +33,11 @@ export const PainelRelatorios = () => {
   const perfilNutriSupervisao =
     JSON.parse(localStorage.getItem("perfil")) ===
     "COORDENADOR_SUPERVISAO_NUTRICAO";
+  const podeVisualizarRelatorio = perfilNutriSupervisao || usuarioEhDRE();
 
   const buscarResultados = async (
     filtros_: FiltrosRelatoriosVisitasInterface,
-    pageNumber: number
+    pageNumber: number,
   ) => {
     setCarregandoTabela(true);
 
@@ -69,7 +70,7 @@ export const PainelRelatorios = () => {
             return { ...item, label: "Enviados pela Supervisão" };
           }
           return item;
-        })
+        }),
       );
     }
   };
@@ -133,6 +134,7 @@ export const PainelRelatorios = () => {
                       <Listagem
                         objetos={relatoriosVisita}
                         perfilNutriSupervisao={perfilNutriSupervisao}
+                        podeVisualizarRelatorio={podeVisualizarRelatorio}
                         getDashboardPainelGerencialSupervisaoAsync={
                           getDashboardPainelGerencialSupervisaoAsync
                         }
