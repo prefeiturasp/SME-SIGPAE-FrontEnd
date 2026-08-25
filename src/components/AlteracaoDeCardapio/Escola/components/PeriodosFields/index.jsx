@@ -152,8 +152,10 @@ export const PeriodosFields = ({ ...props }) => {
                   placeholder="Selecione tipos de alimentação"
                   disabled={!values.substituicoes[index]["check"]}
                   required={values.substituicoes[index]["check"]}
-                  validate={
-                    values.substituicoes[index]["check"] && requiredMultiselect
+                  validate={(value, allValues) =>
+                    allValues.substituicoes[index]?.check
+                      ? requiredMultiselect(value)
+                      : undefined
                   }
                 />
               </div>
@@ -186,8 +188,10 @@ export const PeriodosFields = ({ ...props }) => {
                   }}
                   placeholder="Selecione tipos de alimentação"
                   disabled={!values.substituicoes[index]["check"]}
-                  validate={
-                    values.substituicoes[index]["check"] && requiredMultiselect
+                  validate={(value, allValues) =>
+                    allValues.substituicoes[index]?.check
+                      ? requiredMultiselect(value)
+                      : undefined
                   }
                 />
               </div>
@@ -203,9 +207,10 @@ export const PeriodosFields = ({ ...props }) => {
                   min="0"
                   step="1"
                   required={values.substituicoes[index]["check"]}
-                  validate={
-                    values.substituicoes[index]["check"] &&
-                    handleNumeroAlunosValidate(index)
+                  validate={(value, allValues) =>
+                    allValues.substituicoes[index]?.check
+                      ? handleNumeroAlunosValidate(index)(value)
+                      : undefined
                   }
                 />
               </div>
