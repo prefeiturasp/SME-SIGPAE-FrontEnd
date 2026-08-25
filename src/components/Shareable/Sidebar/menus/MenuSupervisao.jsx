@@ -12,6 +12,7 @@ import {
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
   usuarioEhDinutreDiretoria,
+  usuarioEhDRE,
   usuarioEhEmpresaTerceirizada,
   usuarioEhMedicao,
   usuarioEhNutricionistaSupervisao,
@@ -26,6 +27,7 @@ export const MenuSupervisao = ({ ...props }) => {
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhCODAEGabinete() ||
     usuarioEhDinutreDiretoria() ||
+    usuarioEhDRE() ||
     usuarioEhEmpresaTerceirizada();
 
   const exibirCadastroNovoRelatorio = usuarioEhNutricionistaSupervisao();

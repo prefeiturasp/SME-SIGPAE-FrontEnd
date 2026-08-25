@@ -224,6 +224,7 @@ export const SidebarContent = () => {
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhDinutreDiretoria() ||
+      usuarioEhDRE() ||
       usuarioEhEmpresaTerceirizada()) &&
     !ENVIRONMENT.includes("production");
 

@@ -3,13 +3,7 @@ import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import {
   gerarParametrosConsulta,
-  usuarioEhCODAEGabinete,
-  usuarioEhCODAEGestaoAlimentacao,
-  usuarioEhCODAENutriManifestacao,
-  usuarioEhDinutreDiretoria,
-  usuarioEhDRE,
-  usuarioEhEmpresaTerceirizada,
-  usuarioEhMedicao,
+  usuarioPodeVisualizarRelatorioIMR,
 } from "src/helpers/utilities";
 import { getListRelatoriosVisitaSupervisao } from "src/services/imr/painelGerencial";
 import { Paginacao } from "src/components/Shareable/Paginacao";
@@ -42,15 +36,7 @@ export const PainelRelatorios = () => {
   const perfilNutriSupervisao =
     JSON.parse(localStorage.getItem("perfil")) ===
     "COORDENADOR_SUPERVISAO_NUTRICAO";
-  const podeVisualizarRelatorio =
-    perfilNutriSupervisao ||
-    usuarioEhCODAEGabinete() ||
-    usuarioEhCODAEGestaoAlimentacao() ||
-    usuarioEhCODAENutriManifestacao() ||
-    usuarioEhDinutreDiretoria() ||
-    usuarioEhDRE() ||
-    usuarioEhEmpresaTerceirizada() ||
-    usuarioEhMedicao();
+  const podeVisualizarRelatorio = usuarioPodeVisualizarRelatorioIMR();
 
   const buscarResultados = async (
     filtros_: FiltrosRelatoriosVisitasInterface,
