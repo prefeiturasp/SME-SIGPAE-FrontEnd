@@ -13,7 +13,11 @@ import {
 } from "src/helpers/utilities";
 import { useState } from "react";
 import { Field } from "react-final-form";
-import { totalMatriculados, totalSolicitacao } from "../helpers";
+import {
+  totalMatriculados,
+  totalSolicitacao,
+  validaQuantidadeFaixaCEI,
+} from "../helpers";
 
 export const TabelaFaixasCEMEI = ({
   values,
@@ -30,12 +34,12 @@ export const TabelaFaixasCEMEI = ({
   const periodoCEI = vinculos.find(
     (vinculo) =>
       vinculo.tipo_unidade_escolar.iniciais === "CEI DIRET" &&
-      vinculo.periodo_escolar.nome === periodo.nome
+      vinculo.periodo_escolar.nome === periodo.nome,
   );
   const periodoEMEI = vinculos.find(
     (vinculo) =>
       vinculo.tipo_unidade_escolar.iniciais === "EMEI" &&
-      vinculo.periodo_escolar.nome === periodo.nome
+      vinculo.periodo_escolar.nome === periodo.nome,
   );
   const [alimentoSelecionadoCEI, setAlimentoSelecionadoCEI] = useState([]);
   const [alimentoSelecionadoEMEI, setAlimentoSelecionadoEMEI] = useState([]);
@@ -66,7 +70,7 @@ export const TabelaFaixasCEMEI = ({
                 onClick={async () => {
                   await form.change(
                     `substituicoes[${periodoIndice}][periodo_uuid]`,
-                    periodoCEI.periodo_escolar.uuid
+                    periodoCEI.periodo_escolar.uuid,
                   );
                 }}
               >
@@ -120,8 +124,8 @@ export const TabelaFaixasCEMEI = ({
                     name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`}
                     options={agregarDefault(
                       alimentosCEI.find(
-                        (v) => v.periodo_escolar.nome === periodo.nome
-                      ).tipos_alimentacao
+                        (v) => v.periodo_escolar.nome === periodo.nome,
+                      ).tipos_alimentacao,
                     )}
                     naoDesabilitarPrimeiraOpcao
                     validate={totalFrequenciaCEI > 0 && required}
@@ -140,13 +144,13 @@ export const TabelaFaixasCEMEI = ({
                     }
                     options={formatarParaMultiselect(
                       alimentosCEI.find(
-                        (v) => v.periodo_escolar.nome === periodo.nome
-                      ).tipos_alimentacao
+                        (v) => v.periodo_escolar.nome === periodo.nome,
+                      ).tipos_alimentacao,
                     )}
                     onSelectedChanged={async (values_) => {
                       await form.change(
                         `substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`,
-                        values_.map((value_) => value_.value)
+                        values_.map((value_) => value_.value),
                       );
                       setAlimentoSelecionadoCEI(values_);
                     }}
@@ -171,13 +175,13 @@ export const TabelaFaixasCEMEI = ({
                       substitutosCEI
                         .find((v) => v.periodo_escolar.nome === periodo.nome)
                         .tipos_alimentacao.filter(
-                          (ta) => !alimentoSelecionadoCEI.includes(ta.uuid)
-                        )
+                          (ta) => !alimentoSelecionadoCEI.includes(ta.uuid),
+                        ),
                     )}
                     onSelectedChanged={(values_) => {
                       form.change(
                         `substituicoes[${periodoIndice}][cei][tipos_alimentacao_para]`,
-                        values_.map((value_) => value_.value)
+                        values_.map((value_) => value_.value),
                       );
                       setAlimentoSelecionadoCEI(values_);
                     }}
@@ -195,8 +199,8 @@ export const TabelaFaixasCEMEI = ({
                       substitutosCEI
                         .find((v) => v.periodo_escolar.nome === periodo.nome)
                         .tipos_alimentacao.filter(
-                          (ta) => !alimentoSelecionadoCEI.includes(ta.uuid)
-                        )
+                          (ta) => !alimentoSelecionadoCEI.includes(ta.uuid),
+                        ),
                     )}
                     name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_para]`}
                     nomeDoItemNoPlural="Substitutos"
@@ -233,28 +237,26 @@ export const TabelaFaixasCEMEI = ({
                                 dataTestId={`substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][quantidade_alunos]`}
                                 type="number"
                                 name={`substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][quantidade_alunos]`}
-                                validate={composeValidators(
-                                  required,
-                                  naoPodeSerZero,
-                                  maxValue(parseInt(faixa.quantidade_alunos))
-                                )}
+                                validate={validaQuantidadeFaixaCEI({
+                                  periodoIndice,
+                                  max: parseInt(faixa.quantidade_alunos),
+                                })}
                                 max={parseInt(faixa.quantidade_alunos)}
                                 min={0}
                                 step="1"
                                 className="input-quantidades"
-                                required
                                 inputOnChange={async () => {
                                   await form.change(
                                     `substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][faixa_uuid]`,
-                                    faixa.uuid
+                                    faixa.uuid,
                                   );
                                   await form.change(
                                     `substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][matriculados_quando_criado]`,
-                                    parseInt(faixa.quantidade_alunos)
+                                    parseInt(faixa.quantidade_alunos),
                                   );
                                   const values_ = form.getState().values;
                                   setTotalFrequenciaCEI(
-                                    totalSolicitacao(values_, periodoCEI)
+                                    totalSolicitacao(values_, periodoCEI),
                                   );
                                 }}
                               />
@@ -314,13 +316,13 @@ export const TabelaFaixasCEMEI = ({
                   }
                   options={formatarParaMultiselect(
                     alimentosEMEI.find(
-                      (v) => v.periodo_escolar.nome === periodo.nome
-                    ).tipos_alimentacao
+                      (v) => v.periodo_escolar.nome === periodo.nome,
+                    ).tipos_alimentacao,
                   )}
                   onSelectedChanged={async (values_) => {
                     await form.change(
                       `substituicoes[${periodoIndice}][emei][tipos_alimentacao_de]`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                     setAlimentoSelecionadoEMEI(values_);
                   }}
@@ -343,13 +345,13 @@ export const TabelaFaixasCEMEI = ({
                     substitutosEMEI
                       .find((v) => v.periodo_escolar.nome === periodo.nome)
                       .tipos_alimentacao.filter(
-                        (ta) => !alimentoSelecionadoEMEI.includes(ta.uuid)
-                      )
+                        (ta) => !alimentoSelecionadoEMEI.includes(ta.uuid),
+                      ),
                   )}
                   onSelectedChanged={(values_) => {
                     form.change(
                       `substituicoes[${periodoIndice}][emei][tipos_alimentacao_para]`,
-                      values_.map((value_) => value_.value)
+                      values_.map((value_) => value_.value),
                     );
                   }}
                   placeholder="Selecione tipos de alimentação para"
@@ -381,7 +383,7 @@ export const TabelaFaixasCEMEI = ({
                               validate={composeValidators(
                                 required,
                                 naoPodeSerZero,
-                                maxValue(parseInt(periodo.EMEI))
+                                maxValue(parseInt(periodo.EMEI)),
                               )}
                               max={parseInt(periodo.EMEI)}
                               min={0}
@@ -395,7 +397,7 @@ export const TabelaFaixasCEMEI = ({
                                   ].emei.quantidade_alunos;
                                 await form.change(
                                   `substituicoes[${periodoIndice}][emei][matriculados_quando_criado]`,
-                                  parseInt(periodo.EMEI)
+                                  parseInt(periodo.EMEI),
                                 );
                                 setTotalFrequenciaEMEI(parseInt(value_));
                               }}
