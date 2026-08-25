@@ -5,6 +5,7 @@ import {
   usuarioEhCODAEGabinete,
   usuarioEhDinutreDiretoria,
   usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
   usuarioEhMedicao,
 } from "src/helpers/utilities";
 import { ListaRelatoriosFiscalizacaoTerceirizadasPage } from "src/pages/IMR/Terceirizadas/RelatorioFiscalizacaoTerceirizadas/ListaRelatoriosPage";
@@ -26,6 +27,7 @@ export const rotasSupervisao: Array<RotaInterface> = [
       usuarioEhCODAEGabinete() ||
       usuarioEhDinutreDiretoria() ||
       usuarioEhDRE() ||
+      usuarioEhEmpresaTerceirizada() ||
       usuarioEhMedicao(),
   },
   {
@@ -52,6 +54,7 @@ export const rotasSupervisao: Array<RotaInterface> = [
       usuarioEhCODAEGabinete() ||
       usuarioEhDinutreDiretoria() ||
       usuarioEhDRE() ||
+      usuarioEhEmpresaTerceirizada() ||
       usuarioEhMedicao(),
   },
 ];

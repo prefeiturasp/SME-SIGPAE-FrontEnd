@@ -7,6 +7,7 @@ import {
   usuarioEhCODAENutriManifestacao,
   usuarioEhDinutreDiretoria,
   usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
   usuarioEhMedicao,
 } from "src/helpers/utilities";
 import { getListRelatoriosVisitaSupervisao } from "src/services/imr/painelGerencial";
@@ -46,6 +47,7 @@ export const PainelRelatorios = () => {
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhDinutreDiretoria() ||
     usuarioEhDRE() ||
+    usuarioEhEmpresaTerceirizada() ||
     usuarioEhMedicao();
 
   const buscarResultados = async (
