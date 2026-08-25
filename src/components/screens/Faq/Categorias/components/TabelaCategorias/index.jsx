@@ -1,52 +1,51 @@
 import React from "react";
-import "./style.scss";
+import TabelaListagem from "src/components/Shareable/TabelaListagem";
 
 const TabelaCategorias = ({ categorias, aoEditar, aoExcluir }) => {
+  const colunas = [
+    {
+      chave: "nome",
+      titulo: "Nome da Categoria",
+      renderizar: (categoria) => categoria.nome,
+    },
+    {
+      chave: "acoes",
+      titulo: "Ações",
+      classe: "tabela-listagem__coluna-acoes",
+      largura: "100px",
+      renderizar: (categoria) => (
+        <div className="tabela-listagem__acoes">
+          <button
+            type="button"
+            className="tabela-listagem__botao-acao"
+            title="Editar"
+            aria-label={`Editar categoria ${categoria.nome}`}
+            onClick={() => aoEditar(categoria)}
+          >
+            <i className="fas fa-edit" aria-hidden="true" />
+          </button>
+
+          <button
+            type="button"
+            className="tabela-listagem__botao-acao"
+            title="Excluir"
+            aria-label={`Excluir categoria ${categoria.nome}`}
+            onClick={() => aoExcluir?.(categoria)}
+          >
+            <i className="fas fa-trash" aria-hidden="true" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="tabela-categorias">
-      <div className="container-tabela-categorias">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome da Categoria</th>
-              <th className="coluna-acoes">Ações</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {categorias.map((categoria) => (
-              <tr key={categoria.uuid}>
-                <td>{categoria.nome}</td>
-
-                <td className="coluna-acoes">
-                  <div className="acoes-categoria">
-                    <button
-                      type="button"
-                      className="botao-acao"
-                      title="Editar"
-                      aria-label={`Editar categoria ${categoria.nome}`}
-                      onClick={() => aoEditar(categoria)}
-                    >
-                      <i className="fas fa-edit" aria-hidden="true" />
-                    </button>
-
-                    <button
-                      type="button"
-                      className="botao-acao"
-                      title="Excluir"
-                      aria-label={`Excluir categoria ${categoria.nome}`}
-                      onClick={() => aoExcluir?.(categoria)}
-                    >
-                      <i className="fas fa-trash" aria-hidden="true" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <TabelaListagem
+      colunas={colunas}
+      dados={categorias}
+      larguraMinima="600px"
+      obterChave={(categoria) => categoria.uuid}
+    />
   );
 };
 

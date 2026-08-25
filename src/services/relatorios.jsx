@@ -170,6 +170,14 @@ export const getRelatorioProduto = ({ uuid, id_externo }) => {
     });
 };
 
+export const getRelatorioProdutoHistorico = async ({ uuid }) => {
+  const url = `${API_URL}/produtos/${uuid}/relatorio-historico/`;
+
+  return axios.get(url, {
+    headers: authToken,
+  });
+};
+
 export const getDetalheInversaoCardapio = async (uuid, escola) => {
   const url = `${API_URL}/inversoes-dia-cardapio/${uuid}/relatorio/`;
   const { data } = await axios.get(url, {
