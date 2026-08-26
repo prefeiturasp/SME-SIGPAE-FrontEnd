@@ -131,3 +131,12 @@ export const listarTermosRecebimentoDefinitivo = async (
     toastError(getMensagemDeErro(error.response?.status));
   }
 };
+
+export const getTermoRecebimentoDefinitivo = async (uuid: string) => {
+  try {
+    return await axios.get(`/pos-recebimento/termos/${uuid}/`);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+    throw error;
+  }
+};

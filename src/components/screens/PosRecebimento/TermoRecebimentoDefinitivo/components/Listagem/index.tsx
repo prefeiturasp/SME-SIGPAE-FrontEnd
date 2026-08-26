@@ -1,6 +1,11 @@
 import React, { ReactElement } from "react";
 import { NavLink } from "react-router-dom";
 
+import {
+  POS_RECEBIMENTO,
+  DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO,
+} from "src/configs/constants";
+
 import "./styles.scss";
 
 import { TermoRecebimentoListagem } from "../../interfaces";
@@ -10,9 +15,12 @@ interface Props {
 }
 
 const Listagem: React.FC<Props> = ({ objetos }) => {
-  const renderizarAcoes = (): ReactElement => {
+  const renderizarAcoes = (objeto: TermoRecebimentoListagem): ReactElement => {
     const botaoDetalhar = (
-      <NavLink className="float-start">
+      <NavLink
+        className="float-start"
+        to={`/${POS_RECEBIMENTO}/${DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO}?uuid=${objeto.uuid}`}
+      >
         <span className="link-acoes px-2">
           <i title="Detalhar" className="fas fa-eye green" />
         </span>
@@ -76,7 +84,7 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
                 </div>
                 <div>{objeto.data_cadastro}</div>
                 <div>{objeto.status_display}</div>
-                <div className="p-0">{renderizarAcoes()}</div>
+                <div className="p-0">{renderizarAcoes(objeto)}</div>
               </div>
             </>
           );

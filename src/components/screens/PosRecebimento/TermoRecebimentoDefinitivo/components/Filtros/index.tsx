@@ -16,6 +16,7 @@ import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { InputText } from "src/components/Shareable/Input/InputText";
+import { usuarioEhCronogramaOuCodae } from "src/helpers/utilities";
 import { FiltrosTermoRecebimento } from "../../interfaces";
 
 interface Props {
@@ -64,9 +65,7 @@ export default ({ setFiltros }: Props) => {
     setFiltros({ ...filtros });
   };
 
-  const onClear = () => {
-    setFiltros({});
-  };
+  const onClear = () => {};
 
   return (
     <div className="filtros-termos-recebimento">
@@ -153,19 +152,21 @@ export default ({ setFiltros }: Props) => {
         )}
       </CollapseFiltros>
 
-      <div className="pt-4 pb-4">
-        <NavLink
-          to={`/${POS_RECEBIMENTO}/${CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO}`}
-        >
-          <Botao
-            texto="Cadastrar Termo"
-            type={BUTTON_TYPE.BUTTON}
-            style={BUTTON_STYLE.GREEN}
-            dataTestId="cadastrar-termo"
-            onClick={() => {}}
-          />
-        </NavLink>
-      </div>
+      {usuarioEhCronogramaOuCodae() && (
+        <div className="pt-4 pb-4">
+          <NavLink
+            to={`/${POS_RECEBIMENTO}/${CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO}`}
+          >
+            <Botao
+              texto="Cadastrar Termo"
+              type={BUTTON_TYPE.BUTTON}
+              style={BUTTON_STYLE.GREEN}
+              dataTestId="cadastrar-termo"
+              onClick={() => {}}
+            />
+          </NavLink>
+        </div>
+      )}
     </div>
   );
 };
