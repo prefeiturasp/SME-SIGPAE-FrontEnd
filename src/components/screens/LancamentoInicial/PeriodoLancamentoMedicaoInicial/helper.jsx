@@ -565,7 +565,11 @@ export const desabilitarField = (
     }
   }
 
-  if (ehProgramasEProjetos && dadosValoresInclusoesAutorizadasState) {
+  if (
+    ehProgramasEProjetos &&
+    dadosValoresInclusoesAutorizadasState &&
+    Object.keys(dadosValoresInclusoesAutorizadasState).length > 0
+  ) {
     if (feriadosNoMes.includes(dia)) {
       return true;
     }
