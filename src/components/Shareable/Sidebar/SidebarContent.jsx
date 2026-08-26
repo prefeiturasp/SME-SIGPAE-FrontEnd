@@ -215,7 +215,10 @@ export const SidebarContent = () => {
     usuarioEhCodaeDilog() ||
     usuarioEhDilogDiretoria();
 
-  const exibirMenuPosRecebimento = usuarioEhCronogramaOuCodae();
+  const exibirMenuPosRecebimento =
+    usuarioEhCronogramaOuCodae() ||
+    usuarioEhDilogDiretoria() ||
+    usuarioEhRecebimento();
 
   const exibirMenuSupervisao =
     (usuarioEhNutricionistaSupervisao() ||

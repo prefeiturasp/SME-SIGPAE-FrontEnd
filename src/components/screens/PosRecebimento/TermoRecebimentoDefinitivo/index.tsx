@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Spin } from "antd";
 
 import { Paginacao } from "../../../Shareable/Paginacao";
@@ -19,6 +19,7 @@ export default () => {
   const [totalResultados, setTotalResultados] = useState<number>(0);
   const [consultaRealizada, setConsultaRealizada] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
+  const primeiraRenderizacao = useRef(true);
 
   const buscarResultados = async (pageNumber: number) => {
     setCarregando(true);
@@ -44,6 +45,10 @@ export default () => {
   };
 
   useEffect(() => {
+    if (primeiraRenderizacao.current) {
+      primeiraRenderizacao.current = false;
+      return;
+    }
     buscarResultados(1);
     setPage(1);
   }, [filtros]);
