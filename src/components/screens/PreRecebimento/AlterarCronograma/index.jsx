@@ -362,6 +362,18 @@ export default ({ analiseSolicitacao }) => {
     return logsNomesAtualizados;
   };
 
+  const handleRelatorioSolicitacaoCronograma = async () => {
+    try {
+      setCarregando(true);
+
+      await getSolicitacaoAlteracaoCronogramaRelatorio(uuid);
+    } catch (error) {
+      toastError("Erro ao gerar relatório de alteração de cronograma:", error);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
   const ehFornecedorCiente = (status) => status === "Fornecedor Ciente";
   const ehAprovadoDilog = (solicitacao) =>
     Boolean(solicitacao?.logs) &&
@@ -390,9 +402,7 @@ export default ({ analiseSolicitacao }) => {
                       type={BUTTON_TYPE.BUTTON}
                       style={BUTTON_STYLE.GREEN}
                       icon={BUTTON_ICON.PRINT}
-                      onClick={() => {
-                        getSolicitacaoAlteracaoCronogramaRelatorio(uuid);
-                      }}
+                      onClick={handleRelatorioSolicitacaoCronograma}
                       className="me-2"
                     />
                   )}
