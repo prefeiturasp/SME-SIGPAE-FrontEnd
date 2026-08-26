@@ -14,6 +14,7 @@ import {
   CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO,
   POS_RECEBIMENTO,
 } from "src/configs/constants";
+import { PERFIL } from "src/constants/shared";
 import {
   mockListaTermosRecebimento,
   mockListaTermosRecebimentoVazia,
@@ -29,12 +30,24 @@ const setup = async () => {
   });
 };
 
+const clicarFiltrar = async () => {
+  await act(async () => {
+    fireEvent.click(screen.getByTestId("botao-filtrar"));
+  });
+};
+
 describe("TermoRecebimentoDefinitivo - Listagem e Filtros", () => {
   beforeEach(() => {
+    localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+
     mock.reset();
     mock
       .onGet("/pos-recebimento/termos/")
       .reply(200, mockListaTermosRecebimento);
+  });
+
+  afterEach(() => {
+    localStorage.clear();
   });
 
   it("exibe o botão Cadastrar Termo apontando para a rota de cadastro", async () => {
@@ -47,32 +60,35 @@ describe("TermoRecebimentoDefinitivo - Listagem e Filtros", () => {
     );
   });
 
-  it("renderiza a listagem com os termos retornados pela API", async () => {
+  it("NÃO realiza busca ao carregar a página (só ao filtrar)", async () => {
     await setup();
+
+    expect(mock.history.get.length).toBe(0);
+    expect(screen.queryByText("Resultado da Pesquisa")).not.toBeInTheDocument();
+  });
+
+  it("renderiza a listagem com os termos ao clicar em Filtrar", async () => {
+    await setup();
+    await clicarFiltrar();
 
     expect(
       await screen.findByText("Resultado da Pesquisa"),
     ).toBeInTheDocument();
 
-    // Cabeçalhos da tabela.
-    expect(screen.getByText("Nº do Contrato")).toBeInTheDocument();
-    expect(screen.getByText("Empresa Contratada")).toBeInTheDocument();
-
-    // Dados dos termos (contrato + empresa são únicos, não colidem com os
-    // labels do filtro de status).
     expect(screen.getByText("123/2025")).toBeInTheDocument();
     expect(screen.getByText("Empresa Alfa")).toBeInTheDocument();
     expect(screen.getByText("456/2025")).toBeInTheDocument();
     expect(screen.getByText("Empresa Beta")).toBeInTheDocument();
   });
 
-  it("exibe 'Nenhum resultado encontrado' quando a API retorna lista vazia", async () => {
+  it("exibe 'Nenhum resultado encontrado' ao filtrar sem resultados", async () => {
     mock.reset();
     mock
       .onGet("/pos-recebimento/termos/")
       .reply(200, mockListaTermosRecebimentoVazia);
 
     await setup();
+    await clicarFiltrar();
 
     expect(
       await screen.findByText("Nenhum resultado encontrado"),
@@ -85,9 +101,7 @@ describe("TermoRecebimentoDefinitivo - Listagem e Filtros", () => {
     const inputEmpresa = screen.getByTestId("nome_empresa");
     fireEvent.change(inputEmpresa, { target: { value: "Empresa Alfa" } });
 
-    await act(async () => {
-      fireEvent.click(screen.getByTestId("botao-filtrar"));
-    });
+    await clicarFiltrar();
 
     await waitFor(() => {
       const enviouFiltro = mock.history.get.some(
@@ -97,18 +111,14 @@ describe("TermoRecebimentoDefinitivo - Listagem e Filtros", () => {
     });
   });
 
-  it("refaz a busca ao clicar em Limpar Filtros", async () => {
+  it("Não realiza busca ao clicar em Limpar Filtros", async () => {
     await setup();
-
-    await waitFor(() => expect(mock.history.get.length).toBeGreaterThan(0));
-    const chamadasAntes = mock.history.get.length;
 
     await act(async () => {
       fireEvent.click(screen.getByText("Limpar Filtros"));
     });
 
-    await waitFor(() => {
-      expect(mock.history.get.length).toBeGreaterThan(chamadasAntes);
-    });
+    expect(mock.history.get.length).toBe(0);
+    expect(screen.queryByText("Resultado da Pesquisa")).not.toBeInTheDocument();
   });
 });
