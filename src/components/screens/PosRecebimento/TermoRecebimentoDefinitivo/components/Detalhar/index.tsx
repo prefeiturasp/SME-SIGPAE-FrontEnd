@@ -182,29 +182,6 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
 
               <hr />
 
-              <div className="row detalhar-head my-3">
-                <div className="col-4">
-                  <p>
-                    <b>Fiscal 1:</b>
-                  </p>
-                  <p className="head-green">{termo.fiscal_1?.nome}</p>
-                </div>
-                <div className="col-4">
-                  <p>
-                    <b>Fiscal 2:</b>
-                  </p>
-                  <p className="head-green">{termo.fiscal_2?.nome}</p>
-                </div>
-                <div className="col-4">
-                  <p>
-                    <b>Fiscal 3:</b>
-                  </p>
-                  <p className="head-green">{termo.fiscal_3?.nome}</p>
-                </div>
-              </div>
-
-              <hr />
-
               <div className="row my-3">
                 <div>
                   {termo.texto_termo && htmlParser.parse(termo.texto_termo)}
