@@ -50,7 +50,6 @@ describe("DetalharTermoRecebimentoDefinitivoPage", () => {
       status: 200,
     });
 
-    // Evita a chamada de meus-dados feita pelo wrapper <Page>.
     localStorage.setItem(
       "meusDados",
       JSON.stringify(mockMeusDadosDilogQualidade),
@@ -74,14 +73,11 @@ describe("DetalharTermoRecebimentoDefinitivoPage", () => {
       await screen.findByText("Empresa do Luis Zimmermann"),
     ).toBeInTheDocument();
 
-    // Cronogramas lado a lado separados por " | ".
     expect(screen.getByText("135/2024 | 142/2024A")).toBeInTheDocument();
 
-    // Dados do contrato.
-    expect(screen.getByText("12345/22")).toBeInTheDocument(); // TC Nº
-    expect(screen.getByText("123456789012")).toBeInTheDocument(); // Processo SEI
+    expect(screen.getByText("12345/22")).toBeInTheDocument();
+    expect(screen.getByText("123456789012")).toBeInTheDocument();
 
-    // Botão Voltar.
     expect(screen.getByTestId("voltar")).toBeInTheDocument();
   });
 
