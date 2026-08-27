@@ -89,9 +89,7 @@ export default ({ analiseSolicitacao }) => {
     aprovacaoAbastecimento !== null ||
     usuarioEhCronogramaOuCodae() ||
     ((usuarioEhDilogDiretoria() || usuarioEhDilogAbastecimento()) &&
-      ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
-        solicitacaoAlteracaoCronograma.status,
-      ));
+      analisadoPeloAbastecimento());
 
   const getDetalhes = async () => {
     setCarregando(true);
@@ -404,6 +402,7 @@ export default ({ analiseSolicitacao }) => {
                       icon={BUTTON_ICON.PRINT}
                       onClick={handleRelatorioSolicitacaoCronograma}
                       className="me-2"
+                      dataTestId="botao-relatorio-cronograma"
                     />
                   )}
                 </div>
