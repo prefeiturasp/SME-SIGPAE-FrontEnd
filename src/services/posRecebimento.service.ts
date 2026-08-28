@@ -76,10 +76,11 @@ export const getContratosPosRecebimento = async (
 
 export const getCronogramasPosRecebimento = async (
   contratoId: string,
+  empresaId: string,
 ): Promise<ResultadoLista<CronogramaPosRecebimento>> => {
   try {
     return await axios.get("/cronogramas/lista-cronogramas-pos-recebimento/", {
-      params: { contrato_id: contratoId },
+      params: { contrato_id: contratoId, empresa_id: empresaId },
     });
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
