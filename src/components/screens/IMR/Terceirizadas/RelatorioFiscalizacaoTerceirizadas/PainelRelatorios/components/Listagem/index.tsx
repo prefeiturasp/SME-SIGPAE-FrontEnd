@@ -28,10 +28,11 @@ import "./styles.scss";
 interface Props {
   objetos: RelatorioVisitaItemListagem[];
   perfilNutriSupervisao: boolean;
+  podeVisualizarRelatorio: boolean;
   getDashboardPainelGerencialSupervisaoAsync: () => void;
   buscarResultados: (
     _filtros_: FiltrosRelatoriosVisitasInterface,
-    _pageNumber: number
+    _pageNumber: number,
   ) => void;
   filtros: FiltrosRelatoriosVisitasInterface;
   pagina: number;
@@ -42,6 +43,7 @@ const TAMANHO_MAXIMO = 40;
 export const Listagem: React.FC<Props> = ({
   objetos,
   perfilNutriSupervisao,
+  podeVisualizarRelatorio,
   getDashboardPainelGerencialSupervisaoAsync,
   buscarResultados,
   filtros,
@@ -88,7 +90,7 @@ export const Listagem: React.FC<Props> = ({
   };
 
   const renderizarAcoes = (
-    objeto: RelatorioVisitaItemListagem
+    objeto: RelatorioVisitaItemListagem,
   ): ReactElement => {
     const botaoContinuarRelatorio = (
       <Tooltip title="Editar relatório">
@@ -159,7 +161,7 @@ export const Listagem: React.FC<Props> = ({
           perfilNutriSupervisao &&
           botaoExcluirRelatorio}
         {objeto.status === "Enviado para CODAE" &&
-          perfilNutriSupervisao &&
+          podeVisualizarRelatorio &&
           botaoDetalhar}
         {objeto.status !== "Em Preenchimento" &&
           perfilNutriSupervisao &&

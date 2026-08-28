@@ -215,13 +215,20 @@ export const SidebarContent = () => {
     usuarioEhCodaeDilog() ||
     usuarioEhDilogDiretoria();
 
-  const exibirMenuPosRecebimento = usuarioEhCronogramaOuCodae();
+  const exibirMenuPosRecebimento =
+    usuarioEhCronogramaOuCodae() ||
+    usuarioEhDilogDiretoria() ||
+    usuarioEhRecebimento();
 
   const exibirMenuSupervisao =
     (usuarioEhNutricionistaSupervisao() ||
       usuarioEhCODAEGestaoAlimentacao() ||
       usuarioEhMedicao() ||
-      usuarioEhCODAENutriManifestacao()) &&
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhCODAEGabinete() ||
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhDRE() ||
+      usuarioEhEmpresaTerceirizada()) &&
     !ENVIRONMENT.includes("production");
 
   const _props = {

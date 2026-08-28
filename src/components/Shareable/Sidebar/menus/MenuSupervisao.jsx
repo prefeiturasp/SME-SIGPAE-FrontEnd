@@ -8,8 +8,12 @@ import {
 import React from "react";
 import { LeafItem, Menu, SubMenu } from "./shared";
 import {
+  usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
+  usuarioEhDinutreDiretoria,
+  usuarioEhDRE,
+  usuarioEhEmpresaTerceirizada,
   usuarioEhMedicao,
   usuarioEhNutricionistaSupervisao,
 } from "../../../../helpers/utilities";
@@ -20,7 +24,11 @@ export const MenuSupervisao = ({ ...props }) => {
     usuarioEhNutricionistaSupervisao() ||
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhMedicao() ||
-    usuarioEhCODAENutriManifestacao();
+    usuarioEhCODAENutriManifestacao() ||
+    usuarioEhCODAEGabinete() ||
+    usuarioEhDinutreDiretoria() ||
+    usuarioEhDRE() ||
+    usuarioEhEmpresaTerceirizada();
 
   const exibirCadastroNovoRelatorio = usuarioEhNutricionistaSupervisao();
 

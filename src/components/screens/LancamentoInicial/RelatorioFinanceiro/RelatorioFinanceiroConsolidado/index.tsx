@@ -5,9 +5,12 @@ import { Form } from "react-final-form";
 import { Spin } from "antd";
 import { FormFields } from "../components/FormFields";
 import { useRelatorioFinanceiro } from "../view";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { FaixaEtaria } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { getTotaisAtendimentoConsumo } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { getTiposUnidadeEscolarTiposAlimentacao } from "src/services/cadastroTipoAlimentacao.service";
@@ -30,6 +33,7 @@ import {
   exportarPDFAsyncRelatorioAtesteFinanceiro,
   getDescontoFinanceiro,
   getRelatorioDadosLiquidacao,
+  reabrirLancamentosRelatorio,
 } from "src/services/medicaoInicial/relatorioFinanceiro.service";
 import {
   DadosLiquidacaoEmpenho,
@@ -39,6 +43,8 @@ import {
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import ModalAplicarDesconto from "../components/ModalAplicarDesconto";
 import { getEscolasParaFiltros } from "src/services/escola.service";
+import ModalReabrirLancamentos from "../components/ModalReabrirLancamentos";
+import { MEDICAO_INICIAL, RELATORIO_FINANCEIRO } from "src/configs/constants";
 
 type TotaisParams = {
   mes: string;
@@ -60,6 +66,7 @@ export function RelatorioFinanceiroConsolidado() {
   const [carregando, setCarregando] = useState<boolean>(false);
   const [editarEmpenhos, setEditarEmpenhos] = useState<boolean>(false);
   const [aplicarDesconto, setAplicarDesconto] = useState<boolean>(false);
+  const [reabrirLancamentos, setReabrirLancamentos] = useState<boolean>(false);
   const [exportando, setExportando] = useState<boolean>(false);
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState<boolean>(false);
@@ -77,6 +84,7 @@ export function RelatorioFinanceiroConsolidado() {
   } = useRelatorioFinanceiro();
 
   const { state } = useLocation();
+  const navigate = useNavigate();
   const modoVisualizacao = state?.visualizar || false;
 
   const exportarPDF = async () => {
@@ -282,6 +290,21 @@ export function RelatorioFinanceiroConsolidado() {
     ),
   };
 
+  const onReabrirLancamentos = async (unidades: string[]) => {
+    setCarregando(true);
+    const response = await reabrirLancamentosRelatorio(
+      { unidades_educacionais: unidades },
+      uuidRelatorioFinanceiro,
+    );
+    setCarregando(false);
+
+    if (response.status === HTTP_STATUS.OK) {
+      setReabrirLancamentos(false);
+      toastSuccess("Lançamentos reabertos com sucesso.");
+      navigate(`/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/`);
+    } else toastError("Erro ao reabrir lançamentos do grupo.");
+  };
+
   return (
     <div className="relatorio-consolidado">
       <Spin tip="Carregando..." spinning={carregando || carregandoRelatorio}>
@@ -295,6 +318,7 @@ export function RelatorioFinanceiroConsolidado() {
                     gruposUnidadeEscolar={gruposUnidadeEscolar}
                     mesesAnos={mesesAnos}
                     exibirReabrirLancamentos={!modoVisualizacao}
+                    showReabrirLancamentos={() => setReabrirLancamentos(true)}
                   />
                 </form>
               )}
@@ -376,6 +400,12 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         onSave={(e) => setDescontos(e)}
         tiposAlimentacao={tiposAlimentacao}
+      />
+      <ModalReabrirLancamentos
+        showModal={reabrirLancamentos}
+        setShowModal={setReabrirLancamentos}
+        onReabrir={onReabrirLancamentos}
+        unidadesEducacionais={unidadesEducacionais}
       />
     </div>
   );

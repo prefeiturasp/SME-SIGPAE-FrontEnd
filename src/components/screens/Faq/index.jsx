@@ -7,12 +7,14 @@ import {
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import { Card } from "src/components/Faq";
-import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
+import {
+  AJUDA,
+  CADASTRO_CATEGORIA,
+  CADASTRO_DUVIDAS_FREQUENTES,
+} from "src/configs/constants";
 import { usuarioComAcessoAoCadastroDeCategorias } from "src/helpers/utilities";
 import { getFaq } from "src/services/faq.service";
 import "./style.scss";
-
-const CAMINHO_CADASTRO_CATEGORIA = `/${AJUDA}/${CADASTRO_CATEGORIA}`;
 
 const ConteudoPerguntas = ({ itens }) => {
   return (
@@ -104,20 +106,23 @@ const Faq = () => {
         <div className="col-12 col-md-8 col-lg-9">
           <div className="d-flex justify-content-end align-items-center gap-3 flex-wrap">
             {usuarioComAcessoAoCadastroDeCategorias() && (
-              <Botao
-                texto="Cadastro de Categoria"
-                type={BUTTON_TYPE.BUTTON}
-                style={BUTTON_STYLE.GREEN}
-                onClick={() => navegar(CAMINHO_CADASTRO_CATEGORIA)}
-              />
+              <>
+                <Botao
+                  texto="Cadastro de Categoria"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN}
+                  onClick={() => navegar(`/${AJUDA}/${CADASTRO_CATEGORIA}`)}
+                />
+                <Botao
+                  texto="Cadastro Dúvidas Frequentes"
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                  onClick={() =>
+                    navegar(`/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`)
+                  }
+                />
+              </>
             )}
-
-            <Botao
-              texto="Cadastro Dúvidas Frequentes"
-              type={BUTTON_TYPE.BUTTON}
-              style={BUTTON_STYLE.GREEN_OUTLINE}
-              onClick={() => {}}
-            />
           </div>
         </div>
       </div>

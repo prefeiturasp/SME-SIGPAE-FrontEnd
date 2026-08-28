@@ -1,0 +1,64 @@
+.card-detalhar-cronograma-semanal {
+  min-height: 400px;
+
+  .card-body {
+    min-height: 400px;
+  }
+
+  .head-green {
+    color: #198459;
+    font-weight: 700;
+  }
+
+  .objeto-contrato {
+    font-size: 1.125rem;
+  }
+
+  .dados-contrato {
+    background-color: #f5f6f8;
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+
+    p {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .hr-detalhar {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-top: 1px solid #dee2e6;
+  }
+
+  .detalhar-head {
+    p {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .tabela-dados-cronograma {
+    thead {
+      background-color: #198459;
+      color: white;
+      th {
+        border: 1px solid #198459;
+      }
+    }
+
+    tbody {
+      td {
+        border: 1px solid #dee2e6;
+      }
+    }
+  }
+
+  .borda-crono {
+    border: 1px solid #dee2e6;
+  }
+
+  .head-crono {
+    background-color: #198459;
+    color: white;
+  }
+}

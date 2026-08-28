@@ -76,10 +76,11 @@ export const getContratosPosRecebimento = async (
 
 export const getCronogramasPosRecebimento = async (
   contratoId: string,
+  empresaId: string,
 ): Promise<ResultadoLista<CronogramaPosRecebimento>> => {
   try {
     return await axios.get("/cronogramas/lista-cronogramas-pos-recebimento/", {
-      params: { contrato_id: contratoId },
+      params: { contrato_id: contratoId, empresa_id: empresaId },
     });
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
@@ -118,6 +119,25 @@ export const cadastraTermoRecebimentoDefinitivo = async (
     return await axios.post("/pos-recebimento/termos/", payload);
   } catch (error) {
     toastError(getMensagemDeErro(error.response.status));
+    throw error;
+  }
+};
+
+export const listarTermosRecebimentoDefinitivo = async (
+  params: URLSearchParams,
+) => {
+  try {
+    return await axios.get("/pos-recebimento/termos/", { params });
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
+
+export const getTermoRecebimentoDefinitivo = async (uuid: string) => {
+  try {
+    return await axios.get(`/pos-recebimento/termos/${uuid}/`);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
     throw error;
   }
 };

@@ -45,7 +45,10 @@ import { textAreaRequired } from "src/helpers/fieldValidators";
 import { onChangeEtapas } from "src/components/PreRecebimento/FormEtapa/helper";
 import TabelaFormAlteracao from "./components/TabelaFormAlteracao";
 import FormRecebimento from "src/components/PreRecebimento/FormRecebimento";
-import { fornecedorCienteAlteracaoCodae } from "../../../../services/cronograma.service";
+import {
+  fornecedorCienteAlteracaoCodae,
+  getSolicitacaoAlteracaoCronogramaRelatorio,
+} from "../../../../services/cronograma.service";
 import { SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR } from "../../../../configs/constants";
 import { setFieldTouched } from "../../../../configs/mutators";
 import { numberToStringDecimal } from "src/helpers/parsers";
@@ -353,6 +356,18 @@ export default ({ analiseSolicitacao }) => {
     return logsNomesAtualizados;
   };
 
+  const handleRelatorioSolicitacaoCronograma = async () => {
+    try {
+      setCarregando(true);
+
+      await getSolicitacaoAlteracaoCronogramaRelatorio(uuid);
+    } catch (error) {
+      toastError("Erro ao gerar relatório de alteração de cronograma:", error);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
   useEffect(() => {
     getDetalhes();
   }, [uuid]);
@@ -364,9 +379,9 @@ export default ({ analiseSolicitacao }) => {
           {solicitacaoAlteracaoCronograma && (
             <>
               <div className="row pb-3">
-                <p className="head-green mt-3 ms-3 mb-5">
-                  Status do Cronograma
-                </p>
+                <div className="d-flex align-items-center justify-content-between mt-3 ms-3 me-3 mb-5">
+                  <p className="head-green mb-0">Status do Cronograma</p>
+                </div>
                 <FluxoDeStatusPreRecebimento
                   listaDeStatus={solicitacaoAlteracaoCronograma.logs}
                 />
@@ -609,6 +624,9 @@ export default ({ analiseSolicitacao }) => {
                         }
                         disabledAbastecimento={disabledAbastecimento(values)}
                         disabledDilog={disabledDilog(values)}
+                        handleRelatorioSolicitacaoCronograma={
+                          handleRelatorioSolicitacaoCronograma
+                        }
                       />
                     </div>
                   </form>
