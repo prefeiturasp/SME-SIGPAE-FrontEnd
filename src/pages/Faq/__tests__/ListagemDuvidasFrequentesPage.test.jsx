@@ -30,17 +30,10 @@ jest.mock("src/components/Shareable/Breadcrumb", () => ({
   ),
 }));
 
-jest.mock(
-  "src/components/screens/Faq/DuvidasFrequentes/components/BotaoCadastroDuvidasFrequentes",
-  () => ({
-    __esModule: true,
-    default: () => (
-      <div data-testid="botao-cadastrar-duvidas-frequentes">
-        Cadastrar Dúvidas Frequentes
-      </div>
-    ),
-  }),
-);
+jest.mock("src/components/screens/Faq/DuvidasFrequentes/Listagem", () => ({
+  __esModule: true,
+  default: () => <div data-testid="listagem-duvidas-frequentes" />,
+}));
 
 describe("ListagemDuvidasFrequentesPage", () => {
   it("deve renderizar a página de listagem de dúvidas frequentes corretamente", () => {
@@ -61,7 +54,7 @@ describe("ListagemDuvidasFrequentesPage", () => {
       "Cadastro Dúvidas Frequentes",
     );
     expect(
-      screen.getByTestId("botao-cadastrar-duvidas-frequentes"),
+      screen.getByTestId("listagem-duvidas-frequentes"),
     ).toBeInTheDocument();
   });
 });

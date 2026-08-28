@@ -34,10 +34,10 @@ export const backgroundLabelPeriodo = (periodos) => {
 export const formataDadosTabelaCEMEI = (solicitacao) => {
   let substituicoes =
     solicitacao.substituicoes_cemei_cei_periodo_escolar.concat(
-      solicitacao.substituicoes_cemei_emei_periodo_escolar
+      solicitacao.substituicoes_cemei_emei_periodo_escolar,
     );
   let periodos = substituicoes.sort(
-    (a, b) => a.periodo_escolar.posicao - b.periodo_escolar.posicao
+    (a, b) => a.periodo_escolar.posicao - b.periodo_escolar.posicao,
   );
   periodos = periodos.map((s) => s.periodo_escolar.nome);
   periodos = [...new Set(periodos)];
@@ -48,11 +48,11 @@ export const formataDadosTabelaCEMEI = (solicitacao) => {
   substituicoes = periodos.map((p) => {
     const alunosPorFaixaCEI =
       solicitacao.substituicoes_cemei_cei_periodo_escolar.filter(
-        (s) => s.periodo_escolar.nome === p.nome
+        (s) => s.periodo_escolar.nome === p.nome,
       )[0];
     const alunosPorFaixaEMEI =
       solicitacao.substituicoes_cemei_emei_periodo_escolar.filter(
-        (s) => s.periodo_escolar.nome === p.nome
+        (s) => s.periodo_escolar.nome === p.nome,
       )[0];
     p["substituicoesCEI"] = alunosPorFaixaCEI;
     p["substituicoesEMEI"] = alunosPorFaixaEMEI;
@@ -70,6 +70,37 @@ export const totalMatriculados = (faixas) => {
     });
   return total;
 };
+
+export const validaQuantidadeFaixaCEI =
+  ({ periodoIndice, max }) =>
+  (value, allValues) => {
+    const faixas =
+      allValues?.substituicoes?.[periodoIndice]?.cei?.faixas_etarias;
+    const algumaFaixaPreenchida =
+      Array.isArray(faixas) &&
+      faixas.some(
+        (faixa) =>
+          faixa &&
+          faixa.quantidade_alunos !== "" &&
+          faixa.quantidade_alunos !== null &&
+          faixa.quantidade_alunos !== undefined &&
+          Number(faixa.quantidade_alunos) > 0,
+      );
+
+    if (
+      !algumaFaixaPreenchida &&
+      (value === "" || value === null || value === undefined)
+    ) {
+      return "Campo obrigatório";
+    }
+    if (value && value < 1) {
+      return "Deve ser ao menos 1";
+    }
+    if (value && value > max) {
+      return `Não pode ser maior que ${max}`;
+    }
+    return undefined;
+  };
 
 export const totalSolicitacao = (values, periodoCEI) => {
   let total = 0;
@@ -150,7 +181,7 @@ export const formatarPayload = (values, meusDados) => {
 export const validarSubmit = (values) => {
   let erro = false;
   let substituicoes = values.substituicoes.filter(
-    (substituicao) => substituicao && substituicao.checked === true
+    (substituicao) => substituicao && substituicao.checked === true,
   );
 
   if (substituicoes.length === 0) {

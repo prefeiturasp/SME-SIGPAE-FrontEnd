@@ -45,10 +45,19 @@ import { textAreaRequired } from "src/helpers/fieldValidators";
 import { onChangeEtapas } from "src/components/PreRecebimento/FormEtapa/helper";
 import TabelaFormAlteracao from "./components/TabelaFormAlteracao";
 import FormRecebimento from "src/components/PreRecebimento/FormRecebimento";
-import { fornecedorCienteAlteracaoCodae } from "../../../../services/cronograma.service";
+import {
+  fornecedorCienteAlteracaoCodae,
+  getSolicitacaoAlteracaoCronogramaRelatorio,
+} from "../../../../services/cronograma.service";
 import { SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR } from "../../../../configs/constants";
 import { setFieldTouched } from "../../../../configs/mutators";
 import { numberToStringDecimal } from "src/helpers/parsers";
+import Botao from "src/components/Shareable/Botao";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "src/components/Shareable/Botao/constants";
 
 export default ({ analiseSolicitacao }) => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -80,9 +89,7 @@ export default ({ analiseSolicitacao }) => {
     aprovacaoAbastecimento !== null ||
     usuarioEhCronogramaOuCodae() ||
     ((usuarioEhDilogDiretoria() || usuarioEhDilogAbastecimento()) &&
-      ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
-        solicitacaoAlteracaoCronograma.status,
-      ));
+      analisadoPeloAbastecimento());
 
   const getDetalhes = async () => {
     setCarregando(true);
@@ -353,6 +360,25 @@ export default ({ analiseSolicitacao }) => {
     return logsNomesAtualizados;
   };
 
+  const handleRelatorioSolicitacaoCronograma = async () => {
+    try {
+      setCarregando(true);
+
+      await getSolicitacaoAlteracaoCronogramaRelatorio(uuid);
+    } catch (error) {
+      toastError("Erro ao gerar relatório de alteração de cronograma:", error);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  const ehFornecedorCiente = (status) => status === "Fornecedor Ciente";
+  const ehAprovadoDilog = (solicitacao) =>
+    Boolean(solicitacao?.logs) &&
+    solicitacao.logs.some(
+      (l) => l.status_evento_explicacao === "Aprovado DILOG",
+    );
+
   useEffect(() => {
     getDetalhes();
   }, [uuid]);
@@ -364,9 +390,22 @@ export default ({ analiseSolicitacao }) => {
           {solicitacaoAlteracaoCronograma && (
             <>
               <div className="row pb-3">
-                <p className="head-green mt-3 ms-3 mb-5">
-                  Status do Cronograma
-                </p>
+                <div className="d-flex align-items-center justify-content-between mt-3 ms-3 me-3 mb-5">
+                  <p className="head-green mb-0">Status do Cronograma</p>
+                  {(ehAprovadoDilog(solicitacaoAlteracaoCronograma) ||
+                    ehFornecedorCiente(
+                      solicitacaoAlteracaoCronograma.status,
+                    )) && (
+                    <Botao
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN}
+                      icon={BUTTON_ICON.PRINT}
+                      onClick={handleRelatorioSolicitacaoCronograma}
+                      className="me-2"
+                      dataTestId="botao-relatorio-cronograma"
+                    />
+                  )}
+                </div>
                 <FluxoDeStatusPreRecebimento
                   listaDeStatus={solicitacaoAlteracaoCronograma.logs}
                 />

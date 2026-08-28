@@ -3,7 +3,7 @@ import Breadcrumb from "src/components/Shareable/Breadcrumb";
 import PageNoSidebar from "src/components/Shareable/Page/PageNoSidebar";
 import { AJUDA, CADASTRO_DUVIDAS_FREQUENTES } from "src/configs/constants";
 import { HOME } from "src/constants/config";
-import BotaoCadastrarDuvidasFrequentes from "src/components/screens/Faq/DuvidasFrequentes/components/BotaoCadastroDuvidasFrequentes";
+import ConteudoListagemDuvidasFrequentes from "src/components/screens/Faq/DuvidasFrequentes/Listagem";
 
 const caminhoFaq = `/${AJUDA}`;
 const caminhoListagemDuvidasFrequentes = `/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}`;
@@ -31,6 +31,6 @@ export const ListagemDuvidasFrequentes = () => (
       />
     }
   >
-    <BotaoCadastrarDuvidasFrequentes />
+    <ConteudoListagemDuvidasFrequentes />
   </PageNoSidebar>
 );

@@ -35,6 +35,12 @@ import {
   usuarioEhDilogAbastecimento,
   usuarioEhDilogDiretoria,
 } from "src/helpers/utilities";
+import { getSolicitacaoAlteracaoCronogramaRelatorio } from "src/services/cronograma.service";
+
+jest.mock("src/services/cronograma.service", () => ({
+  ...jest.requireActual("src/services/cronograma.service"),
+  getSolicitacaoAlteracaoCronogramaRelatorio: jest.fn().mockResolvedValue({}),
+}));
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -679,6 +685,37 @@ describe("AlterarCronograma - Testes Completos", () => {
       await waitFor(() => {
         const input = screen.getByTestId("data_programada_0");
         expect(input).toHaveAttribute("data-min-date");
+      });
+    });
+  });
+
+  describe("Relatório de Solicitação de Alteração de Cronograma", () => {
+    beforeEach(() => {
+      getSolicitacaoAlteracaoCronogramaRelatorio.mockClear();
+      mock
+        .onGet(/\/solicitacao-de-alteracao-de-cronograma\/.*\/?/)
+        .reply(200, mockSolicitacaoAprovadaDilog);
+    });
+
+    it("dispara a requisição de relatório ao clicar no botão de impressão", async () => {
+      await setup(true);
+
+      await waitFor(() => {
+        expect(screen.getAllByText(/Aprovado DILOG/i)[0]).toBeInTheDocument();
+      });
+
+      const botaoRelatorio = screen.getByTestId("botao-relatorio-cronograma");
+      expect(botaoRelatorio).toBeInTheDocument();
+
+      fireEvent.click(botaoRelatorio);
+
+      await waitFor(() => {
+        expect(
+          getSolicitacaoAlteracaoCronogramaRelatorio,
+        ).toHaveBeenCalledTimes(1);
+        expect(getSolicitacaoAlteracaoCronogramaRelatorio).toHaveBeenCalledWith(
+          "cronograma-uuid-123",
+        );
       });
     });
   });

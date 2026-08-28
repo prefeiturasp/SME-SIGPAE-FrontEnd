@@ -103,3 +103,19 @@ export const getDescontoFinanceiro = async (params) => {
     },
   );
 };
+
+export const reabrirLancamentosRelatorio = async (
+  payload: Partial<DadosLiquidacaoEmpenho>,
+  relatorioFinanceiro: string,
+) => {
+  const response = await axios
+    .put(
+      `/medicao-inicial/relatorio-financeiro/reabrir-lancamentos/${relatorioFinanceiro}/`,
+      payload,
+    )
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
