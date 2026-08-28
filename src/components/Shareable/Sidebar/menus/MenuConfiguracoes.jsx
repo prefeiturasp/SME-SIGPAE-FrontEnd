@@ -27,16 +27,11 @@ import {
   usuarioEhCoordenadorNutriSupervisao,
   usuarioEhDilogDiretoria,
   usuarioEhDiretorUE,
-  usuarioEhEmpresaTerceirizada,
   usuarioEhGticCODAE,
 } from "src/helpers/utilities";
 import { LeafItem, Menu, SubMenu } from "./shared";
 
 const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
-  const exibirConfigEmail =
-    usuarioEhCODAEGestaoAlimentacao() ||
-    usuarioEhCODAEDietaEspecial() ||
-    usuarioEhEmpresaTerceirizada();
   const exibirGerenciamentoEmails =
     usuarioEhCODAEGestaoAlimentacao() ||
     usuarioEhCODAEDietaEspecial() ||
@@ -63,11 +58,6 @@ const MenuConfiguracoes = ({ activeMenu, onSubmenuClick }) => {
       title={"Configurações"}
       dataTestId="menu-configuracoes"
     >
-      {exibirConfigEmail && (
-        <>
-          <LeafItem to={`/${CONFIGURACOES}`}>Disparo de E-mail</LeafItem>
-        </>
-      )}
       {exibirGerenciamentoEmails && (
         <LeafItem to={`/${CONFIGURACOES}/${GERENCIAMENTO_EMAILS}`}>
           Gerenciamento de E-mails
