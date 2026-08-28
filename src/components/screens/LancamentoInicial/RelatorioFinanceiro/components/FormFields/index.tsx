@@ -17,6 +17,7 @@ type FieldsProps = {
   gruposUnidadeEscolar: MultiSelectOption[] | SelectOption[];
   mesesAnos: SelectOption[];
   exibirReabrirLancamentos?: boolean;
+  showReabrirLancamentos?: (_value: boolean) => void;
 };
 
 export function FormFields({
@@ -24,6 +25,7 @@ export function FormFields({
   gruposUnidadeEscolar,
   mesesAnos,
   exibirReabrirLancamentos,
+  showReabrirLancamentos,
 }: FieldsProps) {
   const [searchParams] = useSearchParams();
   const uuidRelatorioFinanceiro = searchParams.get("uuid");
@@ -90,6 +92,7 @@ export function FormFields({
             style={BUTTON_STYLE.ORANGE_OUTLINE}
             type={BUTTON_TYPE.BUTTON}
             icon={BUTTON_ICON.REFRESH}
+            onClick={() => showReabrirLancamentos(true)}
           />
         </div>
       )}
