@@ -117,6 +117,7 @@ export const tipoDeStatus = (status) => {
     case "Em aberto para preenchimento pela UE":
     case "Enviado pela UE":
     case "Aprovado pela DRE":
+    case "CODAE reabriu lançamento":
     case "Aprovado pela CODAE":
     case "CODAE homologou":
     case "CODAE Atualizou o protocolo":
