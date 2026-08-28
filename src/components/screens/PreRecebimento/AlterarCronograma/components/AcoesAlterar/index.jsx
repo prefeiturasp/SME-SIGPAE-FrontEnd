@@ -3,6 +3,7 @@ import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
+  BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
@@ -28,6 +29,7 @@ export default ({
   solicitacaoAlteracaoCronograma,
   disabledAbastecimento,
   disabledDilog,
+  handleRelatorioSolicitacaoCronograma,
 }) => {
   const [show, setShow] = useState(false);
   const [showVoltar, setShowVoltar] = useState(false);
@@ -143,6 +145,13 @@ export default ({
     },
   ];
 
+  const ehFornecedorCienteStatus = (status) => status === "Fornecedor Ciente";
+  const ehAprovadoDilog = (solicitacao) =>
+    Boolean(solicitacao?.logs) &&
+    solicitacao.logs.some(
+      (l) => l.status_evento_explicacao === "Aprovado DILOG",
+    );
+
   return (
     <>
       {botoes.map(({ cond, texto, Modal, handleSim, disabled, validar }, i) =>
@@ -176,6 +185,18 @@ export default ({
         className="float-end ms-3"
         onClick={handleShowVoltar}
       />
+      {(ehAprovadoDilog(solicitacaoAlteracaoCronograma) ||
+        ehFornecedorCienteStatus(solicitacaoAlteracaoCronograma?.status)) && (
+        <Botao
+          texto="Baixar em PDF"
+          style={BUTTON_STYLE.GREEN_OUTLINE}
+          icon={BUTTON_ICON.FILE_PDF}
+          type={BUTTON_TYPE.BUTTON}
+          onClick={handleRelatorioSolicitacaoCronograma}
+          dataTestId="botao-relatorio-cronograma"
+          className="float-end"
+        />
+      )}
       <ModalVoltar
         modalVoltar={showVoltar}
         setModalVoltar={() => setShowVoltar(false)}
