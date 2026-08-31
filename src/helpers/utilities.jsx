@@ -845,6 +845,16 @@ export const usuarioEhCODAEGabinete = () => {
   return localStorage.getItem("perfil") === PERFIL.ADMINISTRADOR_CODAE_GABINETE;
 };
 
+export const usuarioPodeVisualizarRelatorioIMR = () =>
+  usuarioEhNutricionistaSupervisao() ||
+  usuarioEhCODAEGabinete() ||
+  usuarioEhCODAEGestaoAlimentacao() ||
+  usuarioEhCODAENutriManifestacao() ||
+  usuarioEhDinutreDiretoria() ||
+  usuarioEhDRE() ||
+  usuarioEhEmpresaTerceirizada() ||
+  usuarioEhMedicao();
+
 export const usuarioEhGticCODAE = () => {
   return localStorage.getItem("perfil") === PERFIL.USUARIO_GTIC_CODAE;
 };

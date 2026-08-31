@@ -96,6 +96,13 @@ export const getSolicitacaoAlteracaoCronograma = async (uuid) => {
   return await axios.get(url);
 };
 
+export const getSolicitacaoAlteracaoCronogramaRelatorio = async (uuid) => {
+  const url = `/solicitacao-de-alteracao-de-cronograma/${uuid}/relatorio/`;
+  const response = await axios.get(url, { responseType: "blob" });
+  const blob = new Blob([response.data], { type: "application/pdf" });
+  saveAs(blob, "alteracao_cronograma.pdf");
+};
+
 export const cronogramaAssina = async (uuid, password) => {
   const url = `/cronogramas/${uuid}/cronograma-assina/`;
   return await axios.patch(

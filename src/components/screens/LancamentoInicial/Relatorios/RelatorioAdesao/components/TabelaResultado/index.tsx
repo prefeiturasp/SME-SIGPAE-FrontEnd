@@ -5,7 +5,7 @@ import { TotalAlimentacao } from "./components/TabelaResultadoPeriodo/types";
 import { Props } from "./types";
 
 export default (props: Props) => {
-  const { params, filtros, resultado, exibirTitulo } = props;
+  const { params, filtros, resultado, escola, exibirTitulo } = props;
   const temFiltros = filtros && Object.keys(filtros).length > 0;
   const resultadoVazio = resultado && Object.keys(resultado).length === 0;
 
@@ -33,16 +33,30 @@ export default (props: Props) => {
             <b>Adesão das Alimentações Servidas</b>
             <b className="mx-2">-</b>
             {filtros.mes && <b className="text-dark">{filtros.mes}</b>}
-            {filtros.dre && <b className="text-dark"> | {filtros.dre}</b>}
-            {filtros.lotes && (
+            {filtros.lotes?.length > 0 && (
               <b className="text-dark"> | {filtros.lotes.join(", ")}</b>
             )}
-            {filtros.unidade_educacional && (
-              <b className="text-dark"> | {filtros.unidade_educacional}</b>
+            {filtros.tipos_unidades?.length > 0 && (
+              <b className="text-dark">
+                {" "}
+                | {filtros.tipos_unidades.join(", ")}
+              </b>
+            )}
+            {escola && (
+              <b className="text-dark">
+                {" "}
+                | {escola.codigo_eol} - {escola.nome}
+              </b>
+            )}
+            {filtros.unidade_educacional?.length > 0 && !escola && (
+              <b className="text-dark">
+                {" "}
+                | {filtros.unidade_educacional.join(", ")}
+              </b>
             )}
             {renderPeriodoLancamento(
               filtros.periodo_lancamento_de,
-              filtros.periodo_lancamento_ate
+              filtros.periodo_lancamento_ate,
             )}
           </>
         )}
@@ -61,7 +75,7 @@ export default (props: Props) => {
                     total_servido: d.total_servido,
                     total_frequencia: d.total_frequencia,
                     total_adesao: d.total_adesao,
-                  })
+                  }),
                 )}
               />
             ))}

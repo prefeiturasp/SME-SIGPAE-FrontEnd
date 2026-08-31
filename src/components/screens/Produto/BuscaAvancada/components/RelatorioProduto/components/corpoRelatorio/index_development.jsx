@@ -3,13 +3,20 @@ import { Modal } from "antd";
 import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import { fluxoPartindoTerceirizada } from "src/components/Shareable/FluxoDeStatus/helper";
 import Botao from "src/components/Shareable/Botao";
+import HTTP_STATUS from "http-status-codes";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
   BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
 import { truncarString } from "src/helpers/utilities";
-import { getRelatorioProduto } from "src/services/relatorios";
+import {
+  getRelatorioProduto,
+  getRelatorioProdutoHistorico,
+} from "src/services/relatorios";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
+import { ENVIRONMENT } from "src/constants/config";
 import "../styles.scss";
 
 export default class CorpoRelatorioDesenvolvimento extends Component {
@@ -20,8 +27,15 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
       visible: false,
       logs: [],
       logSelecionado: null,
+      exibirModalCentralDownloads: false,
     };
   }
+
+  showModalDownload = (open) => {
+    this.setState({
+      exibirModalCentralDownloads: open,
+    });
+  };
 
   showModal = () => {
     this.setState({
@@ -105,6 +119,16 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
       }
     });
     return iniciais;
+  };
+
+  downloadRelatorioHistorico = async (produto) => {
+    const response = await getRelatorioProdutoHistorico(produto);
+
+    if (response.status === HTTP_STATUS.OK) {
+      this.showModalDownload(true);
+    } else {
+      toastError("Erro ao baixar PDF. Tente novamente mais tarde");
+    }
   };
 
   render() {
@@ -436,6 +460,25 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
           onCancel={this.handleCancel}
           width={800}
           maskClosable={false}
+          footer={[
+            !ENVIRONMENT.includes("production") && (
+              <Botao
+                key="imprimir"
+                texto="Imprimir"
+                style={BUTTON_STYLE.GREEN_OUTLINE}
+                className="me-3"
+                onClick={() => this.downloadRelatorioHistorico(produto)}
+              />
+            ),
+            <Botao
+              key="fechar"
+              type="button"
+              className="me-2"
+              style={BUTTON_STYLE.GREEN}
+              onClick={this.handleOk}
+              texto={"Fechar"}
+            />,
+          ]}
         >
           <section className="body-modal-produto">
             <div>Usuário</div>
@@ -542,6 +585,12 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
             </article>
           </section>
         </Modal>
+        {this.state.exibirModalCentralDownloads && (
+          <ModalSolicitacaoDownload
+            show={this.state.exibirModalCentralDownloads}
+            setShow={this.showModalDownload}
+          />
+        )}
       </section>
     );
   }

@@ -2,15 +2,21 @@ import HTTP_STATUS from "http-status-codes";
 import { useState } from "react";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
-import {
-  usuarioEhDRE,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "src/helpers/utilities";
+import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
 
-import { RelatorioAdesaoResponse } from "src/services/medicaoInicial/relatorio.interface";
+import {
+  RelatorioAdesaoEscola,
+  RelatorioAdesaoPaginadoResponse,
+  RelatorioAdesaoResponse,
+} from "src/services/medicaoInicial/relatorio.interface";
 import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 
 import { IFiltros } from "./types";
+
+type Paginacao = {
+  count: number;
+  page_size: number;
+};
 
 export default () => {
   const [loading, setLoading] = useState(false);
@@ -21,6 +27,45 @@ export default () => {
   const [filtrosSelecionados, setFiltrosSelecionados] =
     useState<IFiltros | null>(null);
   const [resultado, setResultado] = useState<RelatorioAdesaoResponse>(null);
+  const [escola, setEscola] = useState<RelatorioAdesaoEscola | null>(null);
+  const [paginacao, setPaginacao] = useState<Paginacao | null>(null);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+
+  const buscaRelatorioAdesao = async (values: IFiltros, page: number) => {
+    setLoading(true);
+    const temFiltroEscola = values.unidade_educacional?.length > 0;
+    const response = await RelatorioService.getRelatorioAdesao({
+      mes_ano: values.mes,
+      lotes: values.lotes,
+      tipos_unidades: values.tipos_unidades,
+      escola__uuid: values.unidade_educacional,
+      periodos_escolares: values.periodos,
+      tipos_alimentacao: values.tipos_alimentacao,
+      periodo_lancamento_de: values.periodo_lancamento_de,
+      periodo_lancamento_ate: values.periodo_lancamento_ate,
+      ...(temFiltroEscola ? { page } : {}),
+    });
+    if (response.status === HTTP_STATUS.OK) {
+      if (temFiltroEscola) {
+        const data =
+          response.data as unknown as RelatorioAdesaoPaginadoResponse;
+        const resultadoPagina = data.results?.[0];
+        setEscola(resultadoPagina?.escola ?? null);
+        setResultado(resultadoPagina?.resultados ?? {});
+        setPaginacao({ count: data.count, page_size: data.page_size });
+        setPaginaAtual(page);
+      } else {
+        setEscola(null);
+        setPaginacao(null);
+        setResultado(response.data as unknown as RelatorioAdesaoResponse);
+      }
+    } else {
+      toastError(
+        "Não foi possível obter os resultados. Tente novamente mais tarde.",
+      );
+    }
+    setLoading(false);
+  };
 
   const filtrar = async (values: IFiltros) => {
     if (values.periodo_lancamento_de && !values.periodo_lancamento_ate) {
@@ -31,47 +76,25 @@ export default () => {
       toastError("Se preencher o campo `Até`, `De` é obrigatório");
       return;
     }
-    setLoading(true);
     setFiltros(filtrosSelecionados);
     setParams(values);
     setExibirTitulo(true);
 
-    const response = await RelatorioService.getRelatorioAdesao({
-      mes_ano: values.mes,
-      diretoria_regional: values.dre,
-      lotes: values.lotes,
-      escola: values.unidade_educacional,
-      periodos_escolares: values.periodos,
-      tipos_alimentacao: values.tipos_alimentacao,
-      periodo_lancamento_de: values.periodo_lancamento_de,
-      periodo_lancamento_ate: values.periodo_lancamento_ate,
-    });
-    if (response.status === HTTP_STATUS.OK) {
-      setResultado(response.data);
-    } else {
-      toastError(
-        "Não foi possível obter os resultados. Tente novamente mais tarde."
-      );
-    }
+    await buscaRelatorioAdesao(values, 1);
+  };
 
-    setLoading(false);
+  const mudarPagina = (page: number) => {
+    if (params) {
+      buscaRelatorioAdesao(params, page);
+    }
   };
 
   const limparFiltro = () => {
-    if (usuarioEhDRE()) {
+    if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
       setFiltrosSelecionados({
-        dre: localStorage.getItem("nome_instituicao"),
-      });
-      setFiltros({
-        dre: localStorage.getItem("nome_instituicao"),
-      });
-    } else if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-      setFiltrosSelecionados({
-        dre: localStorage.getItem("dre_nome"),
         unidade_educacional: filtrosSelecionados["unidade_educacional"],
       });
       setFiltros({
-        dre: localStorage.getItem("dre_nome"),
         unidade_educacional: filtrosSelecionados["unidade_educacional"],
       });
     } else {
@@ -79,6 +102,8 @@ export default () => {
       setFiltros(null);
     }
     setResultado(null);
+    setEscola(null);
+    setPaginacao(null);
     setExibirTitulo(false);
   };
 
@@ -86,9 +111,9 @@ export default () => {
     setFiltrosSelecionados((prev) => {
       let values_ = values;
       if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-        values_["dre"] = localStorage.getItem("dre_nome");
-        values_["unidade_educacional"] =
-          localStorage.getItem("labelEscolaLote");
+        values_["unidade_educacional"] = [
+          localStorage.getItem("labelEscolaLote"),
+        ];
       }
       if (prev) return { ...prev, ...values_ };
       return values_;
@@ -100,7 +125,11 @@ export default () => {
     params,
     filtros,
     resultado,
+    escola,
+    paginacao,
+    paginaAtual,
     filtrar,
+    mudarPagina,
     limparFiltro,
     atualizaFiltrosSelecionados,
     exibirTitulo,

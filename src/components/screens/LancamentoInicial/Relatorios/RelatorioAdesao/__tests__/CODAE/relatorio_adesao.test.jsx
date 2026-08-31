@@ -11,13 +11,13 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 import { mockTiposAlimentacao } from "src/mocks/InclusaoAlimentacao/mockTiposAlimentacao";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockMeusDadosCODAEGA } from "src/mocks/meusDados/CODAE-GA";
 import { mockGetPeriodoEscolar } from "src/mocks/services/dietaEspecial.service/mockGetPeriodoEscolar";
 import { mockEscolasParaFiltros } from "src/mocks/services/escola.service/escolasParaFiltros";
+import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
 import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
@@ -33,22 +33,22 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
       .onGet("/medicao-inicial/solicitacao-medicao-inicial/meses-anos/")
       .reply(200, mockMesesAnosRelatorioAdesao);
     mock
-      .onGet("/diretorias-regionais-simplissima/")
-      .reply(200, mockDiretoriaRegionalSimplissima);
+      .onGet("/grupos-unidade-escolar/")
+      .reply(200, mockGetGrupoUnidadeEscolar);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     localStorage.setItem(
       "uuid_instituicao",
-      mockMeusDadosCODAEGA.vinculo_atual.instituicao.uuid
+      mockMeusDadosCODAEGA.vinculo_atual.instituicao.uuid,
     );
 
     await act(async () => {
@@ -68,7 +68,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
             <RelatorioAdesaoPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -89,7 +89,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     expect(selectElementMesReferencia).toHaveValue("12_2023");
 
     const divInputPeriodoLancamentoDe = screen.getByTestId(
-      "div-periodo-lancamento-de"
+      "div-periodo-lancamento-de",
     );
     const inputElementPeriodoLancamentoDe =
       divInputPeriodoLancamentoDe.querySelector("input");
@@ -98,7 +98,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     const divInputPeriodoLancamentoAte = screen.getByTestId(
-      "div-periodo-lancamento-ate"
+      "div-periodo-lancamento-ate",
     );
     const inputElementPeriodoLancamentoAte =
       divInputPeriodoLancamentoAte.querySelector("input");
@@ -107,7 +107,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -115,7 +115,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Adesão das Alimentações Servidas")
+        screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
       expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
     });
@@ -127,7 +127,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("Adesão das Alimentações Servidas")
+        screen.queryByText("Adesão das Alimentações Servidas"),
       ).not.toBeInTheDocument();
       expect(selectElementMesReferencia).toHaveValue("");
     });
@@ -143,7 +143,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     expect(selectElementMesReferencia).toHaveValue("12_2023");
 
     const divInputPeriodoLancamentoDe = screen.getByTestId(
-      "div-periodo-lancamento-de"
+      "div-periodo-lancamento-de",
     );
     const inputElementPeriodoLancamentoDe =
       divInputPeriodoLancamentoDe.querySelector("input");
@@ -152,7 +152,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -160,7 +160,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Se preencher o campo `De`, `Até` é obrigatório")
+        screen.getByText("Se preencher o campo `De`, `Até` é obrigatório"),
       ).toBeInTheDocument();
     });
   });
@@ -175,7 +175,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     expect(selectElementMesReferencia).toHaveValue("12_2023");
 
     const divInputPeriodoLancamentoDe = screen.getByTestId(
-      "div-periodo-lancamento-de"
+      "div-periodo-lancamento-de",
     );
     const inputElementPeriodoLancamentoDe =
       divInputPeriodoLancamentoDe.querySelector("input");
@@ -184,7 +184,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     const divInputPeriodoLancamentoAte = screen.getByTestId(
-      "div-periodo-lancamento-ate"
+      "div-periodo-lancamento-ate",
     );
     const inputElementPeriodoLancamentoAte =
       divInputPeriodoLancamentoAte.querySelector("input");
@@ -192,7 +192,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
       target: { value: "20/12/2023" },
     });
 
-    mock.onGet("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
+    mock.onPost("/medicao-inicial/relatorios/relatorio-adesao/").reply(500, {});
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(botaoFiltrar);
@@ -200,13 +200,13 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Não foi possível obter os resultados. Tente novamente mais tarde."
-        )
+          "Não foi possível obter os resultados. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });
 
-  it("filtra por DRE, Lote e Unidade Educacional", async () => {
+  it("filtra por Lote e Unidade Educacional", async () => {
     const selectMesReferencia = screen.getByTestId("select-mes-referencia");
     const selectElementMesReferencia =
       selectMesReferencia.querySelector("select");
@@ -215,15 +215,6 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
     expect(selectElementMesReferencia).toHaveValue("12_2023");
 
-    const selectDRE = screen.getByTestId("select-dre");
-    const selectElement = selectDRE.querySelector("select");
-    const uuidDREIPIRANGA = mockDiretoriaRegionalSimplissima.results.find(
-      (dre) => dre.nome.includes("IPIRANGA")
-    ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidDREIPIRANGA },
-    });
-
     const selectLotes = screen.getByTestId("select-lotes");
     const selectControlLotes = within(selectLotes).getByRole("combobox");
     fireEvent.mouseDown(selectControlLotes);
@@ -231,7 +222,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     fireEvent.click(optionLote);
 
     const divInputPeriodoLancamentoDe = screen.getByTestId(
-      "div-periodo-lancamento-de"
+      "div-periodo-lancamento-de",
     );
     const inputElementPeriodoLancamentoDe =
       divInputPeriodoLancamentoDe.querySelector("input");
@@ -240,7 +231,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     const divInputPeriodoLancamentoAte = screen.getByTestId(
-      "div-periodo-lancamento-ate"
+      "div-periodo-lancamento-ate",
     );
     const inputElementPeriodoLancamentoAte =
       divInputPeriodoLancamentoAte.querySelector("input");
@@ -249,7 +240,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -257,7 +248,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Adesão das Alimentações Servidas")
+        screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
       expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
     });
@@ -272,7 +263,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -280,7 +271,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Adesão das Alimentações Servidas")
+        screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
       expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
     });
@@ -298,7 +289,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Geração solicitada com sucesso.")
+        screen.getByText("Geração solicitada com sucesso."),
       ).toBeInTheDocument();
     });
 
@@ -318,7 +309,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Geração solicitada com sucesso.")
+        screen.getByText("Geração solicitada com sucesso."),
       ).toBeInTheDocument();
     });
   });
@@ -332,7 +323,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
     });
 
     mock
-      .onGet("/medicao-inicial/relatorios/relatorio-adesao/")
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
       .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
 
     const botaoFiltrar = screen.getByText("Filtrar").closest("button");
@@ -340,7 +331,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Adesão das Alimentações Servidas")
+        screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
       expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
     });
@@ -356,7 +347,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Erro ao exportar xlsx. Tente novamente mais tarde.")
+        screen.getByText("Erro ao exportar xlsx. Tente novamente mais tarde."),
       ).toBeInTheDocument();
     });
 
@@ -371,7 +362,7 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Erro ao exportar pdf. Tente novamente mais tarde.")
+        screen.getByText("Erro ao exportar pdf. Tente novamente mais tarde."),
       ).toBeInTheDocument();
     });
   });

@@ -337,6 +337,8 @@ export const POS_RECEBIMENTO = "pos-recebimento";
 export const TERMO_RECEBIMENTO_DEFINITIVO = "termo-recebimento-definitivo";
 export const CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO =
   "cadastro-termo-recebimento-definitivo";
+export const DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO =
+  "detalhar-termo-recebimento-definitivo";
 export const QUESTOES_POR_PRODUTO = "questoes-por-produto";
 export const ATRIBUIR_QUESTOES_CONFERENCIA = "atribuir-questoes-conferencia";
 export const EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA =
@@ -421,3 +423,5 @@ export const AJUDA = "ajuda";
 export const CADASTRO_CATEGORIA = "cadastro-categoria";
 export const CADASTRAR_CATEGORIA = "cadastrar";
 export const EDITAR_CATEGORIA = "editar";
+export const CADASTRO_DUVIDAS_FREQUENTES = "cadastro-duvidas-frequentes";
+export const EDITAR_DUVIDA_FREQUENTE = "editar";

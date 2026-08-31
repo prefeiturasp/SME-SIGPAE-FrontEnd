@@ -19,7 +19,6 @@ import {
 import AtualizacaoEmailEOLPage from "src/pages/Configuracoes/AtualizacaoEmailEOLPage";
 import CargasUsuariosPage from "src/pages/Configuracoes/CargasUsuariosPage";
 import CargasUsuariosServidoresPage from "src/pages/Configuracoes/CargasUsuariosServidoresPage";
-import ConfigEmailPage from "src/pages/Configuracoes/ConfigEmailPage";
 import GerenciamentoEmailsPage from "src/pages/Configuracoes/GerenciamentoEmailsPage";
 import GestaoAcessoCodaeDilogPage from "src/pages/Configuracoes/GestaoAcessoCodaeDilogPage";
 import { GestaoAcessoCogestorPage } from "src/pages/Configuracoes/GestaoAcessoCogestorPage";
@@ -32,11 +31,6 @@ import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
 
 export const rotasConfiguracoes: Array<RotaInterface> = [
-  {
-    path: `/${constants.CONFIGURACOES}`,
-    component: ConfigEmailPage,
-    tipoUsuario: usuarioEhQualquerCODAE(),
-  },
   {
     path: `/${constants.CONFIGURACOES}/gerenciamento-emails`,
     component: GerenciamentoEmailsPage,

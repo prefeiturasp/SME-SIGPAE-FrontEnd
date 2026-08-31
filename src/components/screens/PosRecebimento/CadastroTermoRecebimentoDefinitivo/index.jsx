@@ -46,6 +46,7 @@ export default () => {
   const proximoIdBloco = useRef(1);
   const [carregando, setCarregando] = useState(true);
   const [empresas, setEmpresas] = useState([]);
+  const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
   const [contratos, setContratos] = useState([]);
   const [cronogramasDisponiveis, setCronogramasDisponiveis] = useState([]);
   const [fiscais, setFiscais] = useState([]);
@@ -109,6 +110,7 @@ export default () => {
     setBlocos([criarBloco()]);
     form?.change("contrato", "");
     const empresa = empresas.find((e) => e.nome_fantasia === nomeFantasia);
+    setEmpresaSelecionada(empresa || null);
     if (!empresa) return;
     setCarregando(true);
     try {
@@ -126,7 +128,10 @@ export default () => {
     if (!contrato) return;
     setCarregando(true);
     try {
-      const response = await getCronogramasPosRecebimento(contrato.uuid);
+      const response = await getCronogramasPosRecebimento(
+        contrato.uuid,
+        empresaSelecionada?.uuid,
+      );
       setCronogramasDisponiveis(response?.data?.results || []);
     } finally {
       setCarregando(false);

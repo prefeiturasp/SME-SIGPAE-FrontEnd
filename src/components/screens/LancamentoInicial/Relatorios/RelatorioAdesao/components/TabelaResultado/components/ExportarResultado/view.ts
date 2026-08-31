@@ -17,9 +17,9 @@ export default ({ params }: Args) => {
     setExportando(true);
     const response = await RelatorioService.exportarRelatorioAdesaoParaXLSX({
       mes_ano: params.mes,
-      diretoria_regional: params.dre,
       lotes: params.lotes,
-      escola: params.unidade_educacional,
+      tipos_unidades: params.tipos_unidades,
+      escola__uuid: params.unidade_educacional,
       periodos_escolares: params.periodos,
       tipos_alimentacao: params.tipos_alimentacao,
       periodo_lancamento_de: params.periodo_lancamento_de,
@@ -37,9 +37,9 @@ export default ({ params }: Args) => {
     setExportando(true);
     const response = await RelatorioService.exportarRelatorioAdesaoParaPDF({
       mes_ano: params.mes,
-      diretoria_regional: params.dre,
       lotes: params.lotes,
-      escola: params.unidade_educacional,
+      tipos_unidades: params.tipos_unidades,
+      escola__uuid: params.unidade_educacional,
       periodos_escolares: params.periodos,
       tipos_alimentacao: params.tipos_alimentacao,
       periodo_lancamento_de: params.periodo_lancamento_de,

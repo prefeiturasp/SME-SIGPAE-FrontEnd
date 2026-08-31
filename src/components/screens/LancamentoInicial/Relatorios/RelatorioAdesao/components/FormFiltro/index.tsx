@@ -1,13 +1,9 @@
-import { Skeleton } from "antd";
+import { Skeleton, Spin, TreeSelect } from "antd";
 import { FormApi } from "final-form";
 import { Field } from "react-final-form";
-import AutoCompleteSelectField from "src/components/Shareable/AutoCompleteSelectField";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
-import {
-  usuarioEhDRE,
-  usuarioEhEscolaTerceirizadaQualquerPerfil,
-} from "src/helpers/utilities";
+import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
 
 import useView from "./view";
 
@@ -15,6 +11,8 @@ import { ChangeEvent } from "react";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { IFiltros } from "../../types";
 import { validateDataFinal, validateDataInicial } from "./helpers";
+
+const { SHOW_CHILD } = TreeSelect;
 
 type Props = {
   form: FormApi;
@@ -46,39 +44,18 @@ export default (props: Props) => {
               naoDesabilitarPrimeiraOpcao
               validate={view.validaMesAno}
               onChangeEffect={(e: ChangeEvent<HTMLInputElement>) =>
-                view.onChangeMesAno(e, form)
+                view.onChangeMesAno(e)
               }
             />
           )}
         </div>
         <div className="col-8">
-          {view.buscandoOpcoes.buscandoDiretoriasRegionais ? (
-            <Skeleton paragraph={false} active />
-          ) : (
-            <Field
-              component={Select}
-              label="DRE"
-              dataTestId="select-dre"
-              name="dre"
-              placeholder="Selecione uma DRE"
-              options={view.diretoriasRegionaisOpcoes}
-              naoDesabilitarPrimeiraOpcao
-              onChangeEffect={view.onChangeDRE}
-              disabled={
-                usuarioEhDRE() || usuarioEhEscolaTerceirizadaQualquerPerfil()
-              }
-            />
-          )}
-        </div>
-      </div>
-      <div className="row">
-        <div className="col-4">
           {view.buscandoOpcoes.buscandoLotes ? (
             <Skeleton paragraph={false} active />
           ) : (
             <Field
               component={MultiselectRaw}
-              label="Lotes"
+              label="DRE/Lote"
               name="lotes"
               dataTestId="select-lotes"
               selected={values.lotes || []}
@@ -92,26 +69,71 @@ export default (props: Props) => {
                 );
                 view.onChangeLotes(values_.map((value_) => value_.value));
               }}
-              placeholder="Selecione os lotes"
+              placeholder="Selecione a DRE/Lote"
+              disabled={
+                !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
+              }
             />
           )}
         </div>
-        <div className="col-8">
-          {view.buscandoOpcoes.buscandoUnidadesEducacionais ? (
+      </div>
+      <div className="row">
+        <div className="col-4">
+          {view.buscandoOpcoes.buscandoTiposUnidades ? (
             <Skeleton paragraph={false} active />
           ) : (
-            <Field
-              component={AutoCompleteSelectField}
-              dataTestId="select-unidade-educacional"
-              label="Unidade Educacional"
-              name="unidade_educacional"
-              placeholder="Selecione uma Unidade Educacional"
-              options={view.unidadesEducacionaisOpcoes}
-              filterOption={view.filtraUnidadesEducacionaisOpcoes}
-              onSelect={view.onChangeUnidadeEducacional}
-              disabled={usuarioEhEscolaTerceirizadaQualquerPerfil()}
-            />
+            <Field name="tipos_unidades">
+              {({ input }) => (
+                <div className="input">
+                  <label className="col-form-label">Tipo de Unidade</label>
+                  <TreeSelect
+                    data-testid="select-tipos-unidades"
+                    treeData={view.tiposUnidadesTreeData}
+                    value={input.value || []}
+                    onChange={(value: Array<string>) => {
+                      input.onChange(value);
+                      view.onChangeTiposUnidades(value);
+                    }}
+                    treeCheckable
+                    showCheckedStrategy={SHOW_CHILD}
+                    treeNodeFilterProp="title"
+                    placeholder="Selecione os tipos de unidade"
+                    style={{ width: "100%" }}
+                    disabled={
+                      !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
+                    }
+                  />
+                </div>
+              )}
+            </Field>
           )}
+        </div>
+        <div className="col-8">
+          <Spin spinning={view.buscandoOpcoes.buscandoUnidadesEducacionais}>
+            <Field
+              component={MultiselectRaw}
+              label="Unidades Educacionais"
+              name="unidade_educacional"
+              dataTestId="select-unidade-educacional"
+              selected={values.unidade_educacional || []}
+              options={view.unidadesEducacionaisOpcoes}
+              onSelectedChanged={(
+                values_: Array<{ label: string; value: string }>,
+              ) => {
+                form.change(
+                  `unidade_educacional`,
+                  values_.map((value_) => value_.value),
+                );
+                view.onChangeUnidadesEducacionais(
+                  values_.map((value_) => value_.value),
+                );
+              }}
+              placeholder="Selecione as unidades educacionais"
+              disabled={
+                !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
+              }
+            />
+          </Spin>
         </div>
       </div>
       <div className="row">
@@ -135,6 +157,7 @@ export default (props: Props) => {
                 );
               }}
               placeholder="Selecione os períodos"
+              disabled={!values.mes}
             />
           )}
         </div>
@@ -158,6 +181,7 @@ export default (props: Props) => {
                 );
               }}
               placeholder="Selecione os períodos"
+              disabled={!values.mes}
             />
           )}
         </div>

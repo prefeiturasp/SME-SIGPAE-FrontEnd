@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { AJUDA, CADASTRO_CATEGORIA } from "src/configs/constants";
 import { HOME } from "src/constants/config";
-import ListagemCategoriasPage from "../ListagemCategoriasPage";
+import ListagemCategoriasPage from "../Categorias/ListagemCategoriasPage";
 
 jest.mock("src/components/Shareable/Page/PageNoSidebar", () => ({
   __esModule: true,
@@ -31,7 +31,7 @@ jest.mock("src/components/Shareable/Breadcrumb", () => ({
 }));
 
 jest.mock(
-  "src/components/screens/Faq/CadastroCategoria/components/BotaoCadastrarCategoria",
+  "src/components/screens/Faq/Categorias/components/BotaoCadastrarCategoria",
   () => ({
     __esModule: true,
     default: () => (
@@ -40,7 +40,7 @@ jest.mock(
   }),
 );
 
-jest.mock("src/components/screens/Faq/CadastroCategoria/Listagem", () => ({
+jest.mock("src/components/screens/Faq/Categorias/Listagem", () => ({
   __esModule: true,
   default: () => (
     <div data-testid="pagina-listagem-categorias">Listagem de Categorias</div>
