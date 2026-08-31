@@ -30,6 +30,11 @@ const GRUPO_1_UUIDS = [
   "e16d9c35-767a-4e5b-928f-56b8a4d0dd52",
 ];
 
+const GRUPO_2_UUIDS = [
+  "ef52e3bc-63de-4863-82e6-81601cfce74e",
+  "03dede4d-fb61-4c90-b851-94a132832f42",
+];
+
 const LOTE_3567_3_UUID = "655a63ff-dd0b-4259-86a0-cdd43ac36030";
 
 const getEscolasRequests = () =>
@@ -142,12 +147,15 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
 
     const params = getEscolasRequests()[0].params;
     expect(params.tipo_gestao__nome).toBe("TERC TOTAL");
-    expect(params.excluir_tipo_unidade__uuid).toEqual(GRUPO_1_UUIDS);
+    expect(params.excluir_tipo_unidade__uuid).toEqual([
+      ...GRUPO_1_UUIDS,
+      ...GRUPO_2_UUIDS,
+    ]);
     expect(params.lote__uuid).toBeUndefined();
     expect(params.tipo_unidade__uuid).toBeUndefined();
   });
 
-  it("exibe os grupos de tipo de unidade com as iniciais e esconde o Grupo 1", async () => {
+  it("exibe os grupos de tipo de unidade com as iniciais e esconde o Grupo 1 e o Grupo 2", async () => {
     await waitFor(() => {
       expect(screen.getByTestId("select-lotes")).toBeInTheDocument();
     });
@@ -169,7 +177,6 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)")).toBeInTheDocument();
     expect(screen.getByText("Grupo 3 (CEU EMEI, EMEI)")).toBeInTheDocument();
     expect(
       screen.getByText("Grupo 4 (CEU EMEF, CEU GESTAO, EMEF, EMEFM)"),
@@ -177,6 +184,7 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     expect(screen.getByText("Grupo 6 (CIEJA, CMCT)")).toBeInTheDocument();
 
     expect(screen.queryByText(/Grupo 1/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Grupo 2/)).not.toBeInTheDocument();
   });
 
   it("refaz a busca de unidades educacionais com lote__uuid ao selecionar DRE/Lote", async () => {
@@ -220,18 +228,18 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       ).toBeInTheDocument();
     });
 
-    const tituloGrupo2 = screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)");
-    const checkboxGrupo2 = tituloGrupo2
+    const tituloGrupo3 = screen.getByText("Grupo 3 (CEU EMEI, EMEI)");
+    const checkboxGrupo3 = tituloGrupo3
       .closest(".ant-select-tree-treenode")
       .querySelector(".ant-select-tree-checkbox");
-    fireEvent.click(checkboxGrupo2);
+    fireEvent.click(checkboxGrupo3);
 
     await waitFor(() => {
       const params =
         getEscolasRequests()[getEscolasRequests().length - 1].params;
       expect(params.tipo_unidade__uuid).toEqual([
-        "ef52e3bc-63de-4863-82e6-81601cfce74e",
-        "03dede4d-fb61-4c90-b851-94a132832f42",
+        "068aae34-1c72-40f2-8042-460c840c10fc",
+        "3f1aee3f-51f4-4759-aa2c-9ccf5c013c1c",
       ]);
     });
 
@@ -266,11 +274,11 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       ).toBeInTheDocument();
     });
 
-    const tituloGrupo2 = screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)");
-    const checkboxGrupo2 = tituloGrupo2
+    const tituloGrupo3 = screen.getByText("Grupo 3 (CEU EMEI, EMEI)");
+    const checkboxGrupo3 = tituloGrupo3
       .closest(".ant-select-tree-treenode")
       .querySelector(".ant-select-tree-checkbox");
-    fireEvent.click(checkboxGrupo2);
+    fireEvent.click(checkboxGrupo3);
 
     mock
       .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
@@ -284,7 +292,7 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
         screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/^\| Grupo 2 \(CEMEI, CEU CEMEI\)/),
+        screen.getByText(/^\| Grupo 3 \(CEU EMEI, EMEI\)/),
       ).toBeInTheDocument();
     });
   });
@@ -311,22 +319,22 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       ).toBeInTheDocument();
     });
 
-    const tituloGrupo2 = screen.getByText("Grupo 2 (CEMEI, CEU CEMEI)");
-    const treenodeGrupo2 = tituloGrupo2.closest(".ant-select-tree-treenode");
-    const switcherGrupo2 = treenodeGrupo2.querySelector(
+    const tituloGrupo3 = screen.getByText("Grupo 3 (CEU EMEI, EMEI)");
+    const treenodeGrupo3 = tituloGrupo3.closest(".ant-select-tree-treenode");
+    const switcherGrupo3 = treenodeGrupo3.querySelector(
       ".ant-select-tree-switcher",
     );
-    fireEvent.click(switcherGrupo2);
+    fireEvent.click(switcherGrupo3);
 
     await waitFor(() => {
-      expect(screen.getByText("CEMEI")).toBeInTheDocument();
+      expect(screen.getByText("CEU EMEI")).toBeInTheDocument();
     });
 
-    const tituloCEMEI = screen.getByText("CEMEI");
-    const checkboxCEMEI = tituloCEMEI
+    const tituloCEUEMEI = screen.getByText("CEU EMEI");
+    const checkboxCEUEMEI = tituloCEUEMEI
       .closest(".ant-select-tree-treenode")
       .querySelector(".ant-select-tree-checkbox");
-    fireEvent.click(checkboxCEMEI);
+    fireEvent.click(checkboxCEUEMEI);
 
     mock
       .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
@@ -339,8 +347,8 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       expect(
         screen.getByText("Adesão das Alimentações Servidas"),
       ).toBeInTheDocument();
-      expect(screen.getByText(/^\| CEMEI/)).toBeInTheDocument();
-      expect(screen.queryByText(/^\| Grupo 2/)).not.toBeInTheDocument();
+      expect(screen.getByText(/^\| CEU EMEI/)).toBeInTheDocument();
+      expect(screen.queryByText(/^\| Grupo 3/)).not.toBeInTheDocument();
     });
   });
 
