@@ -66,7 +66,6 @@ export interface CronogramaResumoTermo {
 
 export interface CronogramaTermoItem {
   cronograma: CronogramaResumoTermo;
-  valor_contrato?: string;
   quantidade_total_recebida: number | string;
 }
 
@@ -81,6 +80,7 @@ export interface TermoRecebimentoDetalhe {
   status_display?: string;
   empresa: EmpresaTermoDetalhe;
   contrato: ContratoTermoDetalhe;
+  valor_contrato?: string;
   cronogramas: CronogramaTermoItem[];
   fiscal_1: FiscalTermoDetalhe;
   fiscal_2: FiscalTermoDetalhe;
