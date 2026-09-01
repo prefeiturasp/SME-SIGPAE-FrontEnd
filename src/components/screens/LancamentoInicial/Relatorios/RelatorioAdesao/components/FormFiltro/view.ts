@@ -115,16 +115,16 @@ export default ({ form, onChange }: Args) => {
         setLotes(lotes);
         setLotesOpcoes(formatarOpcoesLote(lotes));
 
-        const grupo1 = responseGruposUnidades.data.results.find(
-          (grupo) => grupo.nome === "Grupo 1",
+        const gruposExcluidos = responseGruposUnidades.data.results.filter(
+          (grupo) => grupo.nome === "Grupo 1" || grupo.nome === "Grupo 2",
         );
-        const excluirTipoUnidadeUuids = grupo1
-          ? grupo1.tipos_unidades.map((tipo) => tipo.uuid)
-          : [];
+        const excluirTipoUnidadeUuids = gruposExcluidos.flatMap((grupo) =>
+          grupo.tipos_unidades.map((tipo) => tipo.uuid),
+        );
         excluirTipoUnidadeUuidsRef.current = excluirTipoUnidadeUuids;
 
         const gruposUnidades = responseGruposUnidades.data.results.filter(
-          (grupo) => grupo.nome !== "Grupo 1",
+          (grupo) => grupo.nome !== "Grupo 1" && grupo.nome !== "Grupo 2",
         );
         setGruposUnidades(gruposUnidades);
         setTiposUnidadesTreeData(

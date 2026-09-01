@@ -83,7 +83,9 @@ export default ({ analiseSolicitacao }) => {
     aprovacaoAbastecimento !== null ||
     usuarioEhCronogramaOuCodae() ||
     ((usuarioEhDilogDiretoria() || usuarioEhDilogAbastecimento()) &&
-      analisadoPeloAbastecimento());
+      ["Aprovado Abastecimento", "Reprovado Abastecimento"].includes(
+        solicitacaoAlteracaoCronograma.status,
+      ));
 
   const getDetalhes = async () => {
     setCarregando(true);
