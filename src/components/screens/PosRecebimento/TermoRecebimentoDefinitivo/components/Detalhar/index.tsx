@@ -149,12 +149,7 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
                     <p>
                       <b>VALOR DO CONTRATO:</b>
                     </p>
-                    <p>
-                      R${" "}
-                      {formataMilharDecimal(
-                        termo.cronogramas?.[0]?.valor_contrato ?? 0,
-                      )}
-                    </p>
+                    <p>R$ {formataMilharDecimal(termo.valor_contrato ?? 0)}</p>
                   </div>
                 </div>
 
