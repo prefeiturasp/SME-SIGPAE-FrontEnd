@@ -69,6 +69,7 @@ import {
   usuarioEhDilogQualidade,
   usuarioEhDilogDiretoria,
   usuarioEhCronograma,
+  usuarioEhCodaeDilog,
 } from "src/helpers/utilities";
 
 const PainelInicial = () => {
@@ -408,7 +409,7 @@ const PainelInicial = () => {
           </Col>
         </>
       )}
-      {usuarioEhCronograma() && (
+      {(usuarioEhCronograma() || usuarioEhCodaeDilog()) && (
         <>
           <Col xs={24} sm={24} md={12} lg={8} xl={8}>
             <CardLogo
