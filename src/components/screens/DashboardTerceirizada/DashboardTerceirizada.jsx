@@ -139,7 +139,7 @@ class DashboardTerceirizada extends Component {
     });
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     if (
       this.props.location &&
       this.props.location.state &&
