@@ -37,8 +37,10 @@ export default ({ servidores }) => {
   const [tipoPlanilha, setTipoPlanilha] = useState();
 
   const buscarPlanilhas = async (page) => {
+    if (!filtros) return;
+
     setCarregando(true);
-    setTipoPlanilha(filtros?.modelo);
+    setTipoPlanilha(filtros.modelo);
 
     let payload = gerarParametrosConsulta({ page, ...filtros });
     let data;
