@@ -10,8 +10,12 @@ import { getTermoRecebimentoDefinitivo } from "src/services/posRecebimento.servi
 import {
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_DEFINITIVO,
+  TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR,
 } from "src/configs/constants";
-import { formataMilharDecimal } from "src/helpers/utilities";
+import {
+  formataMilharDecimal,
+  usuarioEhEmpresaFornecedor,
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { Parser } from "html-to-react";
 import { CronogramaTermoItem, TermoRecebimentoDetalhe } from "../../interfaces";
@@ -82,7 +86,10 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
 
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    navigate(`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`);
+    const rotaListagem = usuarioEhEmpresaFornecedor()
+      ? `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`
+      : `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`;
+    navigate(rotaListagem);
   };
 
   return (

@@ -2,6 +2,7 @@ export interface TermoRecebimentoListagem {
   uuid: string;
   numero_contrato: string;
   nome_empresa: string;
+  produtos?: string[];
   data_cadastro: string;
   status: string;
   status_display?: string;

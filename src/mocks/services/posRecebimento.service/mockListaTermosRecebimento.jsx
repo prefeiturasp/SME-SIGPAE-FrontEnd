@@ -28,3 +28,29 @@ export const mockListaTermosRecebimentoVazia = {
   previous: null,
   results: [],
 };
+
+export const mockListaTermosRecebimentoFornecedor = {
+  count: 2,
+  next: null,
+  previous: null,
+  results: [
+    {
+      uuid: "uuid-1",
+      numero_contrato: "25/SME/CODAE/2025",
+      nome_empresa: "Fornecedor Alimentos",
+      produtos: ["BISCOITO DE POLVILHO DOCE", "BISCOITO DE POLVILHO SALGADO"],
+      data_cadastro: "18/12/2025",
+      status: "ENVIADO_FISCAIS",
+      status_display: "Enviado Fiscais",
+    },
+    {
+      uuid: "uuid-2",
+      numero_contrato: "15/SME/CODAE/2025",
+      nome_empresa: "Fornecedor Alimentos",
+      produtos: ["LEITE EM PÓ INTEGRAL"],
+      data_cadastro: "16/12/2025",
+      status: "ASSINADO_FORNECEDOR",
+      status_display: "Assinado Fornecedor",
+    },
+  ],
+};
