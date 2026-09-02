@@ -89,7 +89,6 @@ export class StatusSolicitacoes extends Component {
     const { status, formatarDadosSolicitacao } = this.props;
     const data = {};
     let solicitacoes = [];
-    let solicitacoesFiltrados = this.state.solicitacoesPaginaAtual;
     clearTimeout(this.typingTimeout);
     this.typingTimeout = setTimeout(async () => {
       if (
@@ -119,12 +118,11 @@ export class StatusSolicitacoes extends Component {
                 ),
               )),
           );
-          solicitacoesFiltrados = solicitacoes;
           this.setState({
             count: 1,
             currentPage: 1,
             loading: false,
-            solicitacoesFiltrados: solicitacoesFiltrados,
+            solicitacoesFiltrados: solicitacoes,
           });
         } else {
           this.setState({
@@ -137,45 +135,48 @@ export class StatusSolicitacoes extends Component {
         values.titulo === undefined ||
         (values.titulo && values.titulo.length < 3)
       ) {
-        solicitacoesFiltrados = this.state.solicitacoesPaginaAtual;
-        this.setState({
-          count: this.state.originalCount,
-          currentPage: this.state.originalCurrentPage,
-        });
+        this.setState((prevState) => ({
+          count: prevState.originalCount,
+          currentPage: prevState.originalCurrentPage,
+          solicitacoesFiltrados: prevState.solicitacoesPaginaAtual,
+        }));
       }
     }, 1000);
-    if (values.lote && values.lote.length > 0) {
-      solicitacoesFiltrados = this.filtrarLote(
-        solicitacoesFiltrados,
-        values.lote,
-      );
-    }
-    if (values.status && values.status.length > 0) {
-      solicitacoesFiltrados = this.filtrarStatus(
-        solicitacoesFiltrados,
-        values.status,
-      );
-    }
-    if (values.marcaProduto && values.marcaProduto.length > 0) {
-      solicitacoesFiltrados = this.filtrarMarca(
-        solicitacoesFiltrados,
-        values.marcaProduto,
-      );
-    }
+    this.setState((prevState) => {
+      let solicitacoesFiltrados = prevState.solicitacoesPaginaAtual;
+      if (values.lote && values.lote.length > 0) {
+        solicitacoesFiltrados = this.filtrarLote(
+          solicitacoesFiltrados,
+          values.lote,
+        );
+      }
+      if (values.status && values.status.length > 0) {
+        solicitacoesFiltrados = this.filtrarStatus(
+          solicitacoesFiltrados,
+          values.status,
+        );
+      }
+      if (values.marcaProduto && values.marcaProduto.length > 0) {
+        solicitacoesFiltrados = this.filtrarMarca(
+          solicitacoesFiltrados,
+          values.marcaProduto,
+        );
+      }
 
-    if (values.editalProduto && values.editalProduto.length > 0) {
-      solicitacoesFiltrados = this.filtrarEdital(
-        solicitacoesFiltrados,
-        values.editalProduto,
-      );
-    }
-    if (values.nomeProduto && values.nomeProduto.length > 2) {
-      solicitacoesFiltrados = this.filtrarNome(
-        solicitacoesFiltrados,
-        values.nomeProduto,
-      );
-    }
-    this.setState({ solicitacoesFiltrados });
+      if (values.editalProduto && values.editalProduto.length > 0) {
+        solicitacoesFiltrados = this.filtrarEdital(
+          solicitacoesFiltrados,
+          values.editalProduto,
+        );
+      }
+      if (values.nomeProduto && values.nomeProduto.length > 2) {
+        solicitacoesFiltrados = this.filtrarNome(
+          solicitacoesFiltrados,
+          values.nomeProduto,
+        );
+      }
+      return { solicitacoesFiltrados };
+    });
   }
 
   filtrarMarca(listaFiltro, value) {
