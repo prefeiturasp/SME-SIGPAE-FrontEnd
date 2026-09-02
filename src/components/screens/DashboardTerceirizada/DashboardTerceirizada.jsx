@@ -61,7 +61,7 @@ class DashboardTerceirizada extends Component {
   }
 
   alterarCollapse() {
-    this.setState({ collapsed: !this.state.collapsed });
+    this.setState((prevState) => ({ collapsed: !prevState.collapsed }));
   }
 
   async getSolicitacoesAsync(params) {
@@ -92,7 +92,7 @@ class DashboardTerceirizada extends Component {
     getSolicitacoesComQuestionamento(parametros).then((request) => {
       let questionamentosListSolicitacao = ajustarFormatoLog(
         request.data.results,
-        LOG_PARA.TERCEIRIZADA
+        LOG_PARA.TERCEIRIZADA,
       );
       this.setState({
         questionamentosListSolicitacao,
@@ -103,7 +103,7 @@ class DashboardTerceirizada extends Component {
     getSolicitacoesCanceladasTerceirizada(parametros).then((request) => {
       let canceladasListSolicitacao = ajustarFormatoLog(
         request.data.results,
-        LOG_PARA.TERCEIRIZADA
+        LOG_PARA.TERCEIRIZADA,
       );
       this.setState({
         canceladasListSolicitacao,
@@ -113,7 +113,7 @@ class DashboardTerceirizada extends Component {
     getSolicitacoesNegadasTerceirizada(parametros).then((request) => {
       let negadasListSolicitacao = ajustarFormatoLog(
         request.data.results,
-        LOG_PARA.TERCEIRIZADA
+        LOG_PARA.TERCEIRIZADA,
       );
       this.setState({
         negadasListSolicitacao,
@@ -123,7 +123,7 @@ class DashboardTerceirizada extends Component {
     getSolicitacoesAutorizadasTerceirizada(parametros).then((request) => {
       let autorizadasListSolicitacao = ajustarFormatoLog(
         request.data.results,
-        LOG_PARA.TERCEIRIZADA
+        LOG_PARA.TERCEIRIZADA,
       );
       this.setState({
         autorizadasListSolicitacao,
