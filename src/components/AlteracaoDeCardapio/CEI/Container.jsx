@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { agregarDefault, dataParaUTC } from "src/helpers/utilities";
 import {
@@ -7,7 +7,6 @@ import {
 } from "src/services/alteracaoDeCardapio";
 import { getDiasUteis, getFeriadosAno } from "src/services/diasUteis.service";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
-import { useEffect } from "react";
 import { AlteracaoDoTipoDeAlimentacaoCEI } from ".";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { SigpaeLogoLoader } from "src/components/Shareable/SigpaeLogoLoader";

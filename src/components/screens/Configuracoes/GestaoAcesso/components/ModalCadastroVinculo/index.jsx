@@ -455,7 +455,7 @@ const ModalCadastroVinculo = ({
                               disabled={subdivisoes?.length === 1}
                               defaultValue={
                                 subdivisoes?.length === 1
-                                  ? subdivisoes[0]?.uuid
+                                  ? subdivisoes?.[0]?.uuid
                                   : undefined
                               }
                               validate={required}

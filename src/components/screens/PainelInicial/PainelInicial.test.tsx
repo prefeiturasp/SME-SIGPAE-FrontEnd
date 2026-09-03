@@ -228,6 +228,33 @@ describe("PainelInicial - Atalhos por perfil", () => {
     },
   ];
 
+  const atalhosCoordenadorDilogLogistica = [
+    {
+      titulo: "Painel de Aprovações",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_APROVACOES}`,
+    },
+    {
+      titulo: "Cronograma de Entrega",
+      rota: `${PRE_RECEBIMENTO}/${CRONOGRAMA_ENTREGA}`,
+    },
+    {
+      titulo: "Cronograma Semanal FLV",
+      rota: `${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`,
+    },
+    {
+      titulo: "Verificar Alterações de Cronograma",
+      rota: `${PRE_RECEBIMENTO}/${SOLICITACAO_ALTERACAO_CRONOGRAMA}`,
+    },
+    {
+      titulo: "Calendário de Cronogramas",
+      rota: `${PRE_RECEBIMENTO}/calendario-cronograma`,
+    },
+    {
+      titulo: "Calendário Ponto a Ponto",
+      rota: `${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
+    },
+  ];
+
   const renderPainelInicial = (perfil) => {
     localStorage.setItem("perfil", perfil);
 
@@ -376,6 +403,41 @@ describe("PainelInicial - Atalhos por perfil", () => {
     expect(mockNavigate).toHaveBeenCalledWith(
       `${PRE_RECEBIMENTO}/${CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL}`,
     );
+  });
+
+  it("exibe os atalhos do Coordenador CODAE Dilog Logística", () => {
+    renderPainelInicial(PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA);
+
+    atalhosCoordenadorDilogLogistica.forEach(({ titulo }) => {
+      expect(getAtalhoPorTitulo(titulo)).toBeInTheDocument();
+    });
+  });
+
+  it.each(atalhosCoordenadorDilogLogistica)(
+    "navega para a rota correta do Coordenador CODAE Dilog Logística ao clicar em $titulo",
+    ({ titulo, rota }) => {
+      renderPainelInicial(PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA);
+
+      fireEvent.click(getAtalhoPorTitulo(titulo));
+
+      expect(mockNavigate).toHaveBeenCalledWith(rota);
+    },
+  );
+
+  it("não exibe atalhos de outros perfis para o Coordenador CODAE Dilog Logística", () => {
+    renderPainelInicial(PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA);
+
+    expect(screen.queryByText("Layout de Embalagem")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Documentos de Recebimento"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Fichas Técnicas")).not.toBeInTheDocument();
+    expect(screen.queryByText("Ficha de Recebimento")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gestão de Alimentação")).not.toBeInTheDocument();
+    expect(screen.queryByText("Dieta Especial")).not.toBeInTheDocument();
+    expect(screen.queryByText("Gestão de Produto")).not.toBeInTheDocument();
+    expect(screen.queryByText("Medição Inicial")).not.toBeInTheDocument();
+    expect(screen.queryByText("Abastecimento")).not.toBeInTheDocument();
   });
 });
 

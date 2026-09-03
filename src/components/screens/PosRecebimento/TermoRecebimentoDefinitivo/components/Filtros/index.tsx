@@ -16,44 +16,66 @@ import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { InputText } from "src/components/Shareable/Input/InputText";
+import Select from "src/components/Shareable/Select";
 import { usuarioEhCronogramaOuCodae } from "src/helpers/utilities";
 import { FiltrosTermoRecebimento } from "../../interfaces";
 
 interface Props {
   setFiltros: Dispatch<SetStateAction<FiltrosTermoRecebimento>>;
+  fornecedor?: boolean;
 }
 
-export default ({ setFiltros }: Props) => {
-  const opcoesStatus = [
-    {
-      label: "Rascunho",
-      value: "RASCUNHO",
-    },
-    {
-      label: "Enviado Fiscais",
-      value: "ENVIADO_FISCAIS",
-    },
-    {
-      label: "Enviado DILOG",
-      value: "ENVIADO_DILOG",
-    },
-    {
-      label: "Enviado Coordenador",
-      value: "ENVIADO_COORDENADOR",
-    },
-    {
-      label: "Enviado Fornecedor",
-      value: "ENVIADO_FORNECEDOR",
-    },
-    {
-      label: "Assinado Fornecedor",
-      value: "ASSINADO_FORNECEDOR",
-    },
-  ];
+const opcoesStatus = [
+  {
+    label: "Rascunho",
+    value: "RASCUNHO",
+  },
+  {
+    label: "Enviado Fiscais",
+    value: "ENVIADO_FISCAIS",
+  },
+  {
+    label: "Enviado DILOG",
+    value: "ENVIADO_DILOG",
+  },
+  {
+    label: "Enviado Coordenador",
+    value: "ENVIADO_COORDENADOR",
+  },
+  {
+    label: "Enviado Fornecedor",
+    value: "ENVIADO_FORNECEDOR",
+  },
+  {
+    label: "Assinado Fornecedor",
+    value: "ASSINADO_FORNECEDOR",
+  },
+];
 
+const opcoesStatusFornecedor = [
+  {
+    uuid: "",
+    nome: "Selecione",
+  },
+  {
+    uuid: "RECEBIDO",
+    nome: "Recebido",
+  },
+  {
+    uuid: "ASSINADO",
+    nome: "Assinado",
+  },
+];
+
+export default ({ setFiltros, fornecedor }: Props) => {
   const onSubmit = async (values: Record<string, any>) => {
     const filtros = { ...values };
-    if (filtros?.status) filtros.status = filtros.status.flat();
+    if (filtros?.status && Array.isArray(filtros.status)) {
+      filtros.status = filtros.status.flat();
+    }
+    if (!filtros.status) {
+      delete filtros.status;
+    }
 
     if (!filtros.data_inicial) {
       delete filtros.data_inicial;
@@ -82,39 +104,66 @@ export default ({ setFiltros }: Props) => {
                 />
               </div>
 
-              <div className="col-6 mt-2">
-                <Field
-                  component={InputText}
-                  label="Filtrar por Empresa"
-                  dataTestId="nome_empresa"
-                  name="nome_empresa"
-                  placeholder="Digite o Nome da Empresa"
-                  className="input-busca-termo"
-                />
-              </div>
+              {fornecedor ? (
+                <div className="col-6 mt-2">
+                  <Field
+                    component={InputText}
+                    label="Filtrar por Nº do Contrato"
+                    dataTestId="numero_contrato"
+                    name="numero_contrato"
+                    placeholder="Digite o Nº do Contrato"
+                    className="input-busca-termo"
+                  />
+                </div>
+              ) : (
+                <div className="col-6 mt-2">
+                  <Field
+                    component={InputText}
+                    label="Filtrar por Empresa"
+                    dataTestId="nome_empresa"
+                    name="nome_empresa"
+                    placeholder="Digite o Nome da Empresa"
+                    className="input-busca-termo"
+                  />
+                </div>
+              )}
             </div>
             <div className="row">
-              <div className="col-3">
-                <Field
-                  component={InputText}
-                  label="Filtrar por Nº do Cronograma"
-                  name="numero_cronograma"
-                  placeholder="Digite o Nº do Cronograma"
-                  className="input-busca-termo"
-                />
-              </div>
+              {!fornecedor && (
+                <div className="col-3">
+                  <Field
+                    component={InputText}
+                    label="Filtrar por Nº do Cronograma"
+                    name="numero_cronograma"
+                    placeholder="Digite o Nº do Cronograma"
+                    className="input-busca-termo"
+                  />
+                </div>
+              )}
 
-              <div className="col-3">
-                <Field
-                  component={MultiSelect}
-                  disableSearch
-                  options={opcoesStatus}
-                  label="Filtrar por Status"
-                  name="status"
-                  nomeDoItemNoPlural="Status"
-                  placeholder="Selecione os Status"
-                />
-              </div>
+              {fornecedor ? (
+                <div className="col-6">
+                  <Field
+                    component={Select}
+                    label="Filtrar por Status"
+                    dataTestId="status"
+                    name="status_fornecedor"
+                    options={opcoesStatusFornecedor}
+                  />
+                </div>
+              ) : (
+                <div className="col-3">
+                  <Field
+                    component={MultiSelect}
+                    disableSearch
+                    options={opcoesStatus}
+                    label="Filtrar por Status"
+                    name="status"
+                    nomeDoItemNoPlural="Status"
+                    placeholder="Selecione os Status"
+                  />
+                </div>
+              )}
 
               <div className="col-3">
                 <Field

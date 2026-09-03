@@ -138,7 +138,7 @@ const preencherDadosBasicos = async () => {
     expect(screen.getByTestId("cronograma-0")).not.toBeDisabled(),
   );
   await selecionarAutoComplete("cronograma-0", CRONOGRAMA_1_NUMERO);
-  fireEvent.input(screen.getByTestId("valor-contrato-0"), {
+  fireEvent.input(screen.getByTestId("valor-contrato"), {
     target: { value: "150000" },
   });
   fireEvent.input(screen.getByTestId("quantidade-total-recebida-0"), {
@@ -157,7 +157,7 @@ describe("CadastroTermoRecebimentoDefinitivo", () => {
 
     expect(screen.getByTestId("empresa").value).toBe(EMPRESA_NOME);
     expect(
-      screen.getByTestId("valor-contrato-0").closest("input"),
+      screen.getByTestId("valor-contrato").closest("input"),
     ).toBeInTheDocument();
   });
 
@@ -176,7 +176,7 @@ describe("CadastroTermoRecebimentoDefinitivo", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("produto-0").value).toBe("Arroz Parboilizado");
-      expect(screen.getByTestId("processo-sei-0").value).toBe("SEI-12345");
+      expect(screen.getByTestId("processo-sei").value).toBe("SEI-12345");
     });
 
     const quantidade = screen.getByTestId("quantidade-total-recebida-0");
@@ -194,14 +194,14 @@ describe("CadastroTermoRecebimentoDefinitivo", () => {
   it("aplica máscara monetária e numérica nos campos de valor e quantidade", async () => {
     await setup();
 
-    fireEvent.input(screen.getByTestId("valor-contrato-0"), {
+    fireEvent.input(screen.getByTestId("valor-contrato"), {
       target: { value: "150000" },
     });
     fireEvent.input(screen.getByTestId("quantidade-total-recebida-0"), {
       target: { value: "123456" },
     });
 
-    expect(screen.getByTestId("valor-contrato-0").value).toBe("1.500,00");
+    expect(screen.getByTestId("valor-contrato").value).toBe("1.500,00");
     expect(screen.getByTestId("quantidade-total-recebida-0").value).toBe(
       "1.234,56",
     );
@@ -324,10 +324,10 @@ describe("CadastroTermoRecebimentoDefinitivo", () => {
 
     expect(payloadEnviado.empresa).toBe(EMPRESA_UUID);
     expect(payloadEnviado.contrato).toBe(CONTRATO_UUID);
+    expect(payloadEnviado.valor_contrato).toBe("1500.00");
     expect(payloadEnviado.cronogramas).toEqual([
       {
         cronograma: CRONOGRAMA_1_UUID,
-        valor_contrato: "1500.00",
         quantidade_total_recebida: "1234.56",
       },
     ]);
