@@ -373,18 +373,23 @@ export default ({
                       <label>Descrição do Método</label>
                       <label className="asterisk-label">*</label>
 
-                      <Input
-                        className="mt-2"
-                        placeholder="Informe o método de contagem utilizado"
-                        name="descricao_metodo"
-                        data-testid="descricao_metodo"
-                        value={descricaoMetodo}
-                        onChange={(event) =>
-                          setDescricaoMetodo(event.target.value)
-                        }
-                        disabled={!emEdicao}
-                        maxLength={50}
-                      />
+                      <div>
+                        <Input
+                          className="mt-2"
+                          placeholder="Informe o método de contagem utilizado"
+                          name="descricao_metodo"
+                          data-testid="descricao_metodo"
+                          value={descricaoMetodo}
+                          onChange={(event) =>
+                            setDescricaoMetodo(event.target.value)
+                          }
+                          disabled={!emEdicao}
+                          maxLength={50}
+                        />
+                        <span className="descricao-metodo-count">
+                          {descricaoMetodo.length}/50
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>
