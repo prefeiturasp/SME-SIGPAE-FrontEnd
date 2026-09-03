@@ -81,35 +81,36 @@ class FoodSuspensionEditor extends Component {
   }
 
   handleField(field, value, key) {
-    let dias_razoes = this.state.dias_razoes;
-    let acimaDoLimite = this.state.acimaDoLimite;
-    dias_razoes[key][field] = value;
-    if (field === `motivo${key}`) {
-      const indiceMotivo = this.props.motivos.findIndex(
-        (motivo) => motivo.uuid === value,
-      );
-      dias_razoes[key]["outroMotivo"] =
-        this.props.motivos[indiceMotivo].nome.includes("Outro");
-    }
-    if (field === "outro_motivo" + key) {
-      if (value.length > 500) {
-        const index = acimaDoLimite.indexOf(key);
-        if (index === -1) {
-          acimaDoLimite.push(key);
-        }
-      } else {
-        const index = acimaDoLimite.indexOf(key);
-        if (index > -1) {
-          acimaDoLimite.splice(index, 1);
+    this.setState((prevState) => {
+      const dias_razoes = { ...prevState.dias_razoes };
+      const acimaDoLimite = [...prevState.acimaDoLimite];
+      dias_razoes[key] = { ...dias_razoes[key], [field]: value };
+      if (field === `motivo${key}`) {
+        const indiceMotivo = this.props.motivos.findIndex(
+          (motivo) => motivo.uuid === value,
+        );
+        dias_razoes[key]["outroMotivo"] =
+          this.props.motivos[indiceMotivo].nome.includes("Outro");
+      }
+      if (field === "outro_motivo" + key) {
+        if (value.length > 500) {
+          if (!acimaDoLimite.includes(key)) {
+            acimaDoLimite.push(key);
+          }
+        } else {
+          const index = acimaDoLimite.indexOf(key);
+          if (index > -1) {
+            acimaDoLimite.splice(index, 1);
+          }
         }
       }
-    }
-    this.setState({ dias_razoes });
+      return { dias_razoes, acimaDoLimite };
+    });
   }
 
   addDay() {
-    this.setState({
-      dias_razoes: this.state.dias_razoes.concat([
+    this.setState((prevState) => ({
+      dias_razoes: prevState.dias_razoes.concat([
         {
           id: geradorUUID(),
           data: null,
@@ -117,16 +118,13 @@ class FoodSuspensionEditor extends Component {
           outroMotivo: false,
         },
       ]),
-    });
+    }));
   }
 
   handleSelectedChanged = (selectedOptions, period) => {
-    let options = this.state.options;
-    options[period.nome] = selectedOptions;
-    this.setState({
-      ...this.state,
-      options: options,
-    });
+    this.setState((prevState) => ({
+      options: { ...prevState.options, [period.nome]: selectedOptions },
+    }));
     this.props.change(
       `suspensoes_${period.nome}.tipo_de_refeicao`,
       selectedOptions,
@@ -219,8 +217,6 @@ class FoodSuspensionEditor extends Component {
   }
 
   OnEditButtonClicked(param) {
-    let observacao = this.state.observacao;
-    observacao = param.suspensaoDeAlimentacao.observacao;
     this.props.reset("foodSuspension");
     this.props.loadFoodSuspension(param.suspensaoDeAlimentacao);
     this.setState({
@@ -258,7 +254,7 @@ class FoodSuspensionEditor extends Component {
                 .tipo_de_refeicao
             : [],
       },
-      observacao,
+      observacao: param.suspensaoDeAlimentacao.observacao,
     });
     window.scrollTo(0, this.titleRef.current.offsetTop - 90);
   }
@@ -397,13 +393,10 @@ class FoodSuspensionEditor extends Component {
           this.props[field] &&
           !this.props[field].check
         ) {
-          let options = this.state.options;
           const value = field.split("suspensoes_")[1];
-          options[value] = [];
-          this.setState({
-            ...this.state,
-            options: options,
-          });
+          this.setState((prevState) => ({
+            options: { ...prevState.options, [value]: [] },
+          }));
           escolaEhCEMEI() &&
             this.props.change(field + ".alunos_cei_ou_emei", "");
           this.props.change(field + ".tipo_de_refeicao", []);

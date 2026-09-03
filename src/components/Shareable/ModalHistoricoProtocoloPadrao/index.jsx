@@ -352,7 +352,10 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                         undefined &&
                       this.findFieldSubstituicoes(histSelecionado).changes
                         .length > 0 && (
-                        <table className="table table-bordered table-alimentacao">
+                        <table
+                          role="presentation"
+                          className="table table-bordered table-alimentacao"
+                        >
                           <tbody>
                             <tr className="table-body-alimentacao">
                               <td>
@@ -501,7 +504,10 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                       (this.findEditais(histSelecionado) !== undefined ||
                         this.findOutrasInformacoes(histSelecionado) !==
                           undefined) && (
-                        <table className="table table-bordered table-alimentacao">
+                        <table
+                          role="presentation"
+                          className="table table-bordered table-alimentacao"
+                        >
                           <tbody>
                             <tr className="table-body-alimentacao">
                               <td>

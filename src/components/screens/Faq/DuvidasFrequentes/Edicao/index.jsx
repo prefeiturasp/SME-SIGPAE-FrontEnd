@@ -24,8 +24,10 @@ const valoresSaoIguais = (valores, valoresOriginais) =>
   valores.buscaCategoria === valoresOriginais.buscaCategoria &&
   valores.titulo === valoresOriginais.titulo &&
   valores.descricaoDetalhada === valoresOriginais.descricaoDetalhada &&
-  [...valores.perfisAcesso].sort().join("|") ===
-    [...valoresOriginais.perfisAcesso].sort().join("|");
+  [...valores.perfisAcesso].sort((a, b) => a.localeCompare(b)).join("|") ===
+    [...valoresOriginais.perfisAcesso]
+      .sort((a, b) => a.localeCompare(b))
+      .join("|");
 
 const EdicaoDuvidasFrequentes = () => {
   const { uuid } = useParams();
