@@ -50,6 +50,7 @@ export default ({
   const [emEdicao, setEmEdicao] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [descricaoMetodo, setDescricaoMetodo] = useState("");
   const { Panel } = Collapse;
 
   const location = useLocation();
@@ -67,9 +68,16 @@ export default ({
         return solicitacaoMedicaoInicial.responsaveis[indice] || resp;
       });
       setResponsaveis(resps);
-      setTipoDeContagemSelecionada(
-        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid),
-      );
+
+      const idsContagem =
+        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid);
+
+      if (solicitacaoMedicaoInicial.descricao_metodo) {
+        idsContagem.push("outros");
+      }
+
+      setTipoDeContagemSelecionada(idsContagem);
+      setDescricaoMetodo(solicitacaoMedicaoInicial?.descricao_metodo || "");
     }
     if (!solicitacaoMedicaoInicial) {
       setIsOpen(true);
@@ -81,9 +89,12 @@ export default ({
   }, []);
 
   const opcoesContagem = tiposDeContagem
-    ? tiposDeContagem.map((tipo) => {
-        return { value: tipo.uuid, label: tipo.nome };
-      })
+    ? [
+        ...tiposDeContagem.map((tipo) => {
+          return { value: tipo.uuid, label: tipo.nome };
+        }),
+        { value: "outros", label: "Outros" },
+      ]
     : [];
 
   const setaResponsavel = (input, event, indice) => {
@@ -137,6 +148,10 @@ export default ({
 
   const handleChangeTipoContagem = (values) => {
     setTipoDeContagemSelecionada(values.map((value_) => value_.value));
+
+    if (!values.includes("outros")) {
+      setDescricaoMetodo("");
+    }
   };
 
   const handleClickEditar = () => {
@@ -145,6 +160,7 @@ export default ({
 
   const handleClickSalvar = async () => {
     if (!validarResponsaveis()) return;
+    if (!validarMetodoContagem()) return;
 
     setSalvando(true);
     try {
@@ -185,6 +201,20 @@ export default ({
     return true;
   };
 
+  const validarMetodoContagem = () => {
+    if (
+      tipoDeContagemSelecionada.includes("outros") &&
+      !descricaoMetodo.trim()
+    ) {
+      toastError(
+        "Descrição do método é obrigatória quando 'Outros' é selecionado",
+      );
+      return false;
+    }
+
+    return true;
+  };
+
   const temPeloMenosUmResponsavelValido = () => {
     return responsaveis.some((resp) => resp.nome !== "" && resp.rf !== "");
   };
@@ -212,18 +242,24 @@ export default ({
     return responsaveis.filter((resp) => resp.nome !== "" && resp.rf !== "");
   };
 
+  const getTiposContagemSemOutros = () =>
+    tipoDeContagemSelecionada.filter((id) => id !== "outros");
+
   const criarPayloadAtualizacao = () => {
     const data = new FormData();
     data.append("escola", String(escolaInstituicao.uuid));
 
-    for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
-      data.append(
-        "tipos_contagem_alimentacao[]",
-        tipoDeContagemSelecionada[index],
-      );
+    const idsContagem = getTiposContagemSemOutros();
+    for (let index = 0; index < idsContagem.length; index++) {
+      data.append("tipos_contagem_alimentacao[]", idsContagem[index]);
     }
 
     data.append("responsaveis", JSON.stringify(getResponsaveisPayload()));
+
+    if (tipoDeContagemSelecionada.includes("outros")) {
+      data.append("descricao_metodo", descricaoMetodo);
+    }
+
     return data;
   };
 
@@ -237,11 +273,14 @@ export default ({
 
     return {
       escola: escolaInstituicao.uuid,
-      tipos_contagem_alimentacao: tipoDeContagemSelecionada,
+      tipos_contagem_alimentacao: getTiposContagemSemOutros(),
       responsaveis: getResponsaveisPayload(),
       mes: format(dataPeriodo, "MM").toString(),
       ano: getYear(dataPeriodo).toString(),
       recreio_nas_ferias: recreio_nas_ferias_uuid,
+      ...(tipoDeContagemSelecionada.includes("outros") && {
+        descricao_metodo: descricaoMetodo,
+      }),
     };
   };
 
@@ -321,11 +360,35 @@ export default ({
                       onSelectedChanged={(values) =>
                         handleChangeTipoContagem(values)
                       }
-                      hasSelectAll={false}
+                      allowSelectAll={false}
                       placeholder="Selecione os métodos de contagem"
                       required
                       disabled={!emEdicao}
                     />
+                  )}
+                  {tipoDeContagemSelecionada.includes("outros") && (
+                    <div>
+                      <label>Descrição do Método</label>
+                      <label className="asterisk-label">*</label>
+
+                      <div>
+                        <Input
+                          className="mt-2"
+                          placeholder="Informe o método de contagem utilizado"
+                          name="descricao_metodo"
+                          data-testid="descricao_metodo"
+                          value={descricaoMetodo}
+                          onChange={(event) =>
+                            setDescricaoMetodo(event.target.value)
+                          }
+                          disabled={!emEdicao}
+                          maxLength={50}
+                        />
+                        <span className="descricao-metodo-count">
+                          {descricaoMetodo.length}/50
+                        </span>
+                      </div>
+                    </div>
                   )}
                 </div>
                 <div className="col-7 info-label">
