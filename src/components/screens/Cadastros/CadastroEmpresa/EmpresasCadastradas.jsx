@@ -42,7 +42,7 @@ class EmpresasCadastradas extends Component {
         tipoPerfil === PERFIL.DILOG_VISUALIZACAO ||
         tipoPerfil === PERFIL.DILOG_QUALIDADE
       ) {
-        this.setState({ ...this.state, ehDistribuidor: true });
+        this.setState({ ehDistribuidor: true });
         resp.forEach((empresa) => {
           if (empresa.eh_distribuidor) {
             empresasF.push(empresa);
@@ -73,9 +73,9 @@ class EmpresasCadastradas extends Component {
         this.buscaTerceirizadas({ busca: values });
       }, 500);
     } else if (values.length < 3 && !this.state.loading) {
-      this.setState({
-        empresasFiltradas: this.state.empresasFiltradasEstadoInicial,
-      });
+      this.setState((prevState) => ({
+        empresasFiltradas: prevState.empresasFiltradasEstadoInicial,
+      }));
     }
     this.setState({ pesquisar: values });
   }

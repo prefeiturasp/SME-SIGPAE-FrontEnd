@@ -97,6 +97,45 @@ export const ModalAdicionarUnidadeEducacional = ({
     useUnidadesEducacionais(form);
 
   const formApiRef = useRef(null);
+  const [formValues, setFormValues] = useState<any>({});
+
+  const resetDependentFields = () => {
+    const formApi: any = formApiRef.current;
+    if (!formApi) return;
+    formApi.change("unidades_educacionais", []);
+    formApi.change("tipos_alimentacao_inscritos", []);
+    formApi.change("tipos_alimentacao_colaboradores", []);
+    formApi.change("tipos_alimentacao_inscritos_infantil", []);
+  };
+
+  useEffect(() => {
+    const unsubscribe = form.subscribe(
+      (state) => setFormValues({ ...state.values }),
+      { values: true },
+    );
+    return unsubscribe;
+  }, [form]);
+
+  useEffect(() => {
+    const novoDreLote = formValues?.dres_lote || "";
+    if (dreLote !== novoDreLote) {
+      setDreLote(novoDreLote);
+      const formApi: any = formApiRef.current;
+      if (formApi) {
+        formApi.change("tipos_unidades", undefined);
+        formApi.resetFieldState("tipos_unidades");
+      }
+      resetDependentFields();
+    }
+  }, [formValues?.dres_lote]);
+
+  useEffect(() => {
+    const novoTipoUnidade = formValues?.tipos_unidades || "";
+    if (tipoUnidade !== novoTipoUnidade) {
+      setTipoUnidade(novoTipoUnidade);
+      resetDependentFields();
+    }
+  }, [formValues?.tipos_unidades]);
 
   const tipoSelecionado = useMemo(
     () => tipos.find((t) => t.uuid === tipoUnidade),

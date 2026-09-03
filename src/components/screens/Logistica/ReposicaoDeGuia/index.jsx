@@ -82,7 +82,7 @@ export default () => {
   const filtrarAlimentos = (guiaResponse) => {
     guiaResponse.alimentos = guiaResponse.alimentos.filter((alimento) => {
       alimento.embalagens = alimento.embalagens.filter(
-        (embalagem) => embalagem.qtd_a_receber !== 0
+        (embalagem) => embalagem.qtd_a_receber !== 0,
       );
       return alimento.embalagens.length !== 0;
     });
@@ -114,7 +114,7 @@ export default () => {
   const onSubmit = async (values) => {
     values.hora_recebimento = HoraRecebimento;
     values.data_recebimento = moment(values.data_entrega_real).format(
-      "DD/MM/YYYY"
+      "DD/MM/YYYY",
     );
     values.guia = uuid;
     values.arquivo = arquivoAtual;
@@ -220,7 +220,7 @@ export default () => {
       guia.alimentos.forEach((item, index) => {
         let recebidos_fechada = parseInt(values[`recebidos_fechada_${index}`]);
         let recebidos_fracionada = parseInt(
-          values[`recebidos_fracionada_${index}`]
+          values[`recebidos_fracionada_${index}`],
         );
         let dataEhDepois = comparaDataEntrega(values.data_entrega_real);
         let embalagensAlimento = guia.alimentos[index].embalagens;
@@ -394,473 +394,486 @@ export default () => {
             onSubmit={onSubmit}
             initialValues={initialValues}
             validate={() => {}}
-            render={({ handleSubmit, values, errors }) => (
-              <form onSubmit={handleSubmit}>
-                <span className="subtitulo">
-                  Conferência individual dos itens da guia
-                </span>
-                <hr />
-                <div className="texto-intro">
-                  Preencher <strong>exatamente</strong> com os dados
-                  relacionados a <strong>Entrega da Reposição na UE.</strong>
-                </div>
-                <div className="row mt-2">
-                  <div className="col-4">
-                    <Field
-                      component={InputText}
-                      label="Nº da Guia de Remessa"
-                      name="numero_guia"
-                      className="input-busca-produto"
-                      disabled
-                    />
+            render={({ handleSubmit, values, errors }) => {
+              validaStatus(values);
+              return (
+                <form onSubmit={handleSubmit}>
+                  <span className="subtitulo">
+                    Conferência individual dos itens da guia
+                  </span>
+                  <hr />
+                  <div className="texto-intro">
+                    Preencher <strong>exatamente</strong> com os dados
+                    relacionados a <strong>Entrega da Reposição na UE.</strong>
                   </div>
-                  <div className="col-4">
-                    <Field
-                      component={InputText}
-                      label="Data de Entrega Prevista"
-                      name="data_entrega"
-                      className="input-busca-produto"
-                      disabled
-                    />
+                  <div className="row mt-2">
+                    <div className="col-4">
+                      <Field
+                        component={InputText}
+                        label="Nº da Guia de Remessa"
+                        name="numero_guia"
+                        className="input-busca-produto"
+                        disabled
+                      />
+                    </div>
+                    <div className="col-4">
+                      <Field
+                        component={InputText}
+                        label="Data de Entrega Prevista"
+                        name="data_entrega"
+                        className="input-busca-produto"
+                        disabled
+                      />
+                    </div>
+                    <div className="col-4">
+                      <Field
+                        component={InputComData}
+                        label="Selecionar Data de Recebimento na UE"
+                        name="data_entrega_real"
+                        dataTestId="data_entrega_real"
+                        className="data-inicial"
+                        validate={composeValidators(
+                          required,
+                          validaDataEntrega,
+                        )}
+                        minDate={
+                          moment(values.data_entrega, "DD/MM/YYYY").add(
+                            1,
+                            "days",
+                          )._d
+                        }
+                        maxDate={null}
+                        required
+                        writable={false}
+                      />
+                    </div>
                   </div>
-                  <div className="col-4">
-                    <Field
-                      component={InputComData}
-                      label="Selecionar Data de Recebimento na UE"
-                      name="data_entrega_real"
-                      dataTestId="data_entrega_real"
-                      className="data-inicial"
-                      validate={composeValidators(required, validaDataEntrega)}
-                      minDate={
-                        moment(values.data_entrega, "DD/MM/YYYY").add(1, "days")
-                          ._d
-                      }
-                      maxDate={null}
-                      required
-                      writable={false}
-                      onChange={validaStatus(values)}
-                    />
-                  </div>
-                </div>
 
-                <div className="row">
-                  <div className="col-4">
-                    <Field
-                      component={InputHorario}
-                      label="Selecionar Hora da Entrega"
-                      name="hora_recebimento"
-                      dataTestId="hora_recebimento"
-                      placeholder="Selecione a Hora"
-                      horaAtual={HoraRecebimento}
-                      onChangeFunction={(data) => {
-                        escolherHora(data);
-                      }}
-                      writable={false}
-                      className="input-busca-produto"
-                      validate={validaHoraRecebimento}
-                      required
-                      functionComponent
-                    />
+                  <div className="row">
+                    <div className="col-4">
+                      <Field
+                        component={InputHorario}
+                        label="Selecionar Hora da Entrega"
+                        name="hora_recebimento"
+                        dataTestId="hora_recebimento"
+                        placeholder="Selecione a Hora"
+                        horaAtual={HoraRecebimento}
+                        onChangeFunction={(data) => {
+                          escolherHora(data);
+                        }}
+                        writable={false}
+                        className="input-busca-produto"
+                        validate={validaHoraRecebimento}
+                        required
+                        functionComponent
+                      />
+                    </div>
+                    <div className="col-4">
+                      <Field
+                        component={InputText}
+                        label="Nome do Motorista"
+                        name="nome_motorista"
+                        dataTestId="nome_motorista"
+                        className="input-busca-produto"
+                        contador={100}
+                        validate={composeValidators(
+                          required,
+                          maxLength(100),
+                          apenasLetras,
+                        )}
+                        required
+                      />
+                    </div>
+                    <div className="col-4">
+                      <Field
+                        component={InputText}
+                        label="Placa do Veículo"
+                        name="placa_veiculo"
+                        dataTestId="placa_veiculo"
+                        className="input-busca-produto"
+                        contador={7}
+                        validate={composeValidators(
+                          required,
+                          maxLength(7),
+                          alphaNumeric,
+                          peloMenosUmNumeroEUmaLetra,
+                        )}
+                        toUppercaseActive
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="col-4">
-                    <Field
-                      component={InputText}
-                      label="Nome do Motorista"
-                      name="nome_motorista"
-                      dataTestId="nome_motorista"
-                      className="input-busca-produto"
-                      contador={100}
-                      validate={composeValidators(
-                        required,
-                        maxLength(100),
-                        apenasLetras
-                      )}
-                      required
-                    />
+
+                  <hr />
+
+                  <div className="aviso-alimentos">
+                    Atenção: Os itens marcados em{" "}
+                    <span className="green"> verde </span> são os que foram
+                    preenchidos corretamente, os{" "}
+                    <span className="red"> vermelhos </span> são os que estão
+                    pendentes ou que possuem erros no preenchimento.
                   </div>
-                  <div className="col-4">
-                    <Field
-                      component={InputText}
-                      label="Placa do Veículo"
-                      name="placa_veiculo"
-                      dataTestId="placa_veiculo"
-                      className="input-busca-produto"
-                      contador={7}
-                      validate={composeValidators(
-                        required,
-                        maxLength(7),
-                        alphaNumeric,
-                        peloMenosUmNumeroEUmaLetra
-                      )}
-                      toUppercaseActive
-                      required
-                    />
-                  </div>
-                </div>
 
-                <hr />
-
-                <div className="aviso-alimentos">
-                  Atenção: Os itens marcados em{" "}
-                  <span className="green"> verde </span> são os que foram
-                  preenchidos corretamente, os{" "}
-                  <span className="red"> vermelhos </span> são os que estão
-                  pendentes ou que possuem erros no preenchimento.
-                </div>
-
-                <div className="accordion mt-1" id="accordionAlimentos">
-                  {guia.alimentos &&
-                    guia.alimentos.map((alimento, index) => (
-                      <div className="card mt-3" key={alimento.uuid}>
-                        <div
-                          className={`card-header card-tipo-${checaErrosCard(
-                            errors,
-                            index
-                          )}`}
-                          id={`heading_${alimento.uuid}`}
-                        >
-                          <div className="row card-header-content">
-                            <span className="col-11 nome-alimento">{`${alimento.nome_alimento}`}</span>
-                            <div className="col-1 align-self-center">
-                              <button
-                                onClick={() =>
-                                  toggleBtnAlimentos(alimento.uuid, index)
-                                }
-                                className="btn btn-link btn-block text-start px-0"
-                                type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target={`#collapse_${alimento.uuid}`}
-                                aria-expanded="true"
-                                aria-controls={`collapse_${alimento.uuid}`}
-                              >
-                                <span className="span-icone-toogle">
-                                  <i
-                                    className={
-                                      collapseAlimentos[alimento.uuid]
-                                        ? "fas fa-chevron-up"
-                                        : "fas fa-chevron-down"
+                  <div className="accordion mt-1" id="accordionAlimentos">
+                    {guia.alimentos &&
+                      guia.alimentos.map((alimento, index) => {
+                        validaOcorrencias(values, index, errors);
+                        checaAtraso(values, index);
+                        return (
+                          <div className="card mt-3" key={alimento.uuid}>
+                            <div
+                              className={`card-header card-tipo-${checaErrosCard(
+                                errors,
+                                index,
+                              )}`}
+                              id={`heading_${alimento.uuid}`}
+                            >
+                              <div className="row card-header-content">
+                                <span className="col-11 nome-alimento">{`${alimento.nome_alimento}`}</span>
+                                <div className="col-1 align-self-center">
+                                  <button
+                                    onClick={() =>
+                                      toggleBtnAlimentos(alimento.uuid, index)
                                     }
-                                  />
-                                </span>
-                              </button>
+                                    className="btn btn-link btn-block text-start px-0"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target={`#collapse_${alimento.uuid}`}
+                                    aria-expanded="true"
+                                    aria-controls={`collapse_${alimento.uuid}`}
+                                  >
+                                    <span className="span-icone-toogle">
+                                      <i
+                                        className={
+                                          collapseAlimentos[alimento.uuid]
+                                            ? "fas fa-chevron-up"
+                                            : "fas fa-chevron-down"
+                                        }
+                                      />
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
 
-                        <div
-                          id={`collapse_${alimento.uuid}`}
-                          className="collapse"
-                          aria-labelledby="headingOne"
-                          data-bs-parent="#accordionAlimentos"
-                        >
-                          <div className="card-body">
-                            <div className="row">
-                              <>
-                                {(() => {
-                                  if (!guia.alimentos) return;
-                                  const item = alimento;
-                                  const embalagens = item.total_embalagens
-                                    ? item.total_embalagens
-                                    : item.embalagens;
-                                  const fechada = filtraEmbalagemPorTipo(
-                                    embalagens,
-                                    "FECHADA"
-                                  );
-                                  const fracionada = filtraEmbalagemPorTipo(
-                                    embalagens,
-                                    "FRACIONADA"
-                                  );
-                                  const value_col =
-                                    fechada && fracionada ? "col-6" : "col-12";
-                                  return (
-                                    <>
-                                      {fechada && (
-                                        <div className={value_col}>
-                                          <div className="titulo-tabela">
-                                            Embalagem Fechada
-                                          </div>
-                                          <table
-                                            className={`table table-bordered table-reposicao`}
-                                          >
-                                            <thead>
-                                              <tr>
-                                                <th scope="col">
-                                                  Quantidade Prevista
-                                                </th>
-                                                <th scope="col">Capacidade</th>
-                                                <th
-                                                  scope="col"
-                                                  className="th-recebido"
-                                                >
-                                                  Quantidade a Receber{" "}
-                                                  <TooltipIcone
-                                                    tooltipText={
-                                                      TOOLTIP_A_RECEBER
-                                                    }
-                                                  />
-                                                </th>
-                                                <th
-                                                  scope="col"
-                                                  className="th-recebido"
-                                                >
-                                                  Quantidade Recebida{" "}
-                                                  <TooltipIcone
-                                                    tooltipText={
-                                                      TOOLTIP_RECEBIDO
-                                                    }
-                                                  />
-                                                </th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              <tr>
-                                                <td>
-                                                  {fechada.qtd_volume}{" "}
-                                                  {fechada.descricao_embalagem}.
-                                                </td>
-                                                <td>
-                                                  {fechada.capacidade_completa}
-                                                </td>
-                                                <td>{fechada.qtd_a_receber}</td>
-                                                <td>
-                                                  <div className="form-tabela">
-                                                    <Field
-                                                      component={InputText}
-                                                      apenasNumeros
-                                                      name={`recebidos_fechada_${index}`}
-                                                      dataTestId={`recebidos_fechada_${index}`}
-                                                      className="input-busca-produto"
-                                                      placeholder={
+                            <div
+                              id={`collapse_${alimento.uuid}`}
+                              className="collapse"
+                              aria-labelledby="headingOne"
+                              data-bs-parent="#accordionAlimentos"
+                            >
+                              <div className="card-body">
+                                <div className="row">
+                                  <>
+                                    {(() => {
+                                      if (!guia.alimentos) return;
+                                      const item = alimento;
+                                      const embalagens = item.total_embalagens
+                                        ? item.total_embalagens
+                                        : item.embalagens;
+                                      const fechada = filtraEmbalagemPorTipo(
+                                        embalagens,
+                                        "FECHADA",
+                                      );
+                                      const fracionada = filtraEmbalagemPorTipo(
+                                        embalagens,
+                                        "FRACIONADA",
+                                      );
+                                      const value_col =
+                                        fechada && fracionada
+                                          ? "col-6"
+                                          : "col-12";
+                                      return (
+                                        <>
+                                          {fechada && (
+                                            <div className={value_col}>
+                                              <div className="titulo-tabela">
+                                                Embalagem Fechada
+                                              </div>
+                                              <table
+                                                className={`table table-bordered table-reposicao`}
+                                              >
+                                                <thead>
+                                                  <tr>
+                                                    <th scope="col">
+                                                      Quantidade Prevista
+                                                    </th>
+                                                    <th scope="col">
+                                                      Capacidade
+                                                    </th>
+                                                    <th
+                                                      scope="col"
+                                                      className="th-recebido"
+                                                    >
+                                                      Quantidade a Receber{" "}
+                                                      <TooltipIcone
+                                                        tooltipText={
+                                                          TOOLTIP_A_RECEBER
+                                                        }
+                                                      />
+                                                    </th>
+                                                    <th
+                                                      scope="col"
+                                                      className="th-recebido"
+                                                    >
+                                                      Quantidade Recebida{" "}
+                                                      <TooltipIcone
+                                                        tooltipText={
+                                                          TOOLTIP_RECEBIDO
+                                                        }
+                                                      />
+                                                    </th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  <tr>
+                                                    <td>
+                                                      {fechada.qtd_volume}{" "}
+                                                      {
                                                         fechada.descricao_embalagem
                                                       }
-                                                      validate={composeValidators(
-                                                        required,
-                                                        numericInteger
-                                                      )}
-                                                      onChange={validaOcorrencias(
-                                                        values,
-                                                        index,
-                                                        errors
-                                                      )}
-                                                    />
-                                                  </div>
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
-                                      )}
-                                      {fracionada && (
-                                        <div className={value_col}>
-                                          <div className="titulo-tabela">
-                                            Embalagem Fracionada
-                                          </div>
-                                          <table
-                                            className={`table table-bordered table-reposicao`}
-                                          >
-                                            <thead>
-                                              <tr>
-                                                <th scope="col">
-                                                  Quantidade Prevista
-                                                </th>
-                                                <th scope="col">Capacidade</th>
-                                                <th
-                                                  scope="col"
-                                                  className="th-recebido"
-                                                >
-                                                  Quantidade a Receber{" "}
-                                                  <TooltipIcone
-                                                    tooltipText={
-                                                      TOOLTIP_A_RECEBER
-                                                    }
-                                                  />
-                                                </th>
-                                                <th
-                                                  scope="col"
-                                                  className="th-recebido"
-                                                >
-                                                  Quantidade Recebida{" "}
-                                                  <TooltipIcone
-                                                    tooltipText={
-                                                      TOOLTIP_RECEBIDO
-                                                    }
-                                                  />
-                                                </th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                              <tr>
-                                                <td>
-                                                  {fracionada.qtd_volume}{" "}
-                                                  {
-                                                    fracionada.descricao_embalagem
-                                                  }
-                                                  .
-                                                </td>
-                                                <td>
-                                                  {
-                                                    fracionada.capacidade_completa
-                                                  }
-                                                </td>
-                                                <td>
-                                                  {fracionada.qtd_a_receber}
-                                                </td>
-                                                <td>
-                                                  <div className="form-tabela">
-                                                    <Field
-                                                      component={InputText}
-                                                      apenasNumeros
-                                                      name={`recebidos_fracionada_${index}`}
-                                                      dataTestId={`recebidos_fracionada_${index}`}
-                                                      className="input-busca-produto"
-                                                      placeholder={
+                                                      .
+                                                    </td>
+                                                    <td>
+                                                      {
+                                                        fechada.capacidade_completa
+                                                      }
+                                                    </td>
+                                                    <td>
+                                                      {fechada.qtd_a_receber}
+                                                    </td>
+                                                    <td>
+                                                      <div className="form-tabela">
+                                                        <Field
+                                                          component={InputText}
+                                                          apenasNumeros
+                                                          name={`recebidos_fechada_${index}`}
+                                                          dataTestId={`recebidos_fechada_${index}`}
+                                                          className="input-busca-produto"
+                                                          placeholder={
+                                                            fechada.descricao_embalagem
+                                                          }
+                                                          validate={composeValidators(
+                                                            required,
+                                                            numericInteger,
+                                                          )}
+                                                        />
+                                                      </div>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          )}
+                                          {fracionada && (
+                                            <div className={value_col}>
+                                              <div className="titulo-tabela">
+                                                Embalagem Fracionada
+                                              </div>
+                                              <table
+                                                className={`table table-bordered table-reposicao`}
+                                              >
+                                                <thead>
+                                                  <tr>
+                                                    <th scope="col">
+                                                      Quantidade Prevista
+                                                    </th>
+                                                    <th scope="col">
+                                                      Capacidade
+                                                    </th>
+                                                    <th
+                                                      scope="col"
+                                                      className="th-recebido"
+                                                    >
+                                                      Quantidade a Receber{" "}
+                                                      <TooltipIcone
+                                                        tooltipText={
+                                                          TOOLTIP_A_RECEBER
+                                                        }
+                                                      />
+                                                    </th>
+                                                    <th
+                                                      scope="col"
+                                                      className="th-recebido"
+                                                    >
+                                                      Quantidade Recebida{" "}
+                                                      <TooltipIcone
+                                                        tooltipText={
+                                                          TOOLTIP_RECEBIDO
+                                                        }
+                                                      />
+                                                    </th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  <tr>
+                                                    <td>
+                                                      {fracionada.qtd_volume}{" "}
+                                                      {
                                                         fracionada.descricao_embalagem
                                                       }
-                                                      validate={composeValidators(
-                                                        required,
-                                                        numericInteger
-                                                      )}
-                                                      onChange={validaOcorrencias(
-                                                        values,
-                                                        index,
-                                                        errors
-                                                      )}
-                                                    />
-                                                  </div>
-                                                </td>
-                                              </tr>
-                                            </tbody>
-                                          </table>
-                                        </div>
+                                                      .
+                                                    </td>
+                                                    <td>
+                                                      {
+                                                        fracionada.capacidade_completa
+                                                      }
+                                                    </td>
+                                                    <td>
+                                                      {fracionada.qtd_a_receber}
+                                                    </td>
+                                                    <td>
+                                                      <div className="form-tabela">
+                                                        <Field
+                                                          component={InputText}
+                                                          apenasNumeros
+                                                          name={`recebidos_fracionada_${index}`}
+                                                          dataTestId={`recebidos_fracionada_${index}`}
+                                                          className="input-busca-produto"
+                                                          placeholder={
+                                                            fracionada.descricao_embalagem
+                                                          }
+                                                          validate={composeValidators(
+                                                            required,
+                                                            numericInteger,
+                                                          )}
+                                                        />
+                                                      </div>
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                          )}
+                                        </>
+                                      );
+                                    })()}
+                                  </>
+                                </div>
+                                <div className="row">
+                                  <div className="col-6">
+                                    <Field
+                                      component={InputText}
+                                      label="Status de recebimento de alimento"
+                                      name={`status_${index}`}
+                                      className="input-busca-produto"
+                                      placeholder="---"
+                                      disabled
+                                    />
+                                  </div>
+
+                                  <div className="col-6">
+                                    <Field
+                                      component={MultiSelect}
+                                      label="Ocorrências"
+                                      name={`ocorrencias_${index}`}
+                                      disableSearch
+                                      multiple
+                                      nomeDoItemNoPlural="ocorrências"
+                                      options={TIPOS_OCORRENCIAS_OPTIONS}
+                                      className="input-busca-produto"
+                                      disabled={
+                                        !["Parcial", "Não Recebido"].includes(
+                                          values[`status_${index}`],
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="mt-4 mb-4">
+                                  <div className="row">
+                                    <article className="col-9 produto">
+                                      <label className="mb-3">
+                                        <span>
+                                          Insira uma <strong> foto </strong>que
+                                          demonstre a ocorrência apontada
+                                        </span>
+                                      </label>
+                                      <InputFile
+                                        ref={(ref) =>
+                                          (inputFile.current[index] = ref)
+                                        }
+                                        className="inputfile"
+                                        texto="Inserir Imagem"
+                                        name={`files_${index}`}
+                                        accept={FORMATOS_IMAGEM}
+                                        setFiles={setFiles(index)}
+                                        removeFile={removeFile(index)}
+                                        toastSuccess={
+                                          "Imagem incluída com sucesso!"
+                                        }
+                                        alignLeft
+                                      />
+                                      <label className="mb-3">
+                                        {"IMPORTANTE: Envie um arquivo nos formatos: " +
+                                          FORMATOS_IMAGEM +
+                                          ", com até 10MB"}
+                                      </label>
+                                    </article>
+                                  </div>
+                                </div>
+
+                                <div className="row">
+                                  <div className="col-12">
+                                    <Field
+                                      component={TextArea}
+                                      label="Observações"
+                                      name={`observacoes_${index}`}
+                                      dataTestId={`observacoes_${index}`}
+                                      placeholder="Digite seus comentários aqui..."
+                                      required
+                                      contador={500}
+                                      validate={composeValidators(
+                                        validaObservacoes(values, index),
+                                        maxLength(500),
                                       )}
-                                    </>
-                                  );
-                                })()}
-                              </>
-                            </div>
-                            <div className="row">
-                              <div className="col-6">
-                                <Field
-                                  component={InputText}
-                                  label="Status de recebimento de alimento"
-                                  name={`status_${index}`}
-                                  className="input-busca-produto"
-                                  placeholder="---"
-                                  disabled
-                                />
-                              </div>
-
-                              <div className="col-6">
-                                <Field
-                                  component={MultiSelect}
-                                  label="Ocorrências"
-                                  name={`ocorrencias_${index}`}
-                                  disableSearch
-                                  multiple
-                                  nomeDoItemNoPlural="ocorrências"
-                                  options={TIPOS_OCORRENCIAS_OPTIONS}
-                                  className="input-busca-produto"
-                                  onChange={checaAtraso(values, index)}
-                                  disabled={
-                                    !["Parcial", "Não Recebido"].includes(
-                                      values[`status_${index}`]
-                                    )
-                                  }
-                                />
-                              </div>
-                            </div>
-
-                            <div className="mt-4 mb-4">
-                              <div className="row">
-                                <article className="col-9 produto">
-                                  <label className="mb-3">
-                                    <span>
-                                      Insira uma <strong> foto </strong>que
-                                      demonstre a ocorrência apontada
-                                    </span>
-                                  </label>
-                                  <InputFile
-                                    ref={(ref) =>
-                                      (inputFile.current[index] = ref)
-                                    }
-                                    className="inputfile"
-                                    texto="Inserir Imagem"
-                                    name={`files_${index}`}
-                                    accept={FORMATOS_IMAGEM}
-                                    setFiles={setFiles(index)}
-                                    removeFile={removeFile(index)}
-                                    toastSuccess={
-                                      "Imagem incluída com sucesso!"
-                                    }
-                                    alignLeft
-                                  />
-                                  <label className="mb-3">
-                                    {"IMPORTANTE: Envie um arquivo nos formatos: " +
-                                      FORMATOS_IMAGEM +
-                                      ", com até 10MB"}
-                                  </label>
-                                </article>
-                              </div>
-                            </div>
-
-                            <div className="row">
-                              <div className="col-12">
-                                <Field
-                                  component={TextArea}
-                                  label="Observações"
-                                  name={`observacoes_${index}`}
-                                  dataTestId={`observacoes_${index}`}
-                                  placeholder="Digite seus comentários aqui..."
-                                  required
-                                  contador={500}
-                                  validate={composeValidators(
-                                    validaObservacoes(values, index),
-                                    maxLength(500)
-                                  )}
-                                  disabled={
-                                    !values[`ocorrencias_${index}`] ||
-                                    !values[`ocorrencias_${index}`].length
-                                  }
-                                />
+                                      disabled={
+                                        !values[`ocorrencias_${index}`] ||
+                                        !values[`ocorrencias_${index}`].length
+                                      }
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
+                        );
+                      })}
+                  </div>
 
-                <hr />
+                  <hr />
 
-                <div>
-                  <button
-                    onClick={(event) => {
-                      event.preventDefault();
-                      carregarLocalStorage(values);
-                    }}
-                    style={{ display: "none" }}
-                    ref={autoFillButton}
-                  />
-
-                  <span className="float-end tooltip-botao">
-                    <Botao
-                      texto="Finalizar reposição"
-                      type={BUTTON_TYPE.BUTTON}
-                      style={BUTTON_STYLE.GREEN_OUTLINE}
-                      disabled={
-                        Object.keys(errors).length > 0 || !guia.alimentos
-                      }
-                      onClick={() => onSubmit(values)}
+                  <div>
+                    <button
+                      onClick={(event) => {
+                        event.preventDefault();
+                        carregarLocalStorage(values);
+                      }}
+                      style={{ display: "none" }}
+                      ref={autoFillButton}
                     />
-                    <span className="tooltiptext">
-                      Para finalizar, preencha todos os campos de conferência de
-                      alimentos, com suas respectivas datas de entrega e
-                      quantidades.
+
+                    <span className="float-end tooltip-botao">
+                      <Botao
+                        texto="Finalizar reposição"
+                        type={BUTTON_TYPE.BUTTON}
+                        style={BUTTON_STYLE.GREEN_OUTLINE}
+                        disabled={
+                          Object.keys(errors).length > 0 || !guia.alimentos
+                        }
+                        onClick={() => onSubmit(values)}
+                      />
+                      <span className="tooltiptext">
+                        Para finalizar, preencha todos os campos de conferência
+                        de alimentos, com suas respectivas datas de entrega e
+                        quantidades.
+                      </span>
                     </span>
-                  </span>
-                </div>
-              </form>
-            )}
+                  </div>
+                </form>
+              );
+            }}
           />
         </div>
       </div>
