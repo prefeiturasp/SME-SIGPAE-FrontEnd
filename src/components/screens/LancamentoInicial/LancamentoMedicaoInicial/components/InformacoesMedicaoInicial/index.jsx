@@ -90,11 +90,9 @@ export default ({
 
   const opcoesContagem = tiposDeContagem
     ? [
-        ...tiposDeContagem
-          .filter((tipo) => tipo.nome !== "Todos")
-          .map((tipo) => {
-            return { value: tipo.uuid, label: tipo.nome };
-          }),
+        ...tiposDeContagem.map((tipo) => {
+          return { value: tipo.uuid, label: tipo.nome };
+        }),
         { value: "outros", label: "Outros" },
       ]
     : [];
