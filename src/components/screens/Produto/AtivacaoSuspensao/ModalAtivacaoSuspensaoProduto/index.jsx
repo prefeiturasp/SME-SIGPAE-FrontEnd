@@ -33,6 +33,7 @@ const ModalAtivacaoSuspensaoProduto = ({
   showModal,
   produto,
   ehSuspensaoFluxoAlteracaoDados,
+  manterSuspenso,
 }) => {
   const [meusDadosUsuario, setMeusDadosUsuario] = useState(undefined);
   const [editais, setEditais] = useState(undefined);
@@ -105,13 +106,13 @@ const ModalAtivacaoSuspensaoProduto = ({
         let vinculos_produto_edital = produto.vinculos_produto_edital;
         if (vinculos_produto_edital) {
           vinculos_produto_edital = vinculos_produto_edital.filter(
-            (vinculo) => !vinculo.suspenso
+            (vinculo) => !vinculo.suspenso,
           );
         }
         options = vinculos_produto_edital
           .filter(
             ({ edital }) =>
-              !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase())
+              !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase()),
           )
           .map((vinculo) => ({
             value: vinculo.edital.uuid,
@@ -121,7 +122,8 @@ const ModalAtivacaoSuspensaoProduto = ({
       if (acao === "ativação" && editais?.length > 0) {
         options = editais
           .filter(
-            (edital) => !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase())
+            (edital) =>
+              !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase()),
           )
           .map((edital) => ({
             label: edital.numero,
@@ -139,7 +141,12 @@ const ModalAtivacaoSuspensaoProduto = ({
       onHide={closeModal}
     >
       <Modal.Header className="border-0" closeButton>
-        <Modal.Title> {`${capitalizar(acao || "")} de Produto`} </Modal.Title>
+        <Modal.Title>
+          {" "}
+          {manterSuspenso
+            ? "Manter o Produto Suspenso"
+            : `${capitalizar(acao || "")} de Produto`}{" "}
+        </Modal.Title>
       </Modal.Header>
       <Form
         onSubmit={onSubmit}
@@ -177,7 +184,8 @@ const ModalAtivacaoSuspensaoProduto = ({
                     multiple
                     nomeDoItemNoPlural="itens"
                     options={opcoesEditais()}
-                    required
+                    disabled={manterSuspenso}
+                    required={!manterSuspenso}
                   />
                 </div>
                 <div className="col-6 input-nome">
@@ -246,9 +254,11 @@ const ModalAtivacaoSuspensaoProduto = ({
                       submitting ||
                       peloMenosUmCaractere(values.justificativa) !==
                         undefined ||
-                      !values.editais_para_suspensao_ativacao ||
-                      (values.editais_para_suspensao_ativacao &&
-                        values.editais_para_suspensao_ativacao.length === 0)
+                      (!manterSuspenso &&
+                        (!values.editais_para_suspensao_ativacao ||
+                          (values.editais_para_suspensao_ativacao &&
+                            values.editais_para_suspensao_ativacao.length ===
+                              0)))
                     }
                   />
                 </div>
