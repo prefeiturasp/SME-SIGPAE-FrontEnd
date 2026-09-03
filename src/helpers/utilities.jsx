@@ -1441,3 +1441,19 @@ export const usuarioComAcessoAoCadastroDeCategorias = () => {
     PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
   ].includes(localStorage.getItem("perfil"));
 };
+
+export const usuarioPodeVisualizarDownloadsHistoricoReclamacaoProduto = () => {
+  return (
+    usuarioEhCODAEGestaoProduto() ||
+    usuarioEhNutricionistaSupervisao() ||
+    usuarioEhCODAENutriManifestacao() ||
+    usuarioEhCogestorDRE() ||
+    localStorage.getItem("tipo_perfil") === TIPO_PERFIL.ESCOLA ||
+    usuarioEhCODAEGestaoAlimentacao() ||
+    usuarioEhEmpresa() ||
+    usuarioEhDinutreDiretoria() ||
+    usuarioEhCODAEGabinete() ||
+    usuarioEhMedicao() ||
+    usuarioEhOrgaoFiscalizador()
+  );
+};

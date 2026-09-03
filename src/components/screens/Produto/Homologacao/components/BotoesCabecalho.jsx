@@ -13,7 +13,10 @@ import {
   imprimeFichaIdentificacaoProduto,
 } from "src/services/produto.service";
 import ModalAtivacaoSuspensaoProduto from "../../AtivacaoSuspensao/ModalAtivacaoSuspensaoProduto";
-import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
+import {
+  usuarioEhEmpresaTerceirizada,
+  usuarioPodeVisualizarDownloadsHistoricoReclamacaoProduto,
+} from "src/helpers/utilities";
 import AcoesDownloadHistoricoReclamacao from "src/components/screens/Produto/BuscaAvancada/components/RelatorioProduto/components/AcoesDownloadHistoricoReclamacao";
 import { getRelatorioProdutoHistorico } from "src/services/relatorios";
 
@@ -26,6 +29,8 @@ export const BotoesCabecalho = ({
 }) => {
   const ehGPCODAE =
     localStorage.getItem("tipo_perfil") === TIPO_PERFIL.GESTAO_PRODUTO;
+  const podeVisualizarDownloadsHistorico =
+    usuarioPodeVisualizarDownloadsHistoricoReclamacaoProduto();
   const [showModal, setShowModal] = useState(false);
   const [showModalAnaliseSensorial, setShowModalAnaliseSensorial] =
     useState(false);
@@ -90,7 +95,11 @@ export const BotoesCabecalho = ({
             getRelatorioProdutoHistorico({ uuid: homologacao.produto.uuid })
           }
           renderizarAcoesLog={(logSelecionado) => {
-            if (!logSelecionado?.uuid_reclamacao || !logSelecionado?.uuid) {
+            if (
+              !podeVisualizarDownloadsHistorico ||
+              !logSelecionado?.uuid_reclamacao ||
+              !logSelecionado?.uuid
+            ) {
               return null;
             }
 
