@@ -37,6 +37,51 @@ const TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS = [
   "CEU CEMEI",
 ];
 
+const resetDependentFields = (formApi: FormApi<any>) => {
+  formApi.change("unidades_educacionais", []);
+  formApi.change("tipos_alimentacao_inscritos", []);
+  formApi.change("tipos_alimentacao_colaboradores", []);
+  formApi.change("tipos_alimentacao_inscritos_infantil", []);
+};
+
+const SyncCamposDependentes = ({
+  dresLote,
+  tiposUnidades,
+  dreLote,
+  setDreLote,
+  tipoUnidade,
+  setTipoUnidade,
+  formApi,
+}: {
+  dresLote?: string;
+  tiposUnidades?: string;
+  dreLote: string;
+  setDreLote: (_: string) => void;
+  tipoUnidade: string;
+  setTipoUnidade: (_: string) => void;
+  formApi: FormApi<any>;
+}) => {
+  useEffect(() => {
+    const novoDreLote = dresLote || "";
+    if (dreLote !== novoDreLote) {
+      setDreLote(novoDreLote);
+      formApi.change("tipos_unidades", undefined);
+      formApi.resetFieldState("tipos_unidades");
+      resetDependentFields(formApi);
+    }
+  }, [dresLote, dreLote, formApi, setDreLote]);
+
+  useEffect(() => {
+    const novoTipoUnidade = tiposUnidades || "";
+    if (tipoUnidade !== novoTipoUnidade) {
+      setTipoUnidade(novoTipoUnidade);
+      resetDependentFields(formApi);
+    }
+  }, [tiposUnidades, tipoUnidade, formApi, setTipoUnidade]);
+
+  return null;
+};
+
 export const ModalAdicionarUnidadeEducacional = ({
   showModal,
   closeModal,
@@ -217,37 +262,21 @@ export const ModalAdicionarUnidadeEducacional = ({
               (isCemei &&
                 !values?.tipos_alimentacao_inscritos_infantil?.length);
 
-            const resetDependentFields = () => {
-              formApi.change("unidades_educacionais", []);
-              formApi.change("tipos_alimentacao_inscritos", []);
-              formApi.change("tipos_alimentacao_colaboradores", []);
-              formApi.change("tipos_alimentacao_inscritos_infantil", []);
-            };
-
-            useEffect(() => {
-              const novoDreLote = values?.dres_lote || "";
-              if (dreLote !== novoDreLote) {
-                setDreLote(novoDreLote);
-                formApi.change("tipos_unidades", undefined);
-                formApi.resetFieldState("tipos_unidades");
-                resetDependentFields();
-              }
-            }, [values?.dres_lote, dreLote]);
-
-            useEffect(() => {
-              const novoTipoUnidade = values?.tipos_unidades || "";
-              if (tipoUnidade !== novoTipoUnidade) {
-                setTipoUnidade(novoTipoUnidade);
-                resetDependentFields();
-              }
-            }, [values?.tipos_unidades, tipoUnidade]);
-
             return (
               <form
                 ref={() => {
                   formApiRef.current = formApi;
                 }}
               >
+                <SyncCamposDependentes
+                  dresLote={values?.dres_lote}
+                  tiposUnidades={values?.tipos_unidades}
+                  dreLote={dreLote}
+                  setDreLote={setDreLote}
+                  tipoUnidade={tipoUnidade}
+                  setTipoUnidade={setTipoUnidade}
+                  formApi={formApi}
+                />
                 <div className="row">
                   <div className="w-50">
                     <Field
