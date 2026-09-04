@@ -538,6 +538,14 @@ export const usuarioComAcessoAoRelatorioCronogramas = () => {
   ].includes(localStorage.getItem("perfil"));
 };
 
+export const usuarioComAcessoAoRelatorioCronogramasSemanais = () => {
+  return [
+    PERFIL.DILOG_QUALIDADE,
+    PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+  ].includes(localStorage.getItem("perfil"));
+};
+
 export const usuarioComAcessoAoRelatorioFichasTecnicas = () => {
   return [
     PERFIL.DILOG_QUALIDADE,
