@@ -13,7 +13,12 @@ import {
   imprimeFichaIdentificacaoProduto,
 } from "src/services/produto.service";
 import ModalAtivacaoSuspensaoProduto from "../../AtivacaoSuspensao/ModalAtivacaoSuspensaoProduto";
-import { usuarioEhEmpresaTerceirizada } from "src/helpers/utilities";
+import {
+  usuarioEhEmpresaTerceirizada,
+  usuarioPodeVisualizarDownloadsHistoricoReclamacaoProduto,
+} from "src/helpers/utilities";
+import AcoesDownloadHistoricoReclamacao from "src/components/screens/Produto/BuscaAvancada/components/RelatorioProduto/components/AcoesDownloadHistoricoReclamacao";
+import { getRelatorioProdutoHistorico } from "src/services/relatorios";
 
 export const BotoesCabecalho = ({
   homologacao,
@@ -24,12 +29,13 @@ export const BotoesCabecalho = ({
 }) => {
   const ehGPCODAE =
     localStorage.getItem("tipo_perfil") === TIPO_PERFIL.GESTAO_PRODUTO;
+  const podeVisualizarDownloadsHistorico =
+    usuarioPodeVisualizarDownloadsHistoricoReclamacaoProduto();
   const [showModal, setShowModal] = useState(false);
   const [showModalAnaliseSensorial, setShowModalAnaliseSensorial] =
     useState(false);
   const [showModalSuspender, setShowModalSuspender] = useState(false);
   const [acao, setAcao] = useState();
-
   const checaStatus = (status) => {
     return [
       "CODAE_HOMOLOGADO",
@@ -40,8 +46,41 @@ export const BotoesCabecalho = ({
 
   const getHistorico = () => {
     getHomologacaoProdutoAsync();
-    return homologacao.logs;
+    return logsHistorico;
   };
+
+  const converterDataHistorico = (dataHora) => {
+    const [data, hora] = dataHora.split(" ");
+    const [dia, mes, ano] = data.split("/");
+    return new Date(`${ano}-${mes}-${dia}T${hora}`).getTime();
+  };
+
+  const getLogsHistorico = () => {
+    const reclamacoes =
+      homologacao.produto?.ultima_homologacao?.reclamacoes || [];
+
+    const logsReclamacoes = reclamacoes.flatMap((reclamacao) =>
+      reclamacao.logs.map((log) => ({
+        ...log,
+        uuid_reclamacao: reclamacao.uuid,
+      })),
+    );
+
+    const acoesReclamacoes = new Set(
+      logsReclamacoes.map((log) => log.status_evento_explicacao),
+    );
+    const logsHomologacao = homologacao.logs.filter(
+      (log) => !acoesReclamacoes.has(log.status_evento_explicacao),
+    );
+
+    return [...logsHomologacao, ...logsReclamacoes].sort(
+      (logA, logB) =>
+        converterDataHistorico(logB.criado_em) -
+        converterDataHistorico(logA.criado_em),
+    );
+  };
+
+  const logsHistorico = getLogsHistorico();
 
   return (
     <>
@@ -50,8 +89,27 @@ export const BotoesCabecalho = ({
           visible={showModal}
           onOk={() => setShowModal(false)}
           onCancel={() => setShowModal(false)}
-          logs={homologacao.logs}
-          getHistorico={() => getHistorico}
+          logs={logsHistorico}
+          getHistorico={getHistorico}
+          printHistorico={() =>
+            getRelatorioProdutoHistorico({ uuid: homologacao.produto.uuid })
+          }
+          renderizarAcoesLog={(logSelecionado) => {
+            if (
+              !podeVisualizarDownloadsHistorico ||
+              !logSelecionado?.uuid_reclamacao ||
+              !logSelecionado?.uuid
+            ) {
+              return null;
+            }
+
+            return (
+              <AcoesDownloadHistoricoReclamacao
+                uuidReclamacao={logSelecionado.uuid_reclamacao}
+                logSelecionado={logSelecionado}
+              />
+            );
+          }}
         />
         <ModalPadrao
           showModal={showModalAnaliseSensorial}
