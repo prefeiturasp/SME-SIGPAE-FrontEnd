@@ -99,7 +99,10 @@ const AcoesDownloadHistoricoReclamacao = ({
 
   return (
     <>
-      <div className="d-flex flex-column flex-sm-row gap-2 mt-3">
+      <div
+        className="d-flex flex-column flex-sm-row"
+        style={{ columnGap: "5rem" }}
+      >
         {possuiPdf && (
           <Botao
             type={BUTTON_TYPE.BUTTON}
