@@ -31,6 +31,13 @@ export const dateDelta = (daysDelta) => {
   return today;
 };
 
+export const acionaComEnterOuEspaco = (event, acao) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    acao();
+  }
+};
+
 export const checaSeDataEstaEntre2e5DiasUteis = (
   value,
   two_working_days,

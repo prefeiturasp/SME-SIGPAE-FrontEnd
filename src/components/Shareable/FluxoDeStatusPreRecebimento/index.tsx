@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import {
   DETALHAR_ALTERACAO_CRONOGRAMA,
   PRE_RECEBIMENTO,
@@ -75,12 +75,24 @@ export const FluxoDeStatusPreRecebimento = ({
           cursor:
             itensClicaveisCronograma && uuidValido ? "pointer" : "default",
         }}
+        role={itensClicaveisCronograma && uuidValido ? "button" : undefined}
+        tabIndex={itensClicaveisCronograma && uuidValido ? 0 : undefined}
         onClick={() => {
           itensClicaveisCronograma &&
             uuidValido &&
             navigate(
               `/${PRE_RECEBIMENTO}/${DETALHAR_ALTERACAO_CRONOGRAMA}?uuid=${status.justificativa}`,
             );
+        }}
+        onKeyDown={(e: KeyboardEvent) => {
+          if (itensClicaveisCronograma && uuidValido) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              navigate(
+                `/${PRE_RECEBIMENTO}/${DETALHAR_ALTERACAO_CRONOGRAMA}?uuid=${status.justificativa}`,
+              );
+            }
+          }
         }}
       >
         {content}

@@ -36,10 +36,13 @@ export class CardHistorico extends Component {
   }
 
   onCheckClicked(key) {
-    let pedidos = this.state.pedidos;
-    pedidos[key].checked = !pedidos[key].checked;
-    this.props.change(`check_${key}`, pedidos[key].checked);
-    this.setState({ pedidos });
+    const checked = !this.state.pedidos[key].checked;
+    this.props.change(`check_${key}`, checked);
+    this.setState((prevState) => {
+      const pedidos = [...prevState.pedidos];
+      pedidos[key] = { ...pedidos[key], checked };
+      return { pedidos };
+    });
   }
 
   // TODO: chamar "imprimir" quando tiver endpoint definido

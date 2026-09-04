@@ -218,10 +218,10 @@ class solicitacaoDietaEspecial extends Component {
     const response = await criaDietaEspecial(payload_);
     if (response.status === HTTP_STATUS.CREATED) {
       toastSuccess("Solicitação realizada com sucesso.");
-      this.setState({
-        submitted: !this.state.submitted,
+      this.setState((prevState) => ({
+        submitted: !prevState.submitted,
         resumo: `/${ESCOLA}/${DIETA_ESPECIAL}/${RELATORIO}?uuid=${response.data.uuid}`,
-      });
+      }));
       this.props.loadSolicitacoesVigentes(null);
       this.setState({
         aluno_nao_matriculado: false,

@@ -26,6 +26,7 @@ import {
   usuarioEhDRE,
   usuarioEhMedicao,
   usuarioEhCODAENutriManifestacao,
+  acionaComEnterOuEspaco,
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
@@ -991,8 +992,15 @@ export const ConferenciaDosLancamentos = () => {
                                     !ocorrenciaExcluida() && (
                                       <label
                                         className="green visualizar-ocorrencias"
+                                        role="button"
+                                        tabIndex={0}
                                         onClick={() =>
                                           setOcorrenciaExpandida(true)
+                                        }
+                                        onKeyDown={(e) =>
+                                          acionaComEnterOuEspaco(e, () =>
+                                            setOcorrenciaExpandida(true),
+                                          )
                                         }
                                       >
                                         <b>VISUALIZAR</b>

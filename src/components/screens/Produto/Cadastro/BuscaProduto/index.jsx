@@ -39,7 +39,11 @@ export default class BuscaProduto extends Component {
     return arrayNomes;
   };
 
-  componentDidUpdate = async () => {
+  componentDidUpdate() {
+    this.carregarNomesCadastrados();
+  }
+
+  carregarNomesCadastrados = async () => {
     const { nomesProdutos, nomesMarcas, nomesFabricantes } = this.state;
     if (
       nomesProdutos === null &&
@@ -229,7 +233,7 @@ export default class BuscaProduto extends Component {
                                       </div>
                                     </div>
                                   );
-                                }
+                                },
                               )}
 
                             <div className="componentes-produto">

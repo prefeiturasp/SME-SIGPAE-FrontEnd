@@ -55,7 +55,7 @@ export const Formulario = ({ ...props }: FormularioType) => {
         }_parametrizacao_${_resposta.parametrizacao.uuid}_uuid_${
           _resposta.uuid
         }`,
-        _resposta.resposta
+        _resposta.resposta,
       );
     });
   };
@@ -65,11 +65,11 @@ export const Formulario = ({ ...props }: FormularioType) => {
       tiposOcorrencia.forEach((tipoOcorrencia) => {
         const _respostas = respostasOcorrencias.filter(
           (_ocorr) =>
-            _ocorr.parametrizacao.tipo_ocorrencia === tipoOcorrencia.uuid
+            _ocorr.parametrizacao.tipo_ocorrencia === tipoOcorrencia.uuid,
         );
 
         const _respostaNaoSeAplica = respostasOcorrenciaNaoSeAplica.find(
-          (_ocorr) => _ocorr.tipo_ocorrencia === tipoOcorrencia.uuid
+          (_ocorr) => _ocorr.tipo_ocorrencia === tipoOcorrencia.uuid,
         );
 
         if (_respostas.length > 0) {
@@ -79,7 +79,7 @@ export const Formulario = ({ ...props }: FormularioType) => {
           form.change(`ocorrencia_${tipoOcorrencia.uuid}`, "nao_se_aplica");
           form.change(
             `descricao_${tipoOcorrencia.uuid}`,
-            _respostaNaoSeAplica.descricao
+            _respostaNaoSeAplica.descricao,
           );
         } else {
           form.change(`ocorrencia_${tipoOcorrencia.uuid}`, "sim");
@@ -111,12 +111,12 @@ export const Formulario = ({ ...props }: FormularioType) => {
   };
 
   const getRowSpanTiposOcorrenciaMesmaPosicao = (
-    tipoOcorrencia: TipoOcorrenciaInterface
+    tipoOcorrencia: TipoOcorrenciaInterface,
   ) => {
     const tiposOcorrenciaMesmaPosicao = tiposOcorrencia.filter(
       (tipoOcorrencia_) =>
         tipoOcorrencia_.categoria.uuid === tipoOcorrencia.categoria.uuid &&
-        tipoOcorrencia_.posicao === tipoOcorrencia.posicao
+        tipoOcorrencia_.posicao === tipoOcorrencia.posicao,
     );
     let rowSpan = tiposOcorrenciaMesmaPosicao.length;
 
@@ -142,7 +142,7 @@ export const Formulario = ({ ...props }: FormularioType) => {
       tiposOcorrencia.filter(
         (tipoOcorrencia_) =>
           tipoOcorrencia_.categoria.uuid === tipoOcorrencia.categoria.uuid &&
-          tipoOcorrencia_.posicao === tipoOcorrencia.posicao
+          tipoOcorrencia_.posicao === tipoOcorrencia.posicao,
       ).length > 1
     ) {
       return getRowSpanTiposOcorrenciaMesmaPosicao(tipoOcorrencia);
@@ -164,7 +164,7 @@ export const Formulario = ({ ...props }: FormularioType) => {
 
   const exibeColunaIndice = (
     tipoOcorrencia: TipoOcorrenciaInterface,
-    index: number
+    index: number,
   ) => {
     return (
       index === 0 ||
@@ -207,7 +207,7 @@ export const Formulario = ({ ...props }: FormularioType) => {
                         <tr className="frequencia">
                           <th className="pb-3" colSpan={3}>
                             Maior Frequência Registrada:
-                            {values.maior_frequencia_no_periodo && (
+                            {!!values.maior_frequencia_no_periodo && (
                               <span className="highlight">
                                 {" "}
                                 {values.maior_frequencia_no_periodo} alunos
