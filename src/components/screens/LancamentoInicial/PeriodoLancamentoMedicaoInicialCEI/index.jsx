@@ -266,6 +266,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const ehEmeiDaCemeiLocation =
     location && location.state && location.state.ehEmeiDaCemei;
+  const ehCEIDaCEMEI = escolaEhCEMEI() && !ehEmeiDaCemeiLocation;
   const ehSolicitacoesAlimentacaoLocation =
     location &&
     location.state &&
@@ -436,7 +437,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         );
       setInclusoesAutorizadas(response_inclusoes_autorizadas);
       let response_log_matriculados_por_faixa_etaria_dia_inclusoes = [];
-      if (response_inclusoes_autorizadas.length > 0 && periodo === "PARCIAL") {
+      if (
+        !ehCEIDaCEMEI &&
+        response_inclusoes_autorizadas.length > 0 &&
+        periodo === "PARCIAL"
+      ) {
         const inclusoesParaSobrescreverLogs =
           response_inclusoes_autorizadas.filter(
             (inclusao) => inclusao.periodo !== "INTEGRAL",
@@ -684,6 +689,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
               response_inclusoes_autorizadas,
               null,
               ehRecreioNasFerias(),
+              ehCEIDaCEMEI,
             );
       setTabelaAlimentacaoCEIRows(linhasTabelaAlimentacaoCEI);
 

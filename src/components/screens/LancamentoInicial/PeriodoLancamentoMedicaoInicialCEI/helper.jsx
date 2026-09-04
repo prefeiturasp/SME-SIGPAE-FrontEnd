@@ -831,6 +831,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
   inclusoesAutorizadas = null,
   valores_medicao = null,
   ehRecreioNasFerias = false,
+  somenteFaixasComLogParcial = false,
 ) => {
   let faixas_etarias_alimentacao = [];
   let faixas_etarias_objs_alimentacao = [];
@@ -894,6 +895,7 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
 
     faixasEtarias.forEach((faixaEtaria) => {
       if (
+        !somenteFaixasComLogParcial &&
         !faixasEtariasSet.has(faixaEtaria.__str__) &&
         faixasEtariasInclusoes.includes(faixaEtaria.uuid)
       ) {
