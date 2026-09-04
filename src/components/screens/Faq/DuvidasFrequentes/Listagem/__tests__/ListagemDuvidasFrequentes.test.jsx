@@ -1,13 +1,19 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import {
   AJUDA,
   CADASTRO_DUVIDAS_FREQUENTES,
   EDITAR_DUVIDA_FREQUENTE,
 } from "src/configs/constants";
-import { listarPerguntasFrequentes } from "src/services/faq.service";
+import {
+  excluirPerguntaFrequente,
+  listarPerguntasFrequentes,
+} from "src/services/faq.service";
 import ListagemDuvidasFrequentes from "..";
 
 jest.mock("react-router-dom", () => ({
@@ -15,11 +21,13 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("src/services/faq.service", () => ({
+  excluirPerguntaFrequente: jest.fn(),
   listarPerguntasFrequentes: jest.fn(),
 }));
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
   toastError: jest.fn(),
+  toastSuccess: jest.fn(),
 }));
 
 jest.mock("src/components/Shareable/SigpaeLogoLoader", () => ({
@@ -39,9 +47,31 @@ jest.mock("../../components/BotaoCadastroDuvidasFrequentes", () => ({
   default: () => <button>Cadastrar Dúvidas Frequentes</button>,
 }));
 
+jest.mock("src/components/Shareable/ModalGenerico", () => ({
+  __esModule: true,
+  default: ({ show, titulo, texto, handleClose, handleSim, loading }) => {
+    if (!show) {
+      return null;
+    }
+
+    return (
+      <div>
+        <h2>{titulo}</h2>
+        <div>{texto}</div>
+        <button type="button" onClick={handleClose}>
+          Não
+        </button>
+        <button type="button" onClick={handleSim} data-loading={loading}>
+          Sim
+        </button>
+      </div>
+    );
+  },
+}));
+
 jest.mock("../../components/TabelaDuvidasFrequentes", () => ({
   __esModule: true,
-  default: ({ aoEditar, duvidas }) => (
+  default: ({ aoEditar, aoExcluir, duvidas }) => (
     <div data-testid="tabela-duvidas">
       {duvidas.map((duvida) => (
         <div key={duvida.uuid}>
@@ -51,6 +81,9 @@ jest.mock("../../components/TabelaDuvidasFrequentes", () => ({
           <button type="button" onClick={() => aoEditar(duvida)}>
             Editar {duvida.titulo}
           </button>
+          <button type="button" onClick={() => aoExcluir(duvida)}>
+            Excluir {duvida.titulo}
+          </button>
         </div>
       ))}
     </div>
@@ -58,6 +91,7 @@ jest.mock("../../components/TabelaDuvidasFrequentes", () => ({
 }));
 
 const UUID_DUVIDA = "22b0d5e4-50f1-46cc-9cee-5fa30b7d7f57";
+const UUID_DUVIDA_ULTIMA_PAGINA = "56fd6872-eccb-45b0-959b-c73bba8d429e";
 const UUID_CATEGORIA = "96da837c-009f-41f2-ae46-d4a7fa52aa30";
 const UUID_PERFIL = "996c50ce-ea3c-450f-8af0-f19940de223e";
 
@@ -149,6 +183,169 @@ describe("ListagemDuvidasFrequentes", () => {
     expect(navegar).toHaveBeenCalledWith(
       `/${AJUDA}/${CADASTRO_DUVIDAS_FREQUENTES}/${UUID_DUVIDA}/${EDITAR_DUVIDA_FREQUENTE}`,
     );
+  });
+
+  it("cancela a exclusão da dúvida", async () => {
+    render(<ListagemDuvidasFrequentes />);
+
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Excluir Como solicitar uma dieta?",
+      }),
+    );
+
+    expect(screen.getByText("Excluir Dúvida")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Não" }));
+
+    expect(screen.queryByText("Excluir Dúvida")).not.toBeInTheDocument();
+    expect(excluirPerguntaFrequente).not.toHaveBeenCalled();
+  });
+
+  it("exclui a dúvida e atualiza a listagem", async () => {
+    listarPerguntasFrequentes
+      .mockResolvedValueOnce(respostaPaginada)
+      .mockResolvedValueOnce({
+        data: { count: 0, next: null, previous: null, results: [] },
+      });
+    excluirPerguntaFrequente.mockResolvedValue({ status: 204 });
+
+    render(<ListagemDuvidasFrequentes />);
+
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Excluir Como solicitar uma dieta?",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    await waitFor(() => {
+      expect(excluirPerguntaFrequente).toHaveBeenCalledWith(UUID_DUVIDA);
+    });
+
+    expect(toastSuccess).toHaveBeenCalledWith("Dúvida Excluída com Sucesso!");
+    expect(listarPerguntasFrequentes).toHaveBeenCalledTimes(2);
+    expect(
+      await screen.findByText(/Ainda não há dúvidas frequentes cadastradas/),
+    ).toBeInTheDocument();
+  });
+
+  it("informa erro quando a exclusão da dúvida falha", async () => {
+    excluirPerguntaFrequente.mockRejectedValue(
+      new Error("Falha ao excluir dúvida"),
+    );
+
+    render(<ListagemDuvidasFrequentes />);
+
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Excluir Como solicitar uma dieta?",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith(
+        "Houve um erro ao excluir a dúvida",
+      );
+    });
+
+    expect(toastSuccess).not.toHaveBeenCalled();
+    expect(screen.getByText("Excluir Dúvida")).toBeInTheDocument();
+  });
+
+  it("volta à página anterior ao excluir a única dúvida da página atual", async () => {
+    const duvidaUltimaPagina = {
+      categoria: {
+        nome: "Abastecimento",
+        uuid: UUID_CATEGORIA,
+      },
+      pergunta: "Como conferir uma guia?",
+      perfis: [],
+      todos_os_perfis: true,
+      uuid: UUID_DUVIDA_ULTIMA_PAGINA,
+    };
+
+    listarPerguntasFrequentes
+      .mockResolvedValueOnce(respostaPaginada)
+      .mockResolvedValueOnce({
+        data: {
+          count: 11,
+          next: null,
+          previous: "http://localhost/perguntas-frequentes/?page=1",
+          results: [duvidaUltimaPagina],
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          count: 10,
+          next: null,
+          previous: null,
+          results: respostaPaginada.data.results,
+        },
+      });
+    excluirPerguntaFrequente.mockResolvedValue({ status: 204 });
+
+    render(<ListagemDuvidasFrequentes />);
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Próxima página" }),
+    );
+
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Excluir Como conferir uma guia?",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    await waitFor(() => {
+      expect(excluirPerguntaFrequente).toHaveBeenCalledWith(
+        UUID_DUVIDA_ULTIMA_PAGINA,
+      );
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+      });
+    });
+  });
+
+  it("não repete a exclusão enquanto a requisição está em andamento", async () => {
+    let concluirExclusao;
+
+    excluirPerguntaFrequente.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          concluirExclusao = resolve;
+        }),
+    );
+
+    render(<ListagemDuvidasFrequentes />);
+
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: "Excluir Como solicitar uma dieta?",
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Sim" })).toHaveAttribute(
+        "data-loading",
+        "true",
+      );
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+
+    expect(excluirPerguntaFrequente).toHaveBeenCalledTimes(1);
+
+    concluirExclusao({ status: 204 });
+
+    await waitFor(() => {
+      expect(toastSuccess).toHaveBeenCalledWith("Dúvida Excluída com Sucesso!");
+    });
   });
 
   it("apresenta a mensagem prevista quando não há dúvidas cadastradas", async () => {
