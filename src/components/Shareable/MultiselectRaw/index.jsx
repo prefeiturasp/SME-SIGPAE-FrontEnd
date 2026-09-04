@@ -33,8 +33,11 @@ export const MultiselectRaw = (props) => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const selectRef = useRef(null);
   const optionsComTodos = useMemo(
-    () => [{ label: labelAllOption, value: "*" }, ...options],
-    [options],
+    () =>
+      allowSelectAll
+        ? [{ label: labelAllOption, value: "*" }, ...options]
+        : options,
+    [options, allowSelectAll, labelAllOption],
   );
 
   const [opcoesSelecionadas, setOpcoesSelecionadas] = useState(

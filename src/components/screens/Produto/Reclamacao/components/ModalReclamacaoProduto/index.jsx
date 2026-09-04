@@ -50,7 +50,11 @@ export default class ModalReclamacaoProduto extends Component {
     };
   }
 
-  UNSAFE_componentWillMount = async () => {
+  UNSAFE_componentWillMount() {
+    this.carregarDadosIniciais();
+  }
+
+  carregarDadosIniciais = async () => {
     const meusDadosResposta = await meusDados();
     const escolasResposta = await getEscolasTercTotal({
       nome_edital: this.props.edital,
@@ -64,7 +68,7 @@ export default class ModalReclamacaoProduto extends Component {
         };
       }),
       nomesEscolas: escolasResposta.data.map(
-        (escola) => `${escola.codigo_eol} - ${escola.nome}`
+        (escola) => `${escola.codigo_eol} - ${escola.nome}`,
       ),
     });
     if (escolasResposta) {
@@ -107,12 +111,12 @@ export default class ModalReclamacaoProduto extends Component {
     const tipoPerfil = localStorage.getItem("tipo_perfil");
     if (tipoPerfil === TIPO_PERFIL.SUPERVISAO_NUTRICAO) {
       values_.escola = escolas.find(
-        (escola) => escola.label === values_.escola
+        (escola) => escola.label === values_.escola,
       ).uuid;
     }
     const response = await escolaOuNutriReclamaDoProduto(
       this.props.produto.ultima_homologacao.uuid,
-      values_
+      values_,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Reclamação de produto registrada com sucesso!");
@@ -216,7 +220,7 @@ export default class ModalReclamacaoProduto extends Component {
                         className="input-busca-nome-item"
                         validate={composeValidators(
                           required,
-                          requiredOptionSearchSelect(escolas)
+                          requiredOptionSearchSelect(escolas),
                         )}
                         required
                       />
@@ -266,7 +270,7 @@ export default class ModalReclamacaoProduto extends Component {
                       maxDate={moment().toDate()}
                       inputOnChange={(value) => {
                         form.change("produto_data_validade", undefined);
-                        this.setState({ ...this.state, fabricacao: value });
+                        this.setState({ fabricacao: value });
                       }}
                     />
                   </div>
@@ -293,7 +297,7 @@ export default class ModalReclamacaoProduto extends Component {
                       required
                       validate={composeValidators(
                         required,
-                        peloMenosUmCaractere
+                        peloMenosUmCaractere,
                       )}
                     />
                   </div>

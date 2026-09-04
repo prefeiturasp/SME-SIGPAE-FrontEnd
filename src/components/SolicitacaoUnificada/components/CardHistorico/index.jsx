@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Collapse } from "react-collapse";
 import { Navigate } from "react-router-dom";
@@ -33,10 +34,13 @@ export class CardHistorico extends Component {
   }
 
   onCheckClicked(key) {
-    let pedidos = this.state.pedidos;
-    pedidos[key].checked = !pedidos[key].checked;
-    this.props.change(`check_${key}`, pedidos[key].checked);
-    this.setState({ pedidos });
+    const checked = !this.state.pedidos[key].checked;
+    this.props.change(`check_${key}`, checked);
+    this.setState((prevState) => {
+      const pedidos = [...prevState.pedidos];
+      pedidos[key] = { ...pedidos[key], checked };
+      return { pedidos };
+    });
   }
 
   // TODO: chamar "imprimir" quando tiver endpoint definido
@@ -138,7 +142,14 @@ export class CardHistorico extends Component {
                                 name={`check_${key}`}
                               />
                               <span
+                                role="button"
+                                tabIndex={0}
                                 onClick={() => this.onCheckClicked(key)}
+                                onKeyDown={(e) =>
+                                  acionaComEnterOuEspaco(e, () =>
+                                    this.onCheckClicked(key),
+                                  )
+                                }
                                 className="checkbox-custom small report-line"
                               />
                             </label>

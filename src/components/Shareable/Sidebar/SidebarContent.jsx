@@ -218,7 +218,8 @@ export const SidebarContent = () => {
   const exibirMenuPosRecebimento =
     usuarioEhCronogramaOuCodae() ||
     usuarioEhDilogDiretoria() ||
-    usuarioEhRecebimento();
+    usuarioEhRecebimento() ||
+    usuarioEhEmpresaFornecedor();
 
   const exibirMenuSupervisao =
     (usuarioEhNutricionistaSupervisao() ||

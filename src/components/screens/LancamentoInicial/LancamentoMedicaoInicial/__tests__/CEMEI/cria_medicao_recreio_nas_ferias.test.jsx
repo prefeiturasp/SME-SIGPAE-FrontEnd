@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -29,6 +30,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Cria Medição com
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
@@ -115,6 +119,11 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEMEI - Cria Medição com
         </MemoryRouter>,
       );
     });
+  });
+
+  afterEach(() => {
+    cleanup();
+    jest.useRealTimers();
   });
 
   it("Renderiza título da página `Lançamento Medição Inicial`", () => {

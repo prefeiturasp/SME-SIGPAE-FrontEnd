@@ -74,8 +74,8 @@ class RelatorioSuspensaoAlimentacao extends Component {
           this.setState({ erro: true });
           toastError(
             `Erro ao carregar relatório de Suspensão de Alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         } else {
           this.setState({ erro: true });
@@ -107,8 +107,8 @@ class RelatorioSuspensaoAlimentacao extends Component {
         this.setState({ erro: true });
         toastError(
           `Erro ao carregar relatório de Suspensão de Alimentação ${getError(
-            response.data
-          )}`
+            response.data,
+          )}`,
         );
       } else {
         this.setState({ erro: true });
@@ -123,20 +123,20 @@ class RelatorioSuspensaoAlimentacao extends Component {
       (response) => {
         if (response.status === HTTP_STATUS.OK) {
           toastSuccess(
-            "Ciência de suspensão de alimentação avisada com sucesso!"
+            "Ciência de suspensão de alimentação avisada com sucesso!",
           );
           this.setRedirect();
         } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
           toastError(
             `Erro ao tomar ciência de suspensão de alimentação ${getError(
-              response.data
-            )}`
+              response.data,
+            )}`,
           );
         }
       },
       function () {
         toastError("Erro ao tomar ciência de suspensão de alimentação");
-      }
+      },
     );
   }
 
@@ -157,8 +157,10 @@ class RelatorioSuspensaoAlimentacao extends Component {
       visao === TIPO_PERFIL.TERCEIRIZADA &&
       suspensaoAlimentacao &&
       [statusEnum.INFORMADO, statusEnum.ESCOLA_CANCELOU].includes(
-        suspensaoAlimentacao.status
+        suspensaoAlimentacao.status,
       );
+
+    const aoMarcarConferencia = () => this.showModalMarcarConferencia();
 
     const BotaoMarcarConferencia = () => {
       return (
@@ -167,9 +169,7 @@ class RelatorioSuspensaoAlimentacao extends Component {
           type={BUTTON_TYPE.BUTTON}
           style={BUTTON_STYLE.GREEN}
           className="ms-3"
-          onClick={() => {
-            this.showModalMarcarConferencia();
-          }}
+          onClick={aoMarcarConferencia}
         />
       );
     };
@@ -202,7 +202,7 @@ class RelatorioSuspensaoAlimentacao extends Component {
                   dadosEscola={dadosEscola}
                 />
                 {suspensaoAlimentacao.suspensoes_alimentacao.find(
-                  (suspensao) => suspensao.cancelado_justificativa
+                  (suspensao) => suspensao.cancelado_justificativa,
                 ) && (
                   <>
                     <hr />
@@ -210,7 +210,7 @@ class RelatorioSuspensaoAlimentacao extends Component {
                       <strong>Histórico de cancelamento</strong>
                       {suspensaoAlimentacao.suspensoes_alimentacao
                         .filter(
-                          (suspensao) => suspensao.cancelado_justificativa
+                          (suspensao) => suspensao.cancelado_justificativa,
                         )
                         .map((suspensao, key, array) => {
                           return (
