@@ -303,33 +303,41 @@ export const CadastroEmpresa = () => {
   const atualizarEmpresa = (uuid, dados, ehDistribuidor) => {
     const service = ehDistribuidor ? updateNaoTerceirizada : updateTerceirizada;
 
-    service(uuid, dados).then((response) => {
-      if (response.status === HTTP_STATUS.OK) {
-        toastSuccess("Empresa atualizada com sucesso!");
-        navigate("/configuracoes/cadastros/empresas-cadastradas");
-      } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
-        toastError(
-          `Erro ao atualizar cadastro de empresa: ${getError(response.data)}.`,
-        );
-      } else {
+    service(uuid, dados)
+      .then((response) => {
+        if (response?.status === HTTP_STATUS.OK) {
+          toastSuccess("Empresa atualizada com sucesso!");
+          navigate("/configuracoes/cadastros/empresas-cadastradas");
+        } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
+          toastError(
+            `Erro ao atualizar cadastro de empresa: ${getError(response.data)}`,
+          );
+        } else {
+          toastError(`Erro ao atualizar cadastro de empresa`);
+        }
+      })
+      .catch(() => {
         toastError(`Erro ao atualizar cadastro de empresa`);
-      }
-    });
+      });
   };
 
   const cadastrarEmpresa = (dados, ehDistribuidor) => {
     const service = ehDistribuidor ? createNaoTerceirizada : createTerceirizada;
 
-    service(dados).then((response) => {
-      if (response.status === HTTP_STATUS.CREATED) {
-        toastSuccess("Empresa cadastrada com sucesso!");
-        navigate("/configuracoes/cadastros/empresas-cadastradas");
-      } else if (response.status === HTTP_STATUS.BAD_REQUEST) {
-        toastError(`Erro ao cadastrar empresa: ${getError(response.data)}.`);
-      } else {
+    service(dados)
+      .then((response) => {
+        if (response?.status === HTTP_STATUS.CREATED) {
+          toastSuccess("Empresa cadastrada com sucesso!");
+          navigate("/configuracoes/cadastros/empresas-cadastradas");
+        } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
+          toastError(`Erro ao cadastrar empresa: ${getError(response.data)}`);
+        } else {
+          toastError(`Erro ao cadastrar empresa`);
+        }
+      })
+      .catch(() => {
         toastError(`Erro ao cadastrar empresa`);
-      }
-    });
+      });
   };
 
   const onSubmit = async (values) => {
