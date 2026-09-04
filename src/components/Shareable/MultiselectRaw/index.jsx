@@ -48,7 +48,7 @@ export const MultiselectRaw = (props) => {
     setOpcoesSelecionadas(
       optionsComTodos.filter((option) => selected.includes(option.value)),
     );
-  }, [selected]);
+  }, [selected, optionsComTodos]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
