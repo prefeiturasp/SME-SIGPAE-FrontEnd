@@ -69,6 +69,32 @@ jest.mock("src/components/Shareable/ModalGenerico", () => ({
   },
 }));
 
+jest.mock("../components/Filtros", () => ({
+  __esModule: true,
+  default: ({ aoFiltrar, aoLimpar }) => (
+    <div>
+      <button
+        type="button"
+        onClick={() =>
+          aoFiltrar({
+            titulo: " dieta ",
+            categoria: "96da837c-009f-41f2-ae46-d4a7fa52aa30",
+            perfil: "996c50ce-ea3c-450f-8af0-f19940de223e",
+          })
+        }
+      >
+        Aplicar filtros
+      </button>
+      <button type="button" onClick={() => aoFiltrar({ perfil: "todos" })}>
+        Filtrar todos os perfis
+      </button>
+      <button type="button" onClick={aoLimpar}>
+        Limpar filtros
+      </button>
+    </div>
+  ),
+}));
+
 jest.mock("../../components/TabelaDuvidasFrequentes", () => ({
   __esModule: true,
   default: ({ aoEditar, aoExcluir, duvidas }) => (
@@ -169,6 +195,90 @@ describe("ListagemDuvidasFrequentes", () => {
         page_size: 10,
       });
     });
+  });
+
+  it("aplica os filtros na listagem", async () => {
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+        titulo: "dieta",
+        categoria: UUID_CATEGORIA,
+        perfil: UUID_PERFIL,
+      });
+    });
+  });
+
+  it("envia o perfil todos ao selecionar todos", async () => {
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Filtrar todos os perfis" }),
+    );
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+        perfil: "todos",
+      });
+    });
+  });
+
+  it("limpa os filtros e volta a listar todas as dúvidas", async () => {
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+        titulo: "dieta",
+        categoria: UUID_CATEGORIA,
+        perfil: UUID_PERFIL,
+      });
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Limpar filtros" }));
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+      });
+    });
+
+    expect(screen.getByText("Como solicitar uma dieta?")).toBeInTheDocument();
+  });
+
+  it("informa quando o filtro não encontra resultados", async () => {
+    listarPerguntasFrequentes
+      .mockResolvedValueOnce(respostaPaginada)
+      .mockResolvedValueOnce({ data: [] });
+
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+
+    expect(
+      await screen.findByText(
+        "Nenhum resultado encontrado para o filtro selecionado.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("direciona para a edição da dúvida selecionada", async () => {
