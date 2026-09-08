@@ -18,6 +18,7 @@ import {
 import BotaoCadastrarDuvidasFrequentes from "../components/BotaoCadastroDuvidasFrequentes";
 import TabelaDuvidasFrequentes from "../components/TabelaDuvidasFrequentes";
 import { formatarDuvidasParaTabela } from "../components/TabelaDuvidasFrequentes/helpers";
+import Filtros from "./components/Filtros";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import "./style.scss";
 
@@ -108,6 +109,8 @@ const ListagemDuvidasFrequentes = () => {
   return (
     <>
       <div className="pagina-listagem-duvidas-frequentes">
+        <Filtros />
+
         <div className="acao-cadastro-duvida">
           <BotaoCadastrarDuvidasFrequentes />
         </div>
