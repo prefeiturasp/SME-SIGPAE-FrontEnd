@@ -427,4 +427,89 @@ describe("desabilitarField CEI/CEMEI", () => {
       expect(call(a)).toBe(false);
     });
   });
+
+  describe("Inclusão em sábado letivo no SGP - Integral EMEI da CEMEI", () => {
+    const ALIMENTACOES_ESPECIAIS = [
+      "2_refeicao_1_oferta",
+      "repeticao_2_refeicao",
+      "2_sobremesa_1_oferta",
+      "repeticao_2_sobremesa",
+    ];
+
+    const argsSabadoIntegral = ({
+      alimentacoesInclusao,
+      comPermissionamento = true,
+    }) => {
+      const a = baseArgs();
+      a.dia = "29";
+      a.ehEmeiDaCemeiLocation = true;
+      a.mesAnoConsiderado = new Date(2026, 7, 1);
+      a.mesAnoDefault = new Date(2026, 8, 4);
+      a.validacaoDiaLetivo = jest.fn(() => true);
+      a.validacaoSemana = jest.fn(() => false);
+      a.inclusoesAutorizadas = [
+        { dia: "29", alimentacoes: alimentacoesInclusao },
+      ];
+      a.alimentacoesLancamentosEspeciais = ALIMENTACOES_ESPECIAIS;
+      a.permissoesLancamentosEspeciaisPorDia = comPermissionamento
+        ? [{ dia: "29", alimentacoes: ALIMENTACOES_ESPECIAIS }]
+        : [{ dia: "29", alimentacoes: [] }];
+      a.values = {
+        matriculados__dia_29__categoria_1: "20",
+        lanche__dia_29__categoria_1: "",
+        refeicao__dia_29__categoria_1: "",
+        sobremesa__dia_29__categoria_1: "",
+        "2_refeicao_1_oferta__dia_29__categoria_1": "",
+        repeticao_2_refeicao__dia_29__categoria_1: "",
+        "2_sobremesa_1_oferta__dia_29__categoria_1": "",
+        repeticao_2_sobremesa__dia_29__categoria_1: "",
+      };
+      return a;
+    };
+
+    const expectCampo = (a, rowName, habilitado) => {
+      a.rowName = rowName;
+      expect(call(a)).toBe(!habilitado);
+    };
+
+    it("inclusão somente com Lanche não libera refeição, sobremesa nem permissionamentos especiais", () => {
+      const a = argsSabadoIntegral({ alimentacoesInclusao: "lanche" });
+
+      expectCampo(a, "lanche", true);
+      expectCampo(a, "refeicao", false);
+      expectCampo(a, "sobremesa", false);
+      expectCampo(a, "2_refeicao_1_oferta", false);
+      expectCampo(a, "repeticao_2_refeicao", false);
+      expectCampo(a, "2_sobremesa_1_oferta", false);
+      expectCampo(a, "repeticao_2_sobremesa", false);
+    });
+
+    it("inclusão com Refeição e Sobremesa libera esses tipos e os permissionamentos especiais correspondentes", () => {
+      const a = argsSabadoIntegral({
+        alimentacoesInclusao: "refeicao, sobremesa",
+      });
+
+      expectCampo(a, "refeicao", true);
+      expectCampo(a, "sobremesa", true);
+      expectCampo(a, "2_refeicao_1_oferta", true);
+      expectCampo(a, "repeticao_2_refeicao", true);
+      expectCampo(a, "2_sobremesa_1_oferta", true);
+      expectCampo(a, "repeticao_2_sobremesa", true);
+      expectCampo(a, "lanche", false);
+    });
+
+    it("inclusão com Refeição e Sobremesa sem permissionamento especial não libera os campos adicionais", () => {
+      const a = argsSabadoIntegral({
+        alimentacoesInclusao: "refeicao, sobremesa",
+        comPermissionamento: false,
+      });
+
+      expectCampo(a, "refeicao", true);
+      expectCampo(a, "sobremesa", true);
+      expectCampo(a, "2_refeicao_1_oferta", false);
+      expectCampo(a, "repeticao_2_refeicao", false);
+      expectCampo(a, "2_sobremesa_1_oferta", false);
+      expectCampo(a, "repeticao_2_sobremesa", false);
+    });
+  });
 });

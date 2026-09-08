@@ -20,6 +20,11 @@ import {
 import { getPermissoesLancamentosEspeciaisMesAnoPorPeriodo } from "src/services/medicaoInicial/permissaoLancamentosEspeciais.service";
 import { ALUNOS_EMEBS, FUNDAMENTAL_EMEBS, INFANTIL_EMEBS } from "../constants";
 import { verificarMesAnteriorOuPosterior } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/validacoes";
+import {
+  getTiposAlimentacaoDaInclusaoNoDia,
+  inclusaoDeFimDeSemanaRestringeAlimentacoes,
+  lancamentoEspecialCompativelComInclusao,
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/regrasInclusaoLancamentosEspeciais";
 
 export const formatarPayloadPeriodoLancamento = (
   values,
@@ -690,12 +695,33 @@ export const desabilitarField = (
     permissoesLancamentosEspeciaisPorDia &&
     alimentacoesLancamentosEspeciais.includes(rowName)
   ) {
+    const temInclusaoNoDia = (inclusoesAutorizadas || []).some(
+      (inc) => Number(inc.dia) === Number(dia),
+    );
+    const restringePorInclusaoDeFimDeSemana =
+      inclusaoDeFimDeSemanaRestringeAlimentacoes(
+        dia,
+        mesAnoConsiderado,
+        feriadosNoMes,
+        inclusoesAutorizadas,
+      );
+    const especialCompativelComInclusao =
+      lancamentoEspecialCompativelComInclusao(
+        rowName,
+        inclusoesAutorizadas,
+        dia,
+      );
+    const diaLetivoLiberaEspecial =
+      validacaoDiaLetivo(dia) &&
+      (!restringePorInclusaoDeFimDeSemana || especialCompativelComInclusao);
+    const inclusaoLiberaEspecial =
+      !validacaoDiaLetivo(dia) &&
+      temInclusaoNoDia &&
+      especialCompativelComInclusao;
+
     if (
-      ((alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
-        validacaoDiaLetivo(dia)) ||
-        (alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
-          !validacaoDiaLetivo(dia) &&
-          inclusoesAutorizadas.filter((inc) => inc.dia === dia).length)) &&
+      alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
+      (diaLetivoLiberaEspecial || inclusaoLiberaEspecial) &&
       !["Mês anterior", "Mês posterior"].includes(
         values[`${rowName}__dia_${dia}__categoria_${categoria}`],
       ) &&
@@ -776,8 +802,24 @@ export const desabilitarField = (
   ) {
     return false;
   } else {
+    const restringePorInclusaoDeFimDeSemana =
+      inclusaoDeFimDeSemanaRestringeAlimentacoes(
+        dia,
+        mesAnoConsiderado,
+        feriadosNoMes,
+        inclusoesAutorizadas,
+      );
+    const tiposInclusao = getTiposAlimentacaoDaInclusaoNoDia(
+      inclusoesAutorizadas,
+      dia,
+    );
+    const alimentacaoNaoSelecionadaNaInclusao =
+      restringePorInclusaoDeFimDeSemana &&
+      !["frequencia", "observacoes"].includes(rowName) &&
+      !tiposInclusao.includes(rowName);
     return (
       !validacaoDiaLetivo(dia) ||
+      alimentacaoNaoSelecionadaNaInclusao ||
       validacaoSemana(dia) ||
       rowName === "matriculados" ||
       rowName === "numero_de_alunos" ||
