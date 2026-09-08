@@ -53,3 +53,7 @@ export const atualizarCategoriaFaq = async (uuid, dados) => {
 export const excluirCategoriaFaq = async (uuid) => {
   return axios.delete(`/${ENDPOINT.CATEGORIA_PERGUNTAS_FREQUENTES}/${uuid}/`);
 };
+
+export const excluirPerguntaFrequente = async (uuid) => {
+  return axios.delete(`/${ENDPOINT.PERGUNTAS_FREQUENTES}/${uuid}/`);
+};
