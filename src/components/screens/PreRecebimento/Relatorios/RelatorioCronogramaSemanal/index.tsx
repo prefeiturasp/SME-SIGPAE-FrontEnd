@@ -32,8 +32,8 @@ export default () => {
     try {
       const response = await getListagemRelatorioCronogramasSemanais(params);
       setAtivos([]);
-      setCronogramasSemanais(response.data.results);
-      setTotalResultados(response.data.count);
+      setCronogramasSemanais(response.data?.results || []);
+      setTotalResultados(response.data?.count || 0);
       setConsultaRealizada(true);
     } catch (error) {
       toastError(getMensagemDeErro(error.response?.status));
