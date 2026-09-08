@@ -669,4 +669,132 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
       expect(callDesabilitarField(args)).toBe(true);
     });
   });
+
+  describe("Inclusão em sábado letivo no SGP - Integral", () => {
+    const ALIMENTACOES_ESPECIAIS = [
+      "2_refeicao_1_oferta",
+      "repeticao_2_refeicao",
+      "2_sobremesa_1_oferta",
+      "repeticao_2_sobremesa",
+    ];
+
+    const argsSabadoIntegral = ({
+      alimentacoesInclusao,
+      comPermissionamento = true,
+    }) => {
+      const args = baseArgs();
+      args.dia = 5;
+      args.mesAnoConsiderado = new Date(2025, 3, 1);
+      args.mesAnoDefault = new Date(2025, 4, 1);
+      args.location = {
+        state: {
+          status_periodo: "MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE",
+          ehPeriodoEspecifico: false,
+        },
+      };
+      args.ehPeriodoEscolarSimples = true;
+      args.validacaoDiaLetivo = jest.fn(() => true);
+      args.validacaoSemana = jest.fn(() => false);
+      args.inclusoesAutorizadas = [
+        { dia: 5, alimentacoes: alimentacoesInclusao },
+      ];
+      args.alimentacoesLancamentosEspeciais = [...ALIMENTACOES_ESPECIAIS];
+      args.permissoesLancamentosEspeciaisPorDia = comPermissionamento
+        ? [{ dia: 5, alimentacoes: [...ALIMENTACOES_ESPECIAIS] }]
+        : [{ dia: 5, alimentacoes: [] }];
+      args.values = {
+        ...mockValues,
+        matriculados__dia_5__categoria_1: "20",
+        lanche__dia_5__categoria_1: "0",
+        refeicao__dia_5__categoria_1: "0",
+        sobremesa__dia_5__categoria_1: "0",
+        "2_refeicao_1_oferta__dia_5__categoria_1": "0",
+        repeticao_2_refeicao__dia_5__categoria_1: "0",
+        "2_sobremesa_1_oferta__dia_5__categoria_1": "0",
+        repeticao_2_sobremesa__dia_5__categoria_1: "0",
+      };
+      args.dadosValoresInclusoesAutorizadasState = Object.fromEntries(
+        alimentacoesInclusao
+          .split(", ")
+          .map((tipo) => [`${tipo}__dia_5__categoria_1`, "10"]),
+      );
+      return args;
+    };
+
+    const expectCampo = (args, rowName, habilitado) => {
+      args.rowName = rowName;
+      expect(callDesabilitarField(args)).toBe(!habilitado);
+    };
+
+    it("inclusão somente com Lanche não libera refeição, sobremesa nem permissionamentos especiais", () => {
+      const args = argsSabadoIntegral({ alimentacoesInclusao: "lanche" });
+
+      expectCampo(args, "lanche", true);
+      expectCampo(args, "refeicao", false);
+      expectCampo(args, "sobremesa", false);
+      expectCampo(args, "2_refeicao_1_oferta", false);
+      expectCampo(args, "repeticao_2_refeicao", false);
+      expectCampo(args, "2_sobremesa_1_oferta", false);
+      expectCampo(args, "repeticao_2_sobremesa", false);
+    });
+
+    it("inclusão com Refeição e Sobremesa libera esses tipos e os permissionamentos especiais correspondentes", () => {
+      const args = argsSabadoIntegral({
+        alimentacoesInclusao: "refeicao, sobremesa",
+      });
+
+      expectCampo(args, "refeicao", true);
+      expectCampo(args, "sobremesa", true);
+      expectCampo(args, "2_refeicao_1_oferta", true);
+      expectCampo(args, "repeticao_2_refeicao", true);
+      expectCampo(args, "2_sobremesa_1_oferta", true);
+      expectCampo(args, "repeticao_2_sobremesa", true);
+      expectCampo(args, "lanche", false);
+    });
+
+    it("inclusão com Refeição e Sobremesa sem permissionamento especial não libera os campos adicionais", () => {
+      const args = argsSabadoIntegral({
+        alimentacoesInclusao: "refeicao, sobremesa",
+        comPermissionamento: false,
+      });
+
+      expectCampo(args, "refeicao", true);
+      expectCampo(args, "sobremesa", true);
+      expectCampo(args, "2_refeicao_1_oferta", false);
+      expectCampo(args, "repeticao_2_refeicao", false);
+      expectCampo(args, "2_sobremesa_1_oferta", false);
+      expectCampo(args, "repeticao_2_sobremesa", false);
+    });
+
+    it("sábado letivo no SGP sem inclusão continua liberando permissionamento especial", () => {
+      const args = argsSabadoIntegral({ alimentacoesInclusao: "lanche" });
+      args.inclusoesAutorizadas = [];
+      args.dadosValoresInclusoesAutorizadasState = {};
+
+      expectCampo(args, "2_refeicao_1_oferta", true);
+      expectCampo(args, "repeticao_2_refeicao", true);
+      expectCampo(args, "2_sobremesa_1_oferta", true);
+      expectCampo(args, "repeticao_2_sobremesa", true);
+    });
+
+    it("dia útil com inclusão somente de Lanche não restringe permissionamento especial", () => {
+      const args = argsSabadoIntegral({ alimentacoesInclusao: "lanche" });
+      args.dia = 7;
+      args.mesAnoConsiderado = new Date(2025, 3, 1);
+      args.inclusoesAutorizadas = [{ dia: 7, alimentacoes: "lanche" }];
+      args.permissoesLancamentosEspeciaisPorDia = [
+        { dia: 7, alimentacoes: ALIMENTACOES_ESPECIAIS },
+      ];
+      args.dadosValoresInclusoesAutorizadasState = {
+        lanche__dia_7__categoria_1: "10",
+      };
+      args.values = {
+        ...mockValues,
+        matriculados__dia_7__categoria_1: "20",
+        "2_refeicao_1_oferta__dia_7__categoria_1": "0",
+      };
+
+      expectCampo(args, "2_refeicao_1_oferta", true);
+    });
+  });
 });
