@@ -15,6 +15,10 @@ import {
   getSolicitacoesKitLanchesAutorizadasEscola,
   getSolicitacoesSuspensoesAutorizadasEscola,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
+import {
+  inclusaoDeFimDeSemanaRestringeAlimentacoes,
+  lancamentoEspecialCompativelComInclusao,
+} from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/regrasInclusaoLancamentosEspeciais";
 
 export const formatarPayloadPeriodoLancamentoCeiCemei = (
   values,
@@ -467,6 +471,17 @@ export const desabilitarField = (
           return false;
         }
       }
+      if (
+        inclusaoDeFimDeSemanaRestringeAlimentacoes(
+          dia,
+          mesAnoConsiderado,
+          feriadosNoMes,
+          inclusoesAutorizadas,
+        ) &&
+        !alimentacoesLancamentosEspeciais?.includes(rowName)
+      ) {
+        return true;
+      }
     }
   }
 
@@ -538,12 +553,33 @@ export const desabilitarField = (
     permissoesLancamentosEspeciaisPorDia &&
     alimentacoesLancamentosEspeciais.includes(rowName)
   ) {
+    const temInclusaoNoDia = (inclusoesAutorizadas || []).some(
+      (inc) => Number(inc.dia) === Number(dia),
+    );
+    const restringePorInclusaoDeFimDeSemana =
+      inclusaoDeFimDeSemanaRestringeAlimentacoes(
+        dia,
+        mesAnoConsiderado,
+        feriadosNoMes,
+        inclusoesAutorizadas,
+      );
+    const especialCompativelComInclusao =
+      lancamentoEspecialCompativelComInclusao(
+        rowName,
+        inclusoesAutorizadas,
+        dia,
+      );
+    const diaLetivoLiberaEspecial =
+      validacaoDiaLetivo(dia) &&
+      (!restringePorInclusaoDeFimDeSemana || especialCompativelComInclusao);
+    const inclusaoLiberaEspecial =
+      !validacaoDiaLetivo(dia) &&
+      temInclusaoNoDia &&
+      especialCompativelComInclusao;
+
     if (
-      ((alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
-        validacaoDiaLetivo(dia)) ||
-        (alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
-          !validacaoDiaLetivo(dia) &&
-          inclusoesAutorizadas.filter((inc) => inc.dia === dia).length)) &&
+      alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
+      (diaLetivoLiberaEspecial || inclusaoLiberaEspecial) &&
       !["Mês anterior", "Mês posterior"].includes(
         values[`${rowName}__dia_${dia}__categoria_${categoria}`],
       )
