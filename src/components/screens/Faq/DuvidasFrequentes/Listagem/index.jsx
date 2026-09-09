@@ -120,8 +120,10 @@ const ListagemDuvidasFrequentes = () => {
       novosFiltros.categoria = valores.categoria;
     }
 
-    if (valores.perfil && valores.perfil !== "0") {
+    if (valores.perfil === "todos") {
       novosFiltros.perfil = valores.perfil;
+    } else if (valores.perfil?.length) {
+      novosFiltros.perfil = valores.perfil.join(",");
     }
 
     setPaginaAtual(1);

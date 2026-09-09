@@ -12,4 +12,11 @@
     margin-left: 10.5rem;
     row-gap: 1rem;
   }
+
+  .filtro-perfis-acesso {
+    .dropdown-heading-value span,
+    .select-item .item-renderer span {
+      font-weight: 400;
+    }
+  }
 }

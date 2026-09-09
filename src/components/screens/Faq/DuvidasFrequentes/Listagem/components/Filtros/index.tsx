@@ -1,6 +1,7 @@
 import React from "react";
 import { Field } from "react-final-form";
 import CollapseFiltros from "src/components/Shareable/CollapseFiltros";
+import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 import { InputText } from "src/components/Shareable/Input/InputText";
 import SelectSelecione from "src/components/Shareable/SelectSelecione";
 import { useOpcoesCadastroDuvida } from "src/components/screens/Faq/DuvidasFrequentes/hooks/useOpcoesCadastroDuvida";
@@ -11,11 +12,6 @@ import {
 } from "./interfaces";
 import "./style.scss";
 
-const OPCAO_TODOS_OS_PERFIS: OpcaoFiltro = {
-  nome: "Todos",
-  uuid: "todos",
-};
-
 const Filtros = ({ aoFiltrar, aoLimpar }: FiltrosDuvidasFrequentesProps) => {
   const {
     categorias,
@@ -25,16 +21,17 @@ const Filtros = ({ aoFiltrar, aoLimpar }: FiltrosDuvidasFrequentesProps) => {
   } = useOpcoesCadastroDuvida();
 
   const opcoesCategorias: OpcaoFiltro[] = categorias;
-  const opcoesPerfis: OpcaoFiltro[] = [
-    OPCAO_TODOS_OS_PERFIS,
-    ...opcoesPerfisAcesso.map((perfil) => ({
-      nome: perfil.label,
-      uuid: perfil.value,
-    })),
-  ];
 
   const filtrar = (valores: ValoresFiltrosDuvidasFrequentes) => {
-    aoFiltrar?.(valores);
+    const todosOsPerfisSelecionados =
+      opcoesPerfisAcesso.length > 0 &&
+      Array.isArray(valores.perfil) &&
+      valores.perfil.length === opcoesPerfisAcesso.length;
+
+    aoFiltrar?.({
+      ...valores,
+      perfil: todosOsPerfisSelecionados ? "todos" : valores.perfil,
+    });
   };
 
   const limpar = () => {
@@ -70,12 +67,13 @@ const Filtros = ({ aoFiltrar, aoLimpar }: FiltrosDuvidasFrequentesProps) => {
               />
             </div>
 
-            <div className="col-12 col-md-4">
+            <div className="col-12 col-md-4 filtro-perfis-acesso">
               <Field
-                component={SelectSelecione}
+                component={MultiSelect}
                 label="Filtrar por Perfis de Acesso"
                 name="perfil"
-                options={opcoesPerfis}
+                options={opcoesPerfisAcesso}
+                nomeDoItemNoPlural="perfis de acesso"
                 placeholder="Selecione os perfis de acesso"
                 disabled={carregandoPerfis}
               />

@@ -5,7 +5,7 @@ export interface OpcaoFiltro {
 
 export interface ValoresFiltrosDuvidasFrequentes {
   categoria?: string;
-  perfil?: string;
+  perfil?: string[] | "todos";
   titulo?: string;
 }
 

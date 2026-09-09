@@ -79,7 +79,10 @@ jest.mock("../components/Filtros", () => ({
           aoFiltrar({
             titulo: " dieta ",
             categoria: "96da837c-009f-41f2-ae46-d4a7fa52aa30",
-            perfil: "996c50ce-ea3c-450f-8af0-f19940de223e",
+            perfil: [
+              "996c50ce-ea3c-450f-8af0-f19940de223e",
+              "5fa61f05-e894-44f3-a98b-18cc8e718386",
+            ],
           })
         }
       >
@@ -120,6 +123,7 @@ const UUID_DUVIDA = "22b0d5e4-50f1-46cc-9cee-5fa30b7d7f57";
 const UUID_DUVIDA_ULTIMA_PAGINA = "56fd6872-eccb-45b0-959b-c73bba8d429e";
 const UUID_CATEGORIA = "96da837c-009f-41f2-ae46-d4a7fa52aa30";
 const UUID_PERFIL = "996c50ce-ea3c-450f-8af0-f19940de223e";
+const UUID_SEGUNDO_PERFIL = "5fa61f05-e894-44f3-a98b-18cc8e718386";
 
 const respostaPaginada = {
   data: {
@@ -197,7 +201,7 @@ describe("ListagemDuvidasFrequentes", () => {
     });
   });
 
-  it("aplica os filtros na listagem", async () => {
+  it("aplica os filtros com múltiplos perfis na listagem", async () => {
     render(<ListagemDuvidasFrequentes />);
 
     await screen.findByText("Como solicitar uma dieta?");
@@ -210,12 +214,12 @@ describe("ListagemDuvidasFrequentes", () => {
         page_size: 10,
         titulo: "dieta",
         categoria: UUID_CATEGORIA,
-        perfil: UUID_PERFIL,
+        perfil: `${UUID_PERFIL},${UUID_SEGUNDO_PERFIL}`,
       });
     });
   });
 
-  it("envia o perfil todos ao selecionar todos", async () => {
+  it("envia todos quando todos os perfis estão selecionados", async () => {
     render(<ListagemDuvidasFrequentes />);
 
     await screen.findByText("Como solicitar uma dieta?");
@@ -247,7 +251,7 @@ describe("ListagemDuvidasFrequentes", () => {
         page_size: 10,
         titulo: "dieta",
         categoria: UUID_CATEGORIA,
-        perfil: UUID_PERFIL,
+        perfil: `${UUID_PERFIL},${UUID_SEGUNDO_PERFIL}`,
       });
     });
 
