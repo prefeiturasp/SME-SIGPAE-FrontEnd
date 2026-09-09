@@ -19,7 +19,9 @@ export class AnexosProdutoField extends Component {
     } else {
       let pdfWindow = window.open("");
       pdfWindow.document.write(
-        "<iframe width='100%' height='100%' src='" + file.base64 + "'></iframe>"
+        "<iframe width='100%' height='100%' src='" +
+          file.base64 +
+          "'></iframe>",
       );
     }
   }
@@ -44,7 +46,7 @@ export class AnexosProdutoField extends Component {
       const extensao = file.name.split(".")[file.name.split(".").length - 1];
       if (
         !["doc", "docx", "png", "pdf", "jpg", "jpeg"].includes(
-          extensao.toLowerCase()
+          extensao.toLowerCase(),
         )
       ) {
         toastError(`Extensão do arquivo não suportada: ${extensao}`);
@@ -67,12 +69,12 @@ export class AnexosProdutoField extends Component {
           .then(() => {
             if (filesBase64.length === QUANTIDADE_ARQUIVOS) {
               toastSuccess(
-                toastSuccessMessage || "Protocolo incluso com sucesso"
+                toastSuccessMessage || "Protocolo incluso com sucesso",
               );
               onChange(
                 !concatenarNovosArquivos || value === ""
                   ? filesBase64
-                  : value.concat(filesBase64)
+                  : value.concat(filesBase64),
               );
             }
           });
@@ -116,7 +118,18 @@ export class AnexosProdutoField extends Component {
           {files.map((file, key) => {
             return (
               <div key={key} className="px-1 arquivos-anexados mt-1">
-                <span onClick={() => this.openFile(file)}>
+                <span
+                  onClick={() => this.openFile(file)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      this.openFile(file);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Abrir anexo ${file.nome}`}
+                >
                   <i className="fas fa-paperclip" />
                 </span>
                 <a
@@ -132,6 +145,15 @@ export class AnexosProdutoField extends Component {
                   <span
                     className="float-end"
                     onClick={() => this.deleteFile(key)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        this.deleteFile(key);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Remover anexo ${file.nome}`}
                   >
                     <i className="fas fa-trash-alt" />
                   </span>

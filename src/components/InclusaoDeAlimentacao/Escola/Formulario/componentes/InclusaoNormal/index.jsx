@@ -219,6 +219,26 @@ export const PeriodosInclusaoNormal = ({
         );
   };
 
+  const togglePeriodoChecked = async (name, indice) => {
+    await form.change(
+      `${name}.checked`,
+      !values.quantidades_periodo[indice][`checked`],
+    );
+    await form.change(
+      `${name}.multiselect`,
+      !values.quantidades_periodo[indice][`checked`]
+        ? "multiselect-wrapper-enabled"
+        : "multiselect-wrapper-disabled",
+    );
+  };
+
+  const onPeriodoCheckboxKeyDown = (event, name, indice) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      togglePeriodoChecked(name, indice);
+    }
+  };
+
   return (
     <>
       <div className="row table-titles ps-3">
@@ -243,18 +263,15 @@ export const PeriodosInclusaoNormal = ({
                         name={`${name}.checked`}
                       />
                       <span
-                        onClick={async () => {
-                          await form.change(
-                            `${name}.checked`,
-                            !values.quantidades_periodo[indice][`checked`],
-                          );
-                          await form.change(
-                            `${name}.multiselect`,
-                            !values.quantidades_periodo[indice][`checked`]
-                              ? "multiselect-wrapper-enabled"
-                              : "multiselect-wrapper-disabled",
-                          );
-                        }}
+                        onClick={() => togglePeriodoChecked(name, indice)}
+                        onKeyDown={(event) =>
+                          onPeriodoCheckboxKeyDown(event, name, indice)
+                        }
+                        role="checkbox"
+                        tabIndex={0}
+                        aria-checked={Boolean(
+                          values.quantidades_periodo[indice][`checked`],
+                        )}
                         className="checkbox-custom"
                         data-cy={`checkbox-${getPeriodo(indice).nome}`}
                       />{" "}

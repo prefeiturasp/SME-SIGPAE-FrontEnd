@@ -5,6 +5,7 @@ import FiltrosExcel from "../FiltrosRelatorios";
 
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import TooltipIcone from "src/components/Shareable/TooltipIcone";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 const ListagemSolicitacoes = ({
   solicitacoes,
@@ -69,6 +70,13 @@ const ListagemSolicitacoes = ({
                 : "";
             const icone =
               ativos && ativos.includes(solicitacao.uuid) ? "minus" : "plus";
+            const alternarExpansao = () => {
+              ativos && ativos.includes(solicitacao.uuid)
+                ? setAtivos(ativos.filter((el) => el !== solicitacao.uuid))
+                : setAtivos(
+                    ativos ? [...ativos, solicitacao.uuid] : [solicitacao.uuid],
+                  );
+            };
             return (
               <>
                 <div className="grid-table body-table">
@@ -113,17 +121,16 @@ const ListagemSolicitacoes = ({
                   <div>
                     <i
                       className={`fas fa-${icone} expand`}
-                      onClick={() => {
-                        ativos && ativos.includes(solicitacao.uuid)
-                          ? setAtivos(
-                              ativos.filter((el) => el !== solicitacao.uuid)
-                            )
-                          : setAtivos(
-                              ativos
-                                ? [...ativos, solicitacao.uuid]
-                                : [solicitacao.uuid]
-                            );
-                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={Boolean(
+                        ativos && ativos.includes(solicitacao.uuid),
+                      )}
+                      aria-label={`Detalhes da solicitação ${solicitacao.numero_solicitacao}`}
+                      onClick={alternarExpansao}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, alternarExpansao)
+                      }
                     />
                   </div>
                 </div>
