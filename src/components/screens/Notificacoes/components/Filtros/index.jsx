@@ -45,24 +45,33 @@ export default ({ filtros, setFiltros }) => {
         className="btn-group btn-group-toggle container-btn-broup-categorias mt-3"
         data-toggle="buttons"
       >
-        <label
-          onClick={() => handleClickBtnCategorias("todos")}
-          className="btn btn-outline-light active"
-        >
-          <input type="radio" name="options" id="todas" defaultChecked={true} />{" "}
+        <label className="btn btn-outline-light active">
+          <input
+            type="radio"
+            name="options"
+            id="todas"
+            defaultChecked={true}
+            onClick={() => handleClickBtnCategorias("todos")}
+          />{" "}
           Todas
         </label>
-        <label
-          onClick={() => handleClickBtnCategorias("nao_lidas")}
-          className="btn btn-outline-light"
-        >
-          <input type="radio" name="options" id="nao_lidas" /> Não Lidas
+        <label className="btn btn-outline-light">
+          <input
+            type="radio"
+            name="options"
+            id="nao_lidas"
+            onClick={() => handleClickBtnCategorias("nao_lidas")}
+          />{" "}
+          Não Lidas
         </label>
-        <label
-          onClick={() => handleClickBtnCategorias("lidas")}
-          className="btn btn-outline-light"
-        >
-          <input type="radio" name="options" id="lidas" /> Lidas
+        <label className="btn btn-outline-light">
+          <input
+            type="radio"
+            name="options"
+            id="lidas"
+            onClick={() => handleClickBtnCategorias("lidas")}
+          />{" "}
+          Lidas
         </label>
       </div>
       <Form

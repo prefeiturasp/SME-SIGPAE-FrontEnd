@@ -12,6 +12,7 @@ import {
   required,
 } from "src/helpers/fieldValidators";
 import {
+  acionaComEnterOuEspaco,
   deepCopy,
   escolaEhCEMEI,
   fimDoCalendario,
@@ -756,7 +757,15 @@ class FoodSuspensionEditor extends Component {
                                 name="check"
                               />
                               <span
+                                role="checkbox"
+                                tabIndex={0}
+                                aria-checked={Boolean(period.checked)}
                                 onClick={() => this.onCheckInput(key)}
+                                onKeyDown={(e) =>
+                                  acionaComEnterOuEspaco(e, () =>
+                                    this.onCheckInput(key),
+                                  )
+                                }
                                 className="checkbox-custom"
                               />{" "}
                               {period.nome}

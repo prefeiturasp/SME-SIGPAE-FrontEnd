@@ -1,5 +1,8 @@
 import React, { Component } from "react";
-import { stringSeparadaPorVirgulas } from "../../helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  stringSeparadaPorVirgulas,
+} from "../../helpers/utilities";
 
 export class Rascunhos extends Component {
   render() {
@@ -12,7 +15,7 @@ export class Rascunhos extends Component {
       (suspensaoDeAlimentacao, key) => {
         suspensaoDeAlimentacao.suspensoes_alimentacao.forEach((value) => {
           const idx = suspensaoDeAlimentacao.suspensoes_alimentacao.findIndex(
-            (value2) => value2.data === value.data
+            (value2) => value2.data === value.data,
           );
           suspensaoDeAlimentacao.suspensoes_alimentacao[idx][`data${idx}`] =
             suspensaoDeAlimentacao.suspensoes_alimentacao[idx][`data`];
@@ -36,14 +39,34 @@ export class Rascunhos extends Component {
             </div>
             <div className="icon-draft-card float-end">
               Criado em: {suspensaoDeAlimentacao.criado_em}
-              <span onClick={() => OnDeleteButtonClicked(id_externo, uuid)}>
+              <span
+                role="button"
+                tabIndex={0}
+                aria-label="Excluir rascunho"
+                onClick={() => OnDeleteButtonClicked(id_externo, uuid)}
+                onKeyDown={(e) =>
+                  acionaComEnterOuEspaco(e, () =>
+                    OnDeleteButtonClicked(id_externo, uuid),
+                  )
+                }
+              >
                 <i className="fas fa-trash" />
               </span>
               <span
+                role="button"
+                tabIndex={0}
+                aria-label="Editar rascunho"
                 onClick={() =>
                   OnEditButtonClicked({
                     suspensaoDeAlimentacao,
                   })
+                }
+                onKeyDown={(e) =>
+                  acionaComEnterOuEspaco(e, () =>
+                    OnEditButtonClicked({
+                      suspensaoDeAlimentacao,
+                    }),
+                  )
                 }
               >
                 <i className="fas fa-edit" />
@@ -53,13 +76,13 @@ export class Rascunhos extends Component {
               <p>
                 {`Data(s): ${stringSeparadaPorVirgulas(
                   suspensaoDeAlimentacao.suspensoes_alimentacao,
-                  "data"
+                  "data",
                 )}`}
               </p>
             </div>
           </div>
         );
-      }
+      },
     );
     return <div>{allDaysInfo}</div>;
   }

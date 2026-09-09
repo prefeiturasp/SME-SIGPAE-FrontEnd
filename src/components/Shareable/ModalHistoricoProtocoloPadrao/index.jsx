@@ -148,6 +148,15 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
                       onClick={() => {
                         this.itemLogAtivo(index, ativo);
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          this.itemLogAtivo(index, ativo);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={Boolean(ativo)}
                     >
                       <div className="usuario">
                         <div>{iniciais}</div>

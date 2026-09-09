@@ -22,15 +22,31 @@ export const Rascunhos = ({ ...props }) => {
               Criado em: {inversaoDeDiaDeCardapio.criado_em}
               <span
                 data-testid="botao-remover-rascunho"
+                role="button"
+                tabIndex={0}
                 onClick={() => removerRascunho(id_externo, uuid, form)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    removerRascunho(id_externo, uuid, form);
+                  }
+                }}
               >
-                <i className="fas fa-trash" />
+                <i className="fas fa-trash" aria-hidden="true" />
               </span>
               <span
                 data-testid="botao-carregar-rascunho"
+                role="button"
+                tabIndex={0}
                 onClick={() => carregarRascunho(inversaoDeDiaDeCardapio, form)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    carregarRascunho(inversaoDeDiaDeCardapio, form);
+                  }
+                }}
               >
-                <i className="fas fa-edit" />
+                <i className="fas fa-edit" aria-hidden="true" />
               </span>
             </div>
             <div className="ms-3">

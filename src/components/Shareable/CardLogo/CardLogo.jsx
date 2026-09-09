@@ -6,6 +6,14 @@ export const CardLogo = (props) => {
   return (
     <div
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.(e);
+        }
+      }}
+      role="button"
+      tabIndex={0}
       className={`card card-logo ${disabled ? "disabled" : ""}`}
       data-testid={testId || `card-logo-${titulo}`}
     >

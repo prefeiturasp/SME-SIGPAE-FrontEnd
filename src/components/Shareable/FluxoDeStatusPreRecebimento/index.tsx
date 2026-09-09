@@ -106,6 +106,15 @@ export const FluxoDeStatusPreRecebimento = ({
         <i
           className="fas fa-chevron-left seta-esquerda"
           onClick={() => rolar(-300)}
+          onKeyDown={(e: KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              rolar(-300);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Visualizar status anteriores"
         />
       )}
       <div className="fluxo-scroll-container" ref={listaRef}>
@@ -122,6 +131,15 @@ export const FluxoDeStatusPreRecebimento = ({
         <i
           className="fas fa-chevron-right seta-direita"
           onClick={() => rolar(300)}
+          onKeyDown={(e: KeyboardEvent) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              rolar(300);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Visualizar próximos status"
         />
       )}
     </div>

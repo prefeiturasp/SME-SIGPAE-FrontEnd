@@ -132,6 +132,15 @@ export const FluxoDeStatus = (props) => {
         <i
           className="fas fa-chevron-left seta-esquerda"
           onClick={() => scroll(-300)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              scroll(-300);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Visualizar status anteriores"
         />
       )}
 
@@ -206,6 +215,15 @@ export const FluxoDeStatus = (props) => {
         <i
           className="fas fa-chevron-right seta-direita"
           onClick={() => scroll(300)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              scroll(300);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Visualizar próximos status"
         />
       )}
 
