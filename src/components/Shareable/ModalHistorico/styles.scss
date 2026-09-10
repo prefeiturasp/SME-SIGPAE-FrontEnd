@@ -23,17 +23,16 @@
   margin-right: 10px;
   width: max-content;
 }
-
-.download-documento-entrega {
-  color: $green;
-  font-weight: 700;
-  font-size: 14px;
-  cursor: pointer;
-  margin-right: 10px;
-  width: max-content;
-  margin-left: -75px !important;
+.footer-historico{
+  .download-documento-entrega {
+    color: $green;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 10px;
+    width: max-content;
+  }
 }
-
 .preenchimento {
   min-height: 14.5vh;
 }

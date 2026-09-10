@@ -44,16 +44,16 @@ export default ({ servidores }) => {
 
     let payload = gerarParametrosConsulta({ page, ...filtros });
     let data;
-    if (filtros.modelo === "SERVIDOR") {
+    if (filtros?.modelo === "SERVIDOR") {
       data = await getPlanilhasServidor(payload);
-    } else if (filtros.modelo === "NAO_SERVIDOR") {
+    } else if (filtros?.modelo === "NAO_SERVIDOR") {
       data = await getPlanilhasNaoServidor(payload);
-    } else if (filtros.modelo === "UE_PARCEIRA") {
+    } else if (filtros?.modelo === "UE_PARCEIRA") {
       data = await getPlanilhasUEParceira(payload);
     }
 
-    setPlanilhas(data.results);
-    setTotalPlanilhas(data.count);
+    setPlanilhas(data?.results || []);
+    setTotalPlanilhas(data?.count || 0);
     setCarregando(false);
   };
 

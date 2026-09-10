@@ -10,13 +10,7 @@ import React, { useState } from "react";
 import { Field } from "react-final-form";
 import { Collapse } from "react-collapse";
 
-export const TempoPasseio = ({ form, ehEMEI, name, nameKits }) => {
-  const selecionaTempoPasseio = (value) => {
-    if (value) {
-      form.change(nameKits || `kits`, undefined);
-    }
-  };
-
+export const TempoPasseio = ({ ehEMEI, name }) => {
   return (
     <div className="tour-time">
       <div className="label mt-3 mb-3">Tempo previsto do passeio</div>
@@ -31,10 +25,7 @@ export const TempoPasseio = ({ form, ehEMEI, name, nameKits }) => {
             name={name || `tempo_passeio`}
             validate={required}
           />
-          <span
-            className="checkmark"
-            onClick={(e) => selecionaTempoPasseio(e.target.value)}
-          />
+          <span className="checkmark" />
         </label>
         <label className="container-radio">
           de 5 a 7 horas (2 Kits)
@@ -46,10 +37,7 @@ export const TempoPasseio = ({ form, ehEMEI, name, nameKits }) => {
             name={name || `tempo_passeio`}
             validate={required}
           />
-          <span
-            className="checkmark"
-            onClick={(e) => selecionaTempoPasseio(e.target.value)}
-          />
+          <span className="checkmark" />
         </label>
         {ehEMEI && (
           <label className="container-radio">
@@ -62,10 +50,7 @@ export const TempoPasseio = ({ form, ehEMEI, name, nameKits }) => {
               name={name || `tempo_passeio`}
               validate={required}
             />
-            <span
-              className="checkmark"
-              onClick={(e) => selecionaTempoPasseio(e.target.value)}
-            />
+            <span className="checkmark" />
           </label>
         )}
       </div>
@@ -196,13 +181,13 @@ export const QuantidadeAlunosEMEI = ({ meusDados }) => {
                 naoPodeSerZero,
                 maxValue(
                   meusDados.vinculo_atual.instituicao
-                    .quantidade_alunos_emei_da_cemei
+                    .quantidade_alunos_emei_da_cemei,
                 ),
-                required
+                required,
               )}
               max={parseInt(
                 meusDados.vinculo_atual.instituicao
-                  .quantidade_alunos_emei_da_cemei
+                  .quantidade_alunos_emei_da_cemei,
               )}
               min={0}
               step="1"
@@ -292,7 +277,7 @@ export const TabelaFaixasEtariasCEI = ({ faixasEtariasCEI, values }) => {
                     name={`solicitacao_cei.faixas_quantidades.${faixa.faixa_etaria.uuid}`}
                     validate={composeValidators(
                       naoPodeSerZero,
-                      maxValue(faixa.count)
+                      maxValue(faixa.count),
                     )}
                     max={parseInt(faixa.count)}
                     min={0}
@@ -318,7 +303,7 @@ export const TabelaFaixasEtariasCEI = ({ faixasEtariasCEI, values }) => {
               function (total, faixa) {
                 return total + (faixa ? parseInt(faixa) : 0);
               },
-              totalQuantidadeAlunos
+              totalQuantidadeAlunos,
             )}
           </td>
         </tr>

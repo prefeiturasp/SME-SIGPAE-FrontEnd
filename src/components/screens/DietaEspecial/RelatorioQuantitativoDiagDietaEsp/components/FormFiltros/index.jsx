@@ -101,7 +101,10 @@ export default ({ onSubmit, loading, setLoading }) => {
           >
             <div className="row">
               <div className="col-6">
-                <span
+                <Field
+                  component={"input"}
+                  type="checkbox"
+                  name="somente_dietas_ativas"
                   onClick={(e) => {
                     const value = e.target.checked;
                     if (value) {
@@ -120,13 +123,7 @@ export default ({ onSubmit, loading, setLoading }) => {
                       }
                     }
                   }}
-                >
-                  <Field
-                    component={"input"}
-                    type="checkbox"
-                    name="somente_dietas_ativas"
-                  />
-                </span>
+                />
                 <span className="checkbox-custom" />
                 <label
                   htmlFor="somente_dietas_ativas"

@@ -57,9 +57,14 @@ class Step2 extends Component {
   }
 
   activateInformacao(key) {
-    let informacoesAgrupadas = this.state.informacoesAgrupadas;
-    informacoesAgrupadas[key].active = !informacoesAgrupadas[key].active;
-    this.setState({ informacoesAgrupadas });
+    this.setState((prevState) => {
+      const informacoesAgrupadas = [...prevState.informacoesAgrupadas];
+      informacoesAgrupadas[key] = {
+        ...informacoesAgrupadas[key],
+        active: !informacoesAgrupadas[key].active,
+      };
+      return { informacoesAgrupadas };
+    });
   }
 
   onSubmit = (values) => {

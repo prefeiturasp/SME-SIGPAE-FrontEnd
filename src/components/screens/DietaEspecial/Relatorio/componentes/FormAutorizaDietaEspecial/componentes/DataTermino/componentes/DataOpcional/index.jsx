@@ -3,6 +3,7 @@ import { ptBR } from "date-fns/locale/pt-BR";
 import DatePicker from "react-datepicker";
 import InputErroMensagem from "src/components/Shareable/Input/InputErroMensagem";
 import { HelpText } from "src/components/Shareable/HelpText";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./style.scss";
 
 const DataTermino = ({
@@ -90,7 +91,14 @@ const DataTermino = ({
           strictParsing
         />
         {hasIcon && (
-          <i onClick={openDatepicker} className="fas fa-calendar-alt" />
+          <i
+            role="button"
+            tabIndex={0}
+            aria-label="Abrir calendário"
+            onClick={openDatepicker}
+            onKeyDown={(e) => acionaComEnterOuEspaco(e, openDatepicker)}
+            className="fas fa-calendar-alt"
+          />
         )}
       </div>
       <HelpText helpText={helpText} />

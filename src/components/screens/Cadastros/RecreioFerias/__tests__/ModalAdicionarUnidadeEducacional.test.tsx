@@ -58,6 +58,7 @@ const mockFormApi = {
   },
   change: jest.fn(),
   resetFieldState: jest.fn(),
+  subscribe: jest.fn().mockReturnValue(jest.fn()),
 };
 
 const mockLotes = [

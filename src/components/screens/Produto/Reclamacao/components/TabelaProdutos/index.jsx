@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./style.scss";
 
 import Botao from "src/components/Shareable/Botao";
@@ -65,12 +66,21 @@ export default class TabelaProdutos extends Component {
                 <div>{produto.criado_em.split(" ")[0]}</div>
                 <div className="botoes-produto">
                   <i
+                    role="button"
+                    tabIndex={0}
                     className={`fas fa-angle-${isProdutoAtivo ? "up" : "down"}`}
                     onClick={() => {
                       setIndiceProdutoAtivo(
-                        isProdutoAtivo ? undefined : indice
+                        isProdutoAtivo ? undefined : indice,
                       );
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () =>
+                        setIndiceProdutoAtivo(
+                          isProdutoAtivo ? undefined : indice,
+                        ),
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -85,7 +95,7 @@ export default class TabelaProdutos extends Component {
                         <Reclamacao key={indice} reclamacao={reclamacao} />,
                         deveMostrarBarraHorizontal && <hr />,
                       ];
-                    }
+                    },
                   )}
                   <div className="botao-reclamacao mt-4">
                     <Link

@@ -81,7 +81,11 @@ class WizardFormPrimeiraPagina extends React.Component {
     this.setState({ produtoForm: produto });
   }
 
-  async componentDidUpdate() {
+  componentDidUpdate() {
+    this.carregarOpcoesDeCadastro();
+  }
+
+  async carregarOpcoesDeCadastro() {
     const {
       retificou,
       produtoForm,
@@ -105,7 +109,7 @@ class WizardFormPrimeiraPagina extends React.Component {
 
       responseNomeDeProdutosEdital.data.results.forEach((produtoEdital) => {
         listaNomeDeProdutosEdital.push(
-          <Option key={`${produtoEdital.uuid}`}>{produtoEdital.nome}</Option>
+          <Option key={`${produtoEdital.uuid}`}>{produtoEdital.nome}</Option>,
         );
       });
 
@@ -115,7 +119,7 @@ class WizardFormPrimeiraPagina extends React.Component {
 
       responseFabricantes.data.results.forEach((fabricante) => {
         listaFabricantes.push(
-          <Option key={`${fabricante.uuid}`}>{fabricante.nome}</Option>
+          <Option key={`${fabricante.uuid}`}>{fabricante.nome}</Option>,
         );
       });
       this.setState({
@@ -226,7 +230,7 @@ class WizardFormPrimeiraPagina extends React.Component {
 
     responseFabricantes.data.results.forEach((fabricante) => {
       listaFabricantes.push(
-        <Option key={`${fabricante.uuid}`}>{fabricante.nome}</Option>
+        <Option key={`${fabricante.uuid}`}>{fabricante.nome}</Option>,
       );
     });
 
@@ -294,7 +298,7 @@ class WizardFormPrimeiraPagina extends React.Component {
     let { produtoForm, listaFabricantes } = this.state;
     const { change } = this.props;
     produtoForm.fabricante = listaFabricantes.filter(
-      (fabricante) => valor === fabricante.uuid
+      (fabricante) => valor === fabricante.uuid,
     )[0];
     change("fabricante", valor);
     this.setState({ produtoForm });

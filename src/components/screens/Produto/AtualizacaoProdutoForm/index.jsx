@@ -151,7 +151,11 @@ class AtualizacaoProdutoForm extends Component {
     });
   };
 
-  componentDidMount = async () => {
+  componentDidMount() {
+    this.carregarDadosIniciais();
+  }
+
+  carregarDadosIniciais = async () => {
     let { produto, homologacao, informacoesNutricionais, logs } = this.state;
     let homologacao_dados = null;
     const urlParams = new URLSearchParams(window.location.search);
@@ -201,11 +205,11 @@ class AtualizacaoProdutoForm extends Component {
   }
 
   nextPage() {
-    this.setState({ page: this.state.page + 1 });
+    this.setState((prevState) => ({ page: prevState.page + 1 }));
   }
 
   previousPage() {
-    this.setState({ page: this.state.page - 1 });
+    this.setState((prevState) => ({ page: prevState.page - 1 }));
   }
 
   getHistorico = () => {

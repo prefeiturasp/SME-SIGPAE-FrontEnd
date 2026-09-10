@@ -8,6 +8,7 @@ import {
 import { DashboardSupervisaoInterface } from "../../interfaces";
 import { CLASSE_COR_CARD } from "./constants";
 import { FormApi } from "final-form";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 type CardPorStatusType = {
   cardStatus: DashboardSupervisaoInterface;
@@ -17,7 +18,7 @@ type CardPorStatusType = {
   setFiltros: (_filtros: FiltrosRelatoriosVisitasInterface) => void;
   setPage: (_page: number) => void;
   setRelatoriosVisita: (
-    _relatoriosVisita: RelatorioVisitaItemListagem[]
+    _relatoriosVisita: RelatorioVisitaItemListagem[],
   ) => void;
   setConsultaRealizada: (_consultaRealizada: boolean) => void;
 };
@@ -57,9 +58,17 @@ export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
     return cardStatus.total ? "cursor-pointer" : "";
   };
 
+  const ehClicavel = Boolean(cardStatus.total);
+
   return (
     <div
+      role={ehClicavel ? "button" : undefined}
+      tabIndex={ehClicavel ? 0 : undefined}
+      aria-pressed={
+        ehClicavel ? statusSelecionado === cardStatus.status : undefined
+      }
       onClick={() => onClickCard()}
+      onKeyDown={(e) => acionaComEnterOuEspaco(e, () => onClickCard())}
       className={`card-medicao-por-status ${getClassNameCorCard()} ${getClassNameCursorPointer()} me-3 mb-3`}
     >
       <div className="pt-2">

@@ -123,12 +123,30 @@ export class InputFileManaged extends Component {
               <div
                 className="file-name col-8"
                 onClick={() => this.openFile(file)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    this.openFile(file);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Abrir anexo ${file.nome}`}
               >
                 {truncarString(file.nome, 20)}
               </div>
               <div className="col-4 exclude-icon">
                 <i
                   onClick={() => this.deleteFile(key)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      this.deleteFile(key);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Remover anexo ${file.nome}`}
                   className="fas fa-times"
                 />
               </div>

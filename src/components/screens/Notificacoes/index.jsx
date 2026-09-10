@@ -23,7 +23,7 @@ export default () => {
 
   const buscarNotificacoes = async (page) => {
     let pendenciasResponse;
-    if (!filtros.lido) {
+    if (!filtros?.lido) {
       let filtrosPendencias = { ...filtros };
       delete filtrosPendencias.lido;
       const paramsPendencias = gerarParametrosConsulta({

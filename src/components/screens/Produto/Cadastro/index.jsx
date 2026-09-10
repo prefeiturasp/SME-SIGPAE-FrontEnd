@@ -184,9 +184,13 @@ class cadastroProduto extends Component {
         .then((response) => {
           if (response.status === HTTP_STATUS.NO_CONTENT) {
             toastSuccess("Arquivo excluído do rascunho com sucesso!");
-            let payload = this.state.payload;
-            payload.imagens_salvas.splice(index, 1);
-            this.setState({ payload });
+            this.setState((prevState) => {
+              const payload = { ...prevState.payload };
+              payload.imagens_salvas = payload.imagens_salvas.filter(
+                (_, i) => i !== index,
+              );
+              return { payload };
+            });
             this.getRascunhos();
           } else {
             toastError("Erro ao excluir o arquivo");
@@ -198,7 +202,11 @@ class cadastroProduto extends Component {
     }
   };
 
-  componentDidMount = async () => {
+  componentDidMount() {
+    this.carregarDadosIniciais();
+  }
+
+  carregarDadosIniciais = async () => {
     const infoAgrupada = await getInformacoesGrupo({ ativo: true });
     this.setState({
       informacoesAgrupadas: infoAgrupada.data.results,

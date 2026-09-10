@@ -35,17 +35,16 @@ export default ({
     const alimentacao = refAlimentacao.current?.getTotais();
     const dietaA = refDietaA.current?.getTotais();
     const dietaB = refDietaB.current?.getTotais();
-    (+(dietaA?.totalConsumoGeral ?? 0) + (dietaB?.totalConsumoGeral ?? 0),
-      setConsolidado({
-        quantidade:
-          (alimentacao?.totalAtendimentosGeral ?? 0) +
-          (dietaA?.totalConsumoGeral ?? 0) +
-          (dietaB?.totalConsumoGeral ?? 0),
-        valor:
-          (alimentacao?.valorTotalGeral ?? 0) +
-          (dietaA?.valorTotalGeral ?? 0) +
-          (dietaB?.valorTotalGeral ?? 0),
-      }));
+    setConsolidado({
+      quantidade:
+        (alimentacao?.totalAtendimentosGeral ?? 0) +
+        (dietaA?.totalConsumoGeral ?? 0) +
+        (dietaB?.totalConsumoGeral ?? 0),
+      valor:
+        (alimentacao?.valorTotalGeral ?? 0) +
+        (dietaA?.valorTotalGeral ?? 0) +
+        (dietaB?.valorTotalGeral ?? 0),
+    });
   }, [relatorioConsolidado, tiposAlimentacao, totaisConsumo]);
 
   return (

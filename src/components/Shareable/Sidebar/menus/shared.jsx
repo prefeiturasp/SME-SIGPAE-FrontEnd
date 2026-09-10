@@ -25,6 +25,16 @@ export const SubMenu = ({
         e.stopPropagation();
         onClick(path);
       }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          onClick(path);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-expanded={activeMenu === path}
       data-testid={dataTestId}
       className={`collapse-item ${activeMenu === path ? "active" : ""}`}
     >
