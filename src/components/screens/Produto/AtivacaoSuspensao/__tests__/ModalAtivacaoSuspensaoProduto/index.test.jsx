@@ -493,6 +493,80 @@ describe("ModalAtivacaoSuspensaoProduto", () => {
     });
   });
 
+  it("exibe o título Manter o Produto Suspenso quando manterSuspenso é true", async () => {
+    renderizarComponente({
+      acao: "suspensão",
+      manterSuspenso: true,
+      produto: {
+        ...produtoMock,
+        vinculos_produto_edital: [
+          {
+            suspenso: true,
+            edital: editaisMock[0],
+          },
+        ],
+      },
+    });
+
+    await aguardarCarregamentoInicial();
+
+    expect(
+      screen.getByRole("heading", {
+        name: "Manter o Produto Suspenso",
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Suspender produto nos editais"),
+    ).toBeInTheDocument();
+  });
+
+  it("habilita o botão Enviar apenas com a justificativa quando manterSuspenso é true", async () => {
+    const props = renderizarComponente({
+      acao: "suspensão",
+      manterSuspenso: true,
+      produto: {
+        ...produtoMock,
+        vinculos_produto_edital: [
+          {
+            suspenso: true,
+            edital: editaisMock[0],
+          },
+        ],
+      },
+    });
+
+    await aguardarCarregamentoInicial();
+
+    const botaoEnviar = screen.getByRole("button", {
+      name: "Enviar",
+    });
+
+    expect(botaoEnviar).toBeDisabled();
+
+    preencherJustificativa("Manter o produto suspenso");
+
+    await waitFor(() => {
+      expect(botaoEnviar).toBeEnabled();
+    });
+
+    enviarFormulario();
+
+    await waitFor(() => {
+      expect(suspenderProduto).toHaveBeenCalledTimes(1);
+    });
+
+    expect(suspenderProduto).toHaveBeenCalledWith(
+      idHomologacao,
+      expect.objectContaining({
+        justificativa: "Manter o produto suspenso",
+      }),
+    );
+
+    expect(props.atualizarDados).toHaveBeenCalledTimes(1);
+    expect(props.closeModal).toHaveBeenCalledTimes(1);
+  });
+
   it("envia a ativação do produto com os dados preenchidos", async () => {
     const props = renderizarComponente({
       acao: "ativação",
