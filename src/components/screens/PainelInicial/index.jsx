@@ -70,6 +70,7 @@ import {
   usuarioEhDilogDiretoria,
   usuarioEhCronograma,
   usuarioEhCodaeDilog,
+  usuarioEhCoordenadorGpCODAE,
 } from "src/helpers/utilities";
 
 const PainelInicial = () => {
@@ -473,6 +474,30 @@ const PainelInicial = () => {
               }
             >
               <IconeCalendarioPontoAPonto />
+            </CardLogo>
+          </Col>
+        </>
+      )}
+      {usuarioEhCoordenadorGpCODAE() && (
+        <>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Layout de Embalagem"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${PAINEL_LAYOUT_EMBALAGEM}`)
+              }
+            >
+              <IconeLayoutEmbalagem />
+            </CardLogo>
+          </Col>
+          <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+            <CardLogo
+              titulo={"Fichas Técnicas"}
+              onClick={() =>
+                navigate(`${PRE_RECEBIMENTO}/${PAINEL_FICHAS_TECNICAS}`)
+              }
+            >
+              <IconeFichaTecnica />
             </CardLogo>
           </Col>
         </>
