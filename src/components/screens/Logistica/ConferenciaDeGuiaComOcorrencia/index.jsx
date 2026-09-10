@@ -189,9 +189,9 @@ export default () => {
     else return false;
   };
 
-  const validaHoraRecebimento = (value) => {
-    value = HoraRecebimentoAlterada ? HoraRecebimento : undefined;
-    return value !== undefined ? "" : "Campo obrigatório";
+  const validaHoraRecebimento = () => {
+    const horaInformada = HoraRecebimentoAlterada ? HoraRecebimento : undefined;
+    return horaInformada !== undefined ? "" : "Campo obrigatório";
   };
 
   const filtraEmbalagemPorTipo = (embalagens, tipo) => {

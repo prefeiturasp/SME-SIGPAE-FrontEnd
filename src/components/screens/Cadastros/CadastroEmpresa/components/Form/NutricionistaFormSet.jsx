@@ -9,6 +9,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import MaskedInputText from "src/components/Shareable/Input/MaskedInputText";
 import { telefoneMask } from "src/constants/shared";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const NutricionistaFormSet = ({
   ehDistribuidor,
@@ -40,7 +41,7 @@ export const NutricionistaFormSet = ({
     contatosNutricionista,
     setContatosNutricionista,
     contatosTerceirizadaForm,
-    setContatosTerceirizadaForm
+    setContatosTerceirizadaForm,
   ) => {
     if (
       contatosNutricionista.indexOf(indice) !== -1 &&
@@ -89,7 +90,7 @@ export const NutricionistaFormSet = ({
                                   setaContatosNutricionista(
                                     "responsavel",
                                     value,
-                                    indiceTerceirizada
+                                    indiceTerceirizada,
                                   );
                                 }}
                               />
@@ -107,7 +108,7 @@ export const NutricionistaFormSet = ({
                                   setaContatosNutricionista(
                                     "crn",
                                     value,
-                                    indiceTerceirizada
+                                    indiceTerceirizada,
                                   );
                                 }}
                               />
@@ -115,13 +116,27 @@ export const NutricionistaFormSet = ({
                             {contatosNutricionista.length > 1 && (
                               <div className="trash">
                                 <i
+                                  role="button"
+                                  tabIndex={0}
+                                  aria-label="Excluir nutricionista"
                                   onClick={() =>
                                     excluirNutricionista(
                                       indiceTerceirizada,
                                       contatosNutricionista,
                                       setContatosNutricionista,
                                       contatosTerceirizadaForm,
-                                      setContatosTerceirizadaForm
+                                      setContatosTerceirizadaForm,
+                                    )
+                                  }
+                                  onKeyDown={(e) =>
+                                    acionaComEnterOuEspaco(e, () =>
+                                      excluirNutricionista(
+                                        indiceTerceirizada,
+                                        contatosNutricionista,
+                                        setContatosNutricionista,
+                                        contatosTerceirizadaForm,
+                                        setContatosTerceirizadaForm,
+                                      ),
                                     )
                                   }
                                   className="fas fa-trash"
@@ -145,7 +160,7 @@ export const NutricionistaFormSet = ({
                                   setaContatosNutricionista(
                                     "telefone",
                                     value,
-                                    indiceTerceirizada
+                                    indiceTerceirizada,
                                   );
                                 }}
                               />
@@ -164,7 +179,7 @@ export const NutricionistaFormSet = ({
                                   setaContatosNutricionista(
                                     "email",
                                     value,
-                                    indiceTerceirizada
+                                    indiceTerceirizada,
                                   );
                                 }}
                               />
@@ -173,7 +188,7 @@ export const NutricionistaFormSet = ({
                         </div>
                       </>
                     );
-                  }
+                  },
                 )}
               </div>
               <div className={`col-1 mt-auto mb-1`}>

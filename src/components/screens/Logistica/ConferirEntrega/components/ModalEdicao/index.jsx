@@ -7,6 +7,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { CONFERENCIA_GUIA, LOGISTICA } from "src/configs/constants";
 import { useNavigate } from "react-router-dom";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export default ({ uuid }) => {
   const [show, setShow] = useState(false);
@@ -21,7 +22,13 @@ export default ({ uuid }) => {
 
   return (
     <>
-      <span onClick={handleShow} className="link-acoes green">
+      <span
+        onClick={handleShow}
+        onKeyDown={(e) => acionaComEnterOuEspaco(e, handleShow)}
+        role="button"
+        tabIndex={0}
+        className="link-acoes green"
+      >
         <i className="fas fa-eye" />
         Editar Conferência
       </span>

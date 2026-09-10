@@ -4,6 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Collapse } from "react-collapse";
 import { Navigate } from "react-router-dom";
 import { obtemDataSolicitacao } from "../../../../helpers/painelPedidos";
+import { acionaComEnterOuEspaco } from "../../../../helpers/utilities";
 import "./style.scss";
 import {
   TERCEIRIZADA,
@@ -103,7 +104,11 @@ export class CardHistorico extends Component {
                       name="selecionar_todos"
                     />
                     <span
+                      tabIndex={0}
                       onClick={() => this.selecionarTodos()}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => this.selecionarTodos())
+                      }
                       className="checkbox-custom small"
                     />
                     Selecionar todos

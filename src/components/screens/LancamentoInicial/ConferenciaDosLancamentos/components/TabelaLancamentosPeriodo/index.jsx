@@ -51,6 +51,7 @@ import {
   formatarLinhasTabelasDietasCEI,
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicialCEI/helper";
 import {
+  acionaComEnterOuEspaco,
   deepCopy,
   ehEscolaTipoCEI,
   ehEscolaTipoCEMEI,
@@ -1469,7 +1470,15 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
               <p
                 className="visualizar-lancamento mb-0"
                 data-testid={`visualizar-lancamento-${periodoGrupo.nome_periodo_grupo}`}
+                role="button"
+                tabIndex={0}
+                aria-expanded={showTabelaLancamentosPeriodo}
                 onClick={() => onClickVisualizarFechar(periodoGrupo)}
+                onKeyDown={(e) =>
+                  acionaComEnterOuEspaco(e, () =>
+                    onClickVisualizarFechar(periodoGrupo),
+                  )
+                }
               >
                 <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
               </p>

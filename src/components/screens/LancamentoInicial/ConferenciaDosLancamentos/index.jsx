@@ -269,6 +269,15 @@ export const ConferenciaDosLancamentos = () => {
   const usuarioMedicaoOuManifestacaoTemPermissao =
     usuarioEhMedicao() || usuarioEhCODAENutriManifestacao();
 
+  const baixarOcorrencias = () => {
+    medicaoInicialExportarOcorrenciasPDF(ocorrencia?.ultimo_arquivo);
+    usuarioMedicaoOuManifestacaoTemPermissao &&
+      medicaoInicialExportarOcorrenciasXLSX(
+        ocorrencia.ultimo_arquivo_excel,
+        "ocorrencias.xlsx",
+      );
+  };
+
   const exibirBotoesOcorrenciaCODAE =
     usuarioMedicaoOuManifestacaoTemPermissao &&
     solicitacao &&
@@ -972,16 +981,18 @@ export const ConferenciaDosLancamentos = () => {
                                   !ocorrenciaExcluida() ? (
                                     <span
                                       className={`download-ocorrencias me-0 ${!ocorrencia?.ultimo_arquivo ? "disabled" : ""}`}
-                                      onClick={() => {
-                                        medicaoInicialExportarOcorrenciasPDF(
-                                          ocorrencia?.ultimo_arquivo,
-                                        );
-                                        usuarioMedicaoOuManifestacaoTemPermissao &&
-                                          medicaoInicialExportarOcorrenciasXLSX(
-                                            ocorrencia.ultimo_arquivo_excel,
-                                            "ocorrencias.xlsx",
-                                          );
-                                      }}
+                                      role="button"
+                                      tabIndex={0}
+                                      aria-disabled={
+                                        !ocorrencia?.ultimo_arquivo
+                                      }
+                                      onClick={baixarOcorrencias}
+                                      onKeyDown={(e) =>
+                                        acionaComEnterOuEspaco(
+                                          e,
+                                          baixarOcorrencias,
+                                        )
+                                      }
                                     >
                                       <i
                                         className={`${BUTTON_ICON.DOWNLOAD} me-2`}

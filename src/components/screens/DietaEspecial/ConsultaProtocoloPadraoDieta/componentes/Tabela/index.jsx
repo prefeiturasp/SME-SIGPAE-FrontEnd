@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import DetalhesProtocolo from "../DetalhesProtocolo";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./style.scss";
 
 export default ({ resultado }) => {
@@ -49,9 +50,18 @@ export default ({ resultado }) => {
                                 ? "fas fa-angle-up"
                                 : "fas fa-angle-down"
                             }
+                            role="button"
+                            tabIndex={0}
+                            aria-expanded={selecionado === idx}
+                            aria-label={`Detalhes do protocolo ${protocoloPadrao.nome_protocolo}`}
                             onClick={() => {
                               selecionaProtocolo(idx);
                             }}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                selecionaProtocolo(idx),
+                              )
+                            }
                           />
                         </div>
                       </div>

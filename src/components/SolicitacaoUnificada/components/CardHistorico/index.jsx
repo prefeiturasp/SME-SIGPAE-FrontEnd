@@ -101,7 +101,11 @@ export class CardHistorico extends Component {
                       name="selecionar_todos"
                     />
                     <span
+                      tabIndex={0}
                       onClick={() => this.selecionarTodos()}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => this.selecionarTodos())
+                      }
                       className="checkbox-custom small"
                     />
                     Selecionar todos

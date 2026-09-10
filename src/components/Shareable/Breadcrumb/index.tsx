@@ -45,13 +45,15 @@ export default function Breadcrumb({
             anteriores.length > 0 &&
             anteriores.map((anterior, key) => {
               return (
-                <li
-                  key={key}
-                  onClick={() => {
-                    if (anterior.navigate_to) navigate(anterior.navigate_to);
-                  }}
-                >
-                  <Link to={anterior.href}>{anterior.titulo}</Link>
+                <li key={key}>
+                  <Link
+                    to={anterior.href}
+                    onClick={() => {
+                      if (anterior.navigate_to) navigate(anterior.navigate_to);
+                    }}
+                  >
+                    {anterior.titulo}
+                  </Link>
                 </li>
               );
             })}

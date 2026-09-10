@@ -7,7 +7,10 @@ import Confirmar from "../Confirmar";
 import Alterar from "../Alterar";
 import ListagemGuias from "../ListagemGuias";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { gerarParametrosConsulta } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  gerarParametrosConsulta,
+} from "src/helpers/utilities";
 import { gerarExcelSolicitacoes } from "src/services/logistica.service";
 import { CentralDeDownloadContext } from "src/context/CentralDeDownloads";
 
@@ -74,6 +77,13 @@ const ListagemSolicitacoes = ({
                 : "";
             const icone =
               ativos && ativos.includes(solicitacao.uuid) ? "minus" : "plus";
+            const alternarExpansao = () => {
+              ativos && ativos.includes(solicitacao.uuid)
+                ? setAtivos(ativos.filter((el) => el !== solicitacao.uuid))
+                : setAtivos(
+                    ativos ? [...ativos, solicitacao.uuid] : [solicitacao.uuid],
+                  );
+            };
             return (
               <>
                 <div className="grid-table body-table">
@@ -128,17 +138,16 @@ const ListagemSolicitacoes = ({
                   <div>
                     <i
                       className={`fas fa-${icone}`}
-                      onClick={() => {
-                        ativos && ativos.includes(solicitacao.uuid)
-                          ? setAtivos(
-                              ativos.filter((el) => el !== solicitacao.uuid)
-                            )
-                          : setAtivos(
-                              ativos
-                                ? [...ativos, solicitacao.uuid]
-                                : [solicitacao.uuid]
-                            );
-                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={Boolean(
+                        ativos && ativos.includes(solicitacao.uuid),
+                      )}
+                      aria-label={`Guias da requisição ${solicitacao.numero_solicitacao}`}
+                      onClick={alternarExpansao}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, alternarExpansao)
+                      }
                     />
                   </div>
                 </div>
