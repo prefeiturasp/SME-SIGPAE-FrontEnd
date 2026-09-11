@@ -108,6 +108,15 @@ export class InputFileManaged extends Component {
               <div className="col-4 exclude-icon">
                 <i
                   onClick={() => this.deleteFile(key)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      this.deleteFile(key);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Remover anexo ${file.nome}`}
                   className="fas fa-times"
                 />
               </div>

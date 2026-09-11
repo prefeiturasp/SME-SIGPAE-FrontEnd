@@ -31,6 +31,13 @@ export const dateDelta = (daysDelta) => {
   return today;
 };
 
+export const acionaComEnterOuEspaco = (event, acao) => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    acao();
+  }
+};
+
 export const checaSeDataEstaEntre2e5DiasUteis = (
   value,
   two_working_days,
@@ -535,6 +542,14 @@ export const usuarioComAcessoAoRelatorioCronogramas = () => {
     PERFIL.USUARIO_RELATORIOS,
     PERFIL.USUARIO_GTIC_CODAE,
     PERFIL.DILOG_VISUALIZACAO,
+  ].includes(localStorage.getItem("perfil"));
+};
+
+export const usuarioComAcessoAoRelatorioCronogramasSemanais = () => {
+  return [
+    PERFIL.DILOG_QUALIDADE,
+    PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -1440,4 +1455,20 @@ export const usuarioComAcessoAoCadastroDeCategorias = () => {
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
     PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
   ].includes(localStorage.getItem("perfil"));
+};
+
+export const usuarioPodeVisualizarDownloadsHistoricoReclamacaoProduto = () => {
+  return (
+    usuarioEhCODAEGestaoProduto() ||
+    usuarioEhNutricionistaSupervisao() ||
+    usuarioEhCODAENutriManifestacao() ||
+    usuarioEhCogestorDRE() ||
+    localStorage.getItem("tipo_perfil") === TIPO_PERFIL.ESCOLA ||
+    usuarioEhCODAEGestaoAlimentacao() ||
+    usuarioEhEmpresa() ||
+    usuarioEhDinutreDiretoria() ||
+    usuarioEhCODAEGabinete() ||
+    usuarioEhMedicao() ||
+    usuarioEhOrgaoFiscalizador()
+  );
 };

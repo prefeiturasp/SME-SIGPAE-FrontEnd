@@ -9,6 +9,7 @@ import {
   usuarioEhLogistica,
   usuarioEhEmpresaDistribuidora,
   usuarioEhEscola,
+  usuarioEhCodaeDilog,
 } from "src/helpers/utilities";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -127,6 +128,7 @@ export const Page = ({ ...props }) => {
             {botaoVoltar && <BotaoVoltar onClick={handleBack} />}
           </h1>
           {(usuarioEhEmpresaDistribuidora() || usuarioEhLogistica()) &&
+            !usuarioEhCodaeDilog() &&
             window.location.pathname === "/" && (
               <img
                 className="marca-dagua"

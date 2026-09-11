@@ -116,6 +116,15 @@ export class AnexosProdutoField extends Component {
                   <span
                     className="float-end"
                     onClick={() => this.deleteFile(key)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        this.deleteFile(key);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Remover anexo ${file.nome}`}
                   >
                     <i className="fas fa-trash-alt" />
                   </span>

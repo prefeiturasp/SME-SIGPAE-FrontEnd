@@ -31,7 +31,11 @@ class RelatorioAnaliseSensorial extends Component {
     this.closeModal = this.closeModal.bind(this);
   }
 
-  componentDidMount = async () => {
+  componentDidMount() {
+    this.carregarDadosIniciais();
+  }
+
+  carregarDadosIniciais = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     const responseHomolog = await getHomologacao(uuid);
@@ -61,11 +65,11 @@ class RelatorioAnaliseSensorial extends Component {
   };
 
   showModal() {
-    this.setState({ ...this.state, showModal: true });
+    this.setState((prevState) => ({ ...prevState, showModal: true }));
   }
 
   closeModal() {
-    this.setState({ ...this.state, showModal: false });
+    this.setState((prevState) => ({ ...prevState, showModal: false }));
   }
 
   retornaDataSolicitacao = ({ logs }) => {
@@ -94,11 +98,9 @@ class RelatorioAnaliseSensorial extends Component {
 
   pdfGerado = async ({ uuid }) => {
     await flegarHomologacaoPDF(uuid);
-    let homolog = this.state.homologacao;
-    homolog.pdf_gerado = true;
-    this.setState({
-      homologacao: homolog,
-    });
+    this.setState((prevState) => ({
+      homologacao: { ...prevState.homologacao, pdf_gerado: true },
+    }));
   };
 
   responder_deve_aparecer = (analise_sensorial) => {
@@ -159,7 +161,7 @@ class RelatorioAnaliseSensorial extends Component {
                       onClick={() => {
                         this.pdfGerado(homologacao);
                         getRelatorioProdutoAnaliseSensorialRecebimento(
-                          homologacao.produto
+                          homologacao.produto,
                         );
                       }}
                       className="ms-1"
@@ -169,7 +171,7 @@ class RelatorioAnaliseSensorial extends Component {
                       type={BUTTON_TYPE.SUBMIT}
                       style={BUTTON_STYLE.GREEN}
                       disabled={this.responder_deve_aparecer(
-                        homologacao.ultima_analise
+                        homologacao.ultima_analise,
                       )}
                       onClick={() => this.showModal()}
                       className="ms-1"
@@ -181,7 +183,7 @@ class RelatorioAnaliseSensorial extends Component {
                       icon={BUTTON_ICON.PRINT}
                       onClick={() => {
                         getRelatorioProdutoAnaliseSensorial(
-                          homologacao.produto
+                          homologacao.produto,
                         );
                       }}
                       className="ms-1"
@@ -375,7 +377,7 @@ class RelatorioAnaliseSensorial extends Component {
                                       </div>
                                     </div>
                                   );
-                                }
+                                },
                               )}
                             </div>
                           )}

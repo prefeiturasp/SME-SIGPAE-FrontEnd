@@ -21,9 +21,9 @@ class Step3 extends Component {
     };
   }
 
-  componentDidMount = async () => {
-    await this.updateOpcoesItensCadastrados();
-  };
+  componentDidMount() {
+    this.updateOpcoesItensCadastrados();
+  }
 
   updateOpcoesItensCadastrados = async () => {
     const reponseUnidades = await getUnidadesDeMedidaProduto();
@@ -45,7 +45,9 @@ class Step3 extends Component {
     } else {
       let pdfWindow = window.open("");
       pdfWindow.document.write(
-        "<iframe width='100%' height='100%' src='" + file.base64 + "'></iframe>"
+        "<iframe width='100%' height='100%' src='" +
+          file.base64 +
+          "'></iframe>",
       );
     }
   };

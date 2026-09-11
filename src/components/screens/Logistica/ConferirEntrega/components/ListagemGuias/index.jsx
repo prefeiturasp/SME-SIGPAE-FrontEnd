@@ -13,6 +13,7 @@ import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { Spin, Tooltip } from "antd";
 import ModalEdicao from "../ModalEdicao";
 import TooltipIcone from "src/components/Shareable/TooltipIcone";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 const ListagemSolicitacoes = ({ guias }) => {
   const [carregando, setCarregando] = useState(false);
@@ -59,7 +60,7 @@ const ListagemSolicitacoes = ({ guias }) => {
       );
     } else if (
       ["Pendente de conferência", "Insucesso de entrega"].includes(
-        guia.status
+        guia.status,
       ) &&
       guia.situacao === "ATIVA"
     ) {
@@ -103,7 +104,7 @@ const ListagemSolicitacoes = ({ guias }) => {
 
       if (
         ["Recebida", "Recebimento parcial", "Não recebida"].includes(
-          guia.status
+          guia.status,
         ) &&
         guia.situacao === "ATIVA"
       ) {
@@ -159,7 +160,15 @@ const ListagemSolicitacoes = ({ guias }) => {
                     </span>
                     <span
                       className="link-acoes"
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Imprimir guia ${guia.numero_guia}`}
                       onClick={() => baixarPDFGuiaRemessa(guia)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          baixarPDFGuiaRemessa(guia),
+                        )
+                      }
                     >
                       <Tooltip title="Imprimir guia">
                         <i className="fas fa-print" />

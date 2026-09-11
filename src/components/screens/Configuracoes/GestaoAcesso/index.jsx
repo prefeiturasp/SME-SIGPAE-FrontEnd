@@ -149,28 +149,30 @@ export default ({
 
   const buscarVinculos = async (page) => {
     setCarregando(true);
-    if (geral && !filtros?.perfil) {
-      filtros.perfil = perfisSubordinados;
+    const filtrosConsulta = { ...(filtros || {}) };
+
+    if (geral && !filtrosConsulta.perfil) {
+      filtrosConsulta.perfil = perfisSubordinados;
     }
 
     if (cogestor) {
-      filtros.perfil = filtros?.perfil ?? [
+      filtrosConsulta.perfil = filtrosConsulta.perfil ?? [
         "COGESTOR_DRE",
         "ADMINISTRADOR_UE",
         "DIRETOR_UE",
       ];
-      filtros.visao = filtros?.visao ?? ["DRE", "ESCOLA"];
+      filtrosConsulta.visao = filtrosConsulta.visao ?? ["DRE", "ESCOLA"];
     }
 
     if (codae) {
-      filtros.visao = "CODAE";
+      filtrosConsulta.visao = "CODAE";
     }
 
     if (empresa) {
-      filtros.visao = "EMPRESA";
+      filtrosConsulta.visao = "EMPRESA";
     }
 
-    let payload = gerarParametrosConsulta({ page, ...filtros });
+    let payload = gerarParametrosConsulta({ page, ...filtrosConsulta });
     let data = await getVinculosAtivos(payload);
 
     setVinculos(data.results);

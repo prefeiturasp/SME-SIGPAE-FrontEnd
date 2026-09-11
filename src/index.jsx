@@ -31,7 +31,7 @@ if (["development", "homolog", "treinamento"].includes(ENVIRONMENT)) {
   });
 }
 
-if (process.env.IS_DOCKER_ENVIRONMENT === true) {
+if (process.env.IS_DOCKER_ENVIRONMENT === "true") {
   // This way we can pass params to static files. see Dockerfile.
   // when build default env is production
   const SENTRY_URL = "SENTRY_URL_REPLACE_ME";

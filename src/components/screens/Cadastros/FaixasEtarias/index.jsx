@@ -35,11 +35,15 @@ export default class FaixasEtarias extends Component {
     this.onRedefinir = this.onRedefinir.bind(this);
   }
 
-  UNSAFE_componentWillMount = async () => {
+  componentDidMount() {
+    this.carregarFaixasEtarias();
+  }
+
+  carregarFaixasEtarias = async () => {
     const resposta = await getFaixasEtarias();
     if (resposta.status !== 200) {
       toastError(
-        `Não foi possível carregar as faixas etárias: ${resposta.status} - ${resposta.data}`
+        `Não foi possível carregar as faixas etárias: ${resposta.status} - ${resposta.data}`,
       );
     }
     this.setState({
@@ -54,7 +58,7 @@ export default class FaixasEtarias extends Component {
     if (resposta.status === 201) {
       if (this.state.redefinir) {
         toastSuccess(
-          "Redefinição de Novas Faixas Etárias Efetuado com Sucesso"
+          "Redefinição de Novas Faixas Etárias Efetuado com Sucesso",
         );
       } else {
         toastSuccess("Cadastro de Faixas Etárias Efetuado com Sucesso");
@@ -66,7 +70,7 @@ export default class FaixasEtarias extends Component {
       });
     } else {
       toastError(
-        `Erro ao enviar os dados para o servidor: ${resposta.status} - ${resposta.data}`
+        `Erro ao enviar os dados para o servidor: ${resposta.status} - ${resposta.data}`,
       );
     }
   };

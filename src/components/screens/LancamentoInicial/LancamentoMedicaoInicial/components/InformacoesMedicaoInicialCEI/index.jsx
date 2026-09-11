@@ -1,4 +1,4 @@
-import { Checkbox, Collapse, Modal, Spin } from "antd";
+import { Checkbox, Collapse, Input, Modal, Spin } from "antd";
 import { format, getYear } from "date-fns";
 import HTTP_STATUS from "http-status-codes";
 import { useCallback, useEffect, useState } from "react";
@@ -78,6 +78,7 @@ export const InformacoesMedicaoInicialCEI = ({
   const [alunosParcialAlterado, setAlunosParcialAlterado] = useState(false);
   const [loadingInfoBasicas, setLoadingInfoBasicas] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  const [descricaoMetodo, setDescricaoMetodo] = useState("");
 
   const { Panel } = Collapse;
 
@@ -112,9 +113,15 @@ export const InformacoesMedicaoInicialCEI = ({
         setaResponsavel("nome", responsavel.nome, index);
         setaResponsavel("rf", responsavel.rf, index);
       });
-      setTipoDeContagemSelecionada(
-        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid),
-      );
+      const idsContagem =
+        solicitacaoMedicaoInicial.tipos_contagem_alimentacao.map((t) => t.uuid);
+
+      if (solicitacaoMedicaoInicial.descricao_metodo) {
+        idsContagem.push("outros");
+      }
+
+      setTipoDeContagemSelecionada(idsContagem);
+      setDescricaoMetodo(solicitacaoMedicaoInicial?.descricao_metodo || "");
       if (solicitacaoMedicaoInicial.ue_possui_alunos_periodo_parcial) {
         setUePossuiAlunosPeriodoParcial("true");
         setShowPesquisaAluno(true);
@@ -147,6 +154,7 @@ export const InformacoesMedicaoInicialCEI = ({
 
   const handleClickSalvar = async () => {
     if (!validarDados()) return;
+    if (!validarMetodoContagem()) return;
 
     setSalvando(true);
     try {
@@ -181,6 +189,20 @@ export const InformacoesMedicaoInicialCEI = ({
       alunosAdicionados.length < 1
     ) {
       toastError("Obrigatório adicionar alunos parciais");
+      return false;
+    }
+
+    return true;
+  };
+
+  const validarMetodoContagem = () => {
+    if (
+      tipoDeContagemSelecionada.includes("outros") &&
+      !descricaoMetodo.trim()
+    ) {
+      toastError(
+        "Descrição do método é obrigatória quando 'Outros' é selecionado",
+      );
       return false;
     }
 
@@ -260,6 +282,9 @@ export const InformacoesMedicaoInicialCEI = ({
     return alunos;
   };
 
+  const getTiposContagemSemOutros = () =>
+    tipoDeContagemSelecionada.filter((id) => id !== "outros");
+
   const criarPayloadAtualizacao = () => {
     const data = new FormData();
     const alunosParciais = atualizaPayloadAlunosParciais();
@@ -271,11 +296,13 @@ export const InformacoesMedicaoInicialCEI = ({
       uePossuiAlunosPeriodoParcial === "true",
     );
 
-    for (let index = 0; index < tipoDeContagemSelecionada.length; index++) {
-      data.append(
-        "tipos_contagem_alimentacao[]",
-        tipoDeContagemSelecionada[index],
-      );
+    const idsContagem = getTiposContagemSemOutros();
+    for (let index = 0; index < idsContagem.length; index++) {
+      data.append("tipos_contagem_alimentacao[]", idsContagem[index]);
+    }
+
+    if (tipoDeContagemSelecionada.includes("outros")) {
+      data.append("descricao_metodo", descricaoMetodo);
     }
 
     if (alunosParciais) {
@@ -292,11 +319,14 @@ export const InformacoesMedicaoInicialCEI = ({
 
     const payload = {
       escola: escolaInstituicao.uuid,
-      tipos_contagem_alimentacao: tipoDeContagemSelecionada,
+      tipos_contagem_alimentacao: getTiposContagemSemOutros(),
       responsaveis: getResponsaveisPayload(),
       ue_possui_alunos_periodo_parcial: uePossuiAlunosPeriodoParcial === "true",
       mes: format(dataPeriodo, "MM").toString(),
       ano: getYear(dataPeriodo).toString(),
+      ...(tipoDeContagemSelecionada.includes("outros") && {
+        descricao_metodo: descricaoMetodo,
+      }),
     };
 
     if (alunosParciais) {
@@ -395,13 +425,20 @@ export const InformacoesMedicaoInicialCEI = ({
   };
 
   const opcoesContagem = tiposDeContagem
-    ? tiposDeContagem.map((tipo) => {
-        return { value: tipo.uuid, label: tipo.nome };
-      })
+    ? [
+        ...tiposDeContagem.map((tipo) => {
+          return { value: tipo.uuid, label: tipo.nome };
+        }),
+        { value: "outros", label: "Outros" },
+      ]
     : [];
 
   const handleChangeTipoContagem = (values) => {
     setTipoDeContagemSelecionada(values.map((value_) => value_.value));
+
+    if (!values.includes("outros")) {
+      setDescricaoMetodo("");
+    }
   };
 
   const getDefaultValueSelectTipoContagem = () => {
@@ -478,9 +515,33 @@ export const InformacoesMedicaoInicialCEI = ({
                             handleChangeTipoContagem(values)
                           }
                           placeholder="Selecione os métodos de contagem"
-                          hasSelectAll={false}
+                          allowSelectAll={false}
                           disabled={!emEdicao}
                         />
+                      )}
+                      {tipoDeContagemSelecionada.includes("outros") && (
+                        <div>
+                          <label>Descrição do Método</label>
+                          <label className="asterisk-label">*</label>
+
+                          <div>
+                            <Input
+                              className="mt-2"
+                              placeholder="Informe o método de contagem utilizado"
+                              name="descricao_metodo"
+                              data-testid="descricao_metodo"
+                              value={descricaoMetodo}
+                              onChange={(event) =>
+                                setDescricaoMetodo(event.target.value)
+                              }
+                              disabled={!emEdicao}
+                              maxLength={50}
+                            />
+                            <span className="descricao-metodo-count">
+                              {descricaoMetodo.length}/50
+                            </span>
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}

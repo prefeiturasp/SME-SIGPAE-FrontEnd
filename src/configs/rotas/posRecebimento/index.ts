@@ -1,10 +1,12 @@
 import CadastroTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/CadastroTermoRecebimentoDefinitivoPage";
+import TermoRecebimentoDefinitivoFornecedorPage from "src/pages/PosRecebimento/TermoRecebimentoDefinitivoFornecedorPage";
 import TermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/TermoRecebimentoDefinitivoPage";
 import DetalharTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoDefinitivoPage";
 import {
   usuarioEhCronogramaOuCodae,
   usuarioEhDilogDiretoria,
   usuarioEhDilogQualidade,
+  usuarioEhEmpresaFornecedor,
 } from "src/helpers/utilities";
 
 import * as constants from "../../constants";
@@ -30,6 +32,12 @@ export const rotasPosRecebimento: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCronogramaOuCodae() ||
       usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade(),
+      usuarioEhDilogQualidade() ||
+      usuarioEhEmpresaFornecedor(),
+  },
+  {
+    path: `/${constants.POS_RECEBIMENTO}/${constants.TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`,
+    component: TermoRecebimentoDefinitivoFornecedorPage,
+    tipoUsuario: usuarioEhEmpresaFornecedor(),
   },
 ];

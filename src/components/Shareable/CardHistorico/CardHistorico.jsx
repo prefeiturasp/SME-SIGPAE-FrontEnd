@@ -60,6 +60,13 @@ export class CardHistorico extends Component {
                     />
                     <span
                       onClick={() => this.selecionarTodos()}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          this.selecionarTodos();
+                        }
+                      }}
+                      tabIndex={0}
                       className="checkbox-custom"
                     />
                     Selecionar todos
@@ -106,7 +113,7 @@ export class CardHistorico extends Component {
                                 onClick={() =>
                                   this.props.change(
                                     `check_${pedido.uuid}`,
-                                    true
+                                    true,
                                   )
                                 }
                                 className="checkbox-custom"

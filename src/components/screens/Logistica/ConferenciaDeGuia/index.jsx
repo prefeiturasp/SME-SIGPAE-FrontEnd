@@ -58,7 +58,7 @@ export default () => {
       response = await getGuiaParaConferencia(params);
       setGuia(response.data);
       setNomesAlimentos(
-        response.data.alimentos.map((alimento) => alimento.nome_alimento)
+        response.data.alimentos.map((alimento) => alimento.nome_alimento),
       );
       setInitialValues({
         numero_guia: response.data.numero_guia,
@@ -81,7 +81,7 @@ export default () => {
       let conferencia = response.data.results;
       setGuia(conferencia.guia);
       setNomesAlimentos(
-        conferencia.guia.alimentos.map((alimento) => alimento.nome_alimento)
+        conferencia.guia.alimentos.map((alimento) => alimento.nome_alimento),
       );
       setExisteOcorrencia(conferencia.guia.status !== "Recebida");
       setInitialValues({
@@ -134,9 +134,9 @@ export default () => {
     else return undefined;
   };
 
-  const validaHoraRecebimento = (value) => {
-    value = HoraRecebimentoAlterada ? HoraRecebimento : undefined;
-    return value !== undefined ? "" : "Campo obrigatório";
+  const validaHoraRecebimento = () => {
+    const horaInformada = HoraRecebimentoAlterada ? HoraRecebimento : undefined;
+    return horaInformada !== undefined ? "" : "Campo obrigatório";
   };
 
   const onChangeAlimentos = (list) => {
@@ -249,7 +249,7 @@ export default () => {
                             className="data-inicial"
                             validate={composeValidators(
                               required,
-                              validaDataEntrega
+                              validaDataEntrega,
                             )}
                             minDate={null}
                             maxDate={null}
@@ -266,7 +266,7 @@ export default () => {
                             validate={composeValidators(
                               required,
                               maxLength(100),
-                              apenasLetras
+                              apenasLetras,
                             )}
                             required
                           />
@@ -282,7 +282,7 @@ export default () => {
                               required,
                               maxLength(7),
                               alphaNumeric,
-                              peloMenosUmNumeroEUmaLetra
+                              peloMenosUmNumeroEUmaLetra,
                             )}
                             required
                           />

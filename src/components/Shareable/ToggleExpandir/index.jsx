@@ -5,6 +5,16 @@ export const ToggleExpandir = (props) => {
   return (
     <span
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.(e);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-expanded={Boolean(ativo)}
+      aria-label={ativo ? "Recolher" : "Expandir"}
       data-testid={dataTestId}
       className={`toggle-expandir ${className}`}
       data-cy="botao-expandir"

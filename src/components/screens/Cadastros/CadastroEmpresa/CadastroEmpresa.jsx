@@ -135,12 +135,12 @@ export const CadastroEmpresa = () => {
             email: null,
           });
         }
-        setContatosEmpresaForm(contatosEmpresaForm);
+        setContatosEmpresaForm([...contatosEmpresaForm]);
 
         contatosEmpresa[indice]["email"] = contato.email;
         contatosEmpresa[indice]["telefone"] = contato.telefone;
 
-        setContatosEmpresa(contatosEmpresa);
+        setContatosEmpresa([...contatosEmpresa]);
 
         data[`telefone_empresa_${indice}`] = contato.telefone;
         data[`email_empresa_${indice}`] = contato.email;
@@ -200,7 +200,7 @@ export const CadastroEmpresa = () => {
         contatosNutricionista[indice]["email"] =
           nutri.contatos.length === 0 ? null : nutri.contatos[0].email;
 
-        setContatosNutricionista(contatosNutricionista);
+        setContatosNutricionista([...contatosNutricionista]);
         data[`nutricionista_nome_${indice}`] = nutri.nome;
         data[`nutricionista_crn_${indice}`] = nutri.crn_numero;
         data[`telefone_terceirizada_${indice}`] =
@@ -230,7 +230,7 @@ export const CadastroEmpresa = () => {
             nutri.super_admin_terceirizadas;
           contatosNutricionista[indice]["email"] = nutri.email;
 
-          setContatosNutricionista(contatosNutricionista);
+          setContatosNutricionista([...contatosNutricionista]);
 
           data[`nutricionista_nome_${indice}`] = nutri.nome;
           data[`nutricionista_crn_${indice}`] = nutri.crn_numero;

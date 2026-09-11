@@ -7,6 +7,15 @@ const Tab = ({ index, activeIndex, setActiveIndex, title }) => {
   return (
     <div
       onClick={() => setActiveIndex(index)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setActiveIndex(index);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-pressed={active}
       className={`tab col ${active ? "active" : "inactive"}`}
     >
       {title}

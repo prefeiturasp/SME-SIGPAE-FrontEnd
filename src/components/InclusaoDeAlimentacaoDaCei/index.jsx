@@ -124,12 +124,12 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
       values.dias_motivos_da_inclusao_cei[index].motivo &&
       motivos.find(
         (motivo) =>
-          motivo.uuid === values.dias_motivos_da_inclusao_cei[index].motivo
+          motivo.uuid === values.dias_motivos_da_inclusao_cei[index].motivo,
       ) &&
       motivos
         .find(
           (motivo) =>
-            motivo.uuid === values.dias_motivos_da_inclusao_cei[index].motivo
+            motivo.uuid === values.dias_motivos_da_inclusao_cei[index].motivo,
         )
         .nome.includes("Outro")
     );
@@ -141,7 +141,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
-        proximosCincoDiasUteis
+        proximosCincoDiasUteis,
       )
     ) {
       setShowModal(true);
@@ -154,7 +154,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
       values.dias_motivos_da_inclusao_cei[0].motivo &&
       motivos.find(
         (motivo) =>
-          motivo.uuid === values.dias_motivos_da_inclusao_cei[0].motivo
+          motivo.uuid === values.dias_motivos_da_inclusao_cei[0].motivo,
       )
     );
   };
@@ -196,22 +196,22 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                       faixa_etaria.periodo.uuid === periodo_faixa.uuid &&
                       faixa_etaria.periodo_externo.uuid ===
                         periodo_faixa.uuid &&
-                      faixa_etaria.faixa_etaria.uuid === fx.faixa_etaria.uuid
+                      faixa_etaria.faixa_etaria.uuid === fx.faixa_etaria.uuid,
                   );
                 if (faixa_inclusao) {
                   fx["quantidade_alunos"] = faixa_inclusao.quantidade_alunos;
                 }
                 return fx;
-              }
+              },
             );
           } else {
             let faixas_periodo_integral =
               inclusao.quantidade_alunos_por_faixas_etarias.filter(
                 (faixa_etaria) =>
-                  faixa_etaria.periodo_externo.nome === "INTEGRAL"
+                  faixa_etaria.periodo_externo.nome === "INTEGRAL",
               );
             let periodos_internos_nomes = faixas_periodo_integral.map(
-              (faixa_etaria) => faixa_etaria.periodo.nome
+              (faixa_etaria) => faixa_etaria.periodo.nome,
             );
             periodos_internos_nomes = [...new Set(periodos_internos_nomes)];
             periodo_faixa.periodos = periodo_faixa.periodos.map((periodo) => {
@@ -224,7 +224,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                         faixa_etaria.periodo.uuid === periodo.uuid &&
                         faixa_etaria.periodo_externo.uuid ===
                           periodo_faixa.uuid &&
-                        faixa_etaria.faixa_etaria.uuid === fx.faixa_etaria.uuid
+                        faixa_etaria.faixa_etaria.uuid === fx.faixa_etaria.uuid,
                     );
                   if (faixa_inclusao) {
                     fx["quantidade_alunos"] = faixa_inclusao.quantidade_alunos;
@@ -250,7 +250,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
         motivo: dia_motivo.motivo.uuid,
         outro_motivo: dia_motivo.outro_motivo,
         data: dia_motivo.data,
-      }))
+      })),
     );
   };
 
@@ -262,7 +262,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
         refresh(values);
       } else {
         toastError(
-          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde.",
         );
       }
     }
@@ -281,7 +281,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
         const periodo = periodos[index];
         const response = await getQuantidadeAlunosFaixaEtaria(
           periodo.uuid,
-          dataInclusao
+          dataInclusao,
         );
         if (response.status === HTTP_STATUS.OK && response.data.count > 0) {
           let _periodos_e_faixas = {
@@ -293,7 +293,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
             (somatorio, faixa) => {
               return somatorio + faixa.count;
             },
-            0
+            0,
           );
           if (periodo.nome === "INTEGRAL") {
             _periodos_e_faixas["periodos"] = periodos.map((p) => {
@@ -444,7 +444,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                 onClick={async (e) => {
                                   const value = e.target.checked;
                                   let _periodos_e_faixas = deepCopy(
-                                    values.periodos_e_faixas
+                                    values.periodos_e_faixas,
                                   );
                                   if (
                                     !value &&
@@ -471,14 +471,14 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                         ];
                                                       }
                                                       return _fx;
-                                                    }
+                                                    },
                                                   );
                                                 return _periodo;
-                                              }
+                                              },
                                             );
                                         }
                                         return _periodo_faixa;
-                                      }
+                                      },
                                     );
                                   }
                                   if (
@@ -500,17 +500,22 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                   ];
                                                 }
                                                 return _fx;
-                                              }
+                                              },
                                             );
                                         }
                                         return _periodo_faixa;
-                                      }
+                                      },
                                     );
                                   }
                                   form.change(
                                     "periodos_e_faixas",
-                                    _periodos_e_faixas
+                                    _periodos_e_faixas,
                                   );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.currentTarget.click();
+                                  }
                                 }}
                               >
                                 <Field
@@ -574,16 +579,16 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                               step="1"
                                               min="0"
                                               max={parseInt(
-                                                fa.count ? fa.count : 0
+                                                fa.count ? fa.count : 0,
                                               )}
                                               name={`periodos_e_faixas[${periodo_faixa_idx}][faixas_etarias][${k}][quantidade_alunos]`}
                                               validate={composeValidators(
                                                 naoPodeSerZero,
                                                 maxValue(
                                                   parseInt(
-                                                    fa.count ? fa.count : 0
-                                                  )
-                                                )
+                                                    fa.count ? fa.count : 0,
+                                                  ),
+                                                ),
                                               )}
                                               className="input-quantidades"
                                             />
@@ -613,11 +618,11 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                   parseInt(
                                                     f.quantidade_alunos
                                                       ? f.quantidade_alunos
-                                                      : 0
+                                                      : 0,
                                                   )
                                                 );
                                               },
-                                              0
+                                              0,
                                             )
                                           : 0}
                                       </td>
@@ -630,10 +635,10 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                 periodo_faixa_idx
                               ].periodos.map((periodo, periodo_idx) => {
                                 const background = periodos.find(
-                                  (p) => p.uuid === periodo.uuid
+                                  (p) => p.uuid === periodo.uuid,
                                 ).background;
                                 const borderColor = periodos.find(
-                                  (p) => p.uuid === periodo.uuid
+                                  (p) => p.uuid === periodo.uuid,
                                 ).borderColor;
                                 return (
                                   <div
@@ -657,7 +662,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                           onClick={async (e) => {
                                             const value = e.target.checked;
                                             let _periodos_e_faixas = deepCopy(
-                                              values.periodos_e_faixas
+                                              values.periodos_e_faixas,
                                             );
                                             if (!value) {
                                               _periodos_e_faixas =
@@ -687,21 +692,29 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                                       ];
                                                                     }
                                                                     return _fx;
-                                                                  }
+                                                                  },
                                                                 );
                                                             }
                                                             return _periodo;
-                                                          }
+                                                          },
                                                         );
                                                     }
                                                     return _periodo_faixa;
-                                                  }
+                                                  },
                                                 );
                                             }
                                             form.change(
                                               "periodos_e_faixas",
-                                              _periodos_e_faixas
+                                              _periodos_e_faixas,
                                             );
+                                          }}
+                                          onKeyDown={(e) => {
+                                            if (
+                                              e.key === "Enter" ||
+                                              e.key === " "
+                                            ) {
+                                              e.currentTarget.click();
+                                            }
                                           }}
                                         >
                                           <Field
@@ -768,7 +781,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                       step="1"
                                                       min="0"
                                                       max={parseInt(
-                                                        fa.count ? fa.count : 0
+                                                        fa.count ? fa.count : 0,
                                                       )}
                                                       name={`periodos_e_faixas[${periodo_faixa_idx}].periodos[${periodo_idx}].faixas_etarias[${k}].quantidade_alunos`}
                                                       validate={composeValidators(
@@ -777,9 +790,9 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                           parseInt(
                                                             fa.count
                                                               ? fa.count
-                                                              : 0
-                                                          )
-                                                        )
+                                                              : 0,
+                                                          ),
+                                                        ),
                                                       )}
                                                       className="input-quantidades"
                                                     />
@@ -813,11 +826,11 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                                           parseInt(
                                                             f.quantidade_alunos
                                                               ? f.quantidade_alunos
-                                                              : 0
+                                                              : 0,
                                                           )
                                                         );
                                                       },
-                                                      0
+                                                      0,
                                                     )
                                                   : 0}
                                               </td>
@@ -832,7 +845,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                             ))}
                         </>
                       );
-                    }
+                    },
                   )}
                   <div className="row float-end mt-4">
                     <div className="col-12">
@@ -843,11 +856,11 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                           form.change("escola", valoresIniciais.escola);
                           form.change(
                             "dias_motivos_da_inclusao_cei",
-                            valoresIniciais.dias_motivos_da_inclusao_cei
+                            valoresIniciais.dias_motivos_da_inclusao_cei,
                           );
                           form.change(
                             "periodos_e_faixas",
-                            valoresIniciais.periodos_e_faixas
+                            valoresIniciais.periodos_e_faixas,
                           );
                         }}
                         style={BUTTON_STYLE.GREEN_OUTLINE}

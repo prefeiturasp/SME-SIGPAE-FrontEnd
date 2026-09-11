@@ -89,7 +89,6 @@ export class StatusSolicitacoes extends Component {
     const { status, formatarDadosSolicitacao } = this.props;
     const data = {};
     let solicitacoes = [];
-    let solicitacoesFiltrados = this.state.solicitacoesPaginaAtual;
     clearTimeout(this.typingTimeout);
     this.typingTimeout = setTimeout(async () => {
       if (
@@ -105,7 +104,7 @@ export class StatusSolicitacoes extends Component {
           loading: true,
         });
         const promises = listaStatus.map((status) =>
-          getHomologacoesDeProdutoPorStatusTitulo(status, data)
+          getHomologacoesDeProdutoPorStatusTitulo(status, data),
         );
         const retornos = await Promise.all(promises);
         if (retornos[0].status === HTTP_STATUS.OK) {
@@ -115,16 +114,15 @@ export class StatusSolicitacoes extends Component {
                 formatarDadosSolicitacao(
                   retorno.data ? retorno.data.results : retorno.results,
                   null,
-                  this.props.titulo
-                )
-              ))
+                  this.props.titulo,
+                ),
+              )),
           );
-          solicitacoesFiltrados = solicitacoes;
           this.setState({
             count: 1,
             currentPage: 1,
             loading: false,
-            solicitacoesFiltrados: solicitacoesFiltrados,
+            solicitacoesFiltrados: solicitacoes,
           });
         } else {
           this.setState({
@@ -137,50 +135,53 @@ export class StatusSolicitacoes extends Component {
         values.titulo === undefined ||
         (values.titulo && values.titulo.length < 3)
       ) {
-        solicitacoesFiltrados = this.state.solicitacoesPaginaAtual;
-        this.setState({
-          count: this.state.originalCount,
-          currentPage: this.state.originalCurrentPage,
-        });
+        this.setState((prevState) => ({
+          count: prevState.originalCount,
+          currentPage: prevState.originalCurrentPage,
+          solicitacoesFiltrados: prevState.solicitacoesPaginaAtual,
+        }));
       }
     }, 1000);
-    if (values.lote && values.lote.length > 0) {
-      solicitacoesFiltrados = this.filtrarLote(
-        solicitacoesFiltrados,
-        values.lote
-      );
-    }
-    if (values.status && values.status.length > 0) {
-      solicitacoesFiltrados = this.filtrarStatus(
-        solicitacoesFiltrados,
-        values.status
-      );
-    }
-    if (values.marcaProduto && values.marcaProduto.length > 0) {
-      solicitacoesFiltrados = this.filtrarMarca(
-        solicitacoesFiltrados,
-        values.marcaProduto
-      );
-    }
+    this.setState((prevState) => {
+      let solicitacoesFiltrados = prevState.solicitacoesPaginaAtual;
+      if (values.lote && values.lote.length > 0) {
+        solicitacoesFiltrados = this.filtrarLote(
+          solicitacoesFiltrados,
+          values.lote,
+        );
+      }
+      if (values.status && values.status.length > 0) {
+        solicitacoesFiltrados = this.filtrarStatus(
+          solicitacoesFiltrados,
+          values.status,
+        );
+      }
+      if (values.marcaProduto && values.marcaProduto.length > 0) {
+        solicitacoesFiltrados = this.filtrarMarca(
+          solicitacoesFiltrados,
+          values.marcaProduto,
+        );
+      }
 
-    if (values.editalProduto && values.editalProduto.length > 0) {
-      solicitacoesFiltrados = this.filtrarEdital(
-        solicitacoesFiltrados,
-        values.editalProduto
-      );
-    }
-    if (values.nomeProduto && values.nomeProduto.length > 2) {
-      solicitacoesFiltrados = this.filtrarNome(
-        solicitacoesFiltrados,
-        values.nomeProduto
-      );
-    }
-    this.setState({ solicitacoesFiltrados });
+      if (values.editalProduto && values.editalProduto.length > 0) {
+        solicitacoesFiltrados = this.filtrarEdital(
+          solicitacoesFiltrados,
+          values.editalProduto,
+        );
+      }
+      if (values.nomeProduto && values.nomeProduto.length > 2) {
+        solicitacoesFiltrados = this.filtrarNome(
+          solicitacoesFiltrados,
+          values.nomeProduto,
+        );
+      }
+      return { solicitacoesFiltrados };
+    });
   }
 
   filtrarMarca(listaFiltro, value) {
     return listaFiltro.filter((item) =>
-      item.marca.toLowerCase().includes(value.toLowerCase())
+      item.marca.toLowerCase().includes(value.toLowerCase()),
     );
   }
 
@@ -188,7 +189,7 @@ export class StatusSolicitacoes extends Component {
     return listaFiltro.filter(
       (item) =>
         item.produto_editais &&
-        item.produto_editais.toLowerCase().includes(value.toLowerCase())
+        item.produto_editais.toLowerCase().includes(value.toLowerCase()),
     );
   }
 
@@ -233,7 +234,7 @@ export class StatusSolicitacoes extends Component {
     ) {
       const solicitacoesPaginaAtual = solicitacoesCardRespQuest.slice(
         paginaAtual * pageSize - pageSize,
-        paginaAtual * pageSize
+        paginaAtual * pageSize,
       );
       this.setState({
         solicitacoesPaginaAtual: solicitacoesPaginaAtual,
@@ -258,8 +259,8 @@ export class StatusSolicitacoes extends Component {
             "Questionamentos da CODAE",
           ].includes(this.props.titulo)
             ? { limit: 100, offset: (paginaAtual - 1) * 100 }
-            : paginaAtual
-        )
+            : paginaAtual,
+        ),
       );
       const retornos = await Promise.all(promises);
       retornos.forEach(
@@ -268,9 +269,9 @@ export class StatusSolicitacoes extends Component {
             formatarDadosSolicitacao(
               retorno.data ? retorno.data.results : retorno.results,
               null,
-              this.props.titulo
-            )
-          ))
+              this.props.titulo,
+            ),
+          )),
       );
 
       this.setState({
@@ -291,7 +292,11 @@ export class StatusSolicitacoes extends Component {
     });
   };
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.carregarDadosIniciais();
+  }
+
+  carregarDadosIniciais = async () => {
     const { endpointGetSolicitacoes, formatarDadosSolicitacao, status } =
       this.props;
     const listaStatus = Array.isArray(status) ? status : [status];
@@ -321,7 +326,7 @@ export class StatusSolicitacoes extends Component {
     } else {
       try {
         const promises = listaStatus.map((status) =>
-          endpointGetSolicitacoes(status || terceirizadaUUID, currentPage)
+          endpointGetSolicitacoes(status || terceirizadaUUID, currentPage),
         );
         const retornos = await Promise.all(promises);
         retornos.forEach(
@@ -330,9 +335,9 @@ export class StatusSolicitacoes extends Component {
               formatarDadosSolicitacao(
                 retorno.data ? retorno.data.results : retorno.results,
                 null,
-                this.props.titulo
-              )
-            ))
+                this.props.titulo,
+              ),
+            )),
         );
         this.setState({
           count: retornos[0].data.count,
@@ -341,7 +346,7 @@ export class StatusSolicitacoes extends Component {
           originalCount: retornos[0].data.count,
           loading: false,
         });
-      } catch (e) {
+      } catch {
         this.setState({
           loading: false,
           erro: true,
@@ -358,7 +363,7 @@ export class StatusSolicitacoes extends Component {
       await getMeusLotes().then((response) => {
         this.setState({
           listaLotes: [{ nome: "Selecione um lote", uuid: "" }].concat(
-            response.data.results
+            response.data.results,
           ),
         });
       });
@@ -375,7 +380,7 @@ export class StatusSolicitacoes extends Component {
       return { value: element, label: element };
     });
     this.setState({ editais: listaFormatada });
-  }
+  };
 
   cardResponderQuestionamentosCodae = (solicitacoes) => {
     const nomeUsuario = localStorage.getItem("nome");
@@ -385,7 +390,7 @@ export class StatusSolicitacoes extends Component {
         .filter(
           (solicitacao) =>
             ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS.CODAE_PEDIU_ANALISE_RECLAMACAO.toUpperCase() ===
-            solicitacao.status
+            solicitacao.status,
         )
         .sort(ordenaPorDate);
     } else if (tipoPerfil === TIPO_PERFIL.ESCOLA) {
@@ -394,7 +399,7 @@ export class StatusSolicitacoes extends Component {
           (solicitacao) =>
             nomeUsuario === `"${solicitacao.nome_usuario_log_de_reclamacao}"` &&
             ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS.CODAE_QUESTIONOU_UE.toUpperCase() ===
-              solicitacao.status
+              solicitacao.status,
         )
         .sort(ordenaPorDate);
     } else if (tipoPerfil === TIPO_PERFIL.SUPERVISAO_NUTRICAO) {
@@ -402,7 +407,7 @@ export class StatusSolicitacoes extends Component {
         .filter(
           (solicitacao) =>
             ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS.CODAE_QUESTIONOU_NUTRISUPERVISOR.toUpperCase() ===
-            solicitacao.status
+            solicitacao.status,
         )
         .sort(ordenaPorDate);
     }
@@ -496,5 +501,5 @@ const mapDispatchToProps = (dispatch) => ({
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(StatusSolicitacoesForm);

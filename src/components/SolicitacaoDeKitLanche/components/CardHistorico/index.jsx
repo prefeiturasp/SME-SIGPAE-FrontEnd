@@ -33,10 +33,13 @@ export class CardHistorico extends Component {
   }
 
   onCheckClicked(key) {
-    let pedidos = this.state.pedidos;
-    pedidos[key].checked = !pedidos[key].checked;
-    this.props.change(`check_${key}`, pedidos[key].checked);
-    this.setState({ pedidos });
+    const checked = !this.state.pedidos[key].checked;
+    this.props.change(`check_${key}`, checked);
+    this.setState((prevState) => {
+      const pedidos = [...prevState.pedidos];
+      pedidos[key] = { ...pedidos[key], checked };
+      return { pedidos };
+    });
   }
 
   // TODO: chamar "imprimir" quando tiver endpoint definido
@@ -99,6 +102,13 @@ export class CardHistorico extends Component {
                     />
                     <span
                       onClick={() => this.selecionarTodos()}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          this.selecionarTodos();
+                        }
+                      }}
+                      tabIndex={0}
                       className="checkbox-custom small"
                     />
                     Selecionar todos

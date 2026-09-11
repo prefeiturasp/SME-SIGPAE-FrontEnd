@@ -14,14 +14,14 @@ export const totalAlunosInputPorPeriodo = (values, index) => {
   const faixas = values.substituicoes[index].faixas;
   if (!faixas) return 0;
   return Object.values(faixas).reduce(function (total, faixa) {
-    return total + parseInt(faixa);
+    return total + Number.parseInt(faixa);
   }, 0);
 };
 
 export const formataPayload = (values) => {
   const values_ = deepCopy(values);
   let filteredSubstituicoes = values_.substituicoes.filter((obj) =>
-    Object.prototype.hasOwnProperty.call(obj, "faixas")
+    Object.hasOwn(obj, "faixas"),
   );
   values_.substituicoes = filteredSubstituicoes;
   values_.data = values_.data.split("/").reverse().join("-");
@@ -51,14 +51,14 @@ export const formataPayload = (values) => {
 
 export const validaForm = (values) => {
   let erro = "";
-  if (!values.substituicoes.find((subs) => subs.checked)) {
+  if (!values.substituicoes.some((subs) => subs.checked)) {
     erro = "É necessário selecionar pelo menos um período";
     return erro;
   }
   if (
     !values.substituicoes
       .filter((subs) => subs.checked)
-      .find((subs) => subs.faixas)
+      .some((subs) => subs.faixas)
   ) {
     erro =
       "Ao selecionar um período, é necessário preencher ao menos uma faixa etária";

@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
+  cleanup,
   fireEvent,
   render,
   screen,
@@ -28,7 +29,7 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
     mock.onGet("/dias-uteis/").reply(200, mockDiasUteis);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
@@ -59,23 +60,23 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
             <InversaoDeDiaDeCardapioPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Renderiza título `Inversão de dia de Cardápio`", () => {
     expect(screen.queryAllByText("Inversão de dia de Cardápio")).toHaveLength(
-      2
+      2,
     );
   });
 
   it("Preenche formulario e salva rascunho", async () => {
     const selectTiposAlimentacao = screen.getByTestId(
-      "select-tipos-alimentacao"
+      "select-tipos-alimentacao",
     );
     const selectControlTiposAlimentacao = within(
-      selectTiposAlimentacao
+      selectTiposAlimentacao,
     ).getByRole("combobox");
     fireEvent.mouseDown(selectControlTiposAlimentacao);
     const optionLanche = screen.getByText("Lanche");
@@ -131,7 +132,7 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
 
     await waitFor(() => {
       expect(
-        screen.getByText("Inversão de dia de Cardápio salvo com sucesso!")
+        screen.getByText("Inversão de dia de Cardápio salvo com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -147,14 +148,14 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
 
     mock
       .onPut(
-        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`,
       )
       .reply(200, {
         uuid: mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid,
       });
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/inicio-pedido/`
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
 
@@ -163,7 +164,7 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
 
     await waitFor(async () => {
       expect(
-        screen.getByText("Inversão de dia de Cardápio enviada com sucesso!")
+        screen.getByText("Inversão de dia de Cardápio enviada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -178,14 +179,14 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
 
     mock
       .onPut(
-        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`,
       )
       .reply(200, {
         uuid: mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid,
       });
     mock
       .onPatch(
-        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/inicio-pedido/`
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/inicio-pedido/`,
       )
       .reply(400, { detail: "Erro ao enviar pedido." });
 
@@ -200,7 +201,7 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
   it("Exclui rascunho", async () => {
     mock
       .onDelete(
-        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`,
       )
       .replyOnce(204, {});
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -218,7 +219,7 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
-        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`
+        `/inversoes-dia-cardapio/${mockRascunhosInversaoDiaCardapioCEMEI.results[0].uuid}/`,
       )
       .replyOnce(400, { detail: "Erro ao excluir rascunho" });
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -229,8 +230,8 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
-        )
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -250,6 +251,181 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
 
     await waitFor(() => {
       expect(screen.getByText("Adicionar Dia")).toBeInTheDocument();
+    });
+  });
+
+  it("Carrega rascunho com todos os alunos da CEMEI nos dois dias", async () => {
+    cleanup();
+
+    const mockRascunhosComTodos = {
+      ...mockRascunhosInversaoDiaCardapioCEMEI,
+      results: mockRascunhosInversaoDiaCardapioCEMEI.results.map(
+        (rascunho, index) => {
+          if (index !== 0) {
+            return rascunho;
+          }
+          return {
+            ...rascunho,
+            alunos_da_cemei: "Todos",
+            alunos_da_cemei_2: "Todos",
+            data_de_inversao_2: rascunho.data_de_inversao_2 || "01/02/2025",
+            data_para_inversao_2: rascunho.data_para_inversao_2 || "02/02/2025",
+          };
+        },
+      ),
+    };
+
+    mock
+      .onGet("/inversoes-dia-cardapio/minhas-solicitacoes/")
+      .reply(200, mockRascunhosComTodos);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEMEI,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <InversaoDeDiaDeCardapioPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const botaoCarregarRascunho = await screen.findByTestId(
+      "botao-carregar-rascunho",
+    );
+
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Solicitação # 2E398")).toBeInTheDocument();
+      expect(screen.getByTestId("select-alunos_da_cemei")).toBeInTheDocument();
+      expect(
+        screen.getByTestId("select-alunos_da_cemei_2"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Salva rascunho sem alunos do segundo dia", async () => {
+    const selectTiposAlimentacao = screen.getByTestId(
+      "select-tipos-alimentacao",
+    );
+    const selectControlTiposAlimentacao = within(
+      selectTiposAlimentacao,
+    ).getByRole("combobox");
+    fireEvent.mouseDown(selectControlTiposAlimentacao);
+    fireEvent.click(screen.getByText("Lanche"));
+
+    const divInputDataDe = screen.getByTestId("div-input-data_de");
+    fireEvent.change(divInputDataDe.querySelector("input"), {
+      target: { value: "30/01/2025" },
+    });
+
+    const divInputDataPara = screen.getByTestId("div-input-data_para");
+    fireEvent.change(divInputDataPara.querySelector("input"), {
+      target: { value: "31/01/2025" },
+    });
+
+    const selectAlunos = screen.getByTestId("select-alunos_da_cemei");
+    fireEvent.mouseDown(within(selectAlunos).getByRole("combobox"));
+    fireEvent.click(screen.getByText("Todos"));
+
+    mock.onPost("/inversoes-dia-cardapio/").reply(201, {});
+
+    fireEvent.click(screen.getByText("Salvar Rascunho").closest("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inversão de dia de Cardápio salvo com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Cria solicitação e inicia pedido ao enviar", async () => {
+    const selectTiposAlimentacao = screen.getByTestId(
+      "select-tipos-alimentacao",
+    );
+    fireEvent.mouseDown(within(selectTiposAlimentacao).getByRole("combobox"));
+    fireEvent.click(screen.getByText("Lanche"));
+
+    fireEvent.change(
+      screen.getByTestId("div-input-data_de").querySelector("input"),
+      {
+        target: { value: "30/01/2025" },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByTestId("div-input-data_para").querySelector("input"),
+      {
+        target: { value: "31/01/2025" },
+      },
+    );
+
+    const selectAlunos = screen.getByTestId("select-alunos_da_cemei");
+    fireEvent.mouseDown(within(selectAlunos).getByRole("combobox"));
+    fireEvent.click(screen.getByText("Todos"));
+
+    const uuid = "550e8400-e29b-41d4-a716-446655440000";
+
+    mock.onPost("/inversoes-dia-cardapio/").reply(201, { uuid });
+    mock
+      .onPatch(`/inversoes-dia-cardapio/${uuid}/inicio-pedido/`)
+      .reply(200, {});
+
+    fireEvent.click(screen.getByText("Enviar").closest("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inversão de dia de Cardápio enviada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Exibe erro ao salvar rascunho quando a API retorna erro", async () => {
+    const selectTiposAlimentacao = screen.getByTestId(
+      "select-tipos-alimentacao",
+    );
+    fireEvent.mouseDown(within(selectTiposAlimentacao).getByRole("combobox"));
+    fireEvent.click(screen.getByText("Lanche"));
+
+    fireEvent.change(
+      screen.getByTestId("div-input-data_de").querySelector("input"),
+      {
+        target: { value: "30/01/2025" },
+      },
+    );
+
+    fireEvent.change(
+      screen.getByTestId("div-input-data_para").querySelector("input"),
+      {
+        target: { value: "31/01/2025" },
+      },
+    );
+
+    const selectAlunos = screen.getByTestId("select-alunos_da_cemei");
+    fireEvent.mouseDown(within(selectAlunos).getByRole("combobox"));
+    fireEvent.click(screen.getByText("Todos"));
+
+    mock
+      .onPost("/inversoes-dia-cardapio/")
+      .reply(400, { detail: "Erro ao salvar inversão." });
+
+    fireEvent.click(screen.getByText("Salvar Rascunho").closest("button"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Erro ao salvar inversão.")).toBeInTheDocument();
     });
   });
 });

@@ -21,6 +21,7 @@ const ModalHistorico = ({
   motivoNegacao,
   justificativaNegacao,
   printHistorico,
+  renderizarAcoesLog,
 }) => {
   const [logs, setLogs] = useState([]);
   const [logSelecionado, setLogSelecionado] = useState(null);
@@ -120,9 +121,15 @@ const ModalHistorico = ({
     }
   };
 
+  const acoesLog =
+    logSelecionado && renderizarAcoesLog
+      ? renderizarAcoesLog(logSelecionado)
+      : null;
+
   const customStyle =
     logSelecionado?.status_evento_explicacao &&
-    statusValidosDownload.includes(logSelecionado.status_evento_explicacao)
+    (statusValidosDownload.includes(logSelecionado.status_evento_explicacao) ||
+      acoesLog)
       ? { maxHeight: "200px" }
       : { maxHeight: "250px" };
 
@@ -180,6 +187,15 @@ const ModalHistorico = ({
                   onClick={() => {
                     itemLogAtivo(index, ativo);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      itemLogAtivo(index, ativo);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={Boolean(ativo)}
                 >
                   <div className="usuario">
                     <div>{iniciais}</div>
@@ -302,6 +318,11 @@ const ModalHistorico = ({
                 <div />
               )}
             </header>
+            {acoesLog && (
+              <footer className="footer-historico">
+                <article>{acoesLog}</article>
+              </footer>
+            )}
             {logSelecionado !== null &&
               statusValidosDownload.includes(
                 logSelecionado.status_evento_explicacao,
