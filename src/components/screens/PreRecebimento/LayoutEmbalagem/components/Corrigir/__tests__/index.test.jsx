@@ -30,6 +30,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("src/components/Shareable/Input/InputFile/helper", () => ({
+  ...jest.requireActual("src/components/Shareable/Input/InputFile/helper"),
   downloadAndConvertToBase64: jest.fn(() =>
     Promise.resolve("data:image/jpeg;base64,fake-base64-data"),
   ),
