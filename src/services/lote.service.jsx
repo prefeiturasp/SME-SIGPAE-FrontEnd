@@ -89,9 +89,12 @@ export const getLote = (uuid) => {
 export const getLotes = (payload) => {
   const url = `${API_URL}/lotes/`;
   let status = 0;
-  return fetch(url, {
+  const queryString =
+    payload && typeof payload === "object"
+      ? new URLSearchParams(payload).toString()
+      : "";
+  return fetch(queryString ? `${url}?${queryString}` : url, {
     method: "GET",
-    body: payload,
     headers: authToken,
   })
     .then((res) => {
@@ -127,7 +130,7 @@ export const getLotesSimples = async (params = null) => {
 export const getLotesAsync = async (
   setLotes,
   valueField = "value",
-  labelField = "label"
+  labelField = "label",
 ) => {
   try {
     const { data } = await getLotesSimples();
@@ -144,7 +147,7 @@ export const getLotesAsync = async (
     setLotes(lotes);
   } catch (error) {
     toastError(
-      "Erro ao carregar lotes. Tente novamente mais tarde." + error.toString()
+      "Erro ao carregar lotes. Tente novamente mais tarde." + error.toString(),
     );
   }
 };
