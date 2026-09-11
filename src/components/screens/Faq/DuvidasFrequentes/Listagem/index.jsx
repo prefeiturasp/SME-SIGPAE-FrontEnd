@@ -18,6 +18,7 @@ import {
 import BotaoCadastrarDuvidasFrequentes from "../components/BotaoCadastroDuvidasFrequentes";
 import TabelaDuvidasFrequentes from "../components/TabelaDuvidasFrequentes";
 import { formatarDuvidasParaTabela } from "../components/TabelaDuvidasFrequentes/helpers";
+import Filtros from "./components/Filtros";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
 import "./style.scss";
 
@@ -31,6 +32,7 @@ const ListagemDuvidasFrequentes = () => {
   const [duvidaSelecionada, setDuvidaSelecionada] = useState(null);
   const [exibirModalExclusao, setExibirModalExclusao] = useState(false);
   const [excluindo, setExcluindo] = useState(false);
+  const [filtros, setFiltros] = useState({});
   const navegar = useNavigate();
 
   const buscarDuvidas = useCallback(async () => {
@@ -40,6 +42,7 @@ const ListagemDuvidasFrequentes = () => {
       page: paginaAtual,
       page_size: ITENS_POR_PAGINA,
       ordering: "-criado_em",
+      ...filtros,
     };
 
     try {
@@ -55,7 +58,7 @@ const ListagemDuvidasFrequentes = () => {
     } finally {
       setCarregando(false);
     }
-  }, [paginaAtual]);
+  }, [filtros, paginaAtual]);
 
   const abrirModalExclusao = (duvida) => {
     setDuvidaSelecionada(duvida);
@@ -105,9 +108,40 @@ const ListagemDuvidasFrequentes = () => {
     setDuvidaSelecionada(null);
   };
 
+  const filtrarDuvidas = (valores) => {
+    const novosFiltros = {};
+    const titulo = valores.titulo?.trim();
+
+    if (titulo) {
+      novosFiltros.titulo = titulo;
+    }
+
+    if (valores.categoria && valores.categoria !== "0") {
+      novosFiltros.categoria = valores.categoria;
+    }
+
+    if (valores.perfil === "todos") {
+      novosFiltros.perfil = valores.perfil;
+    } else if (valores.perfil?.length) {
+      novosFiltros.perfil = valores.perfil.join(",");
+    }
+
+    setPaginaAtual(1);
+    setFiltros(novosFiltros);
+  };
+
+  const limparFiltros = () => {
+    setPaginaAtual(1);
+    setFiltros({});
+  };
+
+  const possuiFiltros = Object.values(filtros).some(Boolean);
+
   return (
     <>
       <div className="pagina-listagem-duvidas-frequentes">
+        <Filtros aoFiltrar={filtrarDuvidas} aoLimpar={limparFiltros} />
+
         <div className="acao-cadastro-duvida">
           <BotaoCadastrarDuvidasFrequentes />
         </div>
@@ -140,9 +174,9 @@ const ListagemDuvidasFrequentes = () => {
         ) : (
           <>
             <p className="sem-duvidas-cadastradas">
-              Ainda não há dúvidas frequentes cadastradas. Utilize o botão
-              &quot;Cadastrar Dúvidas Frequentes&quot; para realizar o primeiro
-              cadastro.
+              {possuiFiltros
+                ? "Nenhum resultado encontrado para o filtro selecionado."
+                : 'Ainda não há dúvidas frequentes cadastradas. Utilize o botão "Cadastrar Dúvidas Frequentes" para realizar o primeiro cadastro.'}
             </p>
             <TabelaDuvidasFrequentes
               duvidas={duvidas}

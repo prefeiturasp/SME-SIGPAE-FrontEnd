@@ -69,6 +69,35 @@ jest.mock("src/components/Shareable/ModalGenerico", () => ({
   },
 }));
 
+jest.mock("../components/Filtros", () => ({
+  __esModule: true,
+  default: ({ aoFiltrar, aoLimpar }) => (
+    <div>
+      <button
+        type="button"
+        onClick={() =>
+          aoFiltrar({
+            titulo: " dieta ",
+            categoria: "96da837c-009f-41f2-ae46-d4a7fa52aa30",
+            perfil: [
+              "996c50ce-ea3c-450f-8af0-f19940de223e",
+              "5fa61f05-e894-44f3-a98b-18cc8e718386",
+            ],
+          })
+        }
+      >
+        Aplicar filtros
+      </button>
+      <button type="button" onClick={() => aoFiltrar({ perfil: "todos" })}>
+        Filtrar todos os perfis
+      </button>
+      <button type="button" onClick={aoLimpar}>
+        Limpar filtros
+      </button>
+    </div>
+  ),
+}));
+
 jest.mock("../../components/TabelaDuvidasFrequentes", () => ({
   __esModule: true,
   default: ({ aoEditar, aoExcluir, duvidas }) => (
@@ -94,6 +123,7 @@ const UUID_DUVIDA = "22b0d5e4-50f1-46cc-9cee-5fa30b7d7f57";
 const UUID_DUVIDA_ULTIMA_PAGINA = "56fd6872-eccb-45b0-959b-c73bba8d429e";
 const UUID_CATEGORIA = "96da837c-009f-41f2-ae46-d4a7fa52aa30";
 const UUID_PERFIL = "996c50ce-ea3c-450f-8af0-f19940de223e";
+const UUID_SEGUNDO_PERFIL = "5fa61f05-e894-44f3-a98b-18cc8e718386";
 
 const respostaPaginada = {
   data: {
@@ -169,6 +199,90 @@ describe("ListagemDuvidasFrequentes", () => {
         page_size: 10,
       });
     });
+  });
+
+  it("aplica os filtros com múltiplos perfis na listagem", async () => {
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+        titulo: "dieta",
+        categoria: UUID_CATEGORIA,
+        perfil: `${UUID_PERFIL},${UUID_SEGUNDO_PERFIL}`,
+      });
+    });
+  });
+
+  it("envia todos quando todos os perfis estão selecionados", async () => {
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+    fireEvent.click(
+      screen.getByRole("button", { name: "Filtrar todos os perfis" }),
+    );
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+        perfil: "todos",
+      });
+    });
+  });
+
+  it("limpa os filtros e volta a listar todas as dúvidas", async () => {
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+        titulo: "dieta",
+        categoria: UUID_CATEGORIA,
+        perfil: `${UUID_PERFIL},${UUID_SEGUNDO_PERFIL}`,
+      });
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Limpar filtros" }));
+
+    await waitFor(() => {
+      expect(listarPerguntasFrequentes).toHaveBeenLastCalledWith({
+        ordering: "-criado_em",
+        page: 1,
+        page_size: 10,
+      });
+    });
+
+    expect(screen.getByText("Como solicitar uma dieta?")).toBeInTheDocument();
+  });
+
+  it("informa quando o filtro não encontra resultados", async () => {
+    listarPerguntasFrequentes
+      .mockResolvedValueOnce(respostaPaginada)
+      .mockResolvedValueOnce({ data: [] });
+
+    render(<ListagemDuvidasFrequentes />);
+
+    await screen.findByText("Como solicitar uma dieta?");
+    fireEvent.click(screen.getByRole("button", { name: "Aplicar filtros" }));
+
+    expect(
+      await screen.findByText(
+        "Nenhum resultado encontrado para o filtro selecionado.",
+      ),
+    ).toBeInTheDocument();
   });
 
   it("direciona para a edição da dúvida selecionada", async () => {
