@@ -3,30 +3,12 @@ import React, { Component } from "react";
 import "./style.scss";
 import Botao from "../../Botao";
 import { BUTTON_STYLE, BUTTON_TYPE } from "../../Botao/constants";
-import { readerFile } from "./helper";
+import { readerFile, openFile } from "./helper";
 import { toastSuccess, toastError } from "../../Toast/dialogs";
 import { truncarString } from "../../../../helpers/utilities";
 import { DEZ_MB } from "../../../../constants/shared";
 
 export class InputFileManaged extends Component {
-  openFile(file) {
-    if (file.arquivo && file.arquivo.startsWith("http")) {
-      window.open(file.arquivo);
-    } else if (file.nome.includes(".doc")) {
-      const link = document.createElement("a");
-      link.href = file.base64;
-      link.download = file.nome;
-      link.click();
-    } else {
-      let pdfWindow = window.open("");
-      pdfWindow.document.write(
-        "<iframe width='100%' height='100%' src='" +
-          file.base64 +
-          "'></iframe>",
-      );
-    }
-  }
-
   deleteFile(index) {
     const { value, onChange } = this.props;
     onChange(value.length === 1 ? "" : value.filter((_, i) => i !== index));
@@ -120,19 +102,7 @@ export class InputFileManaged extends Component {
         {files.map((file, key) => {
           return (
             <div className="file-div row" key={key}>
-              <div
-                className="file-name col-8"
-                onClick={() => this.openFile(file)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    this.openFile(file);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                aria-label={`Abrir anexo ${file.nome}`}
-              >
+              <div className="file-name col-8" onClick={() => openFile(file)}>
                 {truncarString(file.nome, 20)}
               </div>
               <div className="col-4 exclude-icon">

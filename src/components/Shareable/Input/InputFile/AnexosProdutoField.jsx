@@ -3,29 +3,11 @@ import React, { Component } from "react";
 import "./style.scss";
 import Botao from "../../Botao";
 import { BUTTON_STYLE, BUTTON_TYPE } from "../../Botao/constants";
-import { readerFile } from "./helper";
+import { readerFile, openFile } from "./helper";
 import { toastSuccess, toastError } from "../../Toast/dialogs";
 import { DEZ_MB } from "../../../../constants/shared";
 
 export class AnexosProdutoField extends Component {
-  openFile(file) {
-    if (file.arquivo && file.arquivo.startsWith("http")) {
-      window.open(file.arquivo);
-    } else if (file.nome.includes(".doc")) {
-      const link = document.createElement("a");
-      link.href = file.base64;
-      link.download = file.nome;
-      link.click();
-    } else {
-      let pdfWindow = window.open("");
-      pdfWindow.document.write(
-        "<iframe width='100%' height='100%' src='" +
-          file.base64 +
-          "'></iframe>",
-      );
-    }
-  }
-
   deleteFile(index) {
     const { value, onChange } = this.props;
     onChange(value.length === 1 ? "" : value.filter((_, i) => i !== index));
@@ -118,25 +100,14 @@ export class AnexosProdutoField extends Component {
           {files.map((file, key) => {
             return (
               <div key={key} className="px-1 arquivos-anexados mt-1">
-                <span
-                  onClick={() => this.openFile(file)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      this.openFile(file);
-                    }
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Abrir anexo ${file.nome}`}
-                >
+                <span onClick={() => openFile(file)}>
                   <i className="fas fa-paperclip" />
                 </span>
                 <a
                   href="#!"
                   rel="noopener noreferrer"
                   target="_blank"
-                  onClick={() => this.openFile(file)}
+                  onClick={() => openFile(file)}
                   className="link ms-1 me-5"
                 >
                   {file.nome}
