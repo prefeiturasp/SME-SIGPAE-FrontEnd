@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const SuspensaoAlimentacaoBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;
@@ -46,7 +47,13 @@ export const SuspensaoAlimentacaoBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,
@@ -102,7 +109,7 @@ export const SuspensaoAlimentacaoBody = ({ ...props }) => {
                     </div>
                   </div>
                 );
-              }
+              },
             )}
             <div className="row mt-3">
               <div className="col-3">
@@ -152,7 +159,7 @@ export const SuspensaoAlimentacaoBody = ({ ...props }) => {
                     </div>
                   </div>
                 );
-              }
+              },
             )}
             {solicitacao.observacao && solicitacao.observacao !== "<p></p>" && (
               <div className="row">
@@ -170,7 +177,7 @@ export const SuspensaoAlimentacaoBody = ({ ...props }) => {
               </div>
             )}
             {solicitacao.suspensoes_alimentacao.find(
-              (suspensao) => suspensao.cancelado_justificativa
+              (suspensao) => suspensao.cancelado_justificativa,
             ) && (
               <>
                 <hr />

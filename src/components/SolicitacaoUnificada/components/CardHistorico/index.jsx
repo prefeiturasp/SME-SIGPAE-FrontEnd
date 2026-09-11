@@ -157,24 +157,54 @@ export class CardHistorico extends Component {
                                 className="checkbox-custom small report-line"
                               />
                             </label>
-                            <span onClick={() => this.setRedirect()}>
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => this.setRedirect()}
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  this.setRedirect(),
+                                )
+                              }
+                            >
                               {pedido.id_externo}
                             </span>
                           </td>
                           <td
+                            role="button"
+                            tabIndex={0}
                             onClick={() => this.setRedirect()}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.setRedirect(),
+                              )
+                            }
                             className="col-3"
                           >
                             {pedido.lote}
                           </td>
                           <td
+                            role="button"
+                            tabIndex={0}
                             onClick={() => this.setRedirect()}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.setRedirect(),
+                              )
+                            }
                             className="col-3"
                           >
                             {pedido.diretoria_regional.nome}
                           </td>
                           <td
+                            role="button"
+                            tabIndex={0}
                             onClick={() => this.setRedirect()}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.setRedirect(),
+                              )
+                            }
                             className="col-3"
                           >
                             {pedido.solicitacao_kit_lanche.data}

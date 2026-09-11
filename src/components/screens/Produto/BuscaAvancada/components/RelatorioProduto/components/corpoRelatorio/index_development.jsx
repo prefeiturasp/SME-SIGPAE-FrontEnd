@@ -9,7 +9,7 @@ import {
   BUTTON_STYLE,
   BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
-import { truncarString } from "src/helpers/utilities";
+import { acionaComEnterOuEspaco, truncarString } from "src/helpers/utilities";
 import {
   getRelatorioProduto,
   getRelatorioProdutoHistorico,
@@ -313,9 +313,17 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
                   <nav
                     key={index}
                     className="item-listagem"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(ativo)}
                     onClick={() => {
                       this.renderInformacaoNutricional(index, ativo);
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () =>
+                        this.renderInformacaoNutricional(index, ativo),
+                      )
+                    }
                   >
                     <div className="header-listagem">
                       <div className="descricao-proteina">
@@ -497,9 +505,17 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
                     <div
                       key={index}
                       className={`${ativo && "ativo-item"} grid-item-log`}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={Boolean(ativo)}
                       onClick={() => {
                         this.itemLogAtivo(index, ativo);
                       }}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          this.itemLogAtivo(index, ativo),
+                        )
+                      }
                     >
                       <div className="usuario">
                         <div>{iniciais}</div>

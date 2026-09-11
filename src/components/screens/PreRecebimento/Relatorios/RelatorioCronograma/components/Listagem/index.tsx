@@ -11,9 +11,9 @@ import {
   FiltrosRelatorioCronograma,
 } from "../../interfaces";
 import { imprimirFichaRecebimento } from "src/services/fichaRecebimento.service";
+import { acionaComEnterOuEspaco, truncarString } from "src/helpers/utilities";
 import { Tooltip } from "antd";
 import { formataNome } from "../../helpers";
-import { truncarString } from "src/helpers/utilities";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
 interface Props {
@@ -113,6 +113,11 @@ const Listagem: React.FC<Props> = ({
                   <i
                     className={`fas fa-${icone} expand`}
                     data-testid="icone-expandir"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(
+                      ativos && ativos.includes(cronograma.uuid),
+                    )}
                     onClick={() => {
                       ativos && ativos.includes(cronograma.uuid)
                         ? setAtivos(
@@ -126,6 +131,21 @@ const Listagem: React.FC<Props> = ({
                               : [cronograma.uuid],
                           );
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () => {
+                        ativos && ativos.includes(cronograma.uuid)
+                          ? setAtivos(
+                              ativos.filter(
+                                (el: string) => el !== cronograma.uuid,
+                              ),
+                            )
+                          : setAtivos(
+                              ativos
+                                ? [...ativos, cronograma.uuid]
+                                : [cronograma.uuid],
+                            );
+                      })
+                    }
                   />
                 </div>
               </div>

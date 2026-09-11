@@ -1,4 +1,7 @@
-import { stringSeparadaPorVirgulas } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  stringSeparadaPorVirgulas,
+} from "src/helpers/utilities";
 import React, { useState } from "react";
 
 export const InversaoCardapioBody = ({ ...props }) => {
@@ -33,7 +36,13 @@ export const InversaoCardapioBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,
@@ -97,7 +106,7 @@ export const InversaoCardapioBody = ({ ...props }) => {
                     <p style={{ fontWeight: "bold" }}>
                       {stringSeparadaPorVirgulas(
                         solicitacao.tipos_alimentacao,
-                        "nome"
+                        "nome",
                       )}
                     </p>
                   </div>

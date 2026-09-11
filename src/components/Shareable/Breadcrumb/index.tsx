@@ -1,4 +1,5 @@
 import { TemaContext } from "src/context/TemaContext";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import React, { useContext } from "react";
 import {
   Link,
@@ -68,9 +69,14 @@ export default function Breadcrumb({
       </div>
       <div
         className="col-xs-3 col-sm-2 text-end contrast"
+        role="button"
+        tabIndex={0}
         onClick={() => {
           temaContext.mudarTema();
         }}
+        onKeyDown={(e) =>
+          acionaComEnterOuEspaco(e, () => temaContext.mudarTema())
+        }
       >
         <i className="fas fa-adjust" /> Contraste
       </div>

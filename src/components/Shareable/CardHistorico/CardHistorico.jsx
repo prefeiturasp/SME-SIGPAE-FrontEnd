@@ -116,6 +116,16 @@ export class CardHistorico extends Component {
                                     true,
                                   )
                                 }
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    e.preventDefault();
+                                    this.props.change(
+                                      `check_${pedido.uuid}`,
+                                      true,
+                                    );
+                                  }
+                                }}
+                                tabIndex={0}
                                 className="checkbox-custom"
                               />
                             </label>

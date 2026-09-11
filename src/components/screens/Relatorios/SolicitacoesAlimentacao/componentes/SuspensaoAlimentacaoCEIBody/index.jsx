@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const SuspensaoAlimentacaoCEIBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;
@@ -25,7 +26,13 @@ export const SuspensaoAlimentacaoCEIBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,
@@ -81,7 +88,7 @@ export const SuspensaoAlimentacaoCEIBody = ({ ...props }) => {
             {solicitacao.periodos_escolares.map((periodo, idxPeriodo) => {
               let tiposAlimentacaoPeriodo =
                 solicitacao.escola.periodos_escolares.find(
-                  (pe) => pe.nome === periodo.nome
+                  (pe) => pe.nome === periodo.nome,
                 );
               tiposAlimentacaoPeriodo =
                 tiposAlimentacaoPeriodo.tipos_alimentacao

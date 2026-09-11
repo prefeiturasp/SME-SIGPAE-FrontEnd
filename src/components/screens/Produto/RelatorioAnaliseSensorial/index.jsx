@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import {
   getHomologacao,
   getInformacoesGrupo,
@@ -353,7 +354,15 @@ class RelatorioAnaliseSensorial extends Component {
                             <div>{informacao.nome}</div>
                             <i
                               className={`fas fa-${icone}`}
+                              role="button"
+                              tabIndex={0}
+                              aria-expanded={Boolean(informacao.ativo)}
                               onClick={() => this.showItem(informacao)}
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  this.showItem(informacao),
+                                )
+                              }
                             />
                           </div>
                           {informacao.ativo && (

@@ -4,6 +4,7 @@ import React, { Fragment } from "react";
 import "./styles.scss";
 import FormPrevisaoCadastro from "../FormPrevisaoCadastro";
 import {
+  acionaComEnterOuEspaco,
   usuarioEhCODAEDietaEspecial,
   usuarioEhEmpresaTerceirizada,
 } from "src/helpers/utilities";
@@ -23,13 +24,13 @@ const ListagemProdutos = ({
           sol.status = "CONFIRMADA";
           sol.status_title = "Confirmada";
           sol.data_previsao_cadastro = moment(
-            values.data_previsao_cadastro
+            values.data_previsao_cadastro,
           ).format("DD/MM/YYYY");
           sol.justificativa_previsao_cadastro =
             values.justificativa_previsao_cadastro;
         }
         return sol;
-      })
+      }),
     );
   };
   const gridTableClassName = usuarioTerceirizada
@@ -77,17 +78,35 @@ const ListagemProdutos = ({
                 <div>
                   <i
                     className={`fas fa-${icone}`}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(
+                      ativos && ativos.includes(solicitacao.uuid),
+                    )}
                     onClick={() => {
                       ativos && ativos.includes(solicitacao.uuid)
                         ? setAtivos(
-                            ativos.filter((el) => el !== solicitacao.uuid)
+                            ativos.filter((el) => el !== solicitacao.uuid),
                           )
                         : setAtivos(
                             ativos
                               ? [...ativos, solicitacao.uuid]
-                              : [solicitacao.uuid]
+                              : [solicitacao.uuid],
                           );
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () => {
+                        ativos && ativos.includes(solicitacao.uuid)
+                          ? setAtivos(
+                              ativos.filter((el) => el !== solicitacao.uuid),
+                            )
+                          : setAtivos(
+                              ativos
+                                ? [...ativos, solicitacao.uuid]
+                                : [solicitacao.uuid],
+                            );
+                      })
+                    }
                   />
                 </div>
               </div>
