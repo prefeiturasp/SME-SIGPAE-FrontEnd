@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Spin } from "antd";
-import { CronogramaSemanalRelatorio } from "./interfaces";
+import Filtros from "./components/Filtros";
+import {
+  CronogramaSemanalRelatorio,
+  FiltrosRelatorioCronograma,
+} from "./interfaces";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
 import { getListagemRelatorioCronogramasSemanais } from "../../../../../services/cronogramaSemanal.service";
 import { Paginacao } from "src/components/Shareable/Paginacao";
@@ -18,6 +22,7 @@ import { getMensagemDeErro } from "src/helpers/statusErrors";
 
 export default () => {
   const [carregando, setCarregando] = useState<boolean>(false);
+  const [filtros, setFiltros] = useState<FiltrosRelatorioCronograma>();
   const [page, setPage] = useState<number>(1);
   const [totalResultados, setTotalResultados] = useState<number>(0);
   const [consultaRealizada, setConsultaRealizada] = useState<boolean>(false);
@@ -28,7 +33,7 @@ export default () => {
 
   const buscarResultados = async (page) => {
     setCarregando(true);
-    const params = gerarParametrosConsulta({ page: page });
+    const params = gerarParametrosConsulta({ page: page, ...filtros });
     try {
       const response = await getListagemRelatorioCronogramasSemanais(params);
       setAtivos([]);
@@ -48,14 +53,23 @@ export default () => {
   };
 
   useEffect(() => {
-    buscarResultados(1);
-    setPage(1);
-  }, []);
+    if (filtros) {
+      buscarResultados(1);
+      setPage(1);
+    }
+  }, [filtros]);
 
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 card-relatorio-cronograma">
         <div className="card-body relatorio-cronograma">
+          <Filtros
+            setFiltros={setFiltros}
+            setCarregando={setCarregando}
+            setCronogramas={setCronogramasSemanais}
+            setConsultaRealizada={setConsultaRealizada}
+          />
+
           {consultaRealizada && (
             <>
               {cronogramasSemanais.length === 0 ? (
