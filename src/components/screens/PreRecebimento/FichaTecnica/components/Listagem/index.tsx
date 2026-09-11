@@ -11,7 +11,10 @@ import { FichaTecnica } from "src/interfaces/pre_recebimento.interface";
 import "./styles.scss";
 
 import { Tooltip } from "antd";
-import { truncarString } from "../../../../../../helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  truncarString,
+} from "../../../../../../helpers/utilities";
 import { imprimirFicha } from "../../helpers";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 
@@ -70,7 +73,12 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
     const botaoImprimir = (
       <span
         className="float-start ms-1 link-acoes green"
+        role="button"
+        tabIndex={0}
         onClick={() => baixarPDFFichaTecnica(objeto)}
+        onKeyDown={(e) =>
+          acionaComEnterOuEspaco(e, () => baixarPDFFichaTecnica(objeto))
+        }
         data-testid="btnImprimir"
       >
         <i className="fas fa-print" title="Ficha em PDF" />

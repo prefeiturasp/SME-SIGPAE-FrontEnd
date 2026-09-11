@@ -3,6 +3,7 @@ import { Field, FieldArray } from "redux-form";
 import InputText from "../../../../Shareable/Input/InputText";
 import Especificacoes from "./components/Especificacoes";
 import { required } from "../../../../../helpers/fieldValidators";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import {
   getUnidadesDeMedidaProduto,
   getEmbalagensProduto,
@@ -176,7 +177,16 @@ class Step3 extends Component {
                             key > 0 ? "mt-1" : ""
                           }`}
                         >
-                          <span onClick={() => this.openFile(anexo)}>
+                          <span
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => this.openFile(anexo)}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.openFile(anexo),
+                              )
+                            }
+                          >
                             <i className="fas fa-paperclip" />
                           </span>
                           <a
@@ -189,8 +199,15 @@ class Step3 extends Component {
                           </a>
                           <span
                             className="float-end"
+                            role="button"
+                            tabIndex={0}
                             onClick={() =>
                               this.props.removerAnexo(anexo.uuid, key)
+                            }
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.props.removerAnexo(anexo.uuid, key),
+                              )
                             }
                           >
                             <i className="fas fa-trash-alt" />

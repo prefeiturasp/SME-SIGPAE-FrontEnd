@@ -1580,6 +1580,21 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                       value,
                                     );
                                   }}
+                                  onKeyDown={(e) => {
+                                    if (e.target !== e.currentTarget) {
+                                      return;
+                                    }
+                                    acionaComEnterOuEspaco(e, () => {
+                                      const input =
+                                        e.currentTarget.querySelector("input");
+                                      onChangeCheckBox(
+                                        column,
+                                        categoria,
+                                        periodoGrupo,
+                                        input && input.checked,
+                                      );
+                                    });
+                                  }}
                                 >
                                   <Field
                                     component={"input"}

@@ -2,7 +2,11 @@ import React, { Dispatch, SetStateAction } from "react";
 import "./styles.scss";
 import { CronogramaSemanalRelatorio } from "../../interfaces";
 import { Tooltip } from "antd";
-import { formataMilharDecimal, truncarString } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  formataMilharDecimal,
+  truncarString,
+} from "src/helpers/utilities";
 
 interface Props {
   objetos: CronogramaSemanalRelatorio[];
@@ -48,11 +52,23 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                   <i
                     className={`fas fa-${icone} expand`}
                     data-testid="icone-expandir"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={expandido}
                     onClick={() => {
                       expandido
                         ? setAtivos(ativos.filter((el: string) => el !== chave))
                         : setAtivos(ativos ? [...ativos, chave] : [chave]);
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () => {
+                        expandido
+                          ? setAtivos(
+                              ativos.filter((el: string) => el !== chave),
+                            )
+                          : setAtivos(ativos ? [...ativos, chave] : [chave]);
+                      })
+                    }
                   />
                 </div>
               </div>

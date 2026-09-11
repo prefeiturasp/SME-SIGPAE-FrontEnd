@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./style.scss";
 
 import Botao from "src/components/Shareable/Botao";
@@ -317,11 +318,21 @@ export default class TabelaProdutos extends Component {
                 <div className="com-botao botoes-produto">
                   <i
                     className={`fas fa-angle-${isProdutoAtivo ? "up" : "down"}`}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isProdutoAtivo}
                     onClick={() => {
                       setIndiceProdutoAtivo(
                         indice === indiceProdutoAtivo ? undefined : indice,
                       );
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () =>
+                        setIndiceProdutoAtivo(
+                          indice === indiceProdutoAtivo ? undefined : indice,
+                        ),
+                      )
+                    }
                   />
                 </div>
               </div>

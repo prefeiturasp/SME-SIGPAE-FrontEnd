@@ -10,6 +10,7 @@ import {
 } from "src/configs/constants";
 
 import "./styles.scss";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 interface ListagemProps {
   questoesPorProdutos: QuestoesPorProduto[];
@@ -118,7 +119,14 @@ const Listagem = ({ questoesPorProdutos }: ListagemProps) => {
                 <div>
                   <span
                     className="botao-expandir-questoes collapsed"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => trocarCollapseAberto(index)}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () =>
+                        trocarCollapseAberto(index),
+                      )
+                    }
                     data-bs-toggle="collapse"
                     data-bs-target={`#collapse${questao.uuid}`}
                     aria-expanded="false"

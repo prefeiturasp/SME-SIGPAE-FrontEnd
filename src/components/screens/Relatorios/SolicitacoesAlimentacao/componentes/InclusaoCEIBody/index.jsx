@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 
@@ -14,14 +15,14 @@ export const InclusaoCEIBody = ({ ...props }) => {
     ? [solicitacao.periodo_escolar.nome]
     : unique(
         solicitacao.quantidade_alunos_por_faixas_etarias.map(
-          (qa) => qa.periodo.nome
-        )
+          (qa) => qa.periodo.nome,
+        ),
       );
 
   const periodosExternos = unique(
     solicitacao.quantidade_alunos_por_faixas_etarias.map(
-      (qa) => qa.periodo_externo.nome
-    )
+      (qa) => qa.periodo_externo.nome,
+    ),
   );
 
   const getVinculosAlimentacao = async () => {
@@ -61,7 +62,13 @@ export const InclusaoCEIBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,
@@ -121,7 +128,7 @@ export const InclusaoCEIBody = ({ ...props }) => {
                     )}
                   </div>
                 );
-              }
+              },
             )}
             {vinculosAlimentacao &&
               periodosExternos.map((periodoExt, index) => {
@@ -135,7 +142,7 @@ export const InclusaoCEIBody = ({ ...props }) => {
                       solicitacao.quantidade_alunos_por_faixas_etarias.filter(
                         (qpf) =>
                           qpf.periodo.nome === periodo &&
-                          qpf.periodo_externo.nome === periodoExt
+                          qpf.periodo_externo.nome === periodoExt,
                       );
                   }
                   const alimentosFormatados = vinculosAlimentacao
@@ -147,11 +154,10 @@ export const InclusaoCEIBody = ({ ...props }) => {
                   }, 0);
                   const total_matriculados = faixas_etarias.reduce(function (
                     acc,
-                    v
+                    v,
                   ) {
                     return acc + (v.matriculados_quando_criado || 0);
-                  },
-                  0);
+                  }, 0);
                   return (
                     <Fragment key={idx}>
                       {(periodoExt !== "INTEGRAL" && periodoExt === periodo) ||
@@ -239,7 +245,7 @@ export const InclusaoCEIBody = ({ ...props }) => {
                 });
               })}
             {solicitacao.dias_motivos_da_inclusao_cei.find(
-              (inclusao) => inclusao.cancelado_justificativa
+              (inclusao) => inclusao.cancelado_justificativa,
             ) && (
               <>
                 <hr />

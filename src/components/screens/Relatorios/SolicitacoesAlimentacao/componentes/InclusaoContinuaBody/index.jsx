@@ -1,5 +1,6 @@
 import { WEEK } from "src/configs/constants";
 import React, { useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import { HistoricoAlteracao } from "src/components/InclusaoDeAlimentacao/Relatorio/componentes/HistoricoAlteracao";
 
 export const InclusaoContinuaBody = ({ ...props }) => {
@@ -49,7 +50,13 @@ export const InclusaoContinuaBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,

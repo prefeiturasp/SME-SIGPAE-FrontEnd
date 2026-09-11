@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import "./styles.scss";
 import { DocsRecebimentoRelatorio } from "../../interfaces";
 import { Tooltip } from "antd";
-import { truncarString } from "src/helpers/utilities";
+import { acionaComEnterOuEspaco, truncarString } from "src/helpers/utilities";
 
 interface Props {
   objetos: DocsRecebimentoRelatorio[];
@@ -46,6 +46,11 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                   <i
                     className={`fas fa-${icone} expand`}
                     data-testid="icone-expandir"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(
+                      ativos && ativos.includes(objeto.uuid),
+                    )}
                     onClick={() => {
                       ativos && ativos.includes(objeto.uuid)
                         ? setAtivos(
@@ -55,6 +60,17 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                             ativos ? [...ativos, objeto.uuid] : [objeto.uuid],
                           );
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () => {
+                        ativos && ativos.includes(objeto.uuid)
+                          ? setAtivos(
+                              ativos.filter((el: string) => el !== objeto.uuid),
+                            )
+                          : setAtivos(
+                              ativos ? [...ativos, objeto.uuid] : [objeto.uuid],
+                            );
+                      })
+                    }
                   />
                 </div>
               </div>

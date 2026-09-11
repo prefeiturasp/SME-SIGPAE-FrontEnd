@@ -1,4 +1,5 @@
 import React, { Fragment } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./style.scss";
 import { NOME_STATUS } from "./helpers";
 import { DadosReclamacaoProduto } from "../DadosReclamacao";
@@ -60,7 +61,15 @@ export const TabelaProdutos = ({
                         className={`fas fa-${
                           produto.exibir ? "angle-up" : "angle-down"
                         }`}
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={Boolean(produto.exibir)}
                         onClick={() => exibirDadosProduto(key)}
+                        onKeyDown={(e) =>
+                          acionaComEnterOuEspaco(e, () =>
+                            exibirDadosProduto(key),
+                          )
+                        }
                       />
                     </td>
                   </tr>,

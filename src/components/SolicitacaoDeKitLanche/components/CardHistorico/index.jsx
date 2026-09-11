@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, reduxForm, formValueSelector } from "redux-form";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import { Collapse } from "react-collapse";
 import { Navigate } from "react-router-dom";
 import {
@@ -149,22 +150,51 @@ export class CardHistorico extends Component {
                                 name={`check_${key}`}
                               />
                               <span
+                                tabIndex={0}
                                 onClick={() => this.onCheckClicked(key)}
+                                onKeyDown={(e) =>
+                                  acionaComEnterOuEspaco(e, () =>
+                                    this.onCheckClicked(key),
+                                  )
+                                }
                                 className="checkbox-custom small report-line"
                               />
                             </label>
-                            <span onClick={() => this.setRedirect()}>
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => this.setRedirect()}
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  this.setRedirect(),
+                                )
+                              }
+                            >
                               {pedido.id_externo}
                             </span>
                           </td>
                           <td
+                            role="button"
+                            tabIndex={0}
                             onClick={() => this.setRedirect()}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.setRedirect(),
+                              )
+                            }
                             className="col-4"
                           >
                             {pedido.escola.nome}
                           </td>
                           <td
+                            role="button"
+                            tabIndex={0}
                             onClick={() => this.setRedirect()}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.setRedirect(),
+                              )
+                            }
                             className="col-4"
                           >
                             {pedido.solicitacao_kit_lanche.data}
