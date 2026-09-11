@@ -255,6 +255,17 @@ describe("PainelInicial - Atalhos por perfil", () => {
     },
   ];
 
+  const atalhosCoordenadorGestaoProduto = [
+    {
+      titulo: "Layout de Embalagem",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_LAYOUT_EMBALAGEM}`,
+    },
+    {
+      titulo: "Fichas Técnicas",
+      rota: `${PRE_RECEBIMENTO}/${PAINEL_FICHAS_TECNICAS}`,
+    },
+  ];
+
   const renderPainelInicial = (perfil) => {
     localStorage.setItem("perfil", perfil);
 
@@ -417,6 +428,25 @@ describe("PainelInicial - Atalhos por perfil", () => {
     "navega para a rota correta do Coordenador CODAE Dilog Logística ao clicar em $titulo",
     ({ titulo, rota }) => {
       renderPainelInicial(PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA);
+
+      fireEvent.click(getAtalhoPorTitulo(titulo));
+
+      expect(mockNavigate).toHaveBeenCalledWith(rota);
+    },
+  );
+
+  it("exibe os atalhos do Coordenador de Gestão de Produto", () => {
+    renderPainelInicial(PERFIL.COORDENADOR_GESTAO_PRODUTO);
+
+    atalhosCoordenadorGestaoProduto.forEach(({ titulo }) => {
+      expect(getAtalhoPorTitulo(titulo)).toBeInTheDocument();
+    });
+  });
+
+  it.each(atalhosCoordenadorGestaoProduto)(
+    "navega para a rota correta do Coordenador de Gestão de Produto ao clicar em $titulo",
+    ({ titulo, rota }) => {
+      renderPainelInicial(PERFIL.COORDENADOR_GESTAO_PRODUTO);
 
       fireEvent.click(getAtalhoPorTitulo(titulo));
 
