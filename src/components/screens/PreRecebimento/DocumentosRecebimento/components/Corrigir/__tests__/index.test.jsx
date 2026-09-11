@@ -24,6 +24,7 @@ jest.mock("src/components/Shareable/Toast/dialogs");
 
 // Mock do helper de download de arquivos
 jest.mock("src/components/Shareable/Input/InputFile/helper", () => ({
+  ...jest.requireActual("src/components/Shareable/Input/InputFile/helper"),
   downloadAndConvertToBase64: jest.fn((url) =>
     Promise.resolve(`base64_mock_${url}`),
   ),

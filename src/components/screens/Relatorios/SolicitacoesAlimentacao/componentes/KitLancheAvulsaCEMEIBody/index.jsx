@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;
@@ -58,7 +59,13 @@ export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,
@@ -156,7 +163,7 @@ export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
                                   </td>
                                 </tr>
                               );
-                            }
+                            },
                           )}
                           <tr className="table-head-items">
                             <td>Total</td>

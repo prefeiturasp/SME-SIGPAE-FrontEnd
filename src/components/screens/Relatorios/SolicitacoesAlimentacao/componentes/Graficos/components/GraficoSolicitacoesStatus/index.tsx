@@ -21,7 +21,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartDataLabels
+  ChartDataLabels,
 );
 
 type PropsType = {
@@ -66,12 +66,12 @@ export const GraficoSolicitacoesStatus = ({ ...props }: PropsType) => {
           ctx.fillText(
             `${chart.data.labels[index]}`,
             xLine + extraLine + plusFivePx,
-            yLine
+            yLine,
           );
           ctx.fillText(
             `${dataset.data[index]}%`,
             xLine + extraLine + plusFivePx,
-            yLine + 10
+            yLine + 10,
           );
         });
       });
@@ -100,7 +100,7 @@ export const GraficoSolicitacoesStatus = ({ ...props }: PropsType) => {
 
       chart.legend.fit = function fit() {
         originalFit.bind(chart.legend)();
-        this.height += 20;
+        chart.legend.height += 20;
       };
     },
   };

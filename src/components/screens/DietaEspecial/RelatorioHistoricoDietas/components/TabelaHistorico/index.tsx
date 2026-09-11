@@ -3,6 +3,7 @@ import { toastError } from "src/components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
 import React, { useState } from "react";
 import { getSolicitacoesRelatorioHistoricoDietas } from "src/services/dietaEspecial.service";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import { normalizarValues, PAGE_SIZE } from "../../helper";
 import { CollapseContentCEI } from "../CollapseContentCEI";
 import { CollapseContentCEMEI } from "../CollapseContentCEMEI";
@@ -59,7 +60,7 @@ export const TabelaHistorico: React.FC<TabelaHistoricoProps> = ({
       setCount(response.data.count);
     } else {
       toastError(
-        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde."
+        "Erro ao carregar dados das dietas especiais. Tente novamente mais tarde.",
       );
     }
     setLoadingDietas(false);
@@ -168,7 +169,14 @@ const RowWithCollapse: React.FC<RowWithCollapseProps> = ({
           {shouldRenderCollapse && (
             <i
               className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+              role="button"
+              tabIndex={0}
+              aria-expanded={showDetail}
+              aria-label={`Detalhes de ${unidade.unidade_educacional}`}
               onClick={() => setShowDetail(!showDetail)}
+              onKeyDown={(e) =>
+                acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+              }
               style={{ cursor: "pointer" }}
             />
           )}

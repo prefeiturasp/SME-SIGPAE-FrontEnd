@@ -1,5 +1,64 @@
 import axios from "../../../../services/_base";
 import { ENVIRONMENT } from "src/constants/config";
+import { corrigeLinkAnexo } from "src/helpers/utilities";
+
+const isHttpUrl = (value) =>
+  typeof value === "string" &&
+  (value.startsWith("http://") || value.startsWith("https://"));
+
+const isDataUrl = (value) =>
+  typeof value === "string" && value.startsWith("data:");
+
+const dataUrlToBlobUrl = (dataUrl, nome) => {
+  const [header, data] = dataUrl.split(",");
+  const mimeMatch = header.match(/:(.*?);/);
+  let mime = mimeMatch ? mimeMatch[1] : "application/octet-stream";
+
+  if (
+    mime === "application/octet-stream" &&
+    nome?.toLowerCase().endsWith(".pdf")
+  ) {
+    mime = "application/pdf";
+  }
+
+  const binary = atob(data);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return URL.createObjectURL(new Blob([bytes], { type: mime }));
+};
+
+export const openFile = (file) => {
+  if (!file) return;
+
+  const nome = file.nome || "";
+  const dataUrl = [file.base64, file.arquivo].find(isDataUrl);
+  const httpUrl = [file.arquivo, file.base64].find(isHttpUrl);
+
+  if (nome.toLowerCase().includes(".doc")) {
+    const href = dataUrl || (httpUrl && corrigeLinkAnexo(httpUrl));
+    if (!href) return;
+
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = nome;
+    link.click();
+    return;
+  }
+
+  if (dataUrl) {
+    const blobUrl = dataUrlToBlobUrl(dataUrl, nome);
+    window.open(blobUrl, "_blank", "noopener,noreferrer");
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+    return;
+  }
+
+  if (httpUrl) {
+    window.open(corrigeLinkAnexo(httpUrl), "_blank", "noopener,noreferrer");
+  }
+};
 
 export async function readerFile(file) {
   let result_file = await new Promise((resolve) => {

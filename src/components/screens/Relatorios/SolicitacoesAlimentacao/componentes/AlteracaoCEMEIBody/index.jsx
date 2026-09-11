@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const AlteracaoCEMEIBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;
@@ -10,7 +11,7 @@ export const AlteracaoCEMEIBody = ({ ...props }) => {
   const nomes_periodos = unique(
     solicitacao.substituicoes_cemei_cei_periodo_escolar
       .concat(solicitacao.substituicoes_cemei_emei_periodo_escolar)
-      .map((qa) => qa.periodo_escolar.nome)
+      .map((qa) => qa.periodo_escolar.nome),
   );
 
   const ehDiaCancelado = (diaIntervalo) => {
@@ -41,7 +42,13 @@ export const AlteracaoCEMEIBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,
@@ -92,11 +99,11 @@ export const AlteracaoCEMEIBody = ({ ...props }) => {
             {nomes_periodos.map((periodo, idx) => {
               const substituicoesCEI =
                 solicitacao.substituicoes_cemei_cei_periodo_escolar.filter(
-                  (s) => s.periodo_escolar.nome === periodo
+                  (s) => s.periodo_escolar.nome === periodo,
                 );
               const substituicoesEMEI =
                 solicitacao.substituicoes_cemei_emei_periodo_escolar.filter(
-                  (s) => s.periodo_escolar.nome === periodo
+                  (s) => s.periodo_escolar.nome === periodo,
                 );
               return (
                 <Fragment key={idx}>
@@ -112,7 +119,7 @@ export const AlteracaoCEMEIBody = ({ ...props }) => {
                       function (acc, v) {
                         return acc + (v.quantidade || v.quantidade_alunos);
                       },
-                      0
+                      0,
                     );
                     const total_matriculados =
                       substituicaoCEI.faixas_etarias.reduce(function (acc, v) {
@@ -180,7 +187,7 @@ export const AlteracaoCEMEIBody = ({ ...props }) => {
                                         </td>
                                       </tr>
                                     );
-                                  }
+                                  },
                                 )}
                                 <tr className="table-head-items">
                                   <td>Total</td>
@@ -269,7 +276,7 @@ export const AlteracaoCEMEIBody = ({ ...props }) => {
               </div>
             )}
             {solicitacao.datas_intervalo.find(
-              (data_intervalo) => data_intervalo.cancelado_justificativa
+              (data_intervalo) => data_intervalo.cancelado_justificativa,
             ) && (
               <>
                 <hr />
@@ -277,7 +284,8 @@ export const AlteracaoCEMEIBody = ({ ...props }) => {
                   <strong>Histórico de cancelamento</strong>
                   {solicitacao.datas_intervalo
                     .filter(
-                      (data_intervalo) => data_intervalo.cancelado_justificativa
+                      (data_intervalo) =>
+                        data_intervalo.cancelado_justificativa,
                     )
                     .map((data_intervalo, key) => {
                       return (

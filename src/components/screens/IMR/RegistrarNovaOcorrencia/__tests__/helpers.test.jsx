@@ -9,11 +9,12 @@ describe("Helpers formataPayload - Registrar Nova Corrência", () => {
       ocorrencias: [],
       grupos: [
         {
-          campo_tipo_uuidTipo1_param_uuidParam1: "Resposta 1",
-          campo_tipo_uuidTipo1_param_uuidParam2: true,
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam1_uuid_undefined:
+            "Resposta 1",
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam2_uuid_undefined: true,
         },
         {
-          campo_tipo_uuidTipo2_param_uuidParam3: 10,
+          tipoocorrencia_uuidTipo2_parametrizacao_uuidParam3_uuid_undefined: 10,
         },
       ],
     };
@@ -54,8 +55,9 @@ describe("Helpers formataPayload - Registrar Nova Corrência", () => {
       ocorrencias: [],
       grupos: [
         {
-          campo_tipo_uuidTipo1_param_uuidParam1: "Resposta inicial",
-          outro_tipo_uuidTipo1_param_uuidParam1: false,
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam1_uuid_undefined:
+            "Resposta inicial",
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam1_uuid_outro: false,
         },
       ],
     };
@@ -80,8 +82,9 @@ describe("Helpers formataPayload - Registrar Nova Corrência", () => {
       ocorrencias: [],
       grupos: [
         {
-          campo_tipo_uuidTipo1_param_uuidParam1: true,
-          outro_tipo_uuidTipo1_param_uuidParam1: "Nova resposta",
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam1_uuid_undefined: true,
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam1_uuid_outro:
+            "Nova resposta",
         },
       ],
     };
@@ -106,7 +109,8 @@ describe("Helpers formataPayload - Registrar Nova Corrência", () => {
       ocorrencias: [],
       grupos: [
         {
-          campo_tipo_uuidTipo1_param_uuidParam1: "Resposta original",
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam1_uuid_undefined:
+            "Resposta original",
         },
       ],
     };

@@ -36,8 +36,14 @@ export const listaSimplesTerceirizadas = async () => {
 export const getTerceirizadaUUID = async (uuid) =>
   await axios.get(`/terceirizadas/${uuid}/`);
 
-export const createNaoTerceirizada = async (payload) =>
-  await axios.post("/empresas-nao-terceirizadas/", payload);
+export const createNaoTerceirizada = async (payload) => {
+  const response = await axios
+    .post("/empresas-nao-terceirizadas/", payload)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    return { data: response.data, status: response.status };
+  }
+};
 
 export const createTerceirizada = (payload) => {
   const url = `${API_URL}/terceirizadas/`;
@@ -81,8 +87,14 @@ export const updateTerceirizada = (uuid, payload) => {
     });
 };
 
-export const updateNaoTerceirizada = async (uuid, payload) =>
-  await axios.patch(`/empresas-nao-terceirizadas/${uuid}/`, payload);
+export const updateNaoTerceirizada = async (uuid, payload) => {
+  const response = await axios
+    .patch(`/empresas-nao-terceirizadas/${uuid}/`, payload)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    return { data: response.data, status: response.status };
+  }
+};
 
 export const encerraContratoTerceirizada = async (uuid) => {
   const url = `/contratos/${uuid}/encerrar-contrato/`;

@@ -25,13 +25,11 @@ export default class ModalResponderReclamacao extends Component {
     this.state = {};
   }
 
-  UNSAFE_componentWillMount = async () => {};
-
   onSubmit = async (values) => {
     try {
       const response = await responderReclamacaoProduto(
         this.props.reclamacao.uuid,
-        values
+        values,
       );
       if (response.status === HTTP_STATUS.OK) {
         toastSuccess("Resposta enviada com Sucesso!");

@@ -12,6 +12,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 
 import { Modal } from "antd";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export default class ResultadoMock extends Component {
   constructor(props) {
@@ -193,9 +194,17 @@ export default class ResultadoMock extends Component {
                       <div
                         key={index}
                         className={`grid-item-log ${ativo && "ativo-item"}`}
+                        role="button"
+                        tabIndex={0}
+                        aria-pressed={Boolean(ativo)}
                         onClick={() => {
                           this.itemLogAtivo(index, ativo);
                         }}
+                        onKeyDown={(e) =>
+                          acionaComEnterOuEspaco(e, () =>
+                            this.itemLogAtivo(index, ativo),
+                          )
+                        }
                       >
                         <div className="usuario">
                           <div>BB</div>

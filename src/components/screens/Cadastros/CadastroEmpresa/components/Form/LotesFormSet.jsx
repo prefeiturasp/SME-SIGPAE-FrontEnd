@@ -7,6 +7,7 @@ import { getLotesSimples } from "src/services/lote.service";
 import { transformaObjetos } from "../../helper";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import ModalTransferirLote from "src/components/Shareable/ModalTransferirLote";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 const renderizarLabelLote = (selected, options) => {
   if (selected.length === 0) {
@@ -106,7 +107,15 @@ export const LotesFormSet = (props) => {
                   <label className="label fw-normal pb-3">
                     Lotes de atendimento
                     <span
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={atualizarLotes}
                       onClick={() => setAtualizarLotes(!atualizarLotes)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          setAtualizarLotes(!atualizarLotes),
+                        )
+                      }
                       className="link editar-lotes ms-3"
                     >
                       editar lotes

@@ -9,6 +9,7 @@ import {
   BUTTON_STYLE,
 } from "src/components/Shareable/Botao/constants";
 import { Modal } from "react-bootstrap";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export default ({
   solicitacao,
@@ -58,7 +59,7 @@ export default ({
 
   const validaBotao = () => {
     let invalidas = guias.filter((guia) =>
-      ["Aguardando envio", "Aguardando confirmação"].includes(guia.status)
+      ["Aguardando envio", "Aguardando confirmação"].includes(guia.status),
     );
     return invalidas.length > 0 || selecionados.length <= 0;
   };
@@ -83,6 +84,14 @@ export default ({
               <div>Status</div>
             </div>
             {guias.map((guia) => {
+              const propsCelulaGuia = {
+                role: "button",
+                tabIndex: 0,
+                "aria-label": `Detalhes da guia ${guia.numero_guia}`,
+                onClick: () => abrirModalGuia(guia),
+                onKeyDown: (e) =>
+                  acionaComEnterOuEspaco(e, () => abrirModalGuia(guia)),
+              };
               return (
                 <>
                   <div className="grid-table body-table hand-cursor">
@@ -92,15 +101,9 @@ export default ({
                         onChange={() => checkSolicitacao(guia)}
                       />
                     </div>
-                    <div onClick={() => abrirModalGuia(guia)}>
-                      {guia.numero_guia}
-                    </div>
-                    <div onClick={() => abrirModalGuia(guia)}>
-                      {guia.nome_unidade}
-                    </div>
-                    <div onClick={() => abrirModalGuia(guia)}>
-                      {guia.status}
-                    </div>
+                    <div {...propsCelulaGuia}>{guia.numero_guia}</div>
+                    <div {...propsCelulaGuia}>{guia.nome_unidade}</div>
+                    <div {...propsCelulaGuia}>{guia.status}</div>
                   </div>
                 </>
               );
@@ -249,7 +252,7 @@ export default ({
                   solicitacao.numero_solicitacao,
                   situacao,
                   setShowModal,
-                  setCarregandoModal
+                  setCarregandoModal,
                 );
               }}
               style={BUTTON_STYLE.GREEN}

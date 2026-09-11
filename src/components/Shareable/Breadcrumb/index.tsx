@@ -1,4 +1,5 @@
 import { TemaContext } from "src/context/TemaContext";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import React, { useContext } from "react";
 import {
   Link,
@@ -45,13 +46,15 @@ export default function Breadcrumb({
             anteriores.length > 0 &&
             anteriores.map((anterior, key) => {
               return (
-                <li
-                  key={key}
-                  onClick={() => {
-                    if (anterior.navigate_to) navigate(anterior.navigate_to);
-                  }}
-                >
-                  <Link to={anterior.href}>{anterior.titulo}</Link>
+                <li key={key}>
+                  <Link
+                    to={anterior.href}
+                    onClick={() => {
+                      if (anterior.navigate_to) navigate(anterior.navigate_to);
+                    }}
+                  >
+                    {anterior.titulo}
+                  </Link>
                 </li>
               );
             })}
@@ -66,9 +69,14 @@ export default function Breadcrumb({
       </div>
       <div
         className="col-xs-3 col-sm-2 text-end contrast"
+        role="button"
+        tabIndex={0}
         onClick={() => {
           temaContext.mudarTema();
         }}
+        onKeyDown={(e) =>
+          acionaComEnterOuEspaco(e, () => temaContext.mudarTema())
+        }
       >
         <i className="fas fa-adjust" /> Contraste
       </div>

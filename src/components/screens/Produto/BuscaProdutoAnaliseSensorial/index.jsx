@@ -1,3 +1,4 @@
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import { Spin } from "antd";
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
@@ -55,7 +56,7 @@ class BuscaProdutoAnaliseSensorial extends Component {
           hom.pdf_gerado = true;
         }
         return hom;
-      })
+      }),
     );
   };
 
@@ -131,7 +132,7 @@ class BuscaProdutoAnaliseSensorial extends Component {
                 const produto = homologacao.produto;
                 const dataPedido =
                   homologacao.logs[homologacao.logs.length - 1].criado_em.split(
-                    " "
+                    " ",
                   )[0];
                 return (
                   <Fragment key={index}>
@@ -144,8 +145,15 @@ class BuscaProdutoAnaliseSensorial extends Component {
                       <div>
                         <i
                           className={`fas fa-${icone}`}
+                          role="button"
+                          tabIndex={0}
                           onClick={() =>
                             this.ativaDesativaHomologacao(homologacao.uuid)
+                          }
+                          onKeyDown={(e) =>
+                            acionaComEnterOuEspaco(e, () =>
+                              this.ativaDesativaHomologacao(homologacao.uuid),
+                            )
                           }
                         />
                       </div>
@@ -161,7 +169,7 @@ class BuscaProdutoAnaliseSensorial extends Component {
                             onClick={() => {
                               this.pdfGerado(homologacao);
                               getRelatorioProdutoAnaliseSensorialRecebimento(
-                                homologacao.produto
+                                homologacao.produto,
                               );
                             }}
                           />
@@ -179,7 +187,7 @@ class BuscaProdutoAnaliseSensorial extends Component {
                             type={BUTTON_TYPE.SUBMIT}
                             style={BUTTON_STYLE.GREEN}
                             disabled={this.responder_deve_aparecer(
-                              homologacao.ultima_analise.terceirizada
+                              homologacao.ultima_analise.terceirizada,
                             )}
                             onClick={this.showModal}
                           />
@@ -197,7 +205,7 @@ class BuscaProdutoAnaliseSensorial extends Component {
               homologacao={
                 homologacoes
                   ? homologacoes.find(
-                      (hom) => hom.uuid === uuidHomologacaoAtiva
+                      (hom) => hom.uuid === uuidHomologacaoAtiva,
                     )
                   : undefined
               }
@@ -232,9 +240,9 @@ const mapDispatchToProps = (dispatch) =>
       setUuidHomologacaoAtiva,
       reset,
     },
-    dispatch
+    dispatch,
   );
 
 export default withNavigationType(
-  connect(mapStateToProps, mapDispatchToProps)(BuscaProdutoAnaliseSensorial)
+  connect(mapStateToProps, mapDispatchToProps)(BuscaProdutoAnaliseSensorial),
 );

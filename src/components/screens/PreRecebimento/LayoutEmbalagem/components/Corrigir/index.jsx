@@ -133,6 +133,7 @@ export default ({ atualizar }) => {
         return {
           nome: imagem.nome,
           base64,
+          arquivo: imagem.arquivo,
         };
       }),
     );

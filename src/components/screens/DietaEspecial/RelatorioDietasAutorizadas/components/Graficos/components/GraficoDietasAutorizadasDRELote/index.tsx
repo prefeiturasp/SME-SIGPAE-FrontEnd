@@ -19,7 +19,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartDataLabels
+  ChartDataLabels,
 );
 
 type PropsType = {
@@ -36,7 +36,7 @@ export const GraficoDietasAutorizadasDRELote = ({ ...props }: PropsType) => {
 
       chart.legend.fit = function fit() {
         originalFit.bind(chart.legend)();
-        this.height += 20;
+        chart.legend.height += 20;
       };
     },
   };

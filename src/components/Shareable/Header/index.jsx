@@ -79,7 +79,17 @@ export const Header = ({ toggled }) => {
                           </Link>
                         </li>
                       )}
-                    <li onClick={() => authService.logout()}>
+                    <li
+                      onClick={() => authService.logout()}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          authService.logout();
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                    >
                       <p className="title">Sair</p>
                     </li>
                   </ul>
@@ -129,7 +139,18 @@ export const Header = ({ toggled }) => {
               <li className="nav-item">
                 <NotificacoesNavbar />
               </li>
-              <li onClick={() => authService.logout()} className="nav-item">
+              <li
+                onClick={() => authService.logout()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    authService.logout();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="nav-item"
+              >
                 <div className="nav-link">
                   <div className="icone-verde-fundo">
                     <i className="fas fa-power-off icone-verde" />

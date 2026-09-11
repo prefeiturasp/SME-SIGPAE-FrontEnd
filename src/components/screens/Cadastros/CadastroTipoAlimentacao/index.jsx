@@ -52,7 +52,7 @@ export default ({ tiposUnidadesEscolar }) => {
   const onSubmit = async (formValues) => {
     setCarregando(true);
     await updateListaVinculosTipoAlimentacaoPorTipoUnidadeEscolar(
-      formValues
+      formValues,
     ).then(async (response) => {
       if (response.status === HTTP_STATUS.OK) {
         toastSuccess("Tipo de Alimentação salvo com sucesso");
@@ -68,7 +68,7 @@ export default ({ tiposUnidadesEscolar }) => {
   const setInitialValues = (vinculos) => {
     let vinculosFormatados = vinculos.map((vinculo) => {
       let tipos_alimentacao = vinculo.tipos_alimentacao.map(
-        (tipo_alimentacao) => tipo_alimentacao.uuid
+        (tipo_alimentacao) => tipo_alimentacao.uuid,
       );
       return {
         tipos_alimentacao: tipos_alimentacao,
@@ -86,12 +86,12 @@ export default ({ tiposUnidadesEscolar }) => {
       (response) => {
         if (response.results.length === 0) {
           toastError(
-            "Nenhum período escolar está associado ao tipo de unidade escolar selecionado"
+            "Nenhum período escolar está associado ao tipo de unidade escolar selecionado",
           );
         } else {
           setVinculos(response.results);
         }
-      }
+      },
     );
     setCarregando(false);
   };
@@ -195,9 +195,19 @@ export default ({ tiposUnidadesEscolar }) => {
                                           <span
                                             onClick={() =>
                                               setAlterandoTiposDeAlimentacao(
-                                                false
+                                                false,
                                               )
                                             }
+                                            onKeyDown={(e) => {
+                                              if (
+                                                e.key === "Enter" ||
+                                                e.key === " "
+                                              ) {
+                                                setAlterandoTiposDeAlimentacao(
+                                                  false,
+                                                );
+                                              }
+                                            }}
                                           >
                                             <Field
                                               name={`vinculos[${indice}].tipos_alimentacao`}
@@ -216,7 +226,7 @@ export default ({ tiposUnidadesEscolar }) => {
                                           </span>
                                         </div>
                                       );
-                                    }
+                                    },
                                   )}
                               </div>
                             </div>

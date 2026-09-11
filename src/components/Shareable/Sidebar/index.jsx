@@ -34,6 +34,18 @@ export const Sidebar = ({ ...props }) => {
         <div className="sidebar-divider my-0" />
         <p
           onClick={() => toggle()}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              toggle();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-expanded={!toggled}
+          aria-label={
+            toggled ? "Expandir menu lateral" : "Recolher menu lateral"
+          }
           className="text-end c-pointer"
           data-testid="sidebar-divider-p"
         >

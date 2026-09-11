@@ -11,7 +11,7 @@ import { HelpText } from "../../../Shareable/HelpText";
 import "./style.scss";
 import Botao from "../../Botao";
 import { BUTTON_STYLE, BUTTON_ICON, BUTTON_TYPE } from "../../Botao/constants";
-import { readerFile } from "./helper";
+import { readerFile, openFile } from "./helper";
 import { toastSuccess, toastError } from "../../Toast/dialogs";
 import { truncarString } from "../../../../helpers/utilities";
 import { DEZ_MB, VINTE_CINCO_MB } from "../../../../constants/shared";
@@ -33,22 +33,6 @@ const InputFile = forwardRef((props, ref) => {
   }));
 
   const inputRef = useRef(null);
-
-  const openFile = (file) => {
-    if (file.nome.includes(".doc")) {
-      const link = document.createElement("a");
-      link.href = file.base64;
-      link.download = file.nome;
-      link.click();
-    } else {
-      let pdfWindow = window.open("");
-      pdfWindow.document.write(
-        "<iframe width='100%' height='100%' src='" +
-          file.base64 +
-          "'></iframe>",
-      );
-    }
-  };
 
   useEffect(() => {
     if (props.submitted) {
@@ -262,11 +246,32 @@ const InputFile = forwardRef((props, ref) => {
             <div className="file-div" key={key}>
               <div className="file-name-container">
                 <i className="fas fa-paperclip" />
-                <span onClick={() => openFile(file)} className="file-name">
+                <span
+                  onClick={() => openFile(file)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openFile(file);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Abrir anexo ${file.nome}`}
+                  className="file-name"
+                >
                   {truncarString(file.nome, 40)}
                 </span>
                 <i
                   onClick={() => deleteFile(key)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      deleteFile(key);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Remover anexo ${file.nome}`}
                   data-testid={`delete-file-${key}`}
                   className={`fas ${
                     ehPlanilhaMedicaoInicial ? "fa-times" : "fa-trash-alt"

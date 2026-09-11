@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export class Rascunhos extends Component {
   render() {
@@ -38,7 +39,14 @@ export class Rascunhos extends Component {
                   <div className="icon-draft-card float-end">
                     Salvo em: {solicitacaoKitLanche.criado_em}
                     <span
+                      role="button"
+                      tabIndex={0}
                       onClick={() => removerRascunho(id_externo, uuid, form)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          removerRascunho(id_externo, uuid, form),
+                        )
+                      }
                     >
                       <i
                         className="fas fa-trash"
@@ -46,8 +54,15 @@ export class Rascunhos extends Component {
                       />
                     </span>
                     <span
+                      role="button"
+                      tabIndex={0}
                       onClick={() =>
                         carregarRascunho(form, values, solicitacaoKitLanche)
+                      }
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          carregarRascunho(form, values, solicitacaoKitLanche),
+                        )
                       }
                     >
                       <i
@@ -64,7 +79,7 @@ export class Rascunhos extends Component {
             </div>
           </div>
         );
-      }
+      },
     );
     return <div>{cardsRascunhos}</div>;
   }
