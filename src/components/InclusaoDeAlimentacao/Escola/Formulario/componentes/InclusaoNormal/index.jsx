@@ -54,9 +54,10 @@ export const DataInclusaoNormal = ({ ...props }) => {
               maxDate={fimDoCalendario()}
               label="Dia"
               required
+              usarDirty
               validate={composeValidators(
                 required,
-                dataDuplicada(values[nameFieldArray || "inclusoes"]),
+                dataDuplicada(nameFieldArray || "inclusoes"),
               )}
               inputOnChange={(value) => {
                 if (value) {
