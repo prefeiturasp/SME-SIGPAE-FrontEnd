@@ -1127,9 +1127,9 @@ export const cepMask = createTextMask({
 
 export const composeValidators =
   (...validators) =>
-  (value) =>
+  (value, ...args) =>
     validators.reduce(
-      (error, validator) => error || validator(value),
+      (error, validator) => error || validator(value, ...args),
       undefined,
     );
 

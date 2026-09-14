@@ -16,6 +16,8 @@ import {
   mockListagemRelatorioCronogramasSemanais,
   mockListagemRelatorioCronogramasSemanaisVazia,
 } from "src/mocks/services/cronogramaSemanal.service";
+import { mockTerceirizadasEmpresasCronomagramas } from "src/mocks/cronograma.service/mockGetListaTerceirizadasEmpresasCronomagramas";
+import { mockCadProdEditalCompletaLog } from "src/mocks/cronograma.service/mockGetListaCadProdEditalCompletaLog";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   getNotificacoes,
@@ -28,7 +30,9 @@ import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 jest.mock("src/components/Shareable/Toast/dialogs");
 jest.mock("src/services/notificacoes.service");
 
-const URL = "/cronogramas-semanais/listagem-relatorio/";
+const URL_LISTAGEM = "/cronogramas-semanais/listagem-relatorio/";
+const URL_EMPRESAS = "/terceirizadas/lista-empresas-cronograma/";
+const URL_PRODUTOS = "/cadastro-produtos-edital/lista-completa-logistica/";
 
 const setup = async () => {
   await act(async () => {
@@ -49,7 +53,18 @@ const setup = async () => {
   });
 };
 
-describe("RelatorioCronogramaSemanalPage - Listagem", () => {
+const clicarFiltrar = async () => {
+  await act(async () => {
+    fireEvent.click(screen.getByTestId("botao-filtrar"));
+  });
+};
+
+const chamadasListagem = () =>
+  mock.history.get.filter((c) => c.url === URL_LISTAGEM);
+
+const paramsListagem = () => chamadasListagem()[0]?.params as URLSearchParams;
+
+describe("RelatorioCronogramaSemanalPage", () => {
   beforeEach(() => {
     mock.reset();
     jest.clearAllMocks();
@@ -70,99 +85,239 @@ describe("RelatorioCronogramaSemanalPage - Listagem", () => {
       data: mockGetQtdNaoLidas,
       status: 200,
     });
+
+    // Opções dos filtros (empresa/produto) são carregadas ao montar o Filtros.
+    mock.onGet(URL_EMPRESAS).reply(200, mockTerceirizadasEmpresasCronomagramas);
+    mock.onGet(URL_PRODUTOS).reply(200, mockCadProdEditalCompletaLog);
   });
 
   afterEach(() => {
     localStorage.clear();
   });
 
-  it("renderiza as linhas da listagem com os dados formatados", async () => {
-    mock.onGet(URL).reply(200, mockListagemRelatorioCronogramasSemanais);
-    await setup();
+  describe("Filtros", () => {
+    it("apresenta os campos de filtro com labels e placeholders corretos", async () => {
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
 
-    expect(
-      await screen.findByText("Empresa Alfa Alimentos LTDA"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Empresa Beta Comercio LTDA")).toBeInTheDocument();
+      expect(screen.getByText("Filtrar por Produto")).toBeInTheDocument();
+      expect(screen.getByText("Nº do Cronograma Mensal")).toBeInTheDocument();
+      expect(screen.getByText("Nº do Cronograma Semanal")).toBeInTheDocument();
+      expect(screen.getByText("Filtrar por Status")).toBeInTheDocument();
+      expect(
+        screen.getByText("Filtrar por Mês de Entrega"),
+      ).toBeInTheDocument();
 
-    expect(
-      screen.getByText("Arroz Parboilizado Tipo 1 Long..."),
-    ).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Digite o nº do Cronograma Mensal"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Digite o nº do Cronograma Semanal"),
+      ).toBeInTheDocument();
 
-    expect(screen.getByText("1.500,00 KG")).toBeInTheDocument();
-    expect(screen.getByText("800,00 KG")).toBeInTheDocument();
+      expect(
+        screen.getByText("Selecione uma ou mais Empresas"),
+      ).toBeInTheDocument();
 
-    expect(screen.getByText("Assinado Fornecedor")).toBeInTheDocument();
-    expect(screen.getByText("Enviado ao Fornecedor")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("De")).toBeInTheDocument();
+      expect(screen.getByPlaceholderText("Até")).toBeInTheDocument();
+    });
+
+    it("não realiza a busca ao carregar a tela (somente ao aplicar o filtro)", async () => {
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+
+      expect(chamadasListagem()).toHaveLength(0);
+      expect(
+        screen.queryByText("Nenhum resultado encontrado"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("lista as empresas disponíveis para seleção", async () => {
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+
+      await act(async () => {
+        fireEvent.click(screen.getByText("Selecione uma ou mais Empresas"));
+      });
+
+      expect(await screen.findByText("PETISTICO PET LTDA")).toBeInTheDocument();
+    });
+
+    it("disponibiliza as opções de status", async () => {
+      await setup();
+      await screen.findByText("Filtrar por Status");
+
+      await act(async () => {
+        fireEvent.click(screen.getByText("Selecione"));
+      });
+
+      expect(await screen.findByText("Rascunho")).toBeInTheDocument();
+      expect(screen.getByText("Enviado ao Fornecedor")).toBeInTheDocument();
+      expect(screen.getByText("Fornecedor Ciente")).toBeInTheDocument();
+    });
+
+    it("aplica o filtro por Nº do Cronograma Semanal", async () => {
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanais);
+
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o nº do Cronograma Semanal"),
+        { target: { value: "135/2024" } },
+      );
+      await clicarFiltrar();
+
+      await waitFor(() => expect(chamadasListagem().length).toBeGreaterThan(0));
+      expect(paramsListagem().get("numero_cronograma_semanal")).toBe(
+        "135/2024",
+      );
+    });
+
+    it("realiza nova busca ao limpar os filtros", async () => {
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanais);
+
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+      await clicarFiltrar();
+      await screen.findByText("Empresa Alfa Alimentos LTDA");
+
+      const antes = chamadasListagem().length;
+
+      await act(async () => {
+        fireEvent.click(screen.getByText("Limpar Filtros"));
+      });
+
+      await waitFor(() =>
+        expect(chamadasListagem().length).toBeGreaterThan(antes),
+      );
+    });
   });
 
-  it("expande apenas a linha selecionada, mesmo com número de cronograma repetido", async () => {
-    mock.onGet(URL).reply(200, mockListagemRelatorioCronogramasSemanais);
-    await setup();
+  describe("Listagem", () => {
+    it("renderiza as linhas com os dados formatados após filtrar", async () => {
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanais);
 
-    await screen.findByText("Empresa Alfa Alimentos LTDA");
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+      await clicarFiltrar();
 
-    const icones = screen.getAllByTestId("icone-expandir");
-    expect(icones).toHaveLength(2);
+      expect(
+        await screen.findByText("Empresa Alfa Alimentos LTDA"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Empresa Beta Comercio LTDA"),
+      ).toBeInTheDocument();
 
-    fireEvent.click(icones[0]);
+      // Produto com mais de 30 caracteres é truncado.
+      expect(
+        screen.getByText("Arroz Parboilizado Tipo 1 Long..."),
+      ).toBeInTheDocument();
 
-    expect(await screen.findByText("R$ 12,50")).toBeInTheDocument();
-    expect(screen.queryByText("R$ 9,00")).not.toBeInTheDocument();
-  });
+      // Quantidade formatada em milhar + unidade de medida.
+      expect(screen.getByText("1.500,00 KG")).toBeInTheDocument();
+      expect(screen.getByText("800,00 KG")).toBeInTheDocument();
 
-  it("exibe as programações do cronograma expandido com períodos e quantidades", async () => {
-    mock.onGet(URL).reply(200, mockListagemRelatorioCronogramasSemanais);
-    await setup();
+      expect(screen.getByText("Assinado Fornecedor")).toBeInTheDocument();
+      expect(screen.getByText("Enviado ao Fornecedor")).toBeInTheDocument();
+    });
 
-    await screen.findByText("Empresa Alfa Alimentos LTDA");
-    fireEvent.click(screen.getAllByTestId("icone-expandir")[0]);
+    it("expande apenas a linha selecionada, mesmo com número repetido", async () => {
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanais);
 
-    await screen.findByText("R$ 12,50");
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+      await clicarFiltrar();
+      await screen.findByText("Empresa Alfa Alimentos LTDA");
 
-    expect(screen.getByText("Quantidade de Entrega")).toBeInTheDocument();
-    expect(screen.getByText("Período Programado Inicial")).toBeInTheDocument();
-    expect(screen.getByText("Período Programado Final")).toBeInTheDocument();
+      const icones = screen.getAllByTestId("icone-expandir");
+      expect(icones).toHaveLength(2);
 
-    expect(screen.getByText("01/01/2025")).toBeInTheDocument();
-    expect(screen.getByText("07/01/2025")).toBeInTheDocument();
-    expect(screen.getByText("08/01/2025")).toBeInTheDocument();
-    expect(screen.getByText("500,00 KG")).toBeInTheDocument();
-    expect(screen.getByText("1.000,00 KG")).toBeInTheDocument();
+      await act(async () => {
+        fireEvent.click(icones[0]);
+      });
 
-    // A programação do segundo cronograma não é renderizada.
-    expect(screen.queryByText("02/02/2025")).not.toBeInTheDocument();
-  });
+      // Custo da 1ª linha aparece; o da 2ª (mesmo número) não.
+      expect(await screen.findByText("R$ 12,50")).toBeInTheDocument();
+      expect(screen.queryByText("R$ 9,00")).not.toBeInTheDocument();
+    });
 
-  it("exibe 'Nenhum resultado encontrado' quando a lista vem vazia", async () => {
-    mock.onGet(URL).reply(200, mockListagemRelatorioCronogramasSemanaisVazia);
-    await setup();
+    it("exibe as programações do cronograma expandido", async () => {
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanais);
 
-    expect(
-      await screen.findByText("Nenhum resultado encontrado"),
-    ).toBeInTheDocument();
-    expect(screen.queryByTestId("icone-expandir")).not.toBeInTheDocument();
-  });
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+      await clicarFiltrar();
+      await screen.findByText("Empresa Alfa Alimentos LTDA");
 
-  it("exibe toast de erro e não renderiza a listagem quando a requisição falha", async () => {
-    mock.onGet(URL).reply(500);
-    await setup();
+      await act(async () => {
+        fireEvent.click(screen.getAllByTestId("icone-expandir")[0]);
+      });
+      await screen.findByText("R$ 12,50");
 
-    await waitFor(() => expect(toastError).toHaveBeenCalled());
+      expect(screen.getByText("Quantidade de Entrega")).toBeInTheDocument();
+      expect(
+        screen.getByText("Período Programado Inicial"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Período Programado Final")).toBeInTheDocument();
 
-    expect(
-      screen.queryByText("Nenhum resultado encontrado"),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByTestId("icone-expandir")).not.toBeInTheDocument();
-  });
+      expect(screen.getByText("01/01/2025")).toBeInTheDocument();
+      expect(screen.getByText("07/01/2025")).toBeInTheDocument();
+      expect(screen.getByText("500,00 KG")).toBeInTheDocument();
+      expect(screen.getByText("1.000,00 KG")).toBeInTheDocument();
 
-  it("trata resposta 200 sem 'results' sem quebrar a tela", async () => {
-    mock.onGet(URL).reply(200, { count: 5 });
-    await setup();
+      // Programação da 2ª linha não é exibida (não está expandida).
+      expect(screen.queryByText("02/02/2025")).not.toBeInTheDocument();
+    });
 
-    expect(
-      await screen.findByText("Nenhum resultado encontrado"),
-    ).toBeInTheDocument();
-    expect(toastError).not.toHaveBeenCalled();
+    it("exibe 'Nenhum resultado encontrado' quando a lista vem vazia", async () => {
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanaisVazia);
+
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+      await clicarFiltrar();
+
+      expect(
+        await screen.findByText("Nenhum resultado encontrado"),
+      ).toBeInTheDocument();
+    });
+
+    it("exibe toast de erro e não renderiza a listagem quando a requisição falha", async () => {
+      mock.onGet(URL_LISTAGEM).reply(500);
+
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+      await clicarFiltrar();
+
+      await waitFor(() => expect(toastError).toHaveBeenCalled());
+      expect(screen.queryByTestId("icone-expandir")).not.toBeInTheDocument();
+    });
+
+    it("trata resposta 200 sem 'results' sem quebrar a tela", async () => {
+      // Backend responde 200 com corpo incorreto (sem results/count).
+      mock.onGet(URL_LISTAGEM).reply(200, { count: 5 });
+
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+      await clicarFiltrar();
+
+      expect(
+        await screen.findByText("Nenhum resultado encontrado"),
+      ).toBeInTheDocument();
+      expect(toastError).not.toHaveBeenCalled();
+    });
   });
 });

@@ -6,6 +6,7 @@ export const IconeLayoutEmbalagem = () => {
       viewBox="0 0 115 107"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="fill-white"
     >
       <mask
         id="mask0_970_11709"

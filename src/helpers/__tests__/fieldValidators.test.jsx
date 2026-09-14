@@ -1,5 +1,6 @@
 import {
   alphaNumericAndSingleSpaceBetweenCharacters,
+  dataDuplicada,
   noSpaceStartOrEnd,
   prefeituraEmail,
   SMEPrefeituraEmail,
@@ -233,5 +234,73 @@ describe("tamanhoCnpjMascara", () => {
 
   test('deve retornar "CNPJ Inválido" quando os 2 últimos não são dígitos (com máscara)', () => {
     expect(tamanhoCnpjMascara("12.AB3.456/7890-AA")).toBe("CNPJ Inválido");
+  });
+});
+
+describe("dataDuplicada", () => {
+  const mensagemErro =
+    "Não é permitido selecionar a mesma data mais de uma vez.";
+
+  test("deve retornar undefined quando o valor é vazio ou undefined", () => {
+    expect(dataDuplicada("inclusoes")("")).toBeUndefined();
+    expect(dataDuplicada("inclusoes")(null)).toBeUndefined();
+    expect(dataDuplicada("inclusoes")(undefined)).toBeUndefined();
+  });
+
+  test("deve retornar undefined quando allValues não é fornecido", () => {
+    expect(dataDuplicada("inclusoes")("30/01/2025")).toBeUndefined();
+  });
+
+  test("deve retornar undefined quando o array de datas não existe", () => {
+    expect(dataDuplicada("inclusoes")("30/01/2025", {})).toBeUndefined();
+    expect(
+      dataDuplicada("inclusoes")("30/01/2025", { outro_campo: [] }),
+    ).toBeUndefined();
+  });
+
+  test("deve retornar undefined quando não há datas duplicadas", () => {
+    const allValues = {
+      inclusoes: [
+        { data: "30/01/2025" },
+        { data: "31/01/2025" },
+        { data: null },
+      ],
+    };
+    expect(dataDuplicada("inclusoes")("30/01/2025", allValues)).toBeUndefined();
+  });
+
+  test("deve retornar mensagem de erro quando há datas duplicadas", () => {
+    const allValues = {
+      inclusoes: [
+        { data: "30/01/2025" },
+        { data: "30/01/2025" },
+        { data: "31/01/2025" },
+      ],
+    };
+    expect(dataDuplicada("inclusoes")("30/01/2025", allValues)).toBe(
+      mensagemErro,
+    );
+  });
+
+  test("deve usar o nome do array de dias informado", () => {
+    const allValues = {
+      dias_motivos_da_inclusao_cei: [
+        { data: "30/01/2025" },
+        { data: "30/01/2025" },
+      ],
+    };
+    expect(
+      dataDuplicada("dias_motivos_da_inclusao_cei")("30/01/2025", allValues),
+    ).toBe(mensagemErro);
+    expect(
+      dataDuplicada("dias_motivos_da_inclusao_cei")("31/01/2025", allValues),
+    ).toBeUndefined();
+  });
+
+  test("deve usar o array `inclusoes` por padrão", () => {
+    const allValues = {
+      inclusoes: [{ data: "30/01/2025" }, { data: "30/01/2025" }],
+    };
+    expect(dataDuplicada()("30/01/2025", allValues)).toBe(mensagemErro);
   });
 });

@@ -9,9 +9,9 @@ export const required = (value) =>
 
 export const composeValidators =
   (...validators) =>
-  (value) =>
+  (value, ...args) =>
     validators.reduce(
-      (error, validator) => error || validator(value),
+      (error, validator) => error || validator(value, ...args),
       undefined,
     );
 
@@ -33,13 +33,16 @@ export const requiredSearchSelectUnidEducDietas = (escolas) => (value) => {
     : "Selecione uma opção válida";
 };
 
-export const dataDuplicada = (listaDatas) => (value) => {
-  return value &&
-    listaDatas &&
-    listaDatas.filter((el) => el && el.data === value).length > 1
-    ? "Já existe uma solicitação de inclusão de alimento para essa mesma data."
-    : undefined;
-};
+export const dataDuplicada =
+  (nameFieldArray = "inclusoes") =>
+  (value, allValues) => {
+    const listaDatas = allValues?.[nameFieldArray];
+    return value &&
+      listaDatas &&
+      listaDatas.filter((el) => el && el.data === value).length > 1
+      ? "Não é permitido selecionar a mesma data mais de uma vez."
+      : undefined;
+  };
 
 export const requiredMultiselect = (array) =>
   array && array.length > 0 ? undefined : "Campo obrigatório";

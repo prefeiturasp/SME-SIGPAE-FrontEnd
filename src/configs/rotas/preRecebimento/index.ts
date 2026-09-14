@@ -5,6 +5,7 @@ import {
   usuarioComAcessoAoPainelEmbalagens,
   usuarioComAcessoAoPainelFichasTecnicas,
   usuarioComAcessoAoRelatorioCronogramas,
+  usuarioComAcessoAoRelatorioCronogramasSemanais,
   usuarioComAcessoAoRelatorioFichasTecnicas,
   usuarioEhCODAEGabinete,
   usuarioEhCodaeDilog,
@@ -341,7 +342,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_CRONOGRAMA_SEMANAL}`,
     component: RelatorioCronogramaSemanalPage,
-    tipoUsuario: usuarioComAcessoAoRelatorioCronogramas(),
+    tipoUsuario: usuarioComAcessoAoRelatorioCronogramasSemanais(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_FICHAS_TECNICAS}`,
