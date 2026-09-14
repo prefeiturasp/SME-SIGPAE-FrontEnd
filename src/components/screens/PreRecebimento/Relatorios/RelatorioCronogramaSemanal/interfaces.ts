@@ -1,11 +1,11 @@
 export interface FiltrosRelatorioCronograma {
   empresa?: string[];
   nome_produto?: string;
-  numero?: string;
-  status?: string;
-  data_inicial?: string;
-  data_final?: string;
-  situacao?: string[];
+  numero_cronograma_mensal?: string;
+  numero_cronograma_semanal?: string;
+  status?: string[];
+  mes_inicial?: string;
+  mes_final?: string;
 }
 
 export interface EmpresaFiltros {
