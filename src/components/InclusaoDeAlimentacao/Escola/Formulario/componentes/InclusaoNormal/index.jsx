@@ -54,9 +54,10 @@ export const DataInclusaoNormal = ({ ...props }) => {
               maxDate={fimDoCalendario()}
               label="Dia"
               required
+              usarDirty
               validate={composeValidators(
                 required,
-                dataDuplicada(values[nameFieldArray || "inclusoes"]),
+                dataDuplicada(nameFieldArray || "inclusoes"),
               )}
               inputOnChange={(value) => {
                 if (value) {
@@ -67,7 +68,7 @@ export const DataInclusaoNormal = ({ ...props }) => {
             />
           </div>
           {index > 0 && (
-            <div className="col-3 mt-auto mb-1">
+            <div className="col-3">
               <Botao
                 texto="Remover dia"
                 type={BUTTON_TYPE.BUTTON}
