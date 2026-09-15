@@ -100,7 +100,18 @@ export class AnexosProdutoField extends Component {
           {files.map((file, key) => {
             return (
               <div key={key} className="px-1 arquivos-anexados mt-1">
-                <span onClick={() => openFile(file)}>
+                <span
+                  onClick={() => openFile(file)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openFile(file);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Abrir anexo ${file.nome}`}
+                >
                   <i className="fas fa-paperclip" />
                 </span>
                 <a
