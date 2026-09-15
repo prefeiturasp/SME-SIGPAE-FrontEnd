@@ -12,6 +12,7 @@ import {
   PAINEL_LAYOUT_EMBALAGEM,
   PRE_RECEBIMENTO,
   RELATORIO_CRONOGRAMA,
+  RELATORIO_CRONOGRAMA_SEMANAL,
   RELATORIO_FICHAS_TECNICAS,
   SOLICITACAO_ALTERACAO_CRONOGRAMA,
   SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR,
@@ -23,6 +24,7 @@ import {
   usuarioComAcessoAoPainelEmbalagens,
   usuarioComAcessoAoPainelFichasTecnicas,
   usuarioComAcessoAoRelatorioCronogramas,
+  usuarioComAcessoAoRelatorioCronogramasSemanais,
   usuarioComAcessoAoRelatorioFichasTecnicas,
   usuarioEhCodaeDilog,
   usuarioEhCODAEGabinete,
@@ -135,6 +137,13 @@ const MenuPreRecebimento = ({ activeMenu, onSubmenuClick }) => {
           {usuarioComAcessoAoRelatorioCronogramas() && (
             <LeafItem to={`/${PRE_RECEBIMENTO}/${RELATORIO_CRONOGRAMA}/`}>
               Cronogramas de Entregas
+            </LeafItem>
+          )}
+          {usuarioComAcessoAoRelatorioCronogramasSemanais() && (
+            <LeafItem
+              to={`/${PRE_RECEBIMENTO}/${RELATORIO_CRONOGRAMA_SEMANAL}/`}
+            >
+              Cronogramas Semanais
             </LeafItem>
           )}
           {usuarioComAcessoAoRelatorioFichasTecnicas() && (

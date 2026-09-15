@@ -246,11 +246,32 @@ const InputFile = forwardRef((props, ref) => {
             <div className="file-div" key={key}>
               <div className="file-name-container">
                 <i className="fas fa-paperclip" />
-                <span onClick={() => openFile(file)} className="file-name">
+                <span
+                  onClick={() => openFile(file)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openFile(file);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Abrir anexo ${file.nome}`}
+                  className="file-name"
+                >
                   {truncarString(file.nome, 40)}
                 </span>
                 <i
                   onClick={() => deleteFile(key)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      deleteFile(key);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Remover anexo ${file.nome}`}
                   data-testid={`delete-file-${key}`}
                   className={`fas ${
                     ehPlanilhaMedicaoInicial ? "fa-times" : "fa-trash-alt"

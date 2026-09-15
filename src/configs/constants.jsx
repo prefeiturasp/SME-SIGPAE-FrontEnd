@@ -266,6 +266,7 @@ export const CALENDARIO_CRONOGRAMA = "calendario-cronograma";
 export const CALENDARIO_CRONOGRAMA_PONTO_A_PONTO_SEMANAL =
   "calendario-cronograma-ponto-a-ponto-semanal";
 export const RELATORIO_CRONOGRAMA = "relatorio-cronograma";
+export const RELATORIO_CRONOGRAMA_SEMANAL = "relatorio-cronograma-semanal";
 export const RELATORIO_FICHAS_TECNICAS = "relatorio-fichas-tecnicas";
 export const CRONOGRAMA_SEMANAL_FLV = "cronograma-semanal-flv";
 export const CADASTRO_CRONOGRAMA_SEMANAL = "cadastro-cronograma-semanal";
@@ -339,6 +340,8 @@ export const CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO =
   "cadastro-termo-recebimento-definitivo";
 export const DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO =
   "detalhar-termo-recebimento-definitivo";
+export const TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR =
+  "termo-recebimento-definitivo-fornecedor";
 export const QUESTOES_POR_PRODUTO = "questoes-por-produto";
 export const ATRIBUIR_QUESTOES_CONFERENCIA = "atribuir-questoes-conferencia";
 export const EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA =

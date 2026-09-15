@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => ({
   define: {
     "process.env": {},
     "process.env.NODE_ENV": JSON.stringify(mode),
+    "process.env.IS_DOCKER_ENVIRONMENT": JSON.stringify(
+      process.env.IS_DOCKER_ENVIRONMENT,
+    ),
   },
   css: {
     preprocessorOptions: {

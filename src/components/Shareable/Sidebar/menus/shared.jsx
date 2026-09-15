@@ -25,6 +25,16 @@ export const SubMenu = ({
         e.stopPropagation();
         onClick(path);
       }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          e.stopPropagation();
+          onClick(path);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-expanded={activeMenu === path}
       data-testid={dataTestId}
       className={`collapse-item ${activeMenu === path ? "active" : ""}`}
     >
@@ -44,35 +54,46 @@ export const LeafItem = ({ to, dataTestId, children }) => {
   );
 };
 
-export const Menu = ({ id, title, icon, dataTestId, children }) => (
-  <li className="nav-item" data-testid={dataTestId}>
-    <div
-      className={`nav-link collapsed`}
-      data-toggle="collapse"
-      data-target={`#collapse${id}`}
-      aria-expanded="false"
-      aria-controls={`collapse${id}`}
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const currentElement = document.querySelector(`#collapse${id}`);
-        const otherElements = document.querySelectorAll(".nav-item .show");
-        otherElements.forEach((element) => {
-          if (element !== currentElement) element.classList.remove("show");
-        });
-        currentElement.classList.toggle("show");
-      }}
-    >
-      <i className={`fas ${icon}`} />
-      <span>{title}</span>
-    </div>
-    <div
-      id={`collapse${id}`}
-      className={`collapse`}
-      aria-labelledby="headingConfig"
-      data-parent="#accordionSidebar"
-    >
-      <div className="bg-white py-2 collapse-inner rounded">{children}</div>
-    </div>
-  </li>
-);
+export const Menu = ({ id, title, icon, dataTestId, children }) => {
+  const handleToggle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const currentElement = document.querySelector(`#collapse${id}`);
+    const otherElements = document.querySelectorAll(".nav-item .show");
+    otherElements.forEach((element) => {
+      if (element !== currentElement) element.classList.remove("show");
+    });
+    currentElement.classList.toggle("show");
+  };
+
+  return (
+    <li className="nav-item" data-testid={dataTestId}>
+      <div
+        className={`nav-link collapsed`}
+        data-toggle="collapse"
+        data-target={`#collapse${id}`}
+        aria-expanded="false"
+        aria-controls={`collapse${id}`}
+        role="button"
+        tabIndex={0}
+        onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            handleToggle(e);
+          }
+        }}
+      >
+        <i className={`fas ${icon}`} />
+        <span>{title}</span>
+      </div>
+      <div
+        id={`collapse${id}`}
+        className={`collapse`}
+        aria-labelledby="headingConfig"
+        data-parent="#accordionSidebar"
+      >
+        <div className="bg-white py-2 collapse-inner rounded">{children}</div>
+      </div>
+    </li>
+  );
+};

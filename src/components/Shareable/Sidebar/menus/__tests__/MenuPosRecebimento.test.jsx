@@ -6,6 +6,7 @@ import MenuPosRecebimento from "../MenuPosRecebimento";
 import {
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_DEFINITIVO,
+  TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR,
 } from "src/configs/constants";
 
 describe("MenuPosRecebimento", () => {
@@ -22,5 +23,24 @@ describe("MenuPosRecebimento", () => {
       "href",
       `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`,
     );
+  });
+
+  it("exibe o item Termo de Recebimento Definitivo apontando para a versão do fornecedor", () => {
+    localStorage.setItem("perfil", '"ADMINISTRADOR_EMPRESA"');
+    localStorage.setItem("tipo_servico", '"FORNECEDOR"');
+
+    render(
+      <MemoryRouter>
+        <MenuPosRecebimento />
+      </MemoryRouter>,
+    );
+
+    const linkTermo = screen.getByText("Termo de Recebimento Definitivo");
+    expect(linkTermo.closest("a")).toHaveAttribute(
+      "href",
+      `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`,
+    );
+
+    localStorage.clear();
   });
 });

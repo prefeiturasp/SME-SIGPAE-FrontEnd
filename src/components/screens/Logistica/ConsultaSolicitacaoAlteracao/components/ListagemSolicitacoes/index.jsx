@@ -2,6 +2,7 @@ import React from "react";
 
 import "./styles.scss";
 import AlimentosConsolidado from "../AlimentosConsolidado";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 const ListagemSolicitacoes = ({ solicitacoes, ativos, setAtivos }) => {
   return (
@@ -24,6 +25,13 @@ const ListagemSolicitacoes = ({ solicitacoes, ativos, setAtivos }) => {
               : "";
           const icone =
             ativos && ativos.includes(solicitacao.uuid) ? "minus" : "plus";
+          const alternarExpansao = () => {
+            ativos && ativos.includes(solicitacao.uuid)
+              ? setAtivos(ativos.filter((el) => el !== solicitacao.uuid))
+              : setAtivos(
+                  ativos ? [...ativos, solicitacao.uuid] : [solicitacao.uuid],
+                );
+          };
           return (
             <>
               <div className="grid-table body-table">
@@ -42,17 +50,16 @@ const ListagemSolicitacoes = ({ solicitacoes, ativos, setAtivos }) => {
                 <div>
                   <i
                     className={`fas fa-${icone}`}
-                    onClick={() => {
-                      ativos && ativos.includes(solicitacao.uuid)
-                        ? setAtivos(
-                            ativos.filter((el) => el !== solicitacao.uuid)
-                          )
-                        : setAtivos(
-                            ativos
-                              ? [...ativos, solicitacao.uuid]
-                              : [solicitacao.uuid]
-                          );
-                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(
+                      ativos && ativos.includes(solicitacao.uuid),
+                    )}
+                    aria-label={`Alimentos da solicitação ${solicitacao.numero_solicitacao}`}
+                    onClick={alternarExpansao}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, alternarExpansao)
+                    }
                   />
                 </div>
               </div>

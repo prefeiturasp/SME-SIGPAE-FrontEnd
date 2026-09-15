@@ -30,6 +30,15 @@ export class Rascunhos extends Component {
               <span
                 data-testid={`botao-excluir-rascunho-${index}`}
                 onClick={() => OnDeleteButtonClicked(id_externo, uuid)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    OnDeleteButtonClicked(id_externo, uuid);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="Excluir rascunho"
               >
                 <i className="fas fa-trash" />
               </span>
@@ -37,6 +46,15 @@ export class Rascunhos extends Component {
                 disabled={!this.props.schoolsLoaded}
                 data-testid={`botao-editar-rascunho-${index}`}
                 onClick={() => OnEditButtonClicked(solicitacaoUnificada, form)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    OnEditButtonClicked(solicitacaoUnificada, form);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label="Editar rascunho"
               >
                 <i className="fas fa-edit" />
               </span>

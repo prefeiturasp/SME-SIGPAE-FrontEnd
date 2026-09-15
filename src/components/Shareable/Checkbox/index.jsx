@@ -16,6 +16,15 @@ export const Checkbox = (props) => {
         />
         <span
           onClick={onClick}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onClick?.(e);
+            }
+          }}
+          role="checkbox"
+          tabIndex={0}
+          aria-checked={Boolean(input?.checked)}
           className={`checkbox-custom ${className}`}
           data-testid="checkbox-custom"
         />{" "}

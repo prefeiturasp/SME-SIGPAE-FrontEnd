@@ -5,7 +5,7 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { Form, Field } from "react-final-form";
+import { Form, Field, FormSpy } from "react-final-form";
 import {
   toastError,
   toastSuccess,
@@ -18,7 +18,7 @@ import {
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import { FieldArray } from "react-final-form-arrays";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Select from "src/components/Shareable/Select";
 import { required } from "src/helpers/fieldValidators";
 import { InputText } from "src/components/Shareable/Input/InputText";
@@ -95,6 +95,9 @@ const ModalAplicarDesconto = ({
 }: Props) => {
   const [clausulas, setClausulas] = useState<ClausulaInterface[]>([]);
   const [cancelar, setCancelar] = useState<boolean>(false);
+  const formApiRef = useRef<any>(null);
+  const formValuesRef = useRef<any>({});
+  const [formSyncTick, setFormSyncTick] = useState(0);
 
   const grupoNome =
     relatorioConsolidado?.grupo_unidade_escolar?.nome?.toUpperCase() ?? "";
@@ -253,6 +256,64 @@ const ModalAplicarDesconto = ({
     if (relatorioConsolidado) getClausulasParaDescontosAsync();
   }, [relatorioConsolidado]);
 
+  const recalcularDescontos = () => {
+    const values = formValuesRef.current;
+    const form = formApiRef.current;
+    if (!form) return;
+    values.cadastros_desconto?.forEach((desconto: any, index: number) => {
+      const valorUnitario = getValorUnitario({
+        desconto,
+        grupo: {
+          ehCei,
+          ehCemei,
+          ehEmebs,
+          ehEmef,
+        },
+        faixasEtarias,
+        tiposAlimentacao,
+        tabelas: relatorioConsolidado.tabelas,
+      });
+
+      const clausula = clausulas.find(
+        (c) => c.uuid === desconto.clausula_desconto,
+      );
+
+      const percentualDesconto =
+        Number(clausula?.porcentagem_desconto || 0) / 100;
+
+      const valorAtual = Number(
+        values.cadastros_desconto[index]?.valor_unitario || 0,
+      );
+
+      if (valorUnitario !== valorAtual) {
+        form.change(
+          `cadastros_desconto.${index}.valor_unitario`,
+          numberToStringDecimalMonetario(valorUnitario),
+        );
+      }
+
+      const valorBase =
+        Number(desconto.quantidade || 0) * Number(valorUnitario || 0);
+
+      const totalCalculado = valorBase * percentualDesconto;
+
+      const totalAtual = stringDecimalToNumber(
+        values.cadastros_desconto[index]?.total_desconto?.toString() || "0",
+      );
+
+      if (totalCalculado !== totalAtual) {
+        form.change(
+          `cadastros_desconto.${index}.total_desconto`,
+          numberToStringDecimalMonetario(totalCalculado),
+        );
+      }
+    });
+  };
+
+  useEffect(() => {
+    recalcularDescontos();
+  }, [formSyncTick, clausulas]);
+
   return (
     <Modal show={showModal} onHide={() => setCancelar(true)} size="lg">
       <Modal.Header closeButton>
@@ -264,57 +325,8 @@ const ModalAplicarDesconto = ({
         initialValues={initialValues}
         mutators={{ ...arrayMutators }}
         render={({ handleSubmit, submitting, values, form }) => {
-          useEffect(() => {
-            values.cadastros_desconto?.forEach((desconto, index) => {
-              const valorUnitario = getValorUnitario({
-                desconto,
-                grupo: {
-                  ehCei,
-                  ehCemei,
-                  ehEmebs,
-                  ehEmef,
-                },
-                faixasEtarias,
-                tiposAlimentacao,
-                tabelas: relatorioConsolidado.tabelas,
-              });
-
-              const clausula = clausulas.find(
-                (c) => c.uuid === desconto.clausula_desconto,
-              );
-
-              const percentualDesconto =
-                Number(clausula?.porcentagem_desconto || 0) / 100;
-
-              const valorAtual = Number(
-                values.cadastros_desconto[index]?.valor_unitario || 0,
-              );
-
-              if (valorUnitario !== valorAtual) {
-                form.change(
-                  `cadastros_desconto.${index}.valor_unitario`,
-                  numberToStringDecimalMonetario(valorUnitario),
-                );
-              }
-
-              const valorBase =
-                Number(desconto.quantidade || 0) * Number(valorUnitario || 0);
-
-              const totalCalculado = valorBase * percentualDesconto;
-
-              const totalAtual = stringDecimalToNumber(
-                values.cadastros_desconto[index]?.total_desconto?.toString() ||
-                  "0",
-              );
-
-              if (totalCalculado !== totalAtual) {
-                form.change(
-                  `cadastros_desconto.${index}.total_desconto`,
-                  numberToStringDecimalMonetario(totalCalculado),
-                );
-              }
-            });
-          }, [values.cadastros_desconto, form, clausulas]);
+          formApiRef.current = form;
+          formValuesRef.current = values;
 
           const totalDescontosItens =
             values.cadastros_desconto?.reduce((acc, desconto) => {
@@ -328,6 +340,10 @@ const ModalAplicarDesconto = ({
 
           return (
             <form onSubmit={handleSubmit}>
+              <FormSpy
+                subscription={{ values: true }}
+                onChange={() => setFormSyncTick((t) => t + 1)}
+              />
               <Modal.Body>
                 <b className="mb-3 d-block">
                   Informe abaixo os descontos que devem ser aplicados nos

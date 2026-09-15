@@ -15,6 +15,7 @@ import {
 import { ModalAtualizarOcorrencia } from "../ModalAtualizarOcorrencia";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export default ({
   solicitacaoMedicaoInicial,
@@ -122,9 +123,22 @@ export default ({
                     {!ocorrenciaExcluida() && (
                       <span
                         className={`download-ocorrencias me-0 ${!solicitacaoMedicaoInicial?.ocorrencia?.ultimo_arquivo ? "disabled" : ""}`}
+                        role="button"
+                        tabIndex={0}
+                        aria-disabled={
+                          !solicitacaoMedicaoInicial?.ocorrencia?.ultimo_arquivo
+                        }
                         onClick={() =>
                           medicaoInicialExportarOcorrenciasPDF(
                             solicitacaoMedicaoInicial.ocorrencia.ultimo_arquivo,
+                          )
+                        }
+                        onKeyDown={(e) =>
+                          acionaComEnterOuEspaco(e, () =>
+                            medicaoInicialExportarOcorrenciasPDF(
+                              solicitacaoMedicaoInicial.ocorrencia
+                                .ultimo_arquivo,
+                            ),
                           )
                         }
                       >

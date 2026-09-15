@@ -13,7 +13,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import Wizard from "src/components/Shareable/Wizard";
-import { getError } from "src/helpers/utilities";
+import { acionaComEnterOuEspaco, getError } from "src/helpers/utilities";
 import {
   postHorariosCombosPorEscola,
   putHorariosCombosPorEscola,
@@ -345,12 +345,29 @@ class CadastroHorarioComboAlimentacao extends Component {
                           <Fragment>
                             <i
                               className="fas fa-pen"
+                              role="button"
+                              tabIndex={0}
+                              aria-label="Editar horários do período"
                               onClick={() => this.getPeriodoHorario(index)}
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  this.getPeriodoHorario(index),
+                                )
+                              }
                             />
                             <i
                               className="fas fa-angle-up"
+                              role="button"
+                              tabIndex={0}
+                              aria-expanded={true}
+                              aria-label="Recolher detalhes do período"
                               onClick={() =>
                                 this.detalhesPeriodo(index, element.ativo)
+                              }
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  this.detalhesPeriodo(index, element.ativo),
+                                )
                               }
                             />
                           </Fragment>
@@ -359,8 +376,17 @@ class CadastroHorarioComboAlimentacao extends Component {
                             <i />
                             <i
                               className="fas fa-angle-down"
+                              role="button"
+                              tabIndex={0}
+                              aria-expanded={false}
+                              aria-label="Exibir detalhes do período"
                               onClick={() =>
                                 this.detalhesPeriodo(index, element.ativo)
+                              }
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  this.detalhesPeriodo(index, element.ativo),
+                                )
                               }
                             />
                           </Fragment>

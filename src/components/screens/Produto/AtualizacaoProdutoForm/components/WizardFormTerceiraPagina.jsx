@@ -59,7 +59,11 @@ class WizardFormTerceiraPagina extends Component {
     });
   };
 
-  componentDidMount = async () => {
+  componentDidMount() {
+    this.carregarDadosIniciais();
+  }
+
+  carregarDadosIniciais = async () => {
     if (this.props.produto !== this.state.produto) {
       this.setState({ produto: this.props.produto });
     }
@@ -209,9 +213,11 @@ class WizardFormTerceiraPagina extends Component {
         .then((response) => {
           if (response.status === HTTP_STATUS.NO_CONTENT) {
             toastSuccess("Arquivo excluído do produto com sucesso!");
-            let produto = this.state.produto;
-            produto.imagens.splice(index, 1);
-            this.setState({ produto });
+            this.setState((prevState) => {
+              const produto = { ...prevState.produto };
+              produto.imagens = produto.imagens.filter((_, i) => i !== index);
+              return { produto };
+            });
           } else {
             toastError("Erro ao excluir o arquivo");
           }

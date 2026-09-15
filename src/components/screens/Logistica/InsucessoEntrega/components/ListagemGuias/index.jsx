@@ -4,6 +4,7 @@ import "./styles.scss";
 import { REGISTRAR_INSUCESSO, LOGISTICA } from "src/configs/constants";
 import { NavLink } from "react-router-dom";
 import { Tooltip } from "antd";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 const ListagemGuias = ({ guias, ativos, setAtivos }) => {
   const isDisabled = (guia) => {
@@ -42,6 +43,11 @@ const ListagemGuias = ({ guias, ativos, setAtivos }) => {
             ativos && ativos.includes(guia.uuid) ? "desativar-borda" : "";
           const icone = ativos && ativos.includes(guia.uuid) ? "minus" : "plus";
           const desabilitar = isDisabled(guia);
+          const alternarExpansao = () => {
+            ativos && ativos.includes(guia.uuid)
+              ? setAtivos(ativos.filter((el) => el !== guia.uuid))
+              : setAtivos(ativos ? [...ativos, guia.uuid] : [guia.uuid]);
+          };
           return (
             <>
               <div key={guia.uuid} className="grid-table body-table">
@@ -82,13 +88,16 @@ const ListagemGuias = ({ guias, ativos, setAtivos }) => {
                 <div className={`${bordas}`}>
                   <i
                     className={`fas fa-${icone}`}
-                    onClick={() => {
-                      ativos && ativos.includes(guia.uuid)
-                        ? setAtivos(ativos.filter((el) => el !== guia.uuid))
-                        : setAtivos(
-                            ativos ? [...ativos, guia.uuid] : [guia.uuid]
-                          );
-                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(
+                      ativos && ativos.includes(guia.uuid),
+                    )}
+                    aria-label={`Detalhes da guia ${guia.numero_guia}`}
+                    onClick={alternarExpansao}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, alternarExpansao)
+                    }
                   />
                 </div>
               </div>

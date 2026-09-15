@@ -25,6 +25,15 @@ export default class CheckboxField extends Component {
           <input type="checkbox" name={name} checked={check || checked} />
           <span
             onClick={() => this.onClick()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                this.onClick();
+              }
+            }}
+            role="checkbox"
+            tabIndex={0}
+            aria-checked={Boolean(check || checked)}
             data-testid={dataTestId}
             className="checkbox-field-span"
           />{" "}

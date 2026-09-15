@@ -1,5 +1,8 @@
 import React, { useState } from "react";
-import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  usuarioEhEscolaTerceirizadaQualquerPerfil,
+} from "src/helpers/utilities";
 
 export const KitLancheUnificadoBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;
@@ -42,7 +45,13 @@ export const KitLancheUnificadoBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,
@@ -124,7 +133,7 @@ export const KitLancheUnificadoBody = ({ ...props }) => {
                             </td>
                           </tr>
                         );
-                      }
+                      },
                     )}
                   </tbody>
                 </table>

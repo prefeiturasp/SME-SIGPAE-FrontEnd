@@ -16,6 +16,7 @@ export const mockTermoRecebimentoDetalhe = {
     numero_chamada_publica: "123456789",
     ata: "",
   },
+  valor_contrato: "2000.00",
   cronogramas: [
     {
       cronograma: {
@@ -28,7 +29,6 @@ export const mockTermoRecebimentoDetalhe = {
           produto: { uuid: "prod-1", nome: "MANGA" },
         },
       },
-      valor_contrato: "2000.00",
       quantidade_total_recebida: "17.00",
     },
     {
@@ -42,7 +42,6 @@ export const mockTermoRecebimentoDetalhe = {
           produto: { uuid: "prod-2", nome: "BANANA NANICA" },
         },
       },
-      valor_contrato: "2000.00",
       quantidade_total_recebida: "19.00",
     },
   ],

@@ -6,6 +6,7 @@ export const IconeCronogramaEntrega = () => {
       viewBox="0 0 101 92"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className="fill-white"
     >
       <mask
         id="mask0_970_11676"

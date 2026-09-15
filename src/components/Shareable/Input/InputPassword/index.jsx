@@ -76,6 +76,15 @@ export const InputPassword = (props) => {
           passwordShown ? "fa fa-eye-slash" : "fa fa-eye"
         }`}
         onClick={togglePasswordVisiblity}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            togglePasswordVisiblity();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-label={passwordShown ? "Ocultar senha" : "Mostrar senha"}
       />
       <HelpText helpText={helpText} />
       <InputErroMensagem meta={meta} />

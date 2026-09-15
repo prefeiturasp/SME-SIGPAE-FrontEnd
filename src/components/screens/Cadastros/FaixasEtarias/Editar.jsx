@@ -79,53 +79,56 @@ export default class FaixasEtariasEditar extends Component {
 
   selecionaMes(mes) {
     if (isNaN(mes)) return;
-    if (this.state.mesEdicaoAtual !== undefined) {
-      let segundoClique;
-      if (this.state.mesEdicaoAtual === 0 && (mes === 0 || mes === 1)) {
-        segundoClique = 1;
-      } else {
-        segundoClique = mes + 1;
+    this.setState((prevState) => {
+      if (prevState.mesEdicaoAtual !== undefined) {
+        let segundoClique;
+        if (prevState.mesEdicaoAtual === 0 && (mes === 0 || mes === 1)) {
+          segundoClique = 1;
+        } else {
+          segundoClique = mes + 1;
+        }
+        const faixasEtarias = ordenaFaixas(
+          prevState.faixasEtarias.concat({
+            inicio: prevState.mesEdicaoAtual,
+            fim: segundoClique,
+          }),
+        );
+        return {
+          mesEdicaoAtual: undefined,
+          faixasEtarias,
+          meses: mesesForaDasFaixas(faixasEtarias, this.SEIS_ANOS_MAIS_UM_MES),
+        };
       }
-      const faixasEtarias = ordenaFaixas(
-        this.state.faixasEtarias.concat({
-          inicio: this.state.mesEdicaoAtual,
-          fim: segundoClique,
-        })
-      );
-      this.setState({
-        mesEdicaoAtual: undefined,
-        faixasEtarias,
-        meses: mesesForaDasFaixas(faixasEtarias, this.SEIS_ANOS_MAIS_UM_MES),
-      });
-    } else {
-      this.setState({
+      return {
         mesEdicaoAtual: mes,
         meses: mesesFinaisValidos(
           mes,
-          this.state.faixasEtarias,
-          this.SEIS_ANOS_MAIS_UM_MES
+          prevState.faixasEtarias,
+          this.SEIS_ANOS_MAIS_UM_MES,
         ),
-      });
-    }
-  }
-
-  cancelarEdicao() {
-    this.setState({
-      mesEdicaoAtual: undefined,
-      meses: mesesForaDasFaixas(
-        this.state.faixasEtarias,
-        this.SEIS_ANOS_MAIS_UM_MES
-      ),
+      };
     });
   }
 
+  cancelarEdicao() {
+    this.setState((prevState) => ({
+      mesEdicaoAtual: undefined,
+      meses: mesesForaDasFaixas(
+        prevState.faixasEtarias,
+        this.SEIS_ANOS_MAIS_UM_MES,
+      ),
+    }));
+  }
+
   apagarFaixa(indice) {
-    const faixasEtarias = this.state.faixasEtarias.filter(
-      (f, i) => i !== indice
-    );
-    this.setState({
-      faixasEtarias,
-      meses: mesesForaDasFaixas(faixasEtarias, this.SEIS_ANOS_MAIS_UM_MES),
+    this.setState((prevState) => {
+      const faixasEtarias = prevState.faixasEtarias.filter(
+        (f, i) => i !== indice,
+      );
+      return {
+        faixasEtarias,
+        meses: mesesForaDasFaixas(faixasEtarias, this.SEIS_ANOS_MAIS_UM_MES),
+      };
     });
   }
 
@@ -165,7 +168,7 @@ export default class FaixasEtariasEditar extends Component {
                         ? mes < this.state.mesEdicaoAtual ||
                           mesEstaDentroDeAlgumaFaixa(
                             mes,
-                            this.state.faixasEtarias
+                            this.state.faixasEtarias,
                           )
                         : false
                     }

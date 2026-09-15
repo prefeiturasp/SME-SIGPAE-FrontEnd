@@ -248,7 +248,19 @@ export class InputComData extends Component {
             filterDate={filterDate}
           />
           {hasIcon && (
-            <i onClick={this.openDatepicker} className="fas fa-calendar-alt" />
+            <i
+              onClick={this.openDatepicker}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  this.openDatepicker();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Abrir calendário"
+              className="fas fa-calendar-alt"
+            />
           )}
         </div>
         <HelpText helpText={helpText} />

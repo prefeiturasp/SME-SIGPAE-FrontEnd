@@ -135,14 +135,14 @@ class Step1 extends Component {
     const responseFabricantes = await getFabricantesProdutos();
     responseMarcas.data.results.forEach((marca) => {
       listaMarcas.push(
-        <Option key={`${marca.nome}+${marca.uuid}`}>{marca.nome}</Option>
+        <Option key={`${marca.nome}+${marca.uuid}`}>{marca.nome}</Option>,
       );
     });
     responseFabricantes.data.results.forEach((fabricante) => {
       listaFabricantes.push(
         <Option key={`${fabricante.nome}+${fabricante.uuid}`}>
           {fabricante.nome}
-        </Option>
+        </Option>,
       );
     });
     return {
@@ -153,7 +153,11 @@ class Step1 extends Component {
     };
   };
 
-  componentDidMount = async () => {
+  componentDidMount() {
+    this.carregarDadosIniciais();
+  }
+
+  carregarDadosIniciais = async () => {
     let { marcasArray, fabricantesArray, dafaultArrayProtocolo } = this.state;
     const { payload } = this.props;
     if (dafaultArrayProtocolo.length === 0) {
@@ -173,7 +177,7 @@ class Step1 extends Component {
         listaNomeDeProdutosEdital.push(
           <Option key={`${produtoEdital.nome}+${produtoEdital.uuid}`}>
             {produtoEdital.nome}
-          </Option>
+          </Option>,
         );
       });
 
@@ -188,7 +192,11 @@ class Step1 extends Component {
     }
   };
 
-  componentDidUpdate = async () => {
+  componentDidUpdate() {
+    this.atualizarOpcoes();
+  }
+
+  atualizarOpcoes = async () => {
     const { payload, concluidoStep1 } = this.props;
     const {
       loading,
@@ -216,13 +224,13 @@ class Step1 extends Component {
         listaNomeDeProdutosEdital.push(
           <Option key={`${produtoEdital.nome}+${produtoEdital.uuid}`}>
             {produtoEdital.nome}
-          </Option>
+          </Option>,
         );
       });
 
       responseMarcas.data.results.forEach((marca) => {
         listaMarcas.push(
-          <Option key={`${marca.nome}+${marca.uuid}`}>{marca.nome}</Option>
+          <Option key={`${marca.nome}+${marca.uuid}`}>{marca.nome}</Option>,
         );
       });
 
@@ -230,7 +238,7 @@ class Step1 extends Component {
         listaFabricantes.push(
           <Option key={`${fabricante.nome}+${fabricante.uuid}`}>
             {fabricante.nome}
-          </Option>
+          </Option>,
         );
       });
       this.setState({

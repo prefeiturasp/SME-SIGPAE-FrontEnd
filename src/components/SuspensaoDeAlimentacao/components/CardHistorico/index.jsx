@@ -4,6 +4,7 @@ import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Collapse } from "react-collapse";
 import { Navigate } from "react-router-dom";
 import { obtemDataSolicitacao } from "../../../../helpers/painelPedidos";
+import { acionaComEnterOuEspaco } from "../../../../helpers/utilities";
 import "./style.scss";
 import {
   TERCEIRIZADA,
@@ -36,10 +37,13 @@ export class CardHistorico extends Component {
   }
 
   onCheckClicked(key) {
-    let pedidos = this.state.pedidos;
-    pedidos[key].checked = !pedidos[key].checked;
-    this.props.change(`check_${key}`, pedidos[key].checked);
-    this.setState({ pedidos });
+    const checked = !this.state.pedidos[key].checked;
+    this.props.change(`check_${key}`, checked);
+    this.setState((prevState) => {
+      const pedidos = [...prevState.pedidos];
+      pedidos[key] = { ...pedidos[key], checked };
+      return { pedidos };
+    });
   }
 
   // TODO: chamar "imprimir" quando tiver endpoint definido
@@ -100,7 +104,11 @@ export class CardHistorico extends Component {
                       name="selecionar_todos"
                     />
                     <span
+                      tabIndex={0}
                       onClick={() => this.selecionarTodos()}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => this.selecionarTodos())
+                      }
                       className="checkbox-custom small"
                     />
                     Selecionar todos
@@ -140,22 +148,51 @@ export class CardHistorico extends Component {
                                 name={`check_${key}`}
                               />
                               <span
+                                tabIndex={0}
                                 onClick={() => this.onCheckClicked(key)}
+                                onKeyDown={(e) =>
+                                  acionaComEnterOuEspaco(e, () =>
+                                    this.onCheckClicked(key),
+                                  )
+                                }
                                 className="checkbox-custom small report-line"
                               />
                             </label>
-                            <span onClick={() => this.setRedirect()}>
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={() => this.setRedirect()}
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  this.setRedirect(),
+                                )
+                              }
+                            >
                               {pedido.id_externo}
                             </span>
                           </td>
                           <td
+                            role="button"
+                            tabIndex={0}
                             onClick={() => this.setRedirect()}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.setRedirect(),
+                              )
+                            }
                             className="col-4"
                           >
                             {pedido.escola.nome}
                           </td>
                           <td
+                            role="button"
+                            tabIndex={0}
                             onClick={() => this.setRedirect()}
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                this.setRedirect(),
+                              )
+                            }
                             className="col-4"
                           >
                             {obtemDataSolicitacao(pedido)}

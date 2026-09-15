@@ -14,7 +14,11 @@ import {
 } from "src/configs/constants";
 import { useRelatorioFinanceiro } from "./view";
 import ModalAnalisar from "./components/ModalAnalisar";
-import { usuarioEhMedicao } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  usuarioEhMedicao,
+} from "src/helpers/utilities";
+import { RelatorioFinanceiroInterface } from "src/interfaces/relatorio_financeiro.interface";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import { exportarPDFAsyncRelatorioAtesteFinanceiro } from "src/services/medicaoInicial/relatorioFinanceiro.service";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -55,6 +59,30 @@ export function RelatorioFinanceiro() {
         state: relatorio,
       },
     );
+  };
+
+  const visualizarRelatorio = (relatorio: RelatorioFinanceiroInterface) => {
+    onPageRelatorio({
+      uuid: relatorio.uuid,
+      mes_ano: `${relatorio.mes}_${relatorio.ano}`,
+      lote: [relatorio.lote.uuid],
+      grupo_unidade_escolar: [relatorio.grupo_unidade_escolar.uuid],
+      status: [relatorio.status],
+      visualizar: !usuarioEhMedicao()
+        ? true
+        : relatorio.status !== "EM_ANALISE",
+    });
+  };
+
+  const analisarRelatorio = (relatorio: RelatorioFinanceiroInterface) => {
+    setRelatorioSelecionado({
+      uuid: relatorio.uuid,
+      mes_ano: `${relatorio.mes}_${relatorio.ano}`,
+      lote: [relatorio.lote.uuid],
+      grupo_unidade_escolar: [relatorio.grupo_unidade_escolar.uuid],
+      status: [relatorio.status],
+    });
+    setShowAnalisar(true);
   };
 
   const exportarPDF = async (uuid: string) => {
@@ -138,20 +166,15 @@ export function RelatorioFinanceiro() {
                               <>
                                 <span
                                   className="px-2 cursor-pointer"
-                                  onClick={() => {
-                                    onPageRelatorio({
-                                      uuid: relatorio.uuid,
-                                      mes_ano: `${relatorio.mes}_${relatorio.ano}`,
-                                      lote: [relatorio.lote.uuid],
-                                      grupo_unidade_escolar: [
-                                        relatorio.grupo_unidade_escolar.uuid,
-                                      ],
-                                      status: [relatorio.status],
-                                      visualizar: !usuarioEhMedicao()
-                                        ? true
-                                        : relatorio.status !== "EM_ANALISE",
-                                    });
-                                  }}
+                                  role="button"
+                                  tabIndex={0}
+                                  aria-label="Visualizar"
+                                  onClick={() => visualizarRelatorio(relatorio)}
+                                  onKeyDown={(e) =>
+                                    acionaComEnterOuEspaco(e, () =>
+                                      visualizarRelatorio(relatorio),
+                                    )
+                                  }
                                 >
                                   <i
                                     title="Visualizar"
@@ -168,7 +191,15 @@ export function RelatorioFinanceiro() {
                                 )}
                                 <span
                                   className="px-2 cursor-pointer"
+                                  role="button"
+                                  tabIndex={0}
+                                  aria-label="Ateste Financeiro"
                                   onClick={() => exportarPDF(relatorio.uuid)}
+                                  onKeyDown={(e) =>
+                                    acionaComEnterOuEspaco(e, () =>
+                                      exportarPDF(relatorio.uuid),
+                                    )
+                                  }
                                 >
                                   <i
                                     title="Ateste Financeiro"
@@ -179,18 +210,15 @@ export function RelatorioFinanceiro() {
                             ) : (
                               <span
                                 className="px-2 cursor-pointer"
-                                onClick={() => {
-                                  setRelatorioSelecionado({
-                                    uuid: relatorio.uuid,
-                                    mes_ano: `${relatorio.mes}_${relatorio.ano}`,
-                                    lote: [relatorio.lote.uuid],
-                                    grupo_unidade_escolar: [
-                                      relatorio.grupo_unidade_escolar.uuid,
-                                    ],
-                                    status: [relatorio.status],
-                                  });
-                                  setShowAnalisar(true);
-                                }}
+                                role="button"
+                                tabIndex={0}
+                                aria-label="Analisar"
+                                onClick={() => analisarRelatorio(relatorio)}
+                                onKeyDown={(e) =>
+                                  acionaComEnterOuEspaco(e, () =>
+                                    analisarRelatorio(relatorio),
+                                  )
+                                }
                               >
                                 <i
                                   title="Analisar"

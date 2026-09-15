@@ -11,3 +11,7 @@ export {
   mockCronogramaSemanalDetalheEnviado,
 } from "./mockGetCronogramaSemanalDetalhe";
 export { mockGetCronogramaSemanalCiente } from "./mockGetCronogramaSemanalCiente";
+export {
+  mockListagemRelatorioCronogramasSemanais,
+  mockListagemRelatorioCronogramasSemanaisVazia,
+} from "./mockListagemRelatorioCronogramasSemanais";

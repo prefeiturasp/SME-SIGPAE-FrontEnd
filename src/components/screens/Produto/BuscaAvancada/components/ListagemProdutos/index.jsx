@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import { NavLink } from "react-router-dom";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 import "./styles.scss";
 
@@ -40,13 +41,31 @@ const ListagemProdutos = ({ produtos, ativos, setAtivos }) => {
                 <div>
                   <i
                     className={`fas fa-${icone}`}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(
+                      ativos && ativos.includes(produto.uuid),
+                    )}
                     onClick={() => {
                       ativos && ativos.includes(produto.uuid)
                         ? setAtivos(ativos.filter((el) => el !== produto.uuid))
                         : setAtivos(
-                            ativos ? [...ativos, produto.uuid] : [produto.uuid]
+                            ativos ? [...ativos, produto.uuid] : [produto.uuid],
                           );
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () => {
+                        ativos && ativos.includes(produto.uuid)
+                          ? setAtivos(
+                              ativos.filter((el) => el !== produto.uuid),
+                            )
+                          : setAtivos(
+                              ativos
+                                ? [...ativos, produto.uuid]
+                                : [produto.uuid],
+                            );
+                      })
+                    }
                   />
                 </div>
               </div>

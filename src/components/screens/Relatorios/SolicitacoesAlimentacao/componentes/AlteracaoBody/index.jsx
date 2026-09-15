@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const AlteracaoBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;
@@ -35,7 +36,13 @@ export const AlteracaoBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,

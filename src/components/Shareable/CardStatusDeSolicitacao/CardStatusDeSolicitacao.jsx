@@ -212,6 +212,14 @@ export const CardStatusDeSolicitacao = (props) => {
           hrefCard ? "card-com-href" : undefined
         }`}
         onClick={() => hrefCard && navigate(hrefCard)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            hrefCard && navigate(hrefCard);
+          }
+        }}
+        role={hrefCard ? "button" : undefined}
+        tabIndex={hrefCard ? 0 : undefined}
       >
         <div>
           <i className={"fas " + icon} />

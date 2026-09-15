@@ -46,6 +46,20 @@ export const PeriodosCEIeouEMEI = ({
     return !possuiMaiorQueZero;
   };
 
+  const togglePeriodoChecked = async (name, indice) => {
+    await form.change(
+      `${name}.checked`,
+      !values.quantidades_periodo[indice][`checked`],
+    );
+  };
+
+  const onPeriodoCheckboxKeyDown = (event, name, indice) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      togglePeriodoChecked(name, indice);
+    }
+  };
+
   return (
     <FieldArray name="quantidades_periodo">
       {({ fields }) =>
@@ -63,12 +77,15 @@ export const PeriodosCEIeouEMEI = ({
                     name={`${name}.checked`}
                   />
                   <span
-                    onClick={async () => {
-                      await form.change(
-                        `${name}.checked`,
-                        !values.quantidades_periodo[indice][`checked`],
-                      );
-                    }}
+                    onClick={() => togglePeriodoChecked(name, indice)}
+                    onKeyDown={(event) =>
+                      onPeriodoCheckboxKeyDown(event, name, indice)
+                    }
+                    role="checkbox"
+                    tabIndex={0}
+                    aria-checked={Boolean(
+                      values.quantidades_periodo[indice][`checked`],
+                    )}
                     className="checkbox-custom"
                     data-cy={`checkbox-${getPeriodo(indice).nome}`}
                   />{" "}
@@ -139,12 +156,15 @@ export const PeriodosCEIeouEMEI = ({
                     name={`${name}.checked`}
                   />
                   <span
-                    onClick={async () => {
-                      await form.change(
-                        `${name}.checked`,
-                        !values.quantidades_periodo[indice][`checked`],
-                      );
-                    }}
+                    onClick={() => togglePeriodoChecked(name, indice)}
+                    onKeyDown={(event) =>
+                      onPeriodoCheckboxKeyDown(event, name, indice)
+                    }
+                    role="checkbox"
+                    tabIndex={0}
+                    aria-checked={Boolean(
+                      values.quantidades_periodo[indice][`checked`],
+                    )}
                     className="checkbox-custom"
                     data-cy={`checkbox-${getPeriodo(indice).nome}`}
                   />{" "}

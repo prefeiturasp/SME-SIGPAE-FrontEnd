@@ -9,7 +9,10 @@ import ModalCancelamento from "../ModalCancelamento";
 import { TIPO_SOLICITACAO_DIETA } from "../../../../../../constants/shared";
 import SolicitacaoVigente from "../../../Escola/componentes/SolicitacaoVigente";
 import { getSolicitacoesDietaEspecial } from "src/services/dietaEspecial.service";
-import { gerarParametrosConsulta } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  gerarParametrosConsulta,
+} from "src/helpers/utilities";
 import { getStatusSolicitacoesInativas } from "src/helpers/dietaEspecial";
 
 export default ({
@@ -43,6 +46,12 @@ export default ({
     else return "Dieta Especial";
   };
 
+  const alternarExpansao = () => {
+    ativos && ativos.includes(dieta.uuid)
+      ? setAtivos(ativos.filter((el) => el !== dieta.uuid))
+      : setAtivos(ativos ? [...ativos, dieta.uuid] : [dieta.uuid]);
+  };
+
   return (
     <>
       <div className="grid-dieta-cancelamento-table body-table-produtos">
@@ -52,11 +61,12 @@ export default ({
         <div className={`${bordas}`}>
           <i
             className={`fas fa-${icone}`}
-            onClick={() => {
-              ativos && ativos.includes(dieta.uuid)
-                ? setAtivos(ativos.filter((el) => el !== dieta.uuid))
-                : setAtivos(ativos ? [...ativos, dieta.uuid] : [dieta.uuid]);
-            }}
+            role="button"
+            tabIndex={0}
+            aria-expanded={Boolean(ativos && ativos.includes(dieta.uuid))}
+            aria-label={`Detalhes da dieta de ${dieta.aluno.nome}`}
+            onClick={alternarExpansao}
+            onKeyDown={(e) => acionaComEnterOuEspaco(e, alternarExpansao)}
           />
         </div>
       </div>

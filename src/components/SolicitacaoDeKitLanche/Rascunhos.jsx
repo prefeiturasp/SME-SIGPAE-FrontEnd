@@ -40,6 +40,15 @@ export class Rascunhos extends Component {
                     {solicitacaoKitLanche.solicitacao_kit_lanche.criado_em}
                     <span
                       onClick={() => OnDeleteButtonClicked(id_externo, uuid)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          OnDeleteButtonClicked(id_externo, uuid);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Excluir rascunho"
                     >
                       <i
                         className="fas fa-trash"
@@ -48,6 +57,15 @@ export class Rascunhos extends Component {
                     </span>
                     <span
                       onClick={() => OnEditButtonClicked(solicitacaoKitLanche)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          OnEditButtonClicked(solicitacaoKitLanche);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Editar rascunho"
                     >
                       <i
                         className="fas fa-edit"
@@ -63,7 +81,7 @@ export class Rascunhos extends Component {
             </div>
           </div>
         );
-      }
+      },
     );
     return <div>{cardsRascunhos}</div>;
   }

@@ -7,11 +7,13 @@ import { LinhaDuvidaFrequente } from "./interfaces";
 interface TabelaDuvidasFrequentesProps {
   duvidas: LinhaDuvidaFrequente[];
   aoEditar: (_duvida: LinhaDuvidaFrequente) => void;
+  aoExcluir: (_duvida: LinhaDuvidaFrequente) => void;
 }
 
 const TabelaDuvidasFrequentes = ({
   duvidas,
   aoEditar,
+  aoExcluir,
 }: TabelaDuvidasFrequentesProps) => {
   const colunas: ColunaTabelaListagem<LinhaDuvidaFrequente>[] = [
     {
@@ -51,7 +53,7 @@ const TabelaDuvidasFrequentes = ({
             className="tabela-listagem__botao-acao"
             title="Excluir"
             aria-label={`Excluir dúvida ${duvida.titulo}`}
-            disabled
+            onClick={() => aoExcluir(duvida)}
           >
             <i className="fas fa-trash" aria-hidden="true" />
           </button>

@@ -90,9 +90,9 @@ export default () => {
     if (arquivo[0]) values.arquivo = arquivo[0].arquivo;
   };
 
-  const validaHoraRecebimento = (value) => {
-    value = HoraRecebimentoAlterada ? HoraRecebimento : undefined;
-    return value !== undefined ? "" : "Campo obrigatório";
+  const validaHoraRecebimento = () => {
+    const horaInformada = HoraRecebimentoAlterada ? HoraRecebimento : undefined;
+    return horaInformada !== undefined ? "" : "Campo obrigatório";
   };
 
   const goToInsucesso = () => {
@@ -230,7 +230,7 @@ export default () => {
                       validate={composeValidators(
                         required,
                         maxLength(100),
-                        apenasLetras
+                        apenasLetras,
                       )}
                       required
                     />
@@ -246,7 +246,7 @@ export default () => {
                         required,
                         maxLength(7),
                         alphaNumeric,
-                        peloMenosUmNumeroEUmaLetra
+                        peloMenosUmNumeroEUmaLetra,
                       )}
                       required
                     />

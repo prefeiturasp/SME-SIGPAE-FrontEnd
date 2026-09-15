@@ -1,7 +1,19 @@
 import { getLog } from "src/helpers/utilities";
 
+const STATUS_SUSPENSAO = [
+  "CODAE suspendeu o produto",
+  "CODAE manteve o produto suspenso",
+];
+
 export const MotivoRecusa = ({ logs, motivo, titulo }) => {
-  const recusa = getLog(logs, motivo);
+  const ehSuspensao = motivo === "CODAE suspendeu o produto";
+  const recusa = ehSuspensao
+    ? logs
+        .filter((log) =>
+          STATUS_SUSPENSAO.includes(log.status_evento_explicacao),
+        )
+        .pop()
+    : getLog(logs, motivo);
   if (!recusa) return false;
   return (
     <div className="row">

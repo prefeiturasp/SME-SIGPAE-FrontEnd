@@ -165,7 +165,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
       usuarioEhEmpresaTerceirizada()
     ) {
       const responseAguardandoVigencia =
-        await getDietaEspecialAguardandoVigencia(instituicao.uuid, params);
+        await getDietaEspecialAguardandoVigencia(instituicao?.uuid, params);
       if (responseAguardandoVigencia.status === HTTP_STATUS.OK) {
         setAguardandoVigencia(
           ajustarFormatoLog(

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Spin } from "antd";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 import "./styles.scss";
 import Botao from "src/components/Shareable/Botao";
@@ -19,7 +20,7 @@ export default ({ solicitacao, confirmaCancelamentoGuias }) => {
 
   const validaBotao = () => {
     let invalidas = guias.filter((guia) =>
-      ["Aguardando cancelamento"].includes(guia.status)
+      ["Aguardando cancelamento"].includes(guia.status),
     );
     return invalidas.length === 0;
   };
@@ -43,13 +44,34 @@ export default ({ solicitacao, confirmaCancelamentoGuias }) => {
               return (
                 <>
                   <div className="grid-table body-table hand-cursor">
-                    <div onClick={() => abrirModalGuia(guia)}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => abrirModalGuia(guia)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => abrirModalGuia(guia))
+                      }
+                    >
                       {guia.numero_guia}
                     </div>
-                    <div onClick={() => abrirModalGuia(guia)}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => abrirModalGuia(guia)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => abrirModalGuia(guia))
+                      }
+                    >
                       {guia.nome_unidade}
                     </div>
-                    <div onClick={() => abrirModalGuia(guia)}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => abrirModalGuia(guia)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => abrirModalGuia(guia))
+                      }
+                    >
                       {guia.status}
                     </div>
                   </div>
@@ -190,7 +212,7 @@ export default ({ solicitacao, confirmaCancelamentoGuias }) => {
                 confirmaCancelamentoGuias(
                   solicitacao,
                   setShowModal,
-                  setCarregandoModal
+                  setCarregandoModal,
                 );
               }}
               style={BUTTON_STYLE.GREEN}

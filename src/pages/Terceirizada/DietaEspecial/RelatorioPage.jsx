@@ -28,7 +28,11 @@ export default class RelatorioPage extends Component {
       this.onTerceirizadaTomarCiencia.bind(this);
   }
 
-  UNSAFE_componentWillMount = async () => {
+  UNSAFE_componentWillMount() {
+    this.carregarDietaEspecial();
+  }
+
+  carregarDietaEspecial = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     if (uuid) {

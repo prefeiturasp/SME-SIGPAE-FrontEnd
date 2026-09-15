@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 import AutoCompleteFieldUnaccent from "src/components/Shareable/AutoCompleteField/unaccent";
 import "./style.scss";
@@ -39,7 +40,11 @@ export default class BuscaProduto extends Component {
     return arrayNomes;
   };
 
-  componentDidUpdate = async () => {
+  componentDidUpdate() {
+    this.carregarNomesCadastrados();
+  }
+
+  carregarNomesCadastrados = async () => {
     const { nomesProdutos, nomesMarcas, nomesFabricantes } = this.state;
     if (
       nomesProdutos === null &&
@@ -187,18 +192,34 @@ export default class BuscaProduto extends Component {
                                 <div className="botoes-produto">
                                   <i
                                     className="fas fa-angle-up"
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-expanded={true}
                                     onClick={() => {
                                       this.dropDownProduto(indice);
                                     }}
+                                    onKeyDown={(e) =>
+                                      acionaComEnterOuEspaco(e, () =>
+                                        this.dropDownProduto(indice),
+                                      )
+                                    }
                                   />
                                 </div>
                               </>
                             ) : (
                               <i
                                 className="fas fa-angle-down"
+                                role="button"
+                                tabIndex={0}
+                                aria-expanded={false}
                                 onClick={() => {
                                   this.dropDownProduto(indice);
                                 }}
+                                onKeyDown={(e) =>
+                                  acionaComEnterOuEspaco(e, () =>
+                                    this.dropDownProduto(indice),
+                                  )
+                                }
                               />
                             )}
                           </div>
@@ -229,7 +250,7 @@ export default class BuscaProduto extends Component {
                                       </div>
                                     </div>
                                   );
-                                }
+                                },
                               )}
 
                             <div className="componentes-produto">

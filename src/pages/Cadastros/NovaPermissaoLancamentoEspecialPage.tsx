@@ -13,8 +13,9 @@ import {
 import { useLocation } from "react-router-dom";
 
 export default () => {
+  const location = useLocation();
+
   const breadcrumbURL = () => {
-    const location = useLocation();
     if (location.pathname.includes("editar")) {
       return EDITAR_PERMISSAO_LANCAMENTO_ESPECIAL;
     } else {
@@ -23,7 +24,6 @@ export default () => {
   };
 
   const breadcrumbTitle = () => {
-    const location = useLocation();
     if (location.pathname.includes("editar")) {
       return "Editar Permissão de Lançamento Especial";
     } else {

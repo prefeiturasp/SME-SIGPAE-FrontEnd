@@ -66,18 +66,17 @@ export const TabelaFaixasCEMEI = ({
                 height: "40px",
               }}
             >
-              <span
-                onClick={async () => {
-                  await form.change(
-                    `substituicoes[${periodoIndice}][periodo_uuid]`,
-                    periodoCEI.periodo_escolar.uuid,
-                  );
-                }}
-              >
+              <span>
                 <Field
                   component={"input"}
                   type="checkbox"
                   name={`substituicoes[${periodoIndice}][checked]`}
+                  onClick={async () => {
+                    await form.change(
+                      `substituicoes[${periodoIndice}][periodo_uuid]`,
+                      periodoCEI.periodo_escolar.uuid,
+                    );
+                  }}
                   disabled={
                     !values.alunos_cei_e_ou_emei ||
                     !values.motivo ||

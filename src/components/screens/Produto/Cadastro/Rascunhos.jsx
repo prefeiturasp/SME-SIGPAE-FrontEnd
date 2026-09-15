@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export class Rascunhos extends Component {
   render() {
@@ -23,17 +24,33 @@ export class Rascunhos extends Component {
             <div className="icon-draft-card float-end">
               Criado em: {produto.criado_em}
               <span
+                role="button"
+                tabIndex={0}
                 onClick={() =>
                   removerRascunho(produto.id_externo, rascunho.uuid)
+                }
+                onKeyDown={(e) =>
+                  acionaComEnterOuEspaco(e, () =>
+                    removerRascunho(produto.id_externo, rascunho.uuid),
+                  )
                 }
               >
                 <i className="fas fa-trash" />
               </span>
               <span
+                role="button"
+                tabIndex={0}
                 onClick={() =>
                   carregarRascunho({
                     produto,
                   })
+                }
+                onKeyDown={(e) =>
+                  acionaComEnterOuEspaco(e, () =>
+                    carregarRascunho({
+                      produto,
+                    }),
+                  )
                 }
               >
                 <i className="fas fa-edit" />

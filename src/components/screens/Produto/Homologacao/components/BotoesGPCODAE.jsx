@@ -12,6 +12,7 @@ import {
   CODAEPedeAnaliseSensorialProduto,
   CODAEPedeCorrecao,
 } from "src/services/produto.service";
+import { EDITAIS_INVALIDOS } from "src/helpers/gestaoDeProdutos";
 import ModalAtivacaoSuspensaoProduto from "../../AtivacaoSuspensao/ModalAtivacaoSuspensaoProduto";
 
 export const BotoesGPCODAE = ({
@@ -33,6 +34,13 @@ export const BotoesGPCODAE = ({
   const onChangeEditais = (values) => {
     setEditais(values);
   };
+
+  const vinculosProduto = homologacao?.produto?.vinculos_produto_edital || [];
+  const vinculosValidos = vinculosProduto.filter(
+    ({ edital }) => !EDITAIS_INVALIDOS.includes(edital.numero.toUpperCase()),
+  );
+  const temEditalAtivo = vinculosValidos.some((vinculo) => !vinculo.suspenso);
+  const todosEditaisSuspensos = vinculosValidos.length > 0 && !temEditalAtivo;
 
   const setPropsModalPadrao = (tipoModal) => {
     switch (tipoModal) {
@@ -125,6 +133,7 @@ export const BotoesGPCODAE = ({
           getHomologacaoProdutoAsync();
         }}
         ehSuspensaoFluxoAlteracaoDados
+        manterSuspenso={todosEditaisSuspensos}
       />
       {/* solicitar análise sensorial, correção ou não homologar */}
       <ModalPadrao
@@ -146,10 +155,10 @@ export const BotoesGPCODAE = ({
         status={homologacao.status}
         terceirizada={
           homologacao.logs.filter(
-            (log) => log.status_evento_explicacao === "Solicitação Realizada"
+            (log) => log.status_evento_explicacao === "Solicitação Realizada",
           )[
             homologacao.logs.filter(
-              (log) => log.status_evento_explicacao === "Solicitação Realizada"
+              (log) => log.status_evento_explicacao === "Solicitação Realizada",
             ).length - 1
           ].usuario
         }
@@ -171,7 +180,9 @@ export const BotoesGPCODAE = ({
           <>
             <Botao
               texto={
-                homologacao.esta_homologado ? "Aceitar alterações" : "Homologar"
+                homologacao.esta_homologado && !todosEditaisSuspensos
+                  ? "Aceitar alterações"
+                  : "Homologar"
               }
               className="float-end"
               type={BUTTON_TYPE.BUTTON}
@@ -181,7 +192,11 @@ export const BotoesGPCODAE = ({
             />
             <Botao
               texto={
-                homologacao.esta_homologado ? "Suspender" : "Não homologar"
+                homologacao.esta_homologado
+                  ? todosEditaisSuspensos
+                    ? "Manter suspenso"
+                    : "Suspender"
+                  : "Não homologar"
               }
               className="me-3 float-end"
               onClick={() =>

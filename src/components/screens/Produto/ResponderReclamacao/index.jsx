@@ -3,7 +3,10 @@ import { Fragment, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Link, useNavigationType } from "react-router-dom";
 import { bindActionCreators } from "redux";
-import { gerarParametrosConsulta } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  gerarParametrosConsulta,
+} from "src/helpers/utilities";
 
 import Botao from "src/components/Shareable/Botao";
 import {
@@ -82,6 +85,9 @@ const TabelaProdutos = ({
                   >
                     <i
                       className={`fas fa-${icone} me-3`}
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={ativos.includes(indexProduto)}
                       onClick={() => {
                         ativos.includes(indexProduto)
                           ? setAtivos(
@@ -89,6 +95,15 @@ const TabelaProdutos = ({
                             )
                           : setAtivos([...ativos, indexProduto]);
                       }}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => {
+                          ativos.includes(indexProduto)
+                            ? setAtivos(
+                                ativos.filter((el) => el !== indexProduto),
+                              )
+                            : setAtivos([...ativos, indexProduto]);
+                        })
+                      }
                     />
                   </div>
                 </div>

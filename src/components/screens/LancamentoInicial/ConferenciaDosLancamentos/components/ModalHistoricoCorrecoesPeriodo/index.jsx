@@ -14,6 +14,7 @@ import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoD
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import HTTP_STATUS from "http-status-codes";
 import { gerarRelatorioHistorioCorrecoes } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service.jsx";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
   const { showModal, setShowModal, solicitacao, historicos } = props;
@@ -140,16 +141,23 @@ export const ModalHistoricoCorrecoesPeriodo = ({ ...props }) => {
             <h5 className="cor-titulo-modal mb-3">Usuário</h5>
             {historicos &&
               historicos.map((historico, idxHistorico) => {
+                const ativarHistorico = () => {
+                  setActiveIdx(idxHistorico);
+                  selecionarHistorico(idxHistorico, historico.acao);
+                };
                 return (
                   <div
                     className={`col-12 mb-2 cards-usuario pt-2 pb-2 ${
                       activeIdx === idxHistorico ? "historico-ativo" : ""
                     }`}
                     key={idxHistorico}
-                    onClick={() => {
-                      setActiveIdx(idxHistorico);
-                      selecionarHistorico(idxHistorico, historico.acao);
-                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={activeIdx === idxHistorico}
+                    onClick={ativarHistorico}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, ativarHistorico)
+                    }
                   >
                     <div className="row">
                       <div className="col-2">

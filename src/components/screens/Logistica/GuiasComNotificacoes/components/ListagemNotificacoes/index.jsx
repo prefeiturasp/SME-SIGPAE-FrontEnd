@@ -10,27 +10,35 @@ import { NavLink } from "react-router-dom";
 
 import "./styles.scss";
 import { EDITAR_NOTIFICACAO } from "src/configs/constants";
-import { usuarioComAcessoTelaDetalharNotificacaoOcorrencia } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  usuarioComAcessoTelaDetalharNotificacaoOcorrencia,
+} from "src/helpers/utilities";
 
 const ListagemNotificacoes = ({ notificacoes, fiscal, somenteLeitura }) => {
   const navigate = useNavigate();
 
   const renderizarBotoesDeAcoes = (notificacao) => {
+    const editarRascunho = () =>
+      navigate(
+        {
+          pathname: `/${LOGISTICA}/${EDITAR_NOTIFICACAO}`,
+        },
+        {
+          state: {
+            guia: notificacao,
+          },
+        },
+      );
+
     const botaoRascunho = (
       <span
         className="link-acoes px-2"
-        onClick={() =>
-          navigate(
-            {
-              pathname: `/${LOGISTICA}/${EDITAR_NOTIFICACAO}`,
-            },
-            {
-              state: {
-                guia: notificacao,
-              },
-            }
-          )
-        }
+        role="button"
+        tabIndex={0}
+        aria-label={`Editar rascunho da notificação ${notificacao.numero}`}
+        onClick={editarRascunho}
+        onKeyDown={(e) => acionaComEnterOuEspaco(e, editarRascunho)}
       >
         <i title="Editar Rascunho" className="verde fas fa-edit" />
       </span>

@@ -5,6 +5,7 @@ import {
   usuarioComAcessoAoPainelEmbalagens,
   usuarioComAcessoAoPainelFichasTecnicas,
   usuarioComAcessoAoRelatorioCronogramas,
+  usuarioComAcessoAoRelatorioCronogramasSemanais,
   usuarioComAcessoAoRelatorioFichasTecnicas,
   usuarioEhCODAEGabinete,
   usuarioEhCodaeDilog,
@@ -76,6 +77,7 @@ import PainelDocumentosRecebimentoPage from "src/pages/PreRecebimento/PainelDocu
 import { PainelFichasTecnicasPage } from "src/pages/PreRecebimento/PainelFichasTecnicasPage";
 import { PainelLayoutEmbalagemPage } from "src/pages/PreRecebimento/PainelLayoutEmbalagemPage";
 import RelatorioCronogramaPage from "src/pages/PreRecebimento/Relatorios/RelatorioCronogramaPage";
+import RelatorioCronogramaSemanalPage from "src/pages/PreRecebimento/Relatorios/RelatorioCronogramaSemanalPage";
 import RelatorioFichasTecnicasPage from "src/pages/PreRecebimento/Relatorios/RelatorioFichasTecnicasPage";
 import SolicitacaoAlteracaoCronogramaFornecedorPage from "src/pages/PreRecebimento/SolicitacaoAlteracaoCronogramaFornecedorPage";
 import SolicitacaoAlteracaoCronogramaPage from "src/pages/PreRecebimento/SolicitacaoAlteracaoCronogramaPage";
@@ -336,6 +338,11 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_CRONOGRAMA}`,
     component: RelatorioCronogramaPage,
     tipoUsuario: usuarioComAcessoAoRelatorioCronogramas(),
+  },
+  {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_CRONOGRAMA_SEMANAL}`,
+    component: RelatorioCronogramaSemanalPage,
+    tipoUsuario: usuarioComAcessoAoRelatorioCronogramasSemanais(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.RELATORIO_FICHAS_TECNICAS}`,

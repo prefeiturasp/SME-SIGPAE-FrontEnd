@@ -1,6 +1,10 @@
 import React, { Fragment } from "react";
 import { DetalhesCEIouCEMEI } from "../DetalhesCEIouCEMEI";
-import { deepCopy, usuarioEhDRE } from "src/helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  deepCopy,
+  usuarioEhDRE,
+} from "src/helpers/utilities";
 import { formataNome, formataPeriodoEscolar } from "../../helpers";
 import { Tooltip } from "antd";
 
@@ -110,7 +114,18 @@ export const TabelaResultado = ({ ...props }) => {
                                   ? "angle-up"
                                   : "angle-down"
                               }`}
+                              role="button"
+                              tabIndex={0}
+                              aria-expanded={Boolean(
+                                showPeridosFaixas[index] &&
+                                  showPeridosFaixas[index].active,
+                              )}
                               onClick={() => changeToActive(index)}
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  changeToActive(index),
+                                )
+                              }
                             />
                           )}
                       </td>

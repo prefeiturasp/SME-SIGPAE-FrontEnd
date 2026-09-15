@@ -16,6 +16,16 @@ export const getListagemCronogramasSemanal = async (params) => {
   return await axios.get(url, { params });
 };
 
+export const getListagemRelatorioCronogramasSemanais = async (params) => {
+  const response = await axios.get(
+    "/cronogramas-semanais/listagem-relatorio/",
+    {
+      params,
+    },
+  );
+  return response;
+};
+
 export const criarCronogramaSemanalRascunho = async (
   payload: CronogramaSemanalCreate,
   config = {},

@@ -85,6 +85,12 @@ jest.mock("../../components/FormularioDuvidaFrequente", () => ({
       <button type="button" onClick={() => onAlterarPerfis([])}>
         Remover perfis
       </button>
+      <button
+        type="button"
+        onClick={() => onAlterarPerfis([...valores.perfisAcesso].reverse())}
+      >
+        Inverter ordem dos perfis
+      </button>
       <button type="button" onClick={onCancelar}>
         Cancelar
       </button>
@@ -104,6 +110,7 @@ jest.mock("../../components/FormularioDuvidaFrequente", () => ({
 const UUID_DUVIDA = "b94a1c05-4f00-44d2-b73a-7d8c79fa6021";
 const UUID_CATEGORIA = "62edbea5-ee3e-42d3-b18a-071599c010fd";
 const UUID_PERFIL = "59a1332f-dcf3-454d-a904-2592979137c0";
+const UUID_PERFIL_SECUNDARIO = "4fc52c40-9e7d-4998-9b28-33f45bcdfa9e";
 
 const opcoesEdicao = {
   categorias: [
@@ -156,6 +163,43 @@ describe("EdicaoDuvidasFrequentes", () => {
     expect(
       screen.getByRole("button", { name: "Salvar Alterações" }),
     ).toBeDisabled();
+  });
+
+  it("considera os mesmos perfis iguais independentemente da ordem", async () => {
+    useOpcoesCadastroDuvida.mockReturnValue({
+      ...opcoesEdicao,
+      opcoesPerfisAcesso: [
+        ...opcoesEdicao.opcoesPerfisAcesso,
+        { label: "GESTÃO DE PRODUTO", value: UUID_PERFIL_SECUNDARIO },
+      ],
+    });
+    buscarPerguntaFrequente.mockResolvedValue({
+      data: {
+        ...duvida,
+        perfis: [
+          ...duvida.perfis,
+          { nome: "GESTÃO DE PRODUTO", uuid: UUID_PERFIL_SECUNDARIO },
+        ],
+      },
+    });
+
+    render(<EdicaoDuvidasFrequentes />);
+    await screen.findByLabelText("Título");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Inverter ordem dos perfis" }),
+    );
+
+    expect(screen.getByTestId("perfis")).toHaveTextContent(
+      `${UUID_PERFIL_SECUNDARIO};${UUID_PERFIL}`,
+    );
+    expect(
+      screen.getByRole("button", { name: "Salvar Alterações" }),
+    ).toBeDisabled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Forçar salvamento" }));
+
+    expect(atualizarPerguntaFrequente).not.toHaveBeenCalled();
   });
 
   it("restaura todos os valores originais ao cancelar", async () => {
@@ -283,6 +327,34 @@ describe("EdicaoDuvidasFrequentes", () => {
     ).toBeDisabled();
   });
 
+  it("salva somente os perfis selecionados quando nem todos foram escolhidos", async () => {
+    useOpcoesCadastroDuvida.mockReturnValue({
+      ...opcoesEdicao,
+      opcoesPerfisAcesso: [
+        ...opcoesEdicao.opcoesPerfisAcesso,
+        { label: "GESTÃO DE PRODUTO", value: UUID_PERFIL_SECUNDARIO },
+      ],
+    });
+
+    render(<EdicaoDuvidasFrequentes />);
+    await screen.findByLabelText("Título");
+
+    fireEvent.change(screen.getByLabelText("Título"), {
+      target: { value: "Título alterado" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar Alterações" }));
+
+    await waitFor(() => {
+      expect(atualizarPerguntaFrequente).toHaveBeenCalledWith(UUID_DUVIDA, {
+        categoria: UUID_CATEGORIA,
+        perfis: [UUID_PERFIL],
+        todos_os_perfis: false,
+        pergunta: "Título alterado",
+        resposta: "Consulte as orientações.",
+      });
+    });
+  });
+
   it("carrega categoria e perfis quando a API retorna identificadores simples", async () => {
     buscarPerguntaFrequente.mockResolvedValue({
       data: {
@@ -299,6 +371,56 @@ describe("EdicaoDuvidasFrequentes", () => {
       "Gestão de Alimentação",
     );
     expect(screen.getByTestId("perfis")).toHaveTextContent(UUID_PERFIL);
+  });
+
+  it("carrega categoria e perfil identificados pelo nome", async () => {
+    buscarPerguntaFrequente.mockResolvedValue({
+      data: {
+        ...duvida,
+        categoria: "Gestão de Alimentação",
+        perfis: [{ nome: "QUALIDADE" }],
+      },
+    });
+
+    render(<EdicaoDuvidasFrequentes />);
+
+    expect(await screen.findByLabelText("Categoria")).toHaveValue(
+      "Gestão de Alimentação",
+    );
+    expect(screen.getByTestId("perfis")).toHaveTextContent(UUID_PERFIL);
+  });
+
+  it("carrega o perfil quando a API retorna somente o UUID", async () => {
+    buscarPerguntaFrequente.mockResolvedValue({
+      data: {
+        ...duvida,
+        perfis: [UUID_PERFIL],
+      },
+    });
+
+    render(<EdicaoDuvidasFrequentes />);
+
+    expect(await screen.findByTestId("perfis")).toHaveTextContent(UUID_PERFIL);
+  });
+
+  it("utiliza valores vazios quando os dados opcionais não são encontrados", async () => {
+    buscarPerguntaFrequente.mockResolvedValue({
+      data: {
+        categoria: "Categoria inexistente",
+        todos_os_perfis: false,
+        uuid: UUID_DUVIDA,
+      },
+    });
+
+    render(<EdicaoDuvidasFrequentes />);
+
+    expect(await screen.findByLabelText("Categoria")).toHaveValue("");
+    expect(screen.getByLabelText("Título")).toHaveValue("");
+    expect(screen.getByLabelText("Descrição Detalhada")).toHaveValue("");
+    expect(screen.getByTestId("perfis")).toBeEmptyDOMElement();
+    expect(
+      screen.getByRole("button", { name: "Salvar Alterações" }),
+    ).toBeDisabled();
   });
 
   it("apresenta o erro retornado pela API quando a atualização falha", async () => {

@@ -1,4 +1,5 @@
 import React from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./styles.scss";
 
 const ListagemSolicitacoes = ({
@@ -37,22 +38,37 @@ const ListagemSolicitacoes = ({
                 <div>{guia.status}</div>
                 <div className="opcoes-entregas">
                   <span
+                    role="button"
+                    tabIndex={0}
                     className="link-acoes px-2"
                     onClick={() => buscarDetalheGuia(guia)}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () => buscarDetalheGuia(guia))
+                    }
                   >
                     <i className="fas fa-eye green" />
                   </span>
                   {guiaVinculada(guia) ? (
                     <span
+                      role="button"
+                      tabIndex={0}
                       className="link-acoes"
                       onClick={() => desvincularGuia(guia)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => desvincularGuia(guia))
+                      }
                     >
                       <i className="fas fa-trash-alt red" />
                     </span>
                   ) : (
                     <span
+                      role="button"
+                      tabIndex={0}
                       className="link-acoes"
                       onClick={() => vincularGuia(guia)}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () => vincularGuia(guia))
+                      }
                     >
                       <i className="fas fa-plus green" />
                     </span>

@@ -13,7 +13,7 @@ import {
 } from "src/components/Shareable/Toast/dialogs";
 import { FormApi } from "final-form";
 import { required } from "src/helpers/fieldValidators";
-import { getError } from "src/helpers/utilities";
+import { acionaComEnterOuEspaco, getError } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { DiretoriaRegionalInterface } from "src/interfaces/escola.interface";
 import { LoteRascunhosInterface } from "src/interfaces/rascunhos.interface";
@@ -250,9 +250,16 @@ export const FieldArrayContratos = ({
                   </span>
                   {exibeRemoverContrato(index_contratos) && (
                     <span
+                      role="button"
+                      tabIndex={0}
                       onClick={() => {
                         removeContrato(index_contratos);
                       }}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          removeContrato(index_contratos),
+                        )
+                      }
                       className="remover float-end"
                     >
                       <i className="fas fa-trash" /> Remover contrato

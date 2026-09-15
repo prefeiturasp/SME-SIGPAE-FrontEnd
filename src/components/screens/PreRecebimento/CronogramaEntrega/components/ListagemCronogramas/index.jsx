@@ -10,6 +10,7 @@ import {
   ALTERACAO_CRONOGRAMA,
 } from "src/configs/constants";
 import {
+  acionaComEnterOuEspaco,
   usuarioEhCronograma,
   usuarioEhEmpresaFornecedor,
   formataMilhar,
@@ -163,7 +164,14 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                             <span
                               data-testid={`imprimir_${index}`}
                               className="float-start ms-1 link-acoes green"
+                              role="button"
+                              tabIndex={0}
                               onClick={() => baixarPDFCronograma(cronograma)}
+                              onKeyDown={(e) =>
+                                acionaComEnterOuEspaco(e, () =>
+                                  baixarPDFCronograma(cronograma),
+                                )
+                              }
                             >
                               <i className="fas fa-print" title="Imprimir" />
                             </span>

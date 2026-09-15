@@ -10,7 +10,7 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { STATUS_CODAE_AUTORIZOU_RECLAMACAO } from "src/configs/constants";
 import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
-import { truncarString } from "src/helpers/utilities";
+import { acionaComEnterOuEspaco, truncarString } from "src/helpers/utilities";
 import { getRelatorioProduto } from "src/services/relatorios";
 import "../styles.scss";
 import MotivoEvento from "src/components/Shareable/MotivoEvento";
@@ -118,7 +118,7 @@ export default class CorpoRelatorio extends Component {
       produto.ultima_homologacao.logs &&
       produto.ultima_homologacao.logs.filter(
         (log) =>
-          log.status_evento_explicacao === "CODAE pediu análise sensorial"
+          log.status_evento_explicacao === "CODAE pediu análise sensorial",
       );
     const logAnaliseSensorial =
       logsAnaliseSensorial &&
@@ -310,9 +310,17 @@ export default class CorpoRelatorio extends Component {
                   <nav
                     key={index}
                     className="item-listagem"
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(ativo)}
                     onClick={() => {
                       this.renderInformacaoNutricional(index, ativo);
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () =>
+                        this.renderInformacaoNutricional(index, ativo),
+                      )
+                    }
                   >
                     <div className="header-listagem">
                       <div className="descricao-proteina">
@@ -393,7 +401,7 @@ export default class CorpoRelatorio extends Component {
                       </td>
                     </tr>
                   );
-                }
+                },
               )}
             </tbody>
           </table>
@@ -473,9 +481,17 @@ export default class CorpoRelatorio extends Component {
                     <div
                       key={index}
                       className={`${ativo && "ativo-item"} grid-item-log`}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={Boolean(ativo)}
                       onClick={() => {
                         this.itemLogAtivo(index, ativo);
                       }}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          this.itemLogAtivo(index, ativo),
+                        )
+                      }
                     >
                       <div className="usuario">
                         <div>{iniciais}</div>

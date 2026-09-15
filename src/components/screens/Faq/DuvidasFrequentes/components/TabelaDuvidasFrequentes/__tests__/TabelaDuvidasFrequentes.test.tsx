@@ -17,7 +17,13 @@ describe("TabelaDuvidasFrequentes", () => {
       },
     ]);
 
-    render(<TabelaDuvidasFrequentes duvidas={duvidas} aoEditar={jest.fn()} />);
+    render(
+      <TabelaDuvidasFrequentes
+        duvidas={duvidas}
+        aoEditar={jest.fn()}
+        aoExcluir={jest.fn()}
+      />,
+    );
 
     expect(screen.getByText("Como solicitar uma dieta?")).toBeInTheDocument();
     expect(screen.getByText("Gestão de Alimentação")).toBeInTheDocument();
@@ -35,13 +41,20 @@ describe("TabelaDuvidasFrequentes", () => {
       },
     ]);
 
-    render(<TabelaDuvidasFrequentes duvidas={duvidas} aoEditar={jest.fn()} />);
+    render(
+      <TabelaDuvidasFrequentes
+        duvidas={duvidas}
+        aoEditar={jest.fn()}
+        aoExcluir={jest.fn()}
+      />,
+    );
 
     expect(screen.getByText("TODOS")).toBeInTheDocument();
   });
 
-  it("aciona a edição e mantém a exclusão desabilitada", () => {
+  it("aciona a edição e a exclusão da dúvida selecionada", () => {
     const aoEditar = jest.fn();
+    const aoExcluir = jest.fn();
     const duvida = {
       categoria: "Abastecimento",
       perfis: "QUALIDADE",
@@ -49,7 +62,13 @@ describe("TabelaDuvidasFrequentes", () => {
       uuid: UUID_DUVIDA,
     };
 
-    render(<TabelaDuvidasFrequentes duvidas={[duvida]} aoEditar={aoEditar} />);
+    render(
+      <TabelaDuvidasFrequentes
+        duvidas={[duvida]}
+        aoEditar={aoEditar}
+        aoExcluir={aoExcluir}
+      />,
+    );
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -58,11 +77,13 @@ describe("TabelaDuvidasFrequentes", () => {
     );
 
     expect(aoEditar).toHaveBeenCalledWith(duvida);
-    expect(
+    fireEvent.click(
       screen.getByRole("button", {
         name: "Excluir dúvida Como conferir uma guia?",
       }),
-    ).toBeDisabled();
+    );
+
+    expect(aoExcluir).toHaveBeenCalledWith(duvida);
   });
 
   it("utiliza valores alternativos quando categoria e perfis estão ausentes", () => {

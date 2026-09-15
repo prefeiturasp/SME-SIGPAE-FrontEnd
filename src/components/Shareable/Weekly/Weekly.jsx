@@ -25,6 +25,18 @@ export const Weekly = ({ ...props }) => {
                 await handleWeekly(day.value);
                 input?.onBlur?.();
               }}
+              onKeyDown={async (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  await handleWeekly(day.value);
+                  input?.onBlur?.();
+                }
+              }}
+              role="checkbox"
+              tabIndex={0}
+              aria-checked={Boolean(
+                arrayDiasSemana && arrayDiasSemana.includes(day.value),
+              )}
               className={
                 arrayDiasSemana && arrayDiasSemana.includes(day.value)
                   ? "week-circle-clicked"

@@ -48,8 +48,6 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
   showModal,
   closeModal,
 }) => {
-  if (!event) return null;
-
   const ehDiaPassado = useMemo(() => {
     if (!event?.start) return false;
     const hoje = new Date();
@@ -58,6 +56,8 @@ export const ModalDadosObjeto: React.FC<ModalDadosObjetoProps> = ({
     dataEvento.setHours(0, 0, 0, 0);
     return dataEvento < hoje;
   }, [event]);
+
+  if (!event) return null;
 
   const unidades = formatarUnidades(event.unidades_escolares);
 

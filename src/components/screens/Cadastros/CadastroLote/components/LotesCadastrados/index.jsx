@@ -28,20 +28,22 @@ class LotesCadastrados extends Component {
   }
 
   filtrarLotes(event) {
-    let lotesFiltrados = this.state.lotes;
-    lotesFiltrados = lotesFiltrados.filter(function (item) {
+    this.setState((prevState) => {
       const palavraAFiltrar = event.target.value.toLowerCase();
-      return (
-        item.nome.toLowerCase().search(palavraAFiltrar) !== -1 ||
-        item.iniciais.toLowerCase().search(palavraAFiltrar) !== -1 ||
-        (item.diretoria_regional &&
-          item.diretoria_regional.nome.toLowerCase().search(palavraAFiltrar) !==
-            -1) ||
-        (item.tipo_gestao &&
-          item.tipo_gestao.nome.toLowerCase().search(palavraAFiltrar) !== -1)
-      );
+      const lotesFiltrados = prevState.lotes.filter((item) => {
+        return (
+          item.nome.toLowerCase().search(palavraAFiltrar) !== -1 ||
+          item.iniciais.toLowerCase().search(palavraAFiltrar) !== -1 ||
+          (item.diretoria_regional &&
+            item.diretoria_regional.nome
+              .toLowerCase()
+              .search(palavraAFiltrar) !== -1) ||
+          (item.tipo_gestao &&
+            item.tipo_gestao.nome.toLowerCase().search(palavraAFiltrar) !== -1)
+        );
+      });
+      return { lotesFiltrados };
     });
-    this.setState({ lotesFiltrados });
   }
 
   lidarComBurger(lote) {

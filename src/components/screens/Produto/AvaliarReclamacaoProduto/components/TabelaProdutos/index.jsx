@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./style.scss";
 
 import Botao from "src/components/Shareable/Botao";
@@ -129,23 +130,23 @@ export default class TabelaProdutos extends Component {
     switch (this.state.acao) {
       case this.QUESTIONAR_TERCEIRIZADA:
         return toastSuccess(
-          "Questionamento enviado a terceirizada com sucesso"
+          "Questionamento enviado a terceirizada com sucesso",
         );
       case this.QUESTIONAR_UE:
         return toastSuccess(
-          "Questionamento enviado a unidade educacional com sucesso"
+          "Questionamento enviado a unidade educacional com sucesso",
         );
       case this.QUESTIONAR_NUTRISUPERVISOR:
         return toastSuccess("Questionamento enviado com Sucesso!");
       case this.RESPONDER:
         if (this.state.tipo_resposta === this.ACEITAR_RECLAMACAO) {
           return toastSuccess(
-            "Aceite de reclamação de produto enviado com sucesso"
+            "Aceite de reclamação de produto enviado com sucesso",
           );
         }
         if (this.state.tipo_resposta === this.RECUSAR_RECLAMACAO) {
           return toastSuccess(
-            "Recusa de reclamação de produto enviado com sucesso"
+            "Recusa de reclamação de produto enviado com sucesso",
           );
         }
         break;
@@ -185,7 +186,7 @@ export default class TabelaProdutos extends Component {
     uuidReclamacao,
     produto,
     terceirizada = null,
-    escola = null
+    escola = null,
   ) => {
     this.setState({
       mostraModalJustificativa: true,
@@ -233,30 +234,30 @@ export default class TabelaProdutos extends Component {
       this.mostraToastSucesso();
 
       if (this.state.tipo_resposta === this.RECUSAR_RECLAMACAO) {
-        this.setState({
+        this.setState((prevState) => ({
           uuisdReclamacaoDisabled: [
-            ...this.state.uuisdReclamacaoDisabled,
-            this.state.uuidReclamacaoResposta,
+            ...prevState.uuisdReclamacaoDisabled,
+            prevState.uuidReclamacaoResposta,
           ],
-        });
+        }));
       } else if (this.state.tipo_resposta === this.ACEITAR_RECLAMACAO) {
         const uuidsReclamacoes = this.props.listaProdutos
           .map((produto) =>
             produto.ultima_homologacao.reclamacoes.map(
-              (reclamacao) => reclamacao.uuid
-            )
+              (reclamacao) => reclamacao.uuid,
+            ),
           )
           .flat();
         this.setState({ uuisdReclamacaoDisabled: uuidsReclamacoes });
       } else if (
         this.state.tipo_resposta === this.ACEITAR_RECLAMACAO_PARCIALMENTE
       ) {
-        this.setState({
+        this.setState((prevState) => ({
           uuisdReclamacaoDisabled: [
-            ...this.state.uuisdReclamacaoDisabled,
-            this.state.uuidReclamacaoResposta,
+            ...prevState.uuisdReclamacaoDisabled,
+            prevState.uuidReclamacaoResposta,
           ],
-        });
+        }));
       }
     } else {
       toastError(response.errors);
@@ -299,7 +300,7 @@ export default class TabelaProdutos extends Component {
           const isProdutoAtivo = indice === indiceProdutoAtivo;
           const reclamacoesAceitas =
             produto.ultima_homologacao.reclamacoes.find(
-              (reclamacao) => reclamacao.status === CODAE_ACEITOU
+              (reclamacao) => reclamacao.status === CODAE_ACEITOU,
             );
           const produtoTemReclacaoAceita = reclamacoesAceitas !== undefined;
           return (
@@ -317,11 +318,21 @@ export default class TabelaProdutos extends Component {
                 <div className="com-botao botoes-produto">
                   <i
                     className={`fas fa-angle-${isProdutoAtivo ? "up" : "down"}`}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isProdutoAtivo}
                     onClick={() => {
                       setIndiceProdutoAtivo(
-                        indice === indiceProdutoAtivo ? undefined : indice
+                        indice === indiceProdutoAtivo ? undefined : indice,
                       );
                     }}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () =>
+                        setIndiceProdutoAtivo(
+                          indice === indiceProdutoAtivo ? undefined : indice,
+                        ),
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -414,7 +425,7 @@ export default class TabelaProdutos extends Component {
                                 produto,
                                 reclamacao.escola.lote
                                   ? reclamacao.escola.lote.terceirizada
-                                  : null
+                                  : null,
                               )
                             }
                           />
@@ -433,7 +444,7 @@ export default class TabelaProdutos extends Component {
                                     reclamacao.uuid,
                                     produto,
                                     null,
-                                    reclamacao.escola
+                                    reclamacao.escola,
                                   )
                                 }
                               />
@@ -450,7 +461,7 @@ export default class TabelaProdutos extends Component {
                                 reclamacao.uuid,
                                 produto,
                                 null,
-                                reclamacao.escola
+                                reclamacao.escola,
                               )
                             }
                           />
@@ -484,7 +495,7 @@ export default class TabelaProdutos extends Component {
                               this.abreModalJustificativa(
                                 this.RESPONDER,
                                 reclamacao.uuid,
-                                produto
+                                produto,
                               );
                               this.setState({
                                 uuidReclamacaoResposta: reclamacao.uuid,

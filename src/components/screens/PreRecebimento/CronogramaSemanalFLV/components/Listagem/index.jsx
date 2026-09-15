@@ -3,6 +3,7 @@ import React from "react";
 import "./styles.scss";
 import { NavLink } from "react-router-dom";
 import {
+  acionaComEnterOuEspaco,
   usuarioEhEmpresaFornecedor,
   formataMilharDecimal,
 } from "src/helpers/utilities";
@@ -130,8 +131,15 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                           <span
                             data-testid={`imprimir_${index}`}
                             className="float-start ms-1 link-acoes green"
+                            role="button"
+                            tabIndex={0}
                             onClick={() =>
                               baixarPDFCronogramaSemanal(cronograma)
+                            }
+                            onKeyDown={(e) =>
+                              acionaComEnterOuEspaco(e, () =>
+                                baixarPDFCronogramaSemanal(cronograma),
+                              )
                             }
                           >
                             <i className="fas fa-print" title="Imprimir" />

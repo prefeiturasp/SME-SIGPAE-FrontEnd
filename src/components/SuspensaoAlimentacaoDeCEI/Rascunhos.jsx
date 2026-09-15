@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export class Rascunhos extends Component {
   render() {
@@ -26,15 +27,33 @@ export class Rascunhos extends Component {
             <div className="icon-draft-card float-end">
               Criado em: {suspensaoDeAlimentacao.criado_em}
               <span
+                role="button"
+                tabIndex={0}
+                aria-label="Excluir rascunho"
                 onClick={() => OnDeleteButtonClicked(suspensaoDeAlimentacao)}
+                onKeyDown={(e) =>
+                  acionaComEnterOuEspaco(e, () =>
+                    OnDeleteButtonClicked(suspensaoDeAlimentacao),
+                  )
+                }
               >
                 <i className="fas fa-trash" />
               </span>
               <span
+                role="button"
+                tabIndex={0}
+                aria-label="Editar rascunho"
                 onClick={() =>
                   OnEditButtonClicked({
                     suspensaoDeAlimentacao,
                   })
+                }
+                onKeyDown={(e) =>
+                  acionaComEnterOuEspaco(e, () =>
+                    OnEditButtonClicked({
+                      suspensaoDeAlimentacao,
+                    }),
+                  )
                 }
               >
                 <i className="fas fa-edit" />
@@ -45,7 +64,7 @@ export class Rascunhos extends Component {
             </div>
           </div>
         );
-      }
+      },
     );
     return <div>{allDaysInfo}</div>;
   }

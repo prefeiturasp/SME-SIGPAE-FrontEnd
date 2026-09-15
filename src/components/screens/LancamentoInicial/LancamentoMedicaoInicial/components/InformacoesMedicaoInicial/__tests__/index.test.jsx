@@ -6,6 +6,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { useLocation } from "react-router-dom";
 import HTTP_STATUS from "http-status-codes";
@@ -393,5 +394,87 @@ describe("InformacoesBasicas", () => {
 
     const botaoEditar = screen.getByText("Editar").closest("button");
     expect(botaoEditar).not.toBeDisabled();
+  });
+
+  it("deve exibir o campo de descrição do método ao selecionar 'Outros'", async () => {
+    await act(async () => {
+      render(<InformacoesBasicas {...defaultProps} />);
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("Editar"));
+    });
+
+    expect(screen.queryByTestId("descricao_metodo")).not.toBeInTheDocument();
+
+    const multiselect = screen.getByTestId("multiselect-contagem-refeicoes");
+    const selectInput = within(multiselect).getByRole("combobox");
+
+    await act(async () => {
+      fireEvent.mouseDown(selectInput);
+    });
+
+    const opcaoOutros = await screen.findByText("Outros");
+    await act(async () => {
+      fireEvent.click(opcaoOutros);
+    });
+
+    expect(screen.getByTestId("descricao_metodo")).toBeInTheDocument();
+    expect(screen.getByText("Descrição do Método")).toBeInTheDocument();
+  });
+
+  it("deve ocultar o campo de descrição do método ao desmarcar 'Outros'", async () => {
+    const propsComOutros = {
+      ...defaultProps,
+      solicitacaoMedicaoInicial: {
+        ...mockSolicitacaoExistente,
+        descricao_metodo: "Contagem manual",
+      },
+    };
+
+    render(<InformacoesBasicas {...propsComOutros} />);
+
+    fireEvent.click(screen.getByText("Informações Básicas da Medição Inicial"));
+
+    fireEvent.click(screen.getByText("Editar"));
+
+    expect(await screen.findByTestId("descricao_metodo")).toBeInTheDocument();
+
+    const multiselect = screen.getByTestId("multiselect-contagem-refeicoes");
+
+    const botaoRemoverOutros =
+      await within(multiselect).findByLabelText("Remove Outros");
+
+    fireEvent.click(botaoRemoverOutros);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("descricao_metodo")).not.toBeInTheDocument();
+    });
+  });
+
+  it("deve preencher a descrição do método e manter 'Outros' selecionado ao carregar solicitação existente", async () => {
+    const propsComOutros = {
+      ...defaultProps,
+      solicitacaoMedicaoInicial: {
+        ...mockSolicitacaoExistente,
+        descricao_metodo: "Contagem manual pelo nutricionista",
+      },
+    };
+
+    await act(async () => {
+      render(<InformacoesBasicas {...propsComOutros} />);
+    });
+
+    const collapseHeader = screen.getByText(
+      "Informações Básicas da Medição Inicial",
+    );
+    await act(async () => {
+      fireEvent.click(collapseHeader);
+    });
+
+    expect(
+      screen.getByDisplayValue("Contagem manual pelo nutricionista"),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("descricao_metodo")).toBeInTheDocument();
   });
 });

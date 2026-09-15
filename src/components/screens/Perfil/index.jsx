@@ -7,7 +7,10 @@ import {
   atualizarSenhaLogado,
 } from "../../../services/perfil.service";
 import { TIPO_PERFIL, ENTER } from "../../../constants/shared";
-import { formataCPFCensurado } from "../../../helpers/utilities";
+import {
+  acionaComEnterOuEspaco,
+  formataCPFCensurado,
+} from "../../../helpers/utilities";
 import InputText from "../../Shareable/Input/InputText";
 import "./style.scss";
 import ModalAlterarSenha from "./components/ModalAlterarSenha";
@@ -133,7 +136,12 @@ class Perfil extends Component {
                       </div>
                       <div className="row">
                         <div
+                          role="button"
+                          tabIndex={0}
                           onClick={this.abrirModal}
+                          onKeyDown={(e) =>
+                            acionaComEnterOuEspaco(e, this.abrirModal)
+                          }
                           className="col-12 password"
                         >
                           Alterar senha

@@ -7,6 +7,7 @@ import {
   CONFIGURACOES,
   EDICAO_PRODUTOS,
 } from "src/configs/constants";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 const Tabela = ({ produtos }) => {
   const navigate = useNavigate();
@@ -36,7 +37,15 @@ const Tabela = ({ produtos }) => {
                 <div>{produto.status}</div>
                 <div>{produto.criado_em}</div>
                 <div>
-                  <span onClick={() => editarProduto(produto)}>
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Editar produto ${produto.nome}`}
+                    onClick={() => editarProduto(produto)}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, () => editarProduto(produto))
+                    }
+                  >
                     <i className={`verde fas fa-edit`} />
                   </span>
                 </div>

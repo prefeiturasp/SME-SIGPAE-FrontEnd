@@ -8,6 +8,7 @@ import {
   deleteEmailsTerceirizadasPorModulo,
   updateEmailsTerceirizadasPorModulo,
 } from "src/services/terceirizada.service";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./styles.scss";
 
 export default ({
@@ -38,23 +39,29 @@ export default ({
             ativos && ativos.includes(terceirizada.uuid)
               ? "minus-square"
               : "plus-square";
+          const alternarExpansao = () => {
+            ativos && ativos.includes(terceirizada.uuid)
+              ? setAtivos(ativos.filter((el) => el !== terceirizada.uuid))
+              : setAtivos(
+                  ativos ? [...ativos, terceirizada.uuid] : [terceirizada.uuid],
+                );
+          };
           return (
             <React.Fragment key={terceirizada.uuid}>
               <div className="grid-table body-table">
                 <div className={`${bordas}`}>
                   <i
                     className={`far fa-${icone} expand icon-green mx-3`}
-                    onClick={() => {
-                      ativos && ativos.includes(terceirizada.uuid)
-                        ? setAtivos(
-                            ativos.filter((el) => el !== terceirizada.uuid)
-                          )
-                        : setAtivos(
-                            ativos
-                              ? [...ativos, terceirizada.uuid]
-                              : [terceirizada.uuid]
-                          );
-                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={Boolean(
+                      ativos && ativos.includes(terceirizada.uuid),
+                    )}
+                    aria-label={`Expandir e-mails de ${terceirizada.razao_social}`}
+                    onClick={alternarExpansao}
+                    onKeyDown={(e) =>
+                      acionaComEnterOuEspaco(e, alternarExpansao)
+                    }
                   />
                   {terceirizada.razao_social}
                 </div>

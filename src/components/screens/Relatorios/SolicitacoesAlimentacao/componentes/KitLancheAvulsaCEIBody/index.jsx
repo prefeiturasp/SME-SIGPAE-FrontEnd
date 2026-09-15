@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 export const KitLancheAvulsaCEIBody = ({ ...props }) => {
   const { solicitacao, item, index, filtros, labelData } = props;
@@ -9,11 +10,10 @@ export const KitLancheAvulsaCEIBody = ({ ...props }) => {
   }, 0);
   const total_matriculados = solicitacao.faixas_etarias.reduce(function (
     acc,
-    v
+    v,
   ) {
     return acc + v.matriculados_quando_criado || 0;
-  },
-  0);
+  }, 0);
 
   const total_kits = total * solicitacao.solicitacao_kit_lanche.kits.length;
 
@@ -40,7 +40,13 @@ export const KitLancheAvulsaCEIBody = ({ ...props }) => {
       <td className="text-center">
         <i
           className={`fas fa-${showDetail ? "angle-up" : "angle-down"}`}
+          role="button"
+          tabIndex={0}
+          aria-expanded={showDetail}
           onClick={() => setShowDetail(!showDetail)}
+          onKeyDown={(e) =>
+            acionaComEnterOuEspaco(e, () => setShowDetail(!showDetail))
+          }
         />
       </td>
     </tr>,

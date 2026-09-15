@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import {
   toastError,
@@ -140,11 +141,21 @@ const TabelaProdutos = ({
                       className={`fas fa-angle-${
                         isProdutoAtivo ? "up" : "down"
                       }`}
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isProdutoAtivo}
                       onClick={() => {
                         setIndiceProdutoAtivo(
                           indice === indiceProdutoAtivo ? undefined : indice,
                         );
                       }}
+                      onKeyDown={(e) =>
+                        acionaComEnterOuEspaco(e, () =>
+                          setIndiceProdutoAtivo(
+                            indice === indiceProdutoAtivo ? undefined : indice,
+                          ),
+                        )
+                      }
                     />
                   </div>
                 </div>

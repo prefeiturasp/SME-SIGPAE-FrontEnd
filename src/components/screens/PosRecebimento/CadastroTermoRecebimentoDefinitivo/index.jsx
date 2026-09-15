@@ -109,6 +109,7 @@ export default () => {
     setCronogramasDisponiveis([]);
     setBlocos([criarBloco()]);
     form?.change("contrato", "");
+    form?.change("processo_sei", "");
     const empresa = empresas.find((e) => e.nome_fantasia === nomeFantasia);
     setEmpresaSelecionada(empresa || null);
     if (!empresa) return;
@@ -122,9 +123,11 @@ export default () => {
   };
 
   const selecionaContrato = async (numeroContrato) => {
+    const form = formRef.current;
     setBlocos([criarBloco()]);
     setCronogramasDisponiveis([]);
     const contrato = contratos.find((c) => c.numero === numeroContrato);
+    form?.change("processo_sei", contrato?.processo || "");
     if (!contrato) return;
     setCarregando(true);
     try {
@@ -141,7 +144,6 @@ export default () => {
   const selecionaCronogramaBloco = async (blocoId, numeroCronograma) => {
     const form = formRef.current;
     form?.change(`produto_${blocoId}`, "");
-    form?.change(`processo_sei_${blocoId}`, "");
 
     if (!numeroCronograma) {
       setBlocos((prev) =>
@@ -188,7 +190,6 @@ export default () => {
       );
       setBlocos(novosBlocos);
       form?.change(`produto_${blocoId}`, detalhe.produto);
-      form?.change(`processo_sei_${blocoId}`, detalhe.processo_sei);
       atualizarTextoTermo(
         novosBlocos
           .filter((bloco) => bloco.produto)
@@ -208,8 +209,6 @@ export default () => {
     const resultado = novosBlocos.length > 0 ? novosBlocos : [criarBloco()];
     form?.change(`cronograma_${blocoId}`, "");
     form?.change(`produto_${blocoId}`, "");
-    form?.change(`processo_sei_${blocoId}`, "");
-    form?.change(`valor_contrato_${blocoId}`, "");
     form?.change(`quantidade_total_recebida_${blocoId}`, "");
     setBlocos(resultado);
     atualizarTextoTermo(
@@ -243,9 +242,6 @@ export default () => {
         .filter((bloco) => bloco.cronograma)
         .map((bloco) => ({
           cronograma: uuidDoCronograma(bloco.cronograma),
-          valor_contrato: converterValorParaDecimal(
-            values[`valor_contrato_${bloco.id}`],
-          ),
           quantidade_total_recebida: converterValorParaDecimal(
             values[`quantidade_total_recebida_${bloco.id}`],
           ),
@@ -253,6 +249,7 @@ export default () => {
       const payload = {
         empresa: empresas.find((e) => e.nome_fantasia === values.empresa)?.uuid,
         contrato: contratos.find((c) => c.numero === values.contrato)?.uuid,
+        valor_contrato: converterValorParaDecimal(values.valor_contrato),
         cronogramas,
         fiscal_1: fiscais.find((f) => f.nome === values.fiscal_1)?.uuid,
         fiscal_2: fiscais.find((f) => f.nome === values.fiscal_2)?.uuid,
@@ -285,14 +282,13 @@ export default () => {
       : "";
     const blocosComCronograma = blocos.filter((bloco) => bloco.cronograma);
     const blocosCompletos = blocosComCronograma.filter(
-      (bloco) =>
-        values[`valor_contrato_${bloco.id}`] &&
-        values[`quantidade_total_recebida_${bloco.id}`],
+      (bloco) => values[`quantidade_total_recebida_${bloco.id}`],
     );
     return (
       Object.keys(errors).length > 0 ||
       blocosComCronograma.length === 0 ||
       blocosCompletos.length !== blocosComCronograma.length ||
+      !values.valor_contrato ||
       !values.empresa ||
       !values.contrato ||
       !values.fiscal_1 ||
@@ -345,50 +341,51 @@ export default () => {
                 </div>
               );
 
-              const renderProcessoSei = (bloco, index, colClass) => (
-                <div className={colClass}>
+              const renderProcessoSei = () => (
+                <div className="col-6">
                   <Field
                     component={InputText}
                     label="Nº do Processo SEI"
-                    name={`processo_sei_${bloco.id}`}
-                    dataTestId={`processo-sei-${index}`}
+                    name="processo_sei"
+                    dataTestId="processo-sei"
                     placeholder="Nº do Processo SEI"
                     disabled
                   />
                 </div>
               );
 
-              const renderValorQuantidade = (bloco, index) => (
-                <>
-                  <div className="col-4">
-                    <Field
-                      component={InputText}
-                      label="Valor do Contrato"
-                      name={`valor_contrato_${bloco.id}`}
-                      dataTestId={`valor-contrato-${index}`}
-                      placeholder="0,00"
-                      prefix="R$"
-                      agrupadorMilharComDecimal
-                      validate={required}
-                      required
-                    />
-                  </div>
-                  <div className="col-4">
-                    <Field
-                      component={InputText}
-                      label="Quantidade Total Recebida"
-                      name={`quantidade_total_recebida_${bloco.id}`}
-                      dataTestId={`quantidade-total-recebida-${index}`}
-                      placeholder="0.000,00"
-                      suffix={
-                        bloco.unidadeMedidaAbreviacao || bloco.unidadeMedida
-                      }
-                      agrupadorMilharComDecimal
-                      validate={required}
-                      required
-                    />
-                  </div>
-                </>
+              const renderValorContrato = () => (
+                <div className="col-6">
+                  <Field
+                    component={InputText}
+                    label="Valor do Contrato"
+                    name="valor_contrato"
+                    dataTestId="valor-contrato"
+                    placeholder="0,00"
+                    prefix="R$"
+                    agrupadorMilharComDecimal
+                    validate={required}
+                    required
+                  />
+                </div>
+              );
+
+              const renderQuantidade = (bloco, index) => (
+                <div className="col-4">
+                  <Field
+                    component={InputText}
+                    label="Quantidade Total Recebida"
+                    name={`quantidade_total_recebida_${bloco.id}`}
+                    dataTestId={`quantidade-total-recebida-${index}`}
+                    placeholder="0.000,00"
+                    suffix={
+                      bloco.unidadeMedidaAbreviacao || bloco.unidadeMedida
+                    }
+                    agrupadorMilharComDecimal
+                    validate={required}
+                    required
+                  />
+                </div>
               );
 
               return (
@@ -451,6 +448,11 @@ export default () => {
                     </div>
                   </div>
 
+                  <div className="row mt-3">
+                    {renderProcessoSei()}
+                    {renderValorContrato()}
+                  </div>
+
                   {blocos.map((bloco, index) => (
                     <React.Fragment key={bloco.id}>
                       {index !== 0 && (
@@ -473,12 +475,9 @@ export default () => {
                         </>
                       )}
                       <div className="row mt-3">
-                        {renderSelectCronograma(bloco, index, "col-6")}
-                        {renderProduto(bloco, index, "col-6")}
-                      </div>
-                      <div className="row mt-3">
-                        {renderProcessoSei(bloco, index, "col-4")}
-                        {renderValorQuantidade(bloco, index)}
+                        {renderSelectCronograma(bloco, index, "col-4")}
+                        {renderProduto(bloco, index, "col-4")}
+                        {renderQuantidade(bloco, index)}
                       </div>
                     </React.Fragment>
                   ))}

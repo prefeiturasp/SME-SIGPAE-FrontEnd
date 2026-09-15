@@ -18,6 +18,7 @@ import ModalDetalharGuia from "../CadastroNotificacao/components/ModalDetalharGu
 import "./styles.scss";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { TIPOS_OCORRENCIAS_OPTIONS } from "src/constants/shared";
+import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import Botao from "src/components/Shareable/Botao";
 import {
   BUTTON_STYLE,
@@ -59,7 +60,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
         setNotificacao(notificacao);
         let previsoes_contratuais = getPrevisoesContratuais(
           response.data.previsoes_contratuais,
-          notificacao.lista_ocorrencias
+          notificacao.lista_ocorrencias,
         );
 
         setInitialValues({
@@ -95,7 +96,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
                 let virgula = index === 0 ? "" : ", ";
                 return texto + virgula + labelOcorrencia(ocorrencia);
               },
-              ""
+              "",
             );
         }
       });
@@ -110,7 +111,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
     let values = {};
     previsoes.forEach((prev) => {
       let index = Object.keys(ocorrencias).findIndex(
-        (x) => x === prev.motivo_ocorrencia
+        (x) => x === prev.motivo_ocorrencia,
       );
       values[`previsao_contratual_${index}`] = prev.previsao_contratual;
     });
@@ -134,7 +135,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
               ocorrencias[ocorrencia] = [guia];
             }
           });
-        })
+        }),
       );
     });
 
@@ -184,7 +185,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
     let response = await enviarNotificacao(notificacao.uuid, payload);
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(
-        "Notificação enviada para assinatura do Fiscal de Contrato com sucesso!"
+        "Notificação enviada para assinatura do Fiscal de Contrato com sucesso!",
       );
       setCarregando(false);
       voltarPagina();
@@ -211,7 +212,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
     newAprovacoes[index] = {
       aprovado: true,
       justificativa_alteracao: `Aprovado em ${moment().format(
-        "DD/MM/YYYY - HH:mm"
+        "DD/MM/YYYY - HH:mm",
       )}`,
     };
     setAprovacoes(newAprovacoes);
@@ -255,7 +256,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
     let payload = montaPayloadFiscal();
     let response = await solicitarAlteracaoNotificacao(
       notificacao.uuid,
-      payload
+      payload,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Solicitação de Alteração enviada com sucesso!");
@@ -436,12 +437,19 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
                                 (guia, index) => (
                                   <div
                                     key={index}
+                                    role="button"
+                                    tabIndex={0}
                                     onClick={() => abriModalGuia(guia)}
+                                    onKeyDown={(e) =>
+                                      acionaComEnterOuEspaco(e, () =>
+                                        abriModalGuia(guia),
+                                      )
+                                    }
                                     className="numero-guia"
                                   >
                                     {guia.numero_guia}
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                             <Field
@@ -456,7 +464,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
                           </div>
                         </>
                       );
-                    }
+                    },
                   )}
 
                 <div className="row float-end mt-4">
