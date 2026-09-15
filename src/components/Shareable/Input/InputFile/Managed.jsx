@@ -102,7 +102,19 @@ export class InputFileManaged extends Component {
         {files.map((file, key) => {
           return (
             <div className="file-div row" key={key}>
-              <div className="file-name col-8" onClick={() => openFile(file)}>
+              <div
+                className="file-name col-8"
+                onClick={() => openFile(file)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openFile(file);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Abrir anexo ${file.nome}`}
+              >
                 {truncarString(file.nome, 20)}
               </div>
               <div className="col-4 exclude-icon">
