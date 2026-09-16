@@ -83,7 +83,7 @@ class FoodSuspensionEditor extends Component {
 
   handleField(field, value, key) {
     this.setState((prevState) => {
-      const dias_razoes = { ...prevState.dias_razoes };
+      const dias_razoes = [...prevState.dias_razoes];
       const acimaDoLimite = [...prevState.acimaDoLimite];
       dias_razoes[key] = { ...dias_razoes[key], [field]: value };
       if (field === `motivo${key}`) {
