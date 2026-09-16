@@ -16,7 +16,7 @@ interface Props {
 
 const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
   return (
-    <div className="listagem-relatorio-cronograma">
+    <div className="listagem-relatorio-cronograma-semanal">
       <div className="titulo-verde mt-4 mb-3">Resultado da Pesquisa</div>
 
       <article>
