@@ -3,18 +3,20 @@ import React from "react";
 import { Provider } from "react-redux";
 import { combineReducers, createStore } from "redux";
 import { reducer as formReducer } from "redux-form";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
-import { FiltroEnum, TIPO_SOLICITACAO } from "src/constants/shared";
+import {
+  act,
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+} from "@testing-library/react";
+import { FiltroEnum } from "src/constants/shared";
 
 const mockGetCodaePedidosDeKitLanche = jest.fn();
 const mockGetLotesSimples = jest.fn();
 const mockGetDiretoriaregionalSimplissima = jest.fn();
 const mockUsuarioEhCODAEGestaoAlimentacao = jest.fn();
 const mockCardPendenteAcao = jest.fn();
-const mockFiltraPrioritarios = jest.fn();
-const mockFiltraNoLimite = jest.fn();
-const mockFiltraRegular = jest.fn();
-const mockOrdenarPedidosDataMaisRecente = jest.fn();
 
 jest.mock("src/services/kitLanche", () => ({
   getCodaePedidosDeKitLanche: (...args) =>
@@ -36,9 +38,6 @@ jest.mock("src/helpers/utilities", () => {
   return {
     ...actualUtilities,
     dataAtualDDMMYYYY: jest.fn(() => "09/06/2026"),
-    safeConcatOn: jest.fn((field, ...responses) =>
-      responses.flatMap((response) => response[field] || []),
-    ),
     formatarOpcoesLote: jest.fn((lotes) =>
       lotes.map((lote) => ({
         value: lote.uuid,
@@ -55,14 +54,6 @@ jest.mock("src/helpers/utilities", () => {
       mockUsuarioEhCODAEGestaoAlimentacao(),
   };
 });
-
-jest.mock("src/helpers/painelPedidos", () => ({
-  filtraPrioritarios: (...args) => mockFiltraPrioritarios(...args),
-  filtraNoLimite: (...args) => mockFiltraNoLimite(...args),
-  filtraRegular: (...args) => mockFiltraRegular(...args),
-  ordenarPedidosDataMaisRecente: (...args) =>
-    mockOrdenarPedidosDataMaisRecente(...args),
-}));
 
 jest.mock("src/components/Shareable/MakeField", () => {
   const React = require("react");
@@ -142,8 +133,21 @@ jest.mock("antd", () => {
       children,
     );
 
+  const Spin = ({ children, spinning }) => {
+    const deveMostrarSpin = !children || spinning;
+
+    return React.createElement(
+      "div",
+      {
+        "data-testid": deveMostrarSpin ? "spin" : undefined,
+      },
+      children,
+    );
+  };
+
   return {
     Select,
+    Spin,
   };
 });
 
@@ -182,21 +186,57 @@ describe("PainelPedidos", () => {
   const loteUuid = "f9cb1f30-7b86-4cc2-9f5f-d9e7d81c1234";
 
   const pedidoPrioritario = {
+    uuid: "uuid-prioritario",
     id_externo: "ABC123",
     prioridade: "PRIORITARIO",
     data: "10/06/2026",
+    escola: { uuid: "escola-1", nome: "Escola 1", codigo_eol: "123456" },
+    solicitacoes_similares: [],
   };
 
   const pedidoNoLimite = {
+    uuid: "uuid-limite",
     id_externo: "DEF456",
     prioridade: "LIMITE",
     data: "11/06/2026",
+    escola: { uuid: "escola-1", nome: "Escola 1", codigo_eol: "123456" },
+    solicitacoes_similares: [],
   };
 
   const pedidoRegular = {
+    uuid: "uuid-regular",
     id_externo: "GHI789",
     prioridade: "REGULAR",
     data: "12/06/2026",
+    escola: { uuid: "escola-2", nome: "Escola 2", codigo_eol: "654321" },
+    solicitacoes_similares: [],
+  };
+
+  const totaisPadrao = { PRIORITARIO: 1, LIMITE: 1, REGULAR: 1 };
+
+  const respostaPadraoPorPrazo = async (filtro, params) => {
+    if (params.prazo === "PRIORITARIO") {
+      return {
+        count: 1,
+        results: [pedidoPrioritario],
+        escolas_solicitantes: 1,
+        totais: totaisPadrao,
+      };
+    }
+    if (params.prazo === "LIMITE") {
+      return {
+        count: 1,
+        results: [pedidoNoLimite],
+        escolas_solicitantes: 1,
+        totais: totaisPadrao,
+      };
+    }
+    return {
+      count: 1,
+      results: [pedidoRegular],
+      escolas_solicitantes: 1,
+      totais: totaisPadrao,
+    };
   };
 
   const createTestStore = (initialState = {}) =>
@@ -231,7 +271,7 @@ describe("PainelPedidos", () => {
 
   const waitForPedidosLoad = async () => {
     await waitFor(() => {
-      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument();
+      expect(screen.queryAllByTestId("spin")).toHaveLength(0);
     });
   };
 
@@ -264,50 +304,18 @@ describe("PainelPedidos", () => {
       },
     });
 
-    mockGetCodaePedidosDeKitLanche.mockImplementation(
-      async (filtro, tipoSolicitacao) => {
-        if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_NORMAL) {
-          return {
-            results: [pedidoPrioritario],
-          };
-        }
-
-        if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI) {
-          return {
-            results: [pedidoNoLimite],
-          };
-        }
-
-        return {
-          results: [pedidoRegular],
-        };
-      },
-    );
-
-    mockFiltraPrioritarios.mockImplementation((pedidos) =>
-      pedidos.filter((pedido) => pedido.prioridade === "PRIORITARIO"),
-    );
-
-    mockFiltraNoLimite.mockImplementation((pedidos) =>
-      pedidos.filter((pedido) => pedido.prioridade === "LIMITE"),
-    );
-
-    mockFiltraRegular.mockImplementation((pedidos) =>
-      pedidos.filter((pedido) => pedido.prioridade === "REGULAR"),
-    );
-
-    mockOrdenarPedidosDataMaisRecente.mockImplementation((pedidos) => pedidos);
+    mockGetCodaePedidosDeKitLanche.mockImplementation(respostaPadraoPorPrazo);
   });
 
   it("exibe carregando antes de finalizar a busca dos pedidos", async () => {
     renderPainelPedidos();
 
-    expect(screen.getByText("Carregando...")).toBeInTheDocument();
+    expect(screen.getAllByTestId("spin").length).toBeGreaterThan(0);
 
     await waitForPedidosLoad();
   });
 
-  it("busca pedidos normais, CEI e CEMEI com filtros padrão ao montar a tela", async () => {
+  it("busca os pedidos dos três prazos ao montar a tela", async () => {
     renderPainelPedidos();
 
     await waitFor(() => {
@@ -317,30 +325,31 @@ describe("PainelPedidos", () => {
     expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
       1,
       FiltroEnum.SEM_FILTRO,
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
       {
         lote: [],
         diretoria_regional: [],
+        page: 1,
+        prazo: "PRIORITARIO",
       },
     );
-
     expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
       2,
       FiltroEnum.SEM_FILTRO,
-      TIPO_SOLICITACAO.SOLICITACAO_CEI,
       {
         lote: [],
         diretoria_regional: [],
+        page: 1,
+        prazo: "LIMITE",
       },
     );
-
     expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
       3,
       FiltroEnum.SEM_FILTRO,
-      TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
       {
         lote: [],
         diretoria_regional: [],
+        page: 1,
+        prazo: "REGULAR",
       },
     );
   });
@@ -394,10 +403,11 @@ describe("PainelPedidos", () => {
     expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
       1,
       "outro_filtro",
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
       {
         lote: undefined,
         diretoria_regional: undefined,
+        page: 1,
+        prazo: "PRIORITARIO",
       },
     );
   });
@@ -422,10 +432,11 @@ describe("PainelPedidos", () => {
     expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
       1,
       FiltroEnum.SEM_FILTRO,
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
       {
         diretoria_regional: dreUuid,
         lote: undefined,
+        page: 1,
+        prazo: "PRIORITARIO",
       },
     );
 
@@ -446,10 +457,11 @@ describe("PainelPedidos", () => {
     expect(mockGetCodaePedidosDeKitLanche).toHaveBeenNthCalledWith(
       1,
       FiltroEnum.SEM_FILTRO,
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
       {
         diretoria_regional: dreUuid,
         lote: loteUuid,
+        page: 1,
+        prazo: "PRIORITARIO",
       },
     );
 
@@ -460,5 +472,108 @@ describe("PainelPedidos", () => {
 
     expect(screen.getByTestId("select-diretoria_regional")).toBeInTheDocument();
     expect(screen.getByTestId("select-lote")).toBeInTheDocument();
+  });
+
+  it("refaz a busca do card após parar de digitar por 1,5 segundos", async () => {
+    renderPainelPedidos();
+
+    await waitForPedidosLoad();
+
+    jest.useFakeTimers();
+    mockGetCodaePedidosDeKitLanche.mockClear();
+
+    const propsDoCard = mockCardPendenteAcao.mock.calls[0][0];
+    act(() => {
+      propsDoCard.onBusca("EMEF");
+      propsDoCard.onBusca("EMEF PERICLES");
+    });
+
+    act(() => {
+      jest.advanceTimersByTime(1499);
+    });
+    expect(mockGetCodaePedidosDeKitLanche).not.toHaveBeenCalled();
+
+    await act(async () => {
+      jest.advanceTimersByTime(1);
+    });
+    jest.useRealTimers();
+
+    expect(mockGetCodaePedidosDeKitLanche).toHaveBeenCalledTimes(1);
+    expect(mockGetCodaePedidosDeKitLanche).toHaveBeenCalledWith(
+      FiltroEnum.SEM_FILTRO,
+      {
+        lote: undefined,
+        diretoria_regional: undefined,
+        page: 1,
+        prazo: "PRIORITARIO",
+        busca: "EMEF PERICLES",
+      },
+    );
+  });
+
+  it("repassa as escolas solicitantes e totais para cada bloco", async () => {
+    renderPainelPedidos();
+
+    await waitForPedidosLoad();
+
+    const chamadas = mockCardPendenteAcao.mock.calls.map(
+      (chamada) => chamada[0],
+    );
+    const ultimaDoCard = (tipoDeCard) =>
+      [...chamadas].reverse().find((props) => props.tipoDeCard === tipoDeCard);
+    const prioridade = ultimaDoCard("priority");
+    const limite = ultimaDoCard("on-limit");
+    const regular = ultimaDoCard("regular");
+
+    expect(prioridade.escolasSolicitantes).toEqual(1);
+    expect(limite.escolasSolicitantes).toEqual(1);
+    expect(regular.escolasSolicitantes).toEqual(1);
+
+    expect(prioridade.totalSolicitacoes).toEqual(1);
+    expect(limite.totalSolicitacoes).toEqual(1);
+    expect(regular.totalSolicitacoes).toEqual(1);
+  });
+
+  it("muda de página de um card e refaz a busca com a nova página", async () => {
+    mockGetCodaePedidosDeKitLanche.mockImplementation(
+      async (filtro, params) => {
+        if (params.prazo === "REGULAR") {
+          return {
+            count: 15,
+            results: [pedidoRegular],
+            escolas_solicitantes: 1,
+            totais: { PRIORITARIO: 1, LIMITE: 1, REGULAR: 15 },
+          };
+        }
+        return respostaPadraoPorPrazo(filtro, params);
+      },
+    );
+
+    renderPainelPedidos();
+
+    await waitForPedidosLoad();
+
+    const chamadas = mockCardPendenteAcao.mock.calls.map(
+      (chamada) => chamada[0],
+    );
+    const cardRegular = [...chamadas]
+      .reverse()
+      .find((props) => props.tipoDeCard === "regular");
+
+    await act(async () => {
+      cardRegular.onPageChange(2);
+    });
+
+    await waitFor(() => {
+      expect(mockGetCodaePedidosDeKitLanche).toHaveBeenLastCalledWith(
+        FiltroEnum.SEM_FILTRO,
+        {
+          lote: undefined,
+          diretoria_regional: undefined,
+          page: 2,
+          prazo: "REGULAR",
+        },
+      );
+    });
   });
 });

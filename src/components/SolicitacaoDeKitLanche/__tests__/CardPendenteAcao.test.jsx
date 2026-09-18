@@ -63,11 +63,18 @@ describe("Teste de comportamentos do componente - CardPendenteAcao", () => {
     tipoDeCard: "warning",
     ultimaColunaLabel: "Data",
     pedidos,
+    busca: "",
+    onBusca: jest.fn(),
+    escolasSolicitantes: 1,
+    totalSolicitacoes: 1,
+    page: 1,
+    onPageChange: jest.fn(),
   };
 
   const setup = async (props = {}) => {
+    let resultado;
     await act(async () => {
-      render(
+      resultado = render(
         <MemoryRouter
           future={{
             v7_startTransition: true,
@@ -85,6 +92,7 @@ describe("Teste de comportamentos do componente - CardPendenteAcao", () => {
         </MemoryRouter>,
       );
     });
+    return resultado;
   };
 
   beforeEach(() => {
@@ -114,7 +122,7 @@ describe("Teste de comportamentos do componente - CardPendenteAcao", () => {
     expect(screen.getByText("PED001")).toBeInTheDocument();
   });
 
-  it("deve filtrar pedidos pelo código", async () => {
+  it("deve chamar onBusca com o termo digitado na pesquisa", async () => {
     await setup();
 
     fireEvent.click(screen.getByTestId("botao-expandir"));
@@ -125,21 +133,15 @@ describe("Teste de comportamentos do componente - CardPendenteAcao", () => {
       },
     });
 
-    expect(screen.getByText("PED001")).toBeInTheDocument();
+    expect(defaultProps.onBusca).toHaveBeenCalledWith("PED001");
   });
 
-  it("deve ocultar pedidos quando a pesquisa não encontrar resultados", async () => {
-    await setup();
+  it("deve exibir o termo de busca controlado pelo pai", async () => {
+    await setup({ busca: "PED001" });
 
     fireEvent.click(screen.getByTestId("botao-expandir"));
 
-    fireEvent.change(screen.getByPlaceholderText("Pesquisar"), {
-      target: {
-        value: "xxxx",
-      },
-    });
-
-    expect(screen.queryByText("PED001")).not.toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Pesquisar")).toHaveValue("PED001");
   });
 
   it("deve renderizar a escola", async () => {
@@ -166,9 +168,106 @@ describe("Teste de comportamentos do componente - CardPendenteAcao", () => {
     expect(screen.getByText("#PED002")).toBeInTheDocument();
   });
 
+  it("deve manter as solicitações similares colapsadas após atualizar os pedidos", async () => {
+    const { rerender } = await setup();
+
+    fireEvent.click(screen.getByTestId("botao-expandir"));
+
+    expect(screen.queryByText("Solicitação Número:")).not.toBeInTheDocument();
+
+    const novosPedidos = [
+      {
+        ...pedidos[0],
+        uuid: "uuid-novo",
+        solicitacoes_similares: [
+          { ...pedidos[0].solicitacoes_similares[0], collapsed: false },
+        ],
+      },
+      {
+        ...pedidos[0],
+        uuid: "uuid-novo-2",
+        id_externo: "PED003",
+        solicitacoes_similares: [],
+      },
+    ];
+
+    await act(async () => {
+      rerender(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <CardPendenteAcao {...defaultProps} pedidos={novosPedidos} />{" "}
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    expect(screen.queryByText("Solicitação Número:")).not.toBeInTheDocument();
+  });
+
+  it("deve atualizar os resultados quando os pedidos mudam sem alterar a quantidade", async () => {
+    const { rerender } = await setup();
+
+    fireEvent.click(screen.getByTestId("botao-expandir"));
+
+    expect(screen.getByText("PED001")).toBeInTheDocument();
+
+    const pedidosAtualizados = [
+      {
+        ...pedidos[0],
+        uuid: "uuid-atualizado",
+        id_externo: "PED999",
+      },
+    ];
+
+    await act(async () => {
+      rerender(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <CardPendenteAcao
+              {...defaultProps}
+              pedidos={pedidosAtualizados}
+            />{" "}
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    expect(screen.getByText("PED999")).toBeInTheDocument();
+    expect(screen.queryByText("PED001")).not.toBeInTheDocument();
+  });
+
+  it("deve renderizar a paginação dentro do card quando há mais de uma página", async () => {
+    await setup({ totalSolicitacoes: 15 });
+
+    fireEvent.click(screen.getByTestId("botao-expandir"));
+
+    expect(document.querySelector(".ant-pagination")).toBeInTheDocument();
+  });
+
   it("não deve renderizar pedidos quando a lista estiver vazia", async () => {
     await setup({
       pedidos: [],
+      totalSolicitacoes: 0,
     });
 
     expect(screen.queryByTestId("botao-expandir")).not.toBeInTheDocument();
