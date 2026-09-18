@@ -144,6 +144,18 @@ describe("Teste de comportamentos do componente - CardPendenteAcao", () => {
     expect(screen.getByPlaceholderText("Pesquisar")).toHaveValue("PED001");
   });
 
+  it("deve exibir o texto de ajuda da pesquisa", async () => {
+    await setup();
+
+    fireEvent.click(screen.getByTestId("botao-expandir"));
+
+    expect(
+      screen.getByText(
+        "Pesquisa por: código do pedido, código EOL e nome da escola",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("deve renderizar a escola", async () => {
     await setup();
 
