@@ -65,6 +65,7 @@ export const URL_KIT_LANCHES = `${API_URL}/kit-lanches`;
 export const URL_KIT_LANCHES_SOLICITACOES_AVULSA = `${API_URL}/solicitacoes-kit-lanche-avulsa`;
 export const URL_KIT_LANCHES_SOLICITACOES_CEI = `${API_URL}/solicitacoes-kit-lanche-cei-avulsa`;
 export const URL_KIT_LANCHES_SOLICITACOES_CEMEI = `${API_URL}/solicitacao-kit-lanche-cemei`;
+export const URL_KIT_LANCHES_SOLICITACOES_PAINEL = `${API_URL}/solicitacao-kit-lanche`;
 
 export const AUTH_TOKEN = {
   Authorization: `JWT ${authService.getToken()}`,
