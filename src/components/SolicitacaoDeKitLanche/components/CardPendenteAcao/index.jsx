@@ -115,15 +115,20 @@ export class CardPendenteAcao extends Component {
         </div>
         <Collapse isOpened={!collapsed}>
           <div className="row">
-            <div className="input-search-full-width col-12">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Pesquisar"
-                value={this.props.busca}
-                onChange={this.filtrarPedidos}
-              />
-              <i className="fas fa-search inside-input" />
+            <div className="col-12">
+              <div className="input-search-full-width">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Pesquisar"
+                  value={this.props.busca}
+                  onChange={this.filtrarPedidos}
+                />
+                <i className="fas fa-search inside-input" />
+              </div>
+              <small className="form-text text-muted" style={{ fontSize: 10 }}>
+                Pesquisa por: código do pedido, código EOL e nome da escola
+              </small>
             </div>
             <table className="orders-table mt-4 ms-3 me-3">
               <thead>
