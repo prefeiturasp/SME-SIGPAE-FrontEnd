@@ -6,7 +6,10 @@ import {
   FiltrosRelatorioCronograma,
 } from "./interfaces";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
-import { getListagemRelatorioCronogramasSemanais } from "../../../../../services/cronogramaSemanal.service";
+import {
+  getListagemRelatorioCronogramasSemanais,
+  baixarRelatorioCronogramasSemanaisExcel,
+} from "../../../../../services/cronogramaSemanal.service";
 import { Paginacao } from "src/components/Shareable/Paginacao";
 import Listagem from "./components/Listagem";
 import "./styles.scss";
@@ -18,6 +21,7 @@ import {
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 
 export default () => {
@@ -30,6 +34,9 @@ export default () => {
   const [cronogramasSemanais, setCronogramasSemanais] = useState<
     Array<CronogramaSemanalRelatorio>
   >([]);
+  const [enviandoArquivo, setEnviandoArquivo] = useState<boolean>(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState<boolean>(false);
 
   const buscarResultados = async (page) => {
     setCarregando(true);
@@ -50,6 +57,20 @@ export default () => {
   const nextPage = (page: number) => {
     buscarResultados(page);
     setPage(page);
+  };
+
+  const baixarRelatorioExcel = async () => {
+    setEnviandoArquivo(true);
+    try {
+      // Mesmos parâmetros de filtro aplicados na listagem.
+      const params = gerarParametrosConsulta(filtros);
+      const response = await baixarRelatorioCronogramasSemanaisExcel(params);
+      response?.status === 200 && setExibirModalCentralDownloads(true);
+    } catch {
+      toastError("Erro ao exportar Excel. Tente novamente mais tarde.");
+    } finally {
+      setEnviandoArquivo(false);
+    }
   };
 
   useEffect(() => {
@@ -99,9 +120,17 @@ export default () => {
                         style={BUTTON_STYLE.GREEN_OUTLINE}
                         icon={BUTTON_ICON.FILE_EXCEL}
                         type={BUTTON_TYPE.BUTTON}
-                        onClick={() => {}}
+                        disabled={enviandoArquivo}
+                        onClick={() => baixarRelatorioExcel()}
                         className="float-end me-3"
                       />
+                      {exibirModalCentralDownloads && (
+                        <ModalSolicitacaoDownload
+                          show={exibirModalCentralDownloads}
+                          setShow={setExibirModalCentralDownloads}
+                          callbackClose={() => {}}
+                        />
+                      )}
                     </div>
                   </div>
                 </>
