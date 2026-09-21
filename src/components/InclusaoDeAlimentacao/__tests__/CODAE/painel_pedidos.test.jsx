@@ -6,11 +6,8 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { TIPO_PERFIL, TIPO_SOLICITACAO } from "src/constants/shared";
+import { TIPO_PERFIL } from "src/constants/shared";
 import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
-import { mockPedidosCODAEInclusaoCEI } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
-import { mockPedidosCODAEInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
-import { mockPedidosCODAEInclusaoNormal } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoNormal";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { MemoryRouter } from "react-router-dom";
@@ -22,6 +19,35 @@ import Container from "../../CODAE/PainelPedidos/Container";
 jest.mock("src/services/inclusaoDeAlimentacao");
 jest.mock("src/services/lote.service");
 jest.mock("src/services/diretoriaRegional.service");
+
+const pedidoPrioritario = {
+  uuid: "uuid-prioritario",
+  id_externo: "PRIO01",
+  prioridade: "PRIORITARIO",
+  data_inicial: "30/01/2025",
+  escola: {
+    uuid: "escola-1",
+    nome: "EMEF TESTE",
+    codigo_eol: "000001",
+  },
+  solicitacoes_similares: [],
+};
+
+const pedidoLimite = {
+  ...pedidoPrioritario,
+  uuid: "uuid-limite",
+  id_externo: "LIM01",
+  prioridade: "LIMITE",
+};
+
+const pedidoRegular = {
+  ...pedidoPrioritario,
+  uuid: "uuid-regular",
+  id_externo: "REG01",
+  prioridade: "REGULAR",
+};
+
+const totais = { PRIORITARIO: 1, LIMITE: 1, REGULAR: 1 };
 
 const awaitServices = async () => {
   await waitFor(() => {
@@ -42,39 +68,36 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
     });
 
     codaeListarSolicitacoesDeInclusaoDeAlimentacao.mockImplementation(
-      (_, tipoSolicitacao) => {
-        if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_NORMAL) {
+      (filtro, params) => {
+        if (params.prazo === "PRIORITARIO") {
           return Promise.resolve({
-            results: mockPedidosCODAEInclusaoNormal.results,
-            status: 200,
+            count: 1,
+            results: [pedidoPrioritario],
+            escolas_solicitantes: 1,
+            totais,
           });
-        } else if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CONTINUA) {
+        }
+        if (params.prazo === "LIMITE") {
           return Promise.resolve({
-            results: mockPedidosCODAEInclusaoContinua.results,
-            status: 200,
-          });
-        } else if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEI) {
-          return Promise.resolve({
-            results: mockPedidosCODAEInclusaoCEI.results,
-            status: 200,
-          });
-        } else if (tipoSolicitacao === TIPO_SOLICITACAO.SOLICITACAO_CEMEI) {
-          return Promise.resolve({
-            results: [],
-            status: 200,
+            count: 1,
+            results: [pedidoLimite],
+            escolas_solicitantes: 1,
+            totais,
           });
         }
         return Promise.resolve({
-          data: { results: [] },
-          status: 500,
+          count: 1,
+          results: [pedidoRegular],
+          escolas_solicitantes: 1,
+          totais,
         });
-      }
+      },
     );
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -88,43 +111,42 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
           <Container
             filtros={{ lotes: undefined, diretoria_regional: undefined }}
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza blocos de solicitações vencendo, limite e regular", async () => {
     await awaitServices();
+    await waitFor(() => screen.getByTestId("prioritario"));
 
     expect(
       screen.getByText(
-        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-      )
+        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+      ),
     ).toBeInTheDocument();
     const divPrioritarios = screen.getByTestId("prioritario");
     expect(divPrioritarios).toHaveTextContent("1 escola solicitante");
-    expect(divPrioritarios).toHaveTextContent("F85D5");
-    expect(divPrioritarios).toHaveTextContent("017981");
-    expect(divPrioritarios).toHaveTextContent(
-      "EMEF PERICLES EUGENIO DA SILVA RAMOS"
-    );
-    expect(divPrioritarios).toHaveTextContent("30/01/2025");
+    expect(divPrioritarios).toHaveTextContent("PRIO01");
+    expect(divPrioritarios).toHaveTextContent("000001");
+    expect(divPrioritarios).toHaveTextContent("EMEF TESTE");
 
     expect(
-      screen.getByText("Solicitações no prazo limite")
+      screen.getByText("Solicitações no prazo limite"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Solicitações no prazo regular")
+      screen.getByText("Solicitações no prazo regular"),
     ).toBeInTheDocument();
   });
 
   it("busca por dre e por lote", async () => {
     await awaitServices();
+    await waitFor(() => screen.getByTestId("select-diretoria-regional"));
     await act(async () => {
       fireEvent.mouseDown(
         screen
           .getByTestId("select-diretoria-regional")
-          .querySelector(".ant-select-selection-search-input")
+          .querySelector(".ant-select-selection-search-input"),
       );
     });
 
@@ -137,7 +159,7 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
       fireEvent.mouseDown(
         screen
           .getByTestId("select-lote")
-          .querySelector(".ant-select-selection-search-input")
+          .querySelector(".ant-select-selection-search-input"),
       );
     });
 

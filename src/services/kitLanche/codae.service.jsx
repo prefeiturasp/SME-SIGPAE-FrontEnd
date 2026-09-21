@@ -1,12 +1,17 @@
 import axios from "../_base";
-import { FLUXO, PEDIDOS, AUTH_TOKEN } from "src/services/constants";
+import {
+  FLUXO,
+  PEDIDOS,
+  AUTH_TOKEN,
+  URL_KIT_LANCHES_SOLICITACOES_PAINEL,
+} from "src/services/constants";
 import { getPath } from "./helper";
 import { ErrorHandlerFunction } from "src/services/service-helpers";
 
 export const CODAEquestionaKitLancheAvulso = async (
   uuid,
   payload,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.CODAE_QUESTIONA}/`;
   const response = await axios.patch(url, payload).catch(ErrorHandlerFunction);
@@ -19,7 +24,7 @@ export const CODAEquestionaKitLancheAvulso = async (
 export const CODAENegaKitLancheAvulso = async (
   uuid,
   payload,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.CODAE_NEGA}/`;
   const response = await axios.patch(url, payload).catch(ErrorHandlerFunction);
@@ -32,7 +37,7 @@ export const CODAENegaKitLancheAvulso = async (
 export const CODAEAutorizaKitLancheAvulso = (
   uuid,
   justificativa = {},
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.CODAE_AUTORIZA}/`;
   const OBJ_REQUEST = {
@@ -56,7 +61,7 @@ export const CODAEAutorizaKitLancheAvulso = (
 
 export const getCODAEPedidosKitLanchePendentes = (
   filtroAplicado,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${PEDIDOS.CODAE}/${filtroAplicado}/`;
   const OBJ_REQUEST = {
@@ -67,17 +72,14 @@ export const getCODAEPedidosKitLanchePendentes = (
     .then((result) => {
       return result.json();
     })
-    .catch((error) => {
-      console.log(error);
-    });
+    .catch(() => {});
 };
 
 export const getCodaePedidosDeKitLanche = async (
   filtroAplicado,
-  tipoSolicitacao,
-  paramsFromPrevPage
+  paramsFromPrevPage,
 ) => {
-  const url = `${getPath(tipoSolicitacao)}/${PEDIDOS.CODAE}/${filtroAplicado}/`;
+  const url = `${URL_KIT_LANCHES_SOLICITACOES_PAINEL}/${PEDIDOS.CODAE}/${filtroAplicado}/`;
   const response = await axios.get(url, { params: paramsFromPrevPage });
   return response.data;
 };
