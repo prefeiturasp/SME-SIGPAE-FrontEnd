@@ -243,7 +243,9 @@ export default ({ form, onChange }: Args) => {
         const labelEscola = `${escola?.codigo_eol} - ${escola?.nome} - ${
           escola?.lote ? escola?.lote?.nome : ""
         }`;
-        form.change("unidade_educacional", [escola.uuid]);
+        if (!form.getState().values.resultado_individual_por_data) {
+          form.change("unidade_educacional", [escola.uuid]);
+        }
         form.change("lotes", loteUuids);
         form.change("tipos_unidades", tipoUnidadeUuid ? [tipoUnidadeUuid] : []);
 
@@ -355,6 +357,7 @@ export default ({ form, onChange }: Args) => {
 
     limpaCampo("periodo_lancamento_de");
     limpaCampo("periodo_lancamento_ate");
+    limpaCampo("resultado_individual_por_data");
     limpaCampo("periodos");
     limpaCampo("tipos_alimentacao");
 
@@ -379,6 +382,7 @@ export default ({ form, onChange }: Args) => {
       tipos_alimentacao: undefined,
       periodo_lancamento_de: undefined,
       periodo_lancamento_ate: undefined,
+      resultado_individual_por_data: undefined,
       ...(ehEscola
         ? {}
         : {
@@ -461,13 +465,62 @@ export default ({ form, onChange }: Args) => {
     });
   };
 
+  const onChangeResultadoIndividualPorData = (marcado: boolean) => {
+    if (marcado) {
+      limpaCampo("unidade_educacional");
+      onChange({
+        resultado_individual_por_data: true,
+        unidade_educacional: undefined,
+      });
+      return;
+    }
+
+    if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+      const escolaUuid = unidadesEducacionais.find(
+        (escola) =>
+          escola.codigo_eol ===
+          meusDados?.vinculo_atual?.instituicao?.codigo_eol,
+      )?.uuid;
+      if (escolaUuid) {
+        form.change("unidade_educacional", [escolaUuid]);
+      }
+      onChange({
+        resultado_individual_por_data: undefined,
+        unidade_educacional: localStorage.getItem("labelEscolaLote")
+          ? [localStorage.getItem("labelEscolaLote")]
+          : undefined,
+      });
+      return;
+    }
+
+    onChange({ resultado_individual_por_data: undefined });
+  };
+
+  const desmarcaResultadoIndividualPorData = () => {
+    if (!form.getState().values.resultado_individual_por_data) return;
+    form.change("resultado_individual_por_data", false);
+    onChangeResultadoIndividualPorData(false);
+  };
+
   const onChangePeriodoLancamentoDe = (periodoLancamentoDe: string) => {
+    if (
+      !periodoLancamentoDe ||
+      !form.getState().values.periodo_lancamento_ate
+    ) {
+      desmarcaResultadoIndividualPorData();
+    }
     onChange({
       periodo_lancamento_de: periodoLancamentoDe,
     });
   };
 
   const onChangePeriodoLancamentoAte = (periodoLancamentoAte: string) => {
+    if (
+      !periodoLancamentoAte ||
+      !form.getState().values.periodo_lancamento_de
+    ) {
+      desmarcaResultadoIndividualPorData();
+    }
     onChange({
       periodo_lancamento_ate: periodoLancamentoAte,
     });
@@ -515,5 +568,6 @@ export default ({ form, onChange }: Args) => {
     validaMesAno,
     onChangePeriodoLancamentoDe,
     onChangePeriodoLancamentoAte,
+    onChangeResultadoIndividualPorData,
   };
 };
