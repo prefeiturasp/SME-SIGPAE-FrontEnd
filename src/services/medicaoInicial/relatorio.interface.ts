@@ -19,6 +19,7 @@ export interface RelatorioAdesaoParams {
   tipos_alimentacao: Array<string>;
   periodo_lancamento_de?: string;
   periodo_lancamento_ate?: string;
+  resultado_individual_por_data?: boolean;
   page?: number;
 }
 
@@ -32,12 +33,24 @@ export interface RelatorioAdesaoEscolaResultado {
   resultados: RelatorioAdesaoPeriodo;
 }
 
+export interface RelatorioAdesaoResultadoIndividual {
+  data: string;
+  tipo_unidade?: string;
+  grupo_unidade?: string;
+  tipos_unidades?:
+    | string
+    | Array<string | { iniciais?: string; nome?: string }>;
+  resultados: RelatorioAdesaoPeriodo;
+}
+
 export interface RelatorioAdesaoPaginadoResponse {
   next: string | null;
   previous: string | null;
   count: number;
   page_size: number;
-  results: Array<RelatorioAdesaoEscolaResultado>;
+  results: Array<
+    RelatorioAdesaoEscolaResultado | RelatorioAdesaoResultadoIndividual
+  >;
 }
 
 export interface RelatorioAdesaoResponse extends RelatorioAdesaoPeriodo {}
