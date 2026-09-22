@@ -55,3 +55,32 @@ export const mockRelatorioAdesaoPaginadoPorPagina = {
     ],
   },
 };
+
+export const mockRelatorioAdesaoPaginadoPorData = {
+  1: {
+    next: "?page=2",
+    previous: null,
+    count: 2,
+    page_size: 1,
+    results: [
+      {
+        data: "10/12/2023",
+        tipo_unidade: "Grupo 3 - EMEI, CEU EMEI",
+        resultados: mockRelatorioAdesao10a20Dezenbro2023,
+      },
+    ],
+  },
+  2: {
+    next: null,
+    previous: "?page=1",
+    count: 2,
+    page_size: 1,
+    results: [
+      {
+        data: "11/12/2023",
+        tipo_unidade: "Grupo 3 - EMEI, CEU EMEI",
+        resultados: mockRelatorioAdesao10a20Dezenbro2023,
+      },
+    ],
+  },
+};
