@@ -131,6 +131,16 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
     }
   };
 
+  downloadRelatorioProduto = async (produto) => {
+    const response = await getRelatorioProduto(produto);
+
+    if (response.status === HTTP_STATUS.OK) {
+      this.showModalDownload(true);
+    } else {
+      toastError("Erro ao gerar PDF. Tente novamente mais tarde");
+    }
+  };
+
   render() {
     const { produto, historico } = this.props;
     const { informacoes, logs, logSelecionado } = this.state;
@@ -146,9 +156,7 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN}
                   icon={BUTTON_ICON.PRINT}
-                  onClick={() => {
-                    getRelatorioProduto(produto);
-                  }}
+                  onClick={() => this.downloadRelatorioProduto(produto)}
                   className="me-2"
                 />
                 <Botao
@@ -567,22 +575,102 @@ export default class CorpoRelatorioDesenvolvimento extends Component {
                           {logSelecionado.status_evento_explicacao}
                         </header>
                         <section>
-                          <article>
-                            <div>
-                              RF: {logSelecionado.usuario.registro_funcional}
-                            </div>
-                            <div className="criado-em">
-                              <div>Data:</div>
-                              <div>
-                                {logSelecionado.criado_em.split(" ")[0]}
+                          {logSelecionado.dados_produto ? (
+                            <article className="dados-do-produto-historico">
+                              <div className="dados-do-produto-empresa-container">
+                                <div className="dados-do-produto-empresa-label">
+                                  Empresa:
+                                </div>
+                                <div className="dados-do-produto-empresa-valor">
+                                  {logSelecionado.dados_produto.empresa}
+                                </div>
                               </div>
-                            </div>
-                          </article>
-                          <article>
+                              <div className="dados-do-produto-criado-em-container">
+                                <div className="dados-do-produto-criado-em-label">
+                                  Criado em:
+                                </div>
+                                <div className="dados-do-produto-criado-em-valor">
+                                  {logSelecionado.dados_produto.criado_em
+                                    .split(" ")
+                                    .join(" - ")}
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-produto-container">
+                                <div className="dados-do-produto-produto-label">
+                                  Produto:
+                                </div>
+                                <div className="dados-do-produto-produto-valor">
+                                  {logSelecionado.dados_produto.produto}
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-marca-fabricante-container">
+                                <div className="dados-do-produto-marca-container">
+                                  <div className="dados-do-produto-marca-label">
+                                    Marca:
+                                  </div>
+                                  <div className="dados-do-produto-marca-valor">
+                                    {logSelecionado.dados_produto.marca}
+                                  </div>
+                                </div>
+                                <div className="dados-do-produto-fabricante-container">
+                                  <div className="dados-do-produto-fabricante-label">
+                                    Fabricante:
+                                  </div>
+                                  <div className="dados-do-produto-fabricante-valor">
+                                    {logSelecionado.dados_produto.fabricante}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-dieta-especial-container">
+                                <div className="dados-do-produto-dieta-especial-label">
+                                  O produto se destina à alimentação de alunos
+                                  com dieta especial?
+                                </div>
+                                <div className="dados-do-produto-dieta-especial-valor">
+                                  {logSelecionado.dados_produto
+                                    .eh_para_alunos_com_dieta
+                                    ? "SIM"
+                                    : "NÃO"}
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-componentes-container">
+                                <div className="dados-do-produto-componentes-label">
+                                  Componentes do Produto:
+                                </div>
+                                <div className="dados-do-produto-componentes-valor">
+                                  {logSelecionado.dados_produto.componentes}
+                                </div>
+                              </div>
+                            </article>
+                          ) : (
+                            <article>
+                              <div>
+                                RF: {logSelecionado.usuario.registro_funcional}
+                              </div>
+                              <div className="criado-em">
+                                <div>Data:</div>
+                                <div>
+                                  {logSelecionado.criado_em.split(" ")[0]}
+                                </div>
+                              </div>
+                            </article>
+                          )}
+                          <article
+                            className={
+                              logSelecionado.dados_produto
+                                ? "preenchimento-dados-produto"
+                                : undefined
+                            }
+                          >
                             {logSelecionado.justificativa !== "" && (
                               <>
                                 <div>Justificativa:</div>
                                 <div
+                                  className={
+                                    logSelecionado.dados_produto
+                                      ? "log-selecionado-justificativa-valor"
+                                      : undefined
+                                  }
                                   dangerouslySetInnerHTML={{
                                     __html: logSelecionado.justificativa,
                                   }}

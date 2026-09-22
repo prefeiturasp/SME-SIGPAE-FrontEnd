@@ -3,6 +3,7 @@ import { Modal } from "antd";
 import { FluxoDeStatus } from "src/components/Shareable/FluxoDeStatus";
 import { fluxoPartindoTerceirizada } from "src/components/Shareable/FluxoDeStatus/helper";
 import Botao from "src/components/Shareable/Botao";
+import HTTP_STATUS from "http-status-codes";
 import {
   BUTTON_TYPE,
   BUTTON_STYLE,
@@ -12,6 +13,8 @@ import { STATUS_CODAE_AUTORIZOU_RECLAMACAO } from "src/configs/constants";
 import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
 import { acionaComEnterOuEspaco, truncarString } from "src/helpers/utilities";
 import { getRelatorioProduto } from "src/services/relatorios";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import "../styles.scss";
 import MotivoEvento from "src/components/Shareable/MotivoEvento";
 
@@ -23,8 +26,15 @@ export default class CorpoRelatorio extends Component {
       visible: false,
       logs: [],
       logSelecionado: null,
+      exibirModalCentralDownloads: false,
     };
   }
+
+  showModalDownload = (open) => {
+    this.setState({
+      exibirModalCentralDownloads: open,
+    });
+  };
 
   showModal = () => {
     this.setState({
@@ -110,6 +120,16 @@ export default class CorpoRelatorio extends Component {
     return iniciais;
   };
 
+  downloadRelatorioProduto = async (produto) => {
+    const response = await getRelatorioProduto(produto);
+
+    if (response.status === HTTP_STATUS.OK) {
+      this.showModalDownload(true);
+    } else {
+      toastError("Erro ao gerar PDF. Tente novamente mais tarde");
+    }
+  };
+
   render() {
     const { produto, historico } = this.props;
     const { informacoes, logs, logSelecionado } = this.state;
@@ -187,9 +207,7 @@ export default class CorpoRelatorio extends Component {
                 type={BUTTON_TYPE.BUTTON}
                 style={BUTTON_STYLE.GREEN}
                 icon={BUTTON_ICON.PRINT}
-                onClick={() => {
-                  getRelatorioProduto(produto);
-                }}
+                onClick={() => this.downloadRelatorioProduto(produto)}
                 className="me-2"
               />
               <Botao
@@ -577,6 +595,12 @@ export default class CorpoRelatorio extends Component {
             </article>
           </section>
         </Modal>
+        {this.state.exibirModalCentralDownloads && (
+          <ModalSolicitacaoDownload
+            show={this.state.exibirModalCentralDownloads}
+            setShow={this.showModalDownload}
+          />
+        )}
       </section>
     );
   }
