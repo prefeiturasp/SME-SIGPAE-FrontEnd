@@ -342,6 +342,8 @@ export const DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO =
   "detalhar-termo-recebimento-definitivo";
 export const TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR =
   "termo-recebimento-definitivo-fornecedor";
+export const PAINEL_ASSINATURA_TERMOS_RECEBIMENTO =
+  "painel-assinatura-termos-recebimento";
 export const QUESTOES_POR_PRODUTO = "questoes-por-produto";
 export const ATRIBUIR_QUESTOES_CONFERENCIA = "atribuir-questoes-conferencia";
 export const EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA =
