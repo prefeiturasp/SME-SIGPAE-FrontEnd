@@ -1,3 +1,4 @@
+import { WarningOutlined } from "@ant-design/icons";
 import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Select as SelectAntd, Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
@@ -1213,10 +1214,21 @@ export const AcompanhamentoDeLancamentos = () => {
                                     return (
                                       <tr key={key} className="row">
                                         <td className="col-5 ps-2 pt-3">
-                                          {usuarioEhEscolaTerceirizadaQualquerPerfil()
-                                            ? dado.recreio_nas_ferias?.titulo ||
-                                              dado.mes_ano
-                                            : dado.escola}
+                                          {usuarioEhEscolaTerceirizadaQualquerPerfil() ? (
+                                            dado.recreio_nas_ferias?.titulo ||
+                                            dado.mes_ano
+                                          ) : (
+                                            <>
+                                              {dado.escola}
+                                              {usuarioEhDRE() &&
+                                                dado.pendente_acao_dre && (
+                                                  <WarningOutlined
+                                                    className="icone-pendencia-acao-dre ms-2"
+                                                    aria-label="Item pendente de ação"
+                                                  />
+                                                )}
+                                            </>
+                                          )}
                                         </td>
                                         {!usuarioEhEscolaTerceirizadaQualquerPerfil() && (
                                           <td className="col-1 text-center pt-3">

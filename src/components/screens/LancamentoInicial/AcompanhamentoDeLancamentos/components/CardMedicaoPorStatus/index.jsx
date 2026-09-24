@@ -1,3 +1,4 @@
+import { WarningOutlined } from "@ant-design/icons";
 import React from "react";
 import { formatarPara4Digitos } from "src/components/screens/helper";
 import {
@@ -61,7 +62,10 @@ export const CardMedicaoPorStatus = ({ ...props }) => {
         <div className="conferir-lista float-end">Conferir lista</div>
         {exibirSinalizacaoPendencia && (
           <div className="sinalizacao-pendencia-acao">
-            <i className="fas fa-exclamation-triangle" aria-hidden="true" />
+            <WarningOutlined
+              className="icone-warning-pendencia"
+              aria-hidden="true"
+            />
             <span>Existem itens pendentes de ação</span>
           </div>
         )}
