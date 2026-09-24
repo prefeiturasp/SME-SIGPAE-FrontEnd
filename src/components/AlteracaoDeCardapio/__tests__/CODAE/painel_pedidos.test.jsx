@@ -18,6 +18,7 @@ import { codaeListarSolicitacoesDeAlteracaoDeCardapio } from "src/services/alter
 import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
 import { getLotesSimples } from "src/services/lote.service";
 import Container from "../../CODAE/PainelPedidos/Container";
+import * as dialogs from "src/components/Shareable/Toast/dialogs";
 
 jest.mock("src/services/alteracaoDeCardapio");
 jest.mock("src/services/lote.service");
@@ -63,13 +64,13 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
           data: { results: [] },
           status: 500,
         });
-      }
+      },
     );
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     Object.defineProperty(window, "matchMedia", {
@@ -97,7 +98,7 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
           <Container
             filtros={{ lotes: undefined, diretoria_regional: undefined }}
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -107,12 +108,12 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
 
     expect(
       screen.getByText(
-        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-      )
+        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+      ),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("Solicitações no prazo limite")
+      screen.getByText("Solicitações no prazo limite"),
     ).toBeInTheDocument();
     const divLimite = screen.getByTestId("limite");
     expect(divLimite).toHaveTextContent("1 escola solicitante");
@@ -122,7 +123,7 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
     expect(divLimite).toHaveTextContent("24/03/2025");
 
     expect(
-      screen.getByText("Solicitações no prazo regular")
+      screen.getByText("Solicitações no prazo regular"),
     ).toBeInTheDocument();
   });
 
@@ -132,7 +133,7 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
       fireEvent.mouseDown(
         screen
           .getByTestId("select-diretoria-regional")
-          .querySelector(".ant-select-selection-search-input")
+          .querySelector(".ant-select-selection-search-input"),
       );
     });
 
@@ -145,7 +146,7 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
       fireEvent.mouseDown(
         screen
           .getByTestId("select-lote")
-          .querySelector(".ant-select-selection-search-input")
+          .querySelector(".ant-select-selection-search-input"),
       );
     });
 
@@ -153,5 +154,113 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Alteração do Tipo de A
     await act(async () => {
       fireEvent.click(screen.getByText("BT - 1"));
     });
+  });
+
+  it("filtra opções de DRE e de lote pela busca", async () => {
+    await awaitServices();
+
+    const selectDRE = screen.getByTestId("select-diretoria-regional");
+    await act(async () => {
+      fireEvent.mouseDown(
+        selectDRE.querySelector(".ant-select-selection-search-input"),
+      );
+    });
+    await waitFor(() => screen.getByText("IPIRANGA"));
+    await act(async () => {
+      fireEvent.change(
+        selectDRE.querySelector(".ant-select-selection-search-input"),
+        { target: { value: "ipi" } },
+      );
+    });
+    expect(screen.getByText("IPIRANGA")).toBeInTheDocument();
+
+    const selectLote = screen.getByTestId("select-lote");
+    await act(async () => {
+      fireEvent.mouseDown(
+        selectLote.querySelector(".ant-select-selection-search-input"),
+      );
+    });
+    await waitFor(() => screen.getByText("BT - 1"));
+    await act(async () => {
+      fireEvent.change(
+        selectLote.querySelector(".ant-select-selection-search-input"),
+        { target: { value: "bt" } },
+      );
+    });
+    expect(screen.getByText("BT - 1")).toBeInTheDocument();
+  });
+
+  it("submete o formulário", async () => {
+    await awaitServices();
+
+    const formElement = document.querySelector("form");
+    fireEvent.submit(formElement);
+  });
+});
+
+describe("Painel Pedidos CODAE - cenários de erro", () => {
+  let toastSpy;
+
+  beforeEach(async () => {
+    getDiretoriaregionalSimplissima.mockResolvedValue({
+      data: {},
+      status: 500,
+    });
+    getLotesSimples.mockResolvedValue({
+      data: {},
+      status: 500,
+    });
+    codaeListarSolicitacoesDeAlteracaoDeCardapio.mockResolvedValue({
+      data: { detail: "Erro ao carregar alterações" },
+      results: [],
+      status: 400,
+    });
+
+    toastSpy = jest.spyOn(dialogs, "toastError");
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <Container
+            filtros={{ lotes: undefined, diretoria_regional: undefined }}
+          />
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  afterEach(() => {
+    toastSpy.mockRestore();
+  });
+
+  it("exibe erro ao carregar solicitações, lotes e DREs", async () => {
+    await waitFor(() => expect(toastSpy).toHaveBeenCalled());
+    expect(getLotesSimples).toHaveBeenCalled();
+    expect(getDiretoriaregionalSimplissima).toHaveBeenCalled();
   });
 });
