@@ -59,7 +59,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
   const enviaAlteracaoCardapio = async (uuid, form) => {
     const response = await escolaIniciarSolicitacaoDeAlteracaoDeCardapio(
       uuid,
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess("Alteração do Tipo de Alimentação enviada com sucesso");
@@ -67,7 +67,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
       resetForm(form);
     } else {
       toastError(
-        "Houve um erro ao enviar a Alteração do Tipo de Alimentação. Tente novamente mais tarde."
+        "Houve um erro ao enviar a Alteração do Tipo de Alimentação. Tente novamente mais tarde.",
       );
     }
   };
@@ -78,11 +78,11 @@ export const AlteracaoCardapio = ({ ...props }) => {
     delete values_.status;
     const erros = validateSubmit(values_, meusDados);
     if (!erros) {
-      values_ = formataValues(values_, ehMotivoPorNome("RPL"));
+      values_ = formataValues(values_);
       if (!values_.uuid) {
         const response = await escolaCriarSolicitacaoDeAlteracaoCardapio(
           values_,
-          TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+          TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
         );
         if (response.status === HTTP_STATUS.CREATED) {
           if (status === STATUS_DRE_A_VALIDAR) {
@@ -99,7 +99,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
         const response = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
           values_.uuid,
           values_,
-          TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+          TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
         );
         if (response.status === HTTP_STATUS.OK) {
           if (status === STATUS_DRE_A_VALIDAR) {
@@ -133,7 +133,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
 
     for (const substituicao of alteracaoDeCardapio.substituicoes) {
       const substituicaoValue = substituicoesValue.find(
-        (subs) => subs.nome === substituicao.periodo_escolar.nome
+        (subs) => subs.nome === substituicao.periodo_escolar.nome,
       );
       substituicaoValue.check = true;
       substituicaoValue.tipos_alimentacao_de_selecionados =
@@ -149,7 +149,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
 
   const getRascunhosAsync = async () => {
     const response = await getRascunhosAlteracaoTipoAlimentacao(
-      TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
     );
     if (response.status === HTTP_STATUS.OK) {
       setRascunhos(response.data.results);
@@ -166,14 +166,14 @@ export const AlteracaoCardapio = ({ ...props }) => {
     if (window.confirm("Deseja remover este rascunho?")) {
       const response = await escolaExcluirSolicitacaoDeAlteracaoCardapio(
         uuid,
-        TIPO_SOLICITACAO.SOLICITACAO_NORMAL
+        TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
       );
       if (response.status === HTTP_STATUS.NO_CONTENT) {
         toastSuccess(`Rascunho # ${id_externo} excluído com sucesso`);
         await getRascunhosAsync();
       } else {
         toastError(
-          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde.",
         );
       }
     }
@@ -184,7 +184,6 @@ export const AlteracaoCardapio = ({ ...props }) => {
   };
 
   const ehMotivoPorNome = (nome, values) => {
-    if (!values) return false;
     return motivos
       .find((motivo) => motivo.uuid === values.motivo)
       ?.nome.includes(nome);
@@ -197,7 +196,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
       checaSeDataEstaEntre2e5DiasUteis(
         value,
         proximosDoisDiasUteis,
-        proximosCincoDiasUteis
+        proximosCincoDiasUteis,
       )
     ) {
       setShowModalDiasUteis(true);
@@ -288,7 +287,7 @@ export const AlteracaoCardapio = ({ ...props }) => {
                             !process.env.IS_TEST &&
                             composeValidators(
                               textAreaRequired,
-                              peloMenosUmCaractere
+                              peloMenosUmCaractere,
                             )
                           }
                         />
