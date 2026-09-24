@@ -6,7 +6,7 @@ import CorpoRelatorioDesenvolvimento from "../../../../../components/RelatorioPr
 const mockFluxoDeStatus = jest.fn();
 
 jest.mock("src/services/relatorios", () => ({
-  getRelatorioProduto: jest.fn(),
+  getRelatorioProduto: jest.fn().mockResolvedValue({ status: 200 }),
 }));
 
 jest.mock("src/helpers/utilities", () => ({
