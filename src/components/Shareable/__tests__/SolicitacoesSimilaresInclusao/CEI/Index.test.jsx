@@ -74,6 +74,36 @@ const solicitacaoComDiasInclusao = {
   ],
 };
 
+const solicitacaoComDataCancelada = {
+  collapsed: true,
+  id_externo: "CAN001",
+  motivo: null,
+  dias_motivos_da_inclusao_cei: [
+    {
+      data: "12/06/2026",
+      cancelado: false,
+      cancelado_justificativa: "",
+      motivo: {
+        nome: "Motivo do dia",
+      },
+    },
+    {
+      data: "13/06/2026",
+      cancelado: true,
+      cancelado_justificativa: "Reposição cancelada",
+      motivo: {
+        nome: "Outro motivo",
+      },
+    },
+  ],
+  logs: [
+    {
+      criado_em: "11/06/2026 09:15:00",
+      status_evento_explicacao: "DRE validou",
+    },
+  ],
+};
+
 const renderSolicitacoesSimilaresInclusaoCEI = (solicitacao, index = 0) => {
   return render(
     <table>
@@ -157,5 +187,49 @@ describe("SolicitacoesSimilaresInclusaoCEI", () => {
 
     expect(screen.queryByTestId("collapse-aberto")).not.toBeInTheDocument();
     expect(screen.queryByText("#ABC123")).not.toBeInTheDocument();
+  });
+
+  it("risca a data cancelada e exibe a justificativa abaixo", () => {
+    renderSolicitacoesSimilaresInclusaoCEI(solicitacaoComDataCancelada);
+
+    const dataCancelada = screen
+      .getByText("13/06/2026")
+      .closest(".data-inclusao");
+    expect(dataCancelada).toHaveClass("cancelado");
+
+    const justificativa = screen.getByText("justificativa:");
+    expect(justificativa.parentElement).toHaveTextContent(
+      "Reposição cancelada",
+    );
+  });
+
+  it("não aplica o estilo de cancelamento em datas não canceladas", () => {
+    renderSolicitacoesSimilaresInclusaoCEI(solicitacaoComDataCancelada);
+
+    const dataNormal = screen.getByText("12/06/2026").closest(".data-inclusao");
+    expect(dataNormal).not.toHaveClass("cancelado");
+  });
+
+  it("risca as datas quando a solicitação foi cancelada pela escola", () => {
+    renderSolicitacoesSimilaresInclusaoCEI({
+      ...solicitacaoComDiasInclusao,
+      status: "ESCOLA_CANCELOU",
+      logs: [
+        {
+          criado_em: "11/06/2026 09:15:00",
+          status_evento_explicacao: "Escola cancelou",
+          justificativa: "Cancelada pela escola",
+        },
+      ],
+    });
+
+    const dataNormal = screen.getByText("12/06/2026").closest(".data-inclusao");
+    expect(dataNormal).toHaveClass("cancelado");
+
+    const justificativas = screen.getAllByText("justificativa:");
+    expect(justificativas).toHaveLength(2);
+    expect(justificativas[0].parentElement).toHaveTextContent(
+      "Cancelada pela escola",
+    );
   });
 });
