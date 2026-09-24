@@ -1,8 +1,10 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { Collapse } from "react-collapse";
 
+import "../style.scss";
 import "./style.scss";
 
+import { DataInclusao } from "../DataInclusao";
 import { WEEK } from "src/configs/constants";
 
 export const SolicitacoesSimilaresInclusaoNormal = ({ ...props }) => {
@@ -17,8 +19,16 @@ export const SolicitacoesSimilaresInclusaoNormal = ({ ...props }) => {
 
   const possuiAlgumaInclusaoContinuaNaoETEC =
     solicitacao.quantidades_periodo.some((qp) =>
-      ehInclusaoContinuaENaoETEC(qp)
+      ehInclusaoContinuaENaoETEC(qp),
     );
+
+  const todasQuantidadesCanceladas =
+    solicitacao.quantidades_periodo?.length > 0 &&
+    solicitacao.quantidades_periodo.every((qp) => qp.cancelado);
+
+  const justificativaCancelamento = solicitacao.quantidades_periodo?.find(
+    (qp) => qp.cancelado_justificativa,
+  )?.cancelado_justificativa;
 
   const renderDataSolicitacao = (solicitacao) => {
     if (solicitacao.data_inicial && solicitacao.data_final) {
@@ -26,29 +36,48 @@ export const SolicitacoesSimilaresInclusaoNormal = ({ ...props }) => {
         <>
           <div className="col-2">
             <p>DE:</p>
-            <p>
+            <p
+              className={
+                todasQuantidadesCanceladas ? "data-periodo-cancelado" : ""
+              }
+            >
               <b>{solicitacao.data_inicial}</b>
             </p>
           </div>
           <div className="col-2">
             <p>ATÉ:</p>
-            <p>
+            <p
+              className={
+                todasQuantidadesCanceladas ? "data-periodo-cancelado" : ""
+              }
+            >
               <b>{solicitacao.data_final}</b>
             </p>
           </div>
+          {todasQuantidadesCanceladas && justificativaCancelamento && (
+            <div className="col-4">
+              <p className="justificativa-cancelamento dark-red">
+                <span className="fw-bold">justificativa: </span>
+                {justificativaCancelamento}
+              </p>
+            </div>
+          )}
         </>
       );
     }
     return (
       <div className="col-4">
         <p>Dia(s) de inclusão:</p>
-        <p>
+        <div>
           {solicitacao.inclusoes?.map((inclusao, index) => (
-            <b className="me-4" key={index}>
-              {inclusao.data}
-            </b>
+            <DataInclusao
+              key={index}
+              inclusao={inclusao}
+              status={solicitacao.status}
+              logs={solicitacao.logs}
+            />
           ))}
-        </p>
+        </div>
       </div>
     );
   };
@@ -129,62 +158,86 @@ export const SolicitacoesSimilaresInclusaoNormal = ({ ...props }) => {
                   {solicitacao.quantidades_periodo.map(
                     (quantidade_por_periodo, idx) => {
                       return (
-                        <tr className="row bg-white" key={idx}>
-                          {ehInclusaoContinuaENaoETEC(
-                            quantidade_por_periodo
-                          ) && (
-                            <td className="col-2 weekly">
-                              {WEEK.map((day, key) => {
-                                return (
-                                  <span
-                                    key={key}
-                                    className={
-                                      quantidade_por_periodo.dias_semana
-                                        .map(String)
-                                        .includes(day.value)
-                                        ? "week-circle-clicked green"
-                                        : "week-circle"
-                                    }
-                                    data-cy={`dia-${key}`}
-                                    value={day.value}
-                                  >
-                                    {day.label}
-                                  </span>
-                                );
-                              })}
-                            </td>
-                          )}
-                          <td className="col-2">
-                            <p>{quantidade_por_periodo.periodo_escolar.nome}</p>
-                          </td>
-                          <td
-                            className={
-                              possuiAlgumaInclusaoContinuaNaoETEC
-                                ? "col-6"
-                                : "col-8"
-                            }
+                        <Fragment key={idx}>
+                          <tr
+                            className={`row bg-white ${
+                              quantidade_por_periodo.cancelado
+                                ? "cancelado"
+                                : ""
+                            }`}
                           >
-                            <p>
-                              {quantidade_por_periodo.tipos_alimentacao.reduce(
-                                (acc, tipo, idxTipo) =>
-                                  acc +
-                                  tipo.nome +
-                                  (idxTipo !==
-                                  quantidade_por_periodo.tipos_alimentacao
-                                    .length -
-                                    1
-                                    ? ", "
-                                    : ""),
-                                ""
-                              )}
-                            </p>
-                          </td>
-                          <td className="col-2 text-center">
-                            <p>{quantidade_por_periodo.numero_alunos}</p>
-                          </td>
-                        </tr>
+                            {ehInclusaoContinuaENaoETEC(
+                              quantidade_por_periodo,
+                            ) && (
+                              <td className="col-2 weekly">
+                                {WEEK.map((day, key) => {
+                                  return (
+                                    <span
+                                      key={key}
+                                      className={
+                                        quantidade_por_periodo.dias_semana
+                                          .map(String)
+                                          .includes(day.value)
+                                          ? "week-circle-clicked green"
+                                          : "week-circle"
+                                      }
+                                      data-cy={`dia-${key}`}
+                                      value={day.value}
+                                    >
+                                      {day.label}
+                                    </span>
+                                  );
+                                })}
+                              </td>
+                            )}
+                            <td className="col-2">
+                              <p>
+                                {quantidade_por_periodo.periodo_escolar.nome}
+                              </p>
+                            </td>
+                            <td
+                              className={
+                                possuiAlgumaInclusaoContinuaNaoETEC
+                                  ? "col-6"
+                                  : "col-8"
+                              }
+                            >
+                              <p>
+                                {quantidade_por_periodo.tipos_alimentacao.reduce(
+                                  (acc, tipo, idxTipo) =>
+                                    acc +
+                                    tipo.nome +
+                                    (idxTipo !==
+                                    quantidade_por_periodo.tipos_alimentacao
+                                      .length -
+                                      1
+                                      ? ", "
+                                      : ""),
+                                  "",
+                                )}
+                              </p>
+                            </td>
+                            <td className="col-2 text-center">
+                              <p>{quantidade_por_periodo.numero_alunos}</p>
+                            </td>
+                          </tr>
+                          {quantidade_por_periodo.cancelado && (
+                            <tr className="row bg-white">
+                              <td className="col-12">
+                                <p className="justificativa-cancelamento dark-red">
+                                  <span className="fw-bold">
+                                    justificativa:{" "}
+                                  </span>
+                                  {
+                                    quantidade_por_periodo.cancelado_justificativa
+                                  }
+                                </p>
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
                       );
-                    }
+                    },
                   )}
                 </tbody>
               </table>
