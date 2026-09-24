@@ -20,7 +20,10 @@ import { mockEscolasParaFiltros } from "src/mocks/services/escola.service/escola
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
 import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
-import { mockRelatorioAdesaoPaginadoPorPagina } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesaoPaginado";
+import {
+  mockRelatorioAdesaoPaginadoPorData,
+  mockRelatorioAdesaoPaginadoPorPagina,
+} from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesaoPaginado";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
 import mock from "src/services/_mock";
 
@@ -47,6 +50,38 @@ const selecionaMesReferencia = () => {
   fireEvent.change(selectElementMesReferencia, {
     target: { value: "12_2023" },
   });
+};
+
+const selecionaGrupo3 = async () => {
+  const selectTiposUnidades = screen.getByTestId("select-tipos-unidades");
+  const input = selectTiposUnidades.querySelector(
+    ".ant-select-selection-search-input",
+  );
+
+  await act(async () => {
+    fireEvent.mouseDown(input);
+  });
+
+  await waitFor(() => {
+    expect(document.querySelector(".ant-select-dropdown")).toBeInTheDocument();
+  });
+
+  const tituloGrupo3 = screen.getByText("Grupo 3 (CEU EMEI, EMEI)");
+  const checkboxGrupo3 = tituloGrupo3
+    .closest(".ant-select-tree-treenode")
+    .querySelector(".ant-select-tree-checkbox");
+  fireEvent.click(checkboxGrupo3);
+};
+
+const preenchePeriodoLancamento = (de = "10/12/2023", ate = "20/12/2023") => {
+  fireEvent.change(
+    screen.getByTestId("div-periodo-lancamento-de").querySelector("input"),
+    { target: { value: de } },
+  );
+  fireEvent.change(
+    screen.getByTestId("div-periodo-lancamento-ate").querySelector("input"),
+    { target: { value: ate } },
+  );
 };
 
 describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
@@ -126,6 +161,9 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     expect(
       screen.getByTestId("div-periodo-lancamento-ate").querySelector("input"),
     ).toBeDisabled();
+    expect(
+      screen.getByTestId("checkbox-resultado-individual-por-data"),
+    ).toBeDisabled();
 
     selecionaMesReferencia();
 
@@ -138,6 +176,9 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
     expect(
       screen.getByTestId("div-periodo-lancamento-ate").querySelector("input"),
     ).toBeEnabled();
+    expect(
+      screen.getByTestId("checkbox-resultado-individual-por-data"),
+    ).toBeDisabled();
   });
 
   it("busca as unidades educacionais com excluir_tipo_unidade__uuid e tipo_gestao__nome", async () => {
@@ -434,6 +475,166 @@ describe("Teste Relatório de Adesão - Filtros (Visão CODAE)", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText("Nenhum resultado foi encontrado para esta busca."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("habilita o seletor Resultado individual por data somente com o período de lançamento completo", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("checkbox-resultado-individual-por-data"),
+      ).toBeInTheDocument();
+    });
+
+    const checkbox = screen.getByTestId(
+      "checkbox-resultado-individual-por-data",
+    );
+    expect(checkbox).toBeDisabled();
+    expect(checkbox).not.toBeChecked();
+
+    selecionaMesReferencia();
+    expect(checkbox).toBeDisabled();
+
+    fireEvent.change(
+      screen.getByTestId("div-periodo-lancamento-de").querySelector("input"),
+      { target: { value: "10/12/2023" } },
+    );
+    expect(checkbox).toBeDisabled();
+
+    fireEvent.change(
+      screen.getByTestId("div-periodo-lancamento-ate").querySelector("input"),
+      { target: { value: "20/12/2023" } },
+    );
+    expect(checkbox).toBeEnabled();
+    expect(checkbox).not.toBeChecked();
+  });
+
+  it("torna Tipo de Unidade obrigatório, desabilita e limpa Unidades Educacionais ao marcar o seletor", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("select-unidade-educacional"),
+      ).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+
+    const selectUnidades = screen.getByTestId("select-unidade-educacional");
+    const selectControlUnidades = within(selectUnidades).getByRole("combobox");
+    fireEvent.mouseDown(selectControlUnidades);
+    fireEvent.click(screen.getByText("015423 - EMEF PRESTES MAIA - LOTE 13"));
+
+    preenchePeriodoLancamento();
+
+    const checkbox = screen.getByTestId(
+      "checkbox-resultado-individual-por-data",
+    );
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    expect(selectUnidades.querySelector("input")).toBeDisabled();
+    expect(
+      screen.getByText("Tipo de Unidade").previousElementSibling,
+    ).toHaveClass("required-asterisk");
+
+    mock
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesao10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("O campo Tipo de Unidade é obrigatório"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("volta Tipo de Unidade a opcional e reabilita Unidades Educacionais ao desmarcar o seletor", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("checkbox-resultado-individual-por-data"),
+      ).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+    preenchePeriodoLancamento();
+
+    const checkbox = screen.getByTestId(
+      "checkbox-resultado-individual-por-data",
+    );
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+    expect(
+      screen.getByTestId("select-unidade-educacional").querySelector("input"),
+    ).toBeDisabled();
+
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+    expect(
+      screen.getByTestId("select-unidade-educacional").querySelector("input"),
+    ).toBeEnabled();
+    expect(
+      screen.getByText("Tipo de Unidade").previousElementSibling,
+    ).toBeNull();
+  });
+
+  it("apresenta o resultado individual por data e pagina por data e tipo de unidade", async () => {
+    await waitFor(() => {
+      expect(screen.getByTestId("select-lotes")).toBeInTheDocument();
+    });
+
+    selecionaMesReferencia();
+    await selecionaGrupo3();
+    preenchePeriodoLancamento();
+
+    fireEvent.click(
+      screen.getByTestId("checkbox-resultado-individual-por-data"),
+    );
+
+    mock
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply((config) => {
+        const page = JSON.parse(config.data).page || 1;
+        return [200, mockRelatorioAdesaoPaginadoPorData[page]];
+      });
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      const relatorioRequests = mock.history.post.filter((r) =>
+        r.url.endsWith("/relatorio-adesao/"),
+      );
+      const payload = JSON.parse(
+        relatorioRequests[relatorioRequests.length - 1].data,
+      );
+      expect(payload.resultado_individual_por_data).toBe(true);
+      expect(payload.page).toBe(1);
+      expect(payload.escola__uuid).toBeUndefined();
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Grupo 3 - EMEI, CEU EMEI \| Dia 10\/12\/2023/),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("MANHA")).toBeInTheDocument();
+    expect(
+      screen.queryByText(/De 10\/12\/2023 até 20\/12\/2023/),
+    ).not.toBeInTheDocument();
+
+    const itemPagina2 = document.querySelector(".ant-pagination-item-2");
+    expect(itemPagina2).toBeInTheDocument();
+    fireEvent.click(itemPagina2);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Grupo 3 - EMEI, CEU EMEI \| Dia 11\/12\/2023/),
       ).toBeInTheDocument();
     });
   });

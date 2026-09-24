@@ -2,6 +2,7 @@ import HTTP_STATUS from "http-status-codes";
 import { useState } from "react";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import RelatorioService from "src/services/medicaoInicial/relatorio.service";
+import { montaParamsRelatorioAdesao } from "../../../../helpers";
 import { IFiltros } from "../../../../types";
 
 type Args = {
@@ -15,16 +16,9 @@ export default ({ params }: Args) => {
 
   const exportarXLSX = async () => {
     setExportando(true);
-    const response = await RelatorioService.exportarRelatorioAdesaoParaXLSX({
-      mes_ano: params.mes,
-      lotes: params.lotes,
-      tipos_unidades: params.tipos_unidades,
-      escola__uuid: params.unidade_educacional,
-      periodos_escolares: params.periodos,
-      tipos_alimentacao: params.tipos_alimentacao,
-      periodo_lancamento_de: params.periodo_lancamento_de,
-      periodo_lancamento_ate: params.periodo_lancamento_ate,
-    });
+    const response = await RelatorioService.exportarRelatorioAdesaoParaXLSX(
+      montaParamsRelatorioAdesao(params),
+    );
     if (response.status === HTTP_STATUS.OK) {
       setExibirModalCentralDownloads(true);
     } else {
@@ -35,16 +29,9 @@ export default ({ params }: Args) => {
 
   const exportarPDF = async () => {
     setExportando(true);
-    const response = await RelatorioService.exportarRelatorioAdesaoParaPDF({
-      mes_ano: params.mes,
-      lotes: params.lotes,
-      tipos_unidades: params.tipos_unidades,
-      escola__uuid: params.unidade_educacional,
-      periodos_escolares: params.periodos,
-      tipos_alimentacao: params.tipos_alimentacao,
-      periodo_lancamento_de: params.periodo_lancamento_de,
-      periodo_lancamento_ate: params.periodo_lancamento_ate,
-    });
+    const response = await RelatorioService.exportarRelatorioAdesaoParaPDF(
+      montaParamsRelatorioAdesao(params),
+    );
     if (response.status === HTTP_STATUS.OK) {
       setExibirModalCentralDownloads(true);
     } else {
