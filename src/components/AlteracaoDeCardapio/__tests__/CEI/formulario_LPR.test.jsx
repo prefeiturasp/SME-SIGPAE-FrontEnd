@@ -292,7 +292,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
-        `/alteracoes-cardapio/${mockRascunhosAlteracaoCEI.results[0].uuid}/`,
+        `/alteracoes-cardapio-cei/${mockRascunhosAlteracaoCEI.results[0].uuid}/`,
       )
       .reply(400, { detail: "Erro ao excluir rascunho" });
     window.confirm = jest.fn().mockImplementation(() => true);

@@ -1,5 +1,5 @@
 export const mockMotivosAlteracaoCardapioCEI = {
-  count: 2,
+  count: 3,
   next: null,
   previous: null,
   results: [
@@ -12,6 +12,11 @@ export const mockMotivosAlteracaoCardapioCEI = {
       nome: "RPL - Refeição por Lanche",
       ativo: true,
       uuid: "4a297cbe-771f-4d6a-98ee-0d5fd4ffc442",
+    },
+    {
+      nome: "Alteração de cardápio",
+      ativo: true,
+      uuid: "22222222-2222-2222-2222-222222222222",
     },
   ],
 };
