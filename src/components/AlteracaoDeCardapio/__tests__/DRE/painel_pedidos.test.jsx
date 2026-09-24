@@ -79,4 +79,73 @@ describe("Teste Página do Painel Pedidos - DRE - Alteração do Tipo de Aliment
       fireEvent.click(screen.getByText("BT - 1"));
     });
   });
+
+  it("filtra opções de lote pela busca", async () => {
+    const selectLote = screen.getByTestId("select-lote");
+    await act(async () => {
+      fireEvent.mouseDown(
+        selectLote.querySelector(".ant-select-selection-search-input"),
+      );
+    });
+
+    await waitFor(() => screen.getByText("BT - 1"));
+    await act(async () => {
+      fireEvent.change(
+        selectLote.querySelector(".ant-select-selection-search-input"),
+        { target: { value: "bt" } },
+      );
+    });
+    expect(screen.getByText("BT - 1")).toBeInTheDocument();
+  });
+
+  it("submete o formulário", async () => {
+    const formElement = document.querySelector("form");
+    fireEvent.submit(formElement);
+  });
+});
+
+describe("Painel Pedidos DRE - cenário de erro ao carregar lotes", () => {
+  beforeEach(async () => {
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);
+    mock
+      .onGet("/lotes-simples/")
+      .reply(500, { detail: "Erro ao carregar lotes" });
+    mock
+      .onGet("alteracoes-cardapio/pedidos-diretoria-regional/sem_filtro/")
+      .reply("200", { results: mockPedidosDREAlteracaoCardapio.results });
+
+    mock
+      .onGet("alteracoes-cardapio-cei/pedidos-diretoria-regional/sem_filtro/")
+      .reply("200", { results: mockPedidosDREAlteracaoCardapioCEI.results });
+
+    mock
+      .onGet("alteracoes-cardapio-cemei/pedidos-diretoria-regional/sem_filtro/")
+      .reply("200", { results: mockPedidosDREAlteracaoCardapioCEMEI.results });
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+    localStorage.setItem("perfil", PERFIL.COGESTOR_DRE);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <PainelPedidosAlteracaoCardapioDREPage />
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("renderiza blocos de solicitações mesmo sem lotes", async () => {
+    expect(
+      screen.getByText("Solicitações no prazo limite"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Solicitações no prazo regular"),
+    ).toBeInTheDocument();
+  });
 });
