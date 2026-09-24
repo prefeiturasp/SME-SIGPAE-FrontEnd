@@ -183,6 +183,7 @@ export const AcompanhamentoDeLancamentos = () => {
     tipo_unidade: searchParams.get("tipo_unidade"),
     escola: searchParams.get("escola"),
     ocorrencias: searchParams.get("ocorrencias"),
+    somente_pendentes_acao_dre: false,
   });
 
   const [gruposHabilitadosPorDre, setGruposHabilitadosPorDre] = useState({});
@@ -578,6 +579,7 @@ export const AcompanhamentoDeLancamentos = () => {
       diretoria_regional: diretoria_regional?.value,
       mes_ano: mes_ano?.value,
       recreio_nas_ferias: recreioSelecionado,
+      somente_pendentes_acao_dre: false,
     });
     setMesAno(mesAnoSelecionado);
     setRecreioNasFerias(recreioSelecionado);
@@ -1009,6 +1011,10 @@ export const AcompanhamentoDeLancamentos = () => {
                                     }`
                               }
                               dataTestId={dadosPorStatus.status}
+                              exibirSinalizacaoPendencia={
+                                usuarioEhDRE() &&
+                                dadosPorStatus.possui_pendencias_acao_dre
+                              }
                               getDashboardMedicaoInicialAsync={
                                 getDashboardMedicaoInicialAsync
                               }
@@ -1125,6 +1131,25 @@ export const AcompanhamentoDeLancamentos = () => {
                                 }}
                               />
                             </div>
+                            {usuarioEhDRE() &&
+                              statusSelecionado ===
+                                "MEDICAO_CORRIGIDA_PARA_CODAE" && (
+                                <div className="col-4 d-flex align-items-end">
+                                  <Field
+                                    name="somente_pendentes_acao_dre"
+                                    type="checkbox"
+                                  >
+                                    {({ input }) => (
+                                      <label className="filtro-pendencias-acao-dre">
+                                        <input {...input} type="checkbox" />
+                                        <span>
+                                          Exibir itens pendentes de ação
+                                        </span>
+                                      </label>
+                                    )}
+                                  </Field>
+                                </div>
+                              )}
                           </div>
                           <div className="row">
                             <div className="col-12 mt-auto text-end">

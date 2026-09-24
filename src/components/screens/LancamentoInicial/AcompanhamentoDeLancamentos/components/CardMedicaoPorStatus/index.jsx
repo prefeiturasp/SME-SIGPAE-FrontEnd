@@ -19,6 +19,7 @@ export const CardMedicaoPorStatus = ({ ...props }) => {
     total,
     resetForm,
     dataTestId,
+    exibirSinalizacaoPendencia,
     getDashboardMedicaoInicialAsync,
   } = props;
 
@@ -49,13 +50,21 @@ export const CardMedicaoPorStatus = ({ ...props }) => {
       aria-pressed={ehClicavel ? statusSelecionado === dados.status : undefined}
       onClick={onClickCard}
       onKeyDown={(e) => acionaComEnterOuEspaco(e, onClickCard)}
-      className={`card-medicao-por-status ${classeCor} me-3 mb-3`}
+      className={`card-medicao-por-status ${classeCor} me-3 mb-3 ${
+        exibirSinalizacaoPendencia ? "com-sinalizacao-pendencia" : ""
+      }`}
     >
       <div className="pt-2">
         <div className="titulo">{children}</div>
         <hr />
         <div className="total">{formatarPara4Digitos(total)}</div>
         <div className="conferir-lista float-end">Conferir lista</div>
+        {exibirSinalizacaoPendencia && (
+          <div className="sinalizacao-pendencia-acao">
+            <i className="fas fa-exclamation-triangle" aria-hidden="true" />
+            <span>Existem itens pendentes de ação</span>
+          </div>
+        )}
       </div>
     </div>
   );
