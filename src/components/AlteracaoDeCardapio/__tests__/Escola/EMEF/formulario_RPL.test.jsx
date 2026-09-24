@@ -324,6 +324,39 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
     fireEvent.click(botaoSalvarRascunho);
   });
 
+  it("Exibe erro ao submeter sem informar o alterar dia", async () => {
+    selecionaMotivoRPL();
+
+    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
+    const spanElement = divCheckboxMANHA.querySelector("span");
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    await selectOption(
+      screen.getByTestId("select-tipos-alimentacao-de-MANHA"),
+      "Refeição",
+    );
+    await selectOption(
+      screen.getByTestId("select-tipos-alimentacao-para-MANHA"),
+      "Lanche",
+    );
+
+    const divInputNumeroAlunosMANHA = screen.getByTestId(
+      "div-input-numero-alunos-MANHA",
+    );
+    const inputElementNumeroAlunosMANHA =
+      divInputNumeroAlunosMANHA.querySelector("input");
+    fireEvent.change(inputElementNumeroAlunosMANHA, {
+      target: { value: "123" },
+    });
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+  });
+
   it("Cria nova solicitação e inicia pedido ao enviar", async () => {
     await preencherFormularioRPL();
 

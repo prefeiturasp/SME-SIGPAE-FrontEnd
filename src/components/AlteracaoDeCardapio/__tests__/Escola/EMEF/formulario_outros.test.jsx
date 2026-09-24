@@ -13,6 +13,7 @@ import { mockQuantidadeAlunosPorPeriodoEMEF } from "src/mocks/services/escola.se
 import AlteracaoDeCardapioPage from "src/pages/Escola/AlteracaoDeCardapioPage";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 jest.mock("react-toastify", () => ({
   success: jest.fn(),
@@ -24,6 +25,11 @@ jest.mock("react-toastify", () => ({
   },
 }));
 
+jest.mock("src/components/Shareable/Toast/dialogs", () => ({
+  toastError: jest.fn(),
+  toastSuccess: jest.fn(),
+}));
+
 const mockRascunhoComPeriodo = {
   ...mockRascunhosAlteracaoCardapioEMEF.results[0],
   id_externo: "9ABC1",
@@ -33,10 +39,42 @@ const mockRascunhoComPeriodo = {
   criado_em: "14/03/2025 09:00:00",
 };
 
+const mockRascunhoDatasInvertidas = {
+  ...mockRascunhosAlteracaoCardapioEMEF.results[0],
+  id_externo: "9ABC2",
+  uuid: "88888888-7777-6666-5555-444444444444",
+  motivo: {
+    nome: "Lanche Emergencial",
+    ativo: true,
+    uuid: "1ddec320-cd24-4cf4-9666-3e7b3a2b903c",
+  },
+  data_inicial: "01/02/2025",
+  data_final: "30/01/2025",
+  criado_em: "15/03/2025 09:00:00",
+  substituicoes: [
+    {
+      ...mockRascunhosAlteracaoCardapioEMEF.results[0].substituicoes[0],
+      tipos_alimentacao_de: [
+        {
+          nome: "Refeição",
+          uuid: "65f11f11-630b-4629-bb17-07c875c548f1",
+        },
+      ],
+      tipos_alimentacao_para: [
+        {
+          nome: "Lanche Emergencial",
+          uuid: "c4255a14-85fd-412f-b35f-30828215e4d5",
+        },
+      ],
+    },
+  ],
+};
+
 const setupMocks = (
   rascunhos = [
     mockRascunhosAlteracaoCardapioEMEF.results[0],
     mockRascunhoComPeriodo,
+    mockRascunhoDatasInvertidas,
   ],
 ) => {
   const escolaUuid =
@@ -49,14 +87,12 @@ const setupMocks = (
     .onGet("/motivos-alteracao-cardapio/")
     .reply(200, mockMotivosAlteracaoCardapio);
   mock.onGet("/dias-uteis/").reply(200, mockDiasUteis);
-  mock
-    .onGet("/alteracoes-cardapio/minhas-solicitacoes/")
-    .reply(200, {
-      count: rascunhos.length,
-      next: null,
-      previous: null,
-      results: rascunhos,
-    });
+  mock.onGet("/alteracoes-cardapio/minhas-solicitacoes/").reply(200, {
+    count: rascunhos.length,
+    next: null,
+    previous: null,
+    results: rascunhos,
+  });
   mock
     .onGet(
       `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
@@ -131,6 +167,26 @@ describe("Teste Formulário Alteração de Cardápio - Complementos - EMEF", () 
     });
 
     expect(screen.getByText("Solicitação # 9ABC1")).toBeInTheDocument();
+  });
+
+  it("Exibe erro ao submeter rascunho com data inicial posterior à data final", async () => {
+    const botoesCarregarRascunho = screen.getAllByTestId(
+      "botao-carregar-rascunho",
+    );
+    await act(async () => {
+      fireEvent.click(botoesCarregarRascunho[2]);
+    });
+
+    expect(screen.getByText("Solicitação # 9ABC2")).toBeInTheDocument();
+
+    const botaoAtualizar = screen
+      .getByText("Atualizar rascunho")
+      .closest("button");
+    fireEvent.click(botaoAtualizar);
+
+    expect(toastError).toHaveBeenCalledWith(
+      "Data inicial deve ser anterior à data final.",
+    );
   });
 });
 
