@@ -159,17 +159,11 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     return values && values.substituicoes[indice];
   };
 
-  const encontrarIndiceSubstituicao = (
-    periodoEscolarUuid,
-    solicitacao_ = solicitacao,
-  ) => {
-    for (let index = 0; index < solicitacao_.substituicoes.length; index++) {
-      const substituicao = solicitacao_.substituicoes[index];
-      if (substituicao.periodo_escolar.uuid === periodoEscolarUuid) {
-        return index;
-      }
-    }
-    return -1;
+  const encontrarIndiceSubstituicao = (periodoEscolarUuid, solicitacao_) => {
+    return solicitacao_.substituicoes.findIndex(
+      (substituicao) =>
+        substituicao.periodo_escolar.uuid === periodoEscolarUuid,
+    );
   };
 
   const getFaixasEtariasPorPeriodo = async (
@@ -434,7 +428,6 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                       <Rascunhos
                         rascunhos={rascunhos}
                         removerRascunho={removerRascunho}
-                        resetForm={() => form.reset()}
                         carregarRascunho={carregarRascunho}
                         form={form}
                         values={values}
@@ -770,7 +763,7 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                           disabled={submitting}
                           onClick={() => {
                             values["status"] = STATUS_DRE_A_VALIDAR;
-                            handleSubmit((values) => onSubmit(values, form));
+                            handleSubmit();
                           }}
                           style={BUTTON_STYLE.GREEN}
                           className="ms-3"
