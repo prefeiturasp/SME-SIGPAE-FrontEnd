@@ -31,11 +31,5 @@ export const validateSubmit = (values) => {
   if (!values["alterar_dia"] && diferencaDeDias <= 0)
     return "Data inicial deve ser anterior à data final.";
 
-  if (
-    (values["data_inicial"] && !values["data_final"]) ||
-    (values["data_final"] && !values["data_inicial"])
-  )
-    return "Informe um período completo.";
-
   return false;
 };
