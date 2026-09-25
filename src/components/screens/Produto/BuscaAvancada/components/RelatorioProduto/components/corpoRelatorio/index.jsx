@@ -9,14 +9,14 @@ import {
   BUTTON_STYLE,
   BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
-import { STATUS_CODAE_AUTORIZOU_RECLAMACAO } from "src/configs/constants";
-import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
 import { acionaComEnterOuEspaco, truncarString } from "src/helpers/utilities";
-import { getRelatorioProduto } from "src/services/relatorios";
+import {
+  getRelatorioProduto,
+  getRelatorioProdutoHistorico,
+} from "src/services/relatorios";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 import "../styles.scss";
-import MotivoEvento from "src/components/Shareable/MotivoEvento";
 
 export default class CorpoRelatorio extends Component {
   constructor(props) {
@@ -120,6 +120,16 @@ export default class CorpoRelatorio extends Component {
     return iniciais;
   };
 
+  downloadRelatorioHistorico = async (produto) => {
+    const response = await getRelatorioProdutoHistorico(produto);
+
+    if (response.status === HTTP_STATUS.OK) {
+      this.showModalDownload(true);
+    } else {
+      toastError("Erro ao baixar PDF. Tente novamente mais tarde");
+    }
+  };
+
   downloadRelatorioProduto = async (produto) => {
     const response = await getRelatorioProduto(produto);
 
@@ -133,145 +143,128 @@ export default class CorpoRelatorio extends Component {
   render() {
     const { produto, historico } = this.props;
     const { informacoes, logs, logSelecionado } = this.state;
-    const status = produto.ultima_homologacao.status;
-    const logsAnaliseSensorial =
-      produto.ultima_homologacao.logs &&
-      produto.ultima_homologacao.logs.filter(
-        (log) =>
-          log.status_evento_explicacao === "CODAE pediu análise sensorial",
-      );
-    const logAnaliseSensorial =
-      logsAnaliseSensorial &&
-      logsAnaliseSensorial.length > 0 &&
-      logsAnaliseSensorial[logsAnaliseSensorial.length - 1];
+
     return (
-      <section className="corpo-reatorio-produto">
-        {!!logs.length && (
-          <>
-            <MotivoEvento
-              logs={historico?.logs || []}
-              titulo="Motivo da solicitação de correção do produto"
-              motivo="Questionamento pela CODAE"
-            />
-            <MotivoEvento
-              logs={historico?.logs || []}
-              titulo="Motivo da recusa de homologação"
-              motivo="CODAE não homologou"
-            />
-            <MotivoEvento
-              logs={historico.logs || []}
-              titulo="Motivo da suspensão"
-              motivo="CODAE suspendeu o produto"
-            />
-          </>
-        )}
-        {status === STATUS_CODAE_AUTORIZOU_RECLAMACAO && (
-          <InformativoReclamacao homologacao={produto.ultima_homologacao} />
-        )}
+      <section className="corpo-reatorio-produto ">
         <article className="flex-botoes-relatorio">
           <div className="row col-12">
-            <div className="row col-10 ms-0">
-              {logAnaliseSensorial && (
-                <>
-                  <div className="col-6 ps-0">
-                    <p className="text-muted">
-                      Solicitação de análise sensorial
-                    </p>
-                  </div>
-                  <div className="col-6">
-                    <p>
-                      <span className="text-muted">
-                        Protocolo Análise Sensorial:
-                      </span>{" "}
-                      {produto.ultima_homologacao.protocolo_analise_sensorial}
-                    </p>
-                  </div>
-                </>
-              )}
-
-              {logAnaliseSensorial && (
-                <section className="texto-wysiwyg row col-12 ms-0">
-                  <div className="col-12">
-                    <p
-                      dangerouslySetInnerHTML={{
-                        __html: logAnaliseSensorial.justificativa,
-                      }}
-                    />
-                  </div>
-                </section>
-              )}
-            </div>
-
-            <div className="col-2 d-flex" style={{ alignItems: "flex-end" }}>
-              <Botao
-                type={BUTTON_TYPE.BUTTON}
-                style={BUTTON_STYLE.GREEN}
-                icon={BUTTON_ICON.PRINT}
-                onClick={() => this.downloadRelatorioProduto(produto)}
-                className="me-2"
-              />
-              <Botao
-                type={BUTTON_TYPE.BUTTON}
-                texto="Histórico"
-                style={BUTTON_STYLE.GREEN_OUTLINE}
-                onClick={this.showModal}
-              />
+            <div className="col-12 d-flex justify-content-between align-items-center px-0">
+              <div className="titulo-secao-relatorio">Status do Produto</div>
+              <div className="d-flex align-items-center">
+                <Botao
+                  type={BUTTON_TYPE.BUTTON}
+                  style={BUTTON_STYLE.GREEN}
+                  icon={BUTTON_ICON.PRINT}
+                  onClick={() => this.downloadRelatorioProduto(produto)}
+                  className="me-2"
+                />
+                <Botao
+                  type={BUTTON_TYPE.BUTTON}
+                  texto="Histórico"
+                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                  onClick={this.showModal}
+                />
+              </div>
             </div>
           </div>
           <hr />
         </article>
-        <header>
-          <div className="label-relatorio">Nome do produto</div>
-          <div className="label-relatorio">Marca</div>
-          <div className="label-relatorio">Tipo</div>
-          <div className="label-relatorio">Data de cadastro</div>
-
-          <div className="value-relatorio">{produto.nome}</div>
-          <div className="value-relatorio">{produto.marca.nome}</div>
-          <div className="value-relatorio">
-            {produto.eh_para_alunos_com_dieta ? "DIETA ESPECIAL" : "COMUM"}
-          </div>
-          <div className="value-relatorio">
-            {produto.ultima_homologacao.data_cadastro}
-          </div>
-        </header>
         <article>
           <hr />
           <FluxoDeStatus
             listaDeStatus={historico.logs}
             fluxo={fluxoPartindoTerceirizada}
+            exibirSetasNavegacao={true}
           />
           <hr />
         </article>
-        <article className="informacoes-gerais">
-          <div className="header-informacao">
-            Informação de empresa solicitante (Terceirizada)
+        <section className="product-summary">
+          <div className="table-responsive">
+            <table className="product-details-table">
+              <thead>
+                <tr>
+                  <th className="label-relatorio">Nome do produto</th>
+                  <th className="label-relatorio">Marca</th>
+                  <th className="label-relatorio">Tipo</th>
+                  <th className="label-relatorio">Data de cadastro</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td className="value-relatorio">{produto.nome}</td>
+                  <td className="value-relatorio">{produto.marca.nome}</td>
+                  <td className="value-relatorio">
+                    {produto.eh_para_alunos_com_dieta
+                      ? "DIETA ESPECIAL"
+                      : "COMUM"}
+                  </td>
+                  <td className="value-relatorio">
+                    {produto.ultima_homologacao.data_cadastro}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div className="grid-empresa-info">
-            <div className="label-relatorio">
-              {" "}
-              Empresa solicitante (Terceirizada)
-            </div>
-            <div className="label-relatorio">Telefone </div>
-            <div className="label-relatorio">E-mail</div>
-            <div className="value-relatorio">
-              {produto.ultima_homologacao.rastro_terceirizada.nome_fantasia}
-            </div>
-            <div className="value-relatorio">
-              {
-                produto.ultima_homologacao.rastro_terceirizada.contatos[0]
-                  .telefone
-              }
-            </div>
-            <div className="value-relatorio">
-              {produto.ultima_homologacao.rastro_terceirizada.contatos[0].email}
-            </div>
+        </section>
+
+        <article className="informacoes-gerais company-information">
+          <div className="table-responsive">
+            <table className="product-details-table">
+              <thead>
+                <tr>
+                  <th className="label-relatorio">
+                    Empresa solicitante (Terceirizada)
+                  </th>
+                  <th className="label-relatorio">Telefone</th>
+                  <th className="label-relatorio">E-mail</th>
+                  <th aria-hidden="true" />
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td className="value-relatorio">
+                    {
+                      produto.ultima_homologacao.rastro_terceirizada
+                        .nome_fantasia
+                    }
+                  </td>
+                  <td className="value-relatorio">
+                    {
+                      produto.ultima_homologacao.rastro_terceirizada.contatos[0]
+                        .telefone
+                    }
+                  </td>
+                  <td className="value-relatorio">
+                    {
+                      produto.ultima_homologacao.rastro_terceirizada.contatos[0]
+                        .email
+                    }
+                  </td>
+                  <td aria-hidden="true" />
+                </tr>
+              </tbody>
+            </table>
           </div>
         </article>
         <hr />
         <article className="informacoes-gerais">
-          <div className="header-informacao">Identificação do Produto</div>
-          <div className="info-sem-grid">
+          <div className="titulo-secao-relatorio">Identificação do Produto</div>
+
+          <div className="linha-marca-fabricante">
+            <div className="linha-informacao">
+              <div className="label-relatorio">Marca</div>
+              <div className="value-relatorio">{produto.marca.nome}</div>
+            </div>
+
+            <div className="linha-informacao">
+              <div className="label-relatorio">Fabricante</div>
+              <div className="value-relatorio">{produto.fabricante.nome}</div>
+            </div>
+          </div>
+
+          <div className="linha-informacao">
             <div className="label-relatorio">
               O produto se destina a alimentação de alunos com dieta especial?
             </div>
@@ -280,21 +273,13 @@ export default class CorpoRelatorio extends Component {
             </div>
           </div>
 
-          <div className="grid-marca-fabricante-info info-sem-grid">
-            <div className="label-relatorio">Marca</div>
-            <div className="label-relatorio">Fabricante</div>
-            <div className="value-relatorio">{produto.marca.nome}</div>
-            <div className="value-relatorio">{produto.fabricante.nome}</div>
-          </div>
-
-          <div className="info-sem-grid">
+          <div className="linha-informacao">
             <div className="label-relatorio">Componentes do produto</div>
             <div className="value-relatorio">{produto.componentes}</div>
           </div>
 
-          <div className="info-sem-grid">
+          <div className="linha-informacao">
             <div className="label-relatorio">
-              {" "}
               O produto contém ou pode conter ingredientes/aditivos alergênicos?
             </div>
             <div className="value-relatorio">
@@ -302,15 +287,22 @@ export default class CorpoRelatorio extends Component {
             </div>
           </div>
 
-          <div className="info-sem-grid">
-            <div className="informativo-importante">
-              IMPORTANTE: Relacioná-los conforme dispõe a RDC nº 26 de 02/07/15
-            </div>
+          <div className="informativo-importante">
+            IMPORTANTE: Relacioná-los conforme dispõe a RDC nº 26 de 02/07/15
           </div>
+
+          {produto.tem_aditivos_alergenicos ? (
+            <div className="linha-informacao-produtos-aditivos">
+              <div className="label-relatorio">Quais?</div>
+              <div className="value-relatorio">{produto.aditivos || ""}</div>
+            </div>
+          ) : (
+            <></>
+          )}
         </article>
         <hr />
         <article className="informacoes-gerais">
-          <div className="header-informacao">Informações nutricionais</div>
+          <div className="titulo-secao-relatorio">Informações nutricionais</div>
 
           <div className="grid-marca-fabricante-info info-sem-grid">
             <div className="label-relatorio">Porção</div>
@@ -373,14 +365,14 @@ export default class CorpoRelatorio extends Component {
           </div>
 
           <div className="aviso-importante-nutricional">
-            IMPORTANTE: * % VD com base em uma dieta de 2.000 Kcal ou 8.400 KJ.
+            IMPORTANTE: (*) %VD com base em uma dieta de 2.000 Kcal ou 8.400 KJ.
             Seus valores diários podem ser maiores ou menores dependendo de suas
             necessidades energéticas. (**) VD não estabelecidos
           </div>
         </article>
         <hr />
         <article className="informacoes-gerais">
-          <div className="header-informacao">
+          <div className="titulo-secao-relatorio">
             Informação do Produto (classificação)
           </div>
 
@@ -392,11 +384,13 @@ export default class CorpoRelatorio extends Component {
           <div className="grid-marca-fabricante-info info-sem-grid">
             <div className="label-relatorio">Embalagem primária</div>
             <div className="label-relatorio">Prazo de validade</div>
-            <div className="value-relatorio">{produto.tipo}</div>
+            <div className="value-relatorio">{produto.embalagem}</div>
             <div className="value-relatorio">{produto.prazo_validade}</div>
           </div>
 
-          <p>Informações referentes ao volume e unidade de medida</p>
+          <div className="table-title">
+            Informações referentes ao volume e unidade de medida
+          </div>
           <table className="table table-ficha-identificacao-produto">
             <thead>
               <tr>
@@ -451,7 +445,7 @@ export default class CorpoRelatorio extends Component {
 
         <article className="informacoes-gerais">
           <div className="header-informacao label-relatorio">
-            Foto do produto
+            Fotos do produto
           </div>
 
           <div>
@@ -481,6 +475,23 @@ export default class CorpoRelatorio extends Component {
           onCancel={this.handleCancel}
           width={800}
           maskClosable={false}
+          footer={[
+            <Botao
+              key="imprimir"
+              texto="Imprimir"
+              style={BUTTON_STYLE.GREEN_OUTLINE}
+              className="me-3"
+              onClick={() => this.downloadRelatorioHistorico(produto)}
+            />,
+            <Botao
+              key="fechar"
+              type="button"
+              className="me-2"
+              style={BUTTON_STYLE.GREEN}
+              onClick={this.handleOk}
+              texto={"Fechar"}
+            />,
+          ]}
         >
           <section className="body-modal-produto">
             <div>Usuário</div>
@@ -561,22 +572,102 @@ export default class CorpoRelatorio extends Component {
                           {logSelecionado.status_evento_explicacao}
                         </header>
                         <section>
-                          <article>
-                            <div>
-                              RF: {logSelecionado.usuario.registro_funcional}
-                            </div>
-                            <div className="criado-em">
-                              <div>Data:</div>
-                              <div>
-                                {logSelecionado.criado_em.split(" ")[0]}
+                          {logSelecionado.dados_produto ? (
+                            <article className="dados-do-produto-historico">
+                              <div className="dados-do-produto-empresa-container">
+                                <div className="dados-do-produto-empresa-label">
+                                  Empresa:
+                                </div>
+                                <div className="dados-do-produto-empresa-valor">
+                                  {logSelecionado.dados_produto.empresa}
+                                </div>
                               </div>
-                            </div>
-                          </article>
-                          <article>
+                              <div className="dados-do-produto-criado-em-container">
+                                <div className="dados-do-produto-criado-em-label">
+                                  Criado em:
+                                </div>
+                                <div className="dados-do-produto-criado-em-valor">
+                                  {logSelecionado.dados_produto.criado_em
+                                    .split(" ")
+                                    .join(" - ")}
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-produto-container">
+                                <div className="dados-do-produto-produto-label">
+                                  Produto:
+                                </div>
+                                <div className="dados-do-produto-produto-valor">
+                                  {logSelecionado.dados_produto.produto}
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-marca-fabricante-container">
+                                <div className="dados-do-produto-marca-container">
+                                  <div className="dados-do-produto-marca-label">
+                                    Marca:
+                                  </div>
+                                  <div className="dados-do-produto-marca-valor">
+                                    {logSelecionado.dados_produto.marca}
+                                  </div>
+                                </div>
+                                <div className="dados-do-produto-fabricante-container">
+                                  <div className="dados-do-produto-fabricante-label">
+                                    Fabricante:
+                                  </div>
+                                  <div className="dados-do-produto-fabricante-valor">
+                                    {logSelecionado.dados_produto.fabricante}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-dieta-especial-container">
+                                <div className="dados-do-produto-dieta-especial-label">
+                                  O produto se destina à alimentação de alunos
+                                  com dieta especial?
+                                </div>
+                                <div className="dados-do-produto-dieta-especial-valor">
+                                  {logSelecionado.dados_produto
+                                    .eh_para_alunos_com_dieta
+                                    ? "SIM"
+                                    : "NÃO"}
+                                </div>
+                              </div>
+                              <div className="dados-do-produto-componentes-container">
+                                <div className="dados-do-produto-componentes-label">
+                                  Componentes do Produto:
+                                </div>
+                                <div className="dados-do-produto-componentes-valor">
+                                  {logSelecionado.dados_produto.componentes}
+                                </div>
+                              </div>
+                            </article>
+                          ) : (
+                            <article>
+                              <div>
+                                RF: {logSelecionado.usuario.registro_funcional}
+                              </div>
+                              <div className="criado-em">
+                                <div>Data:</div>
+                                <div>
+                                  {logSelecionado.criado_em.split(" ")[0]}
+                                </div>
+                              </div>
+                            </article>
+                          )}
+                          <article
+                            className={
+                              logSelecionado.dados_produto
+                                ? "preenchimento-dados-produto"
+                                : undefined
+                            }
+                          >
                             {logSelecionado.justificativa !== "" && (
                               <>
                                 <div>Justificativa:</div>
                                 <div
+                                  className={
+                                    logSelecionado.dados_produto
+                                      ? "log-selecionado-justificativa-valor"
+                                      : undefined
+                                  }
                                   dangerouslySetInnerHTML={{
                                     __html: logSelecionado.justificativa,
                                   }}

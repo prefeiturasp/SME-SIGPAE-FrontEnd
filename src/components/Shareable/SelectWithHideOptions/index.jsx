@@ -21,6 +21,7 @@ export class SelectWithHideOptions extends React.Component {
     const filteredOptions = options.filter((o) => !selectedItems.includes(o));
     return (
       <Select
+        {...input}
         mode={mode || "multiple"}
         placeholder={placeholder}
         value={selectedItems}
@@ -31,7 +32,6 @@ export class SelectWithHideOptions extends React.Component {
           width: "100%",
         }}
         optionLabelProp="label"
-        {...input}
         data-testid={input.name}
       >
         {filteredOptions.map((item) => (
