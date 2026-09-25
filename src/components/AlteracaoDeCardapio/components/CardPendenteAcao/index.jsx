@@ -21,7 +21,6 @@ export class CardPendenteAcao extends Component {
   }
 
   filtrarPedidos(event) {
-    if (event === undefined) event = { target: { value: "" } };
     let pedidosFiltrados = this.props.pedidos;
     pedidosFiltrados = pedidosFiltrados.filter(function (item) {
       const palavraAFiltrar = event.target.value.toLowerCase();
@@ -61,10 +60,10 @@ export class CardPendenteAcao extends Component {
                   {`
                   ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "escola"
+                    "escola",
                   )} ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "solicitante"
+                    "solicitante",
                   )}
                   `}
                 </span>
@@ -111,7 +110,7 @@ export class CardPendenteAcao extends Component {
                         pedido.alunos_cei_e_ou_emei
                           ? ALTERACAO_TIPO_ALIMENTACAO_CEMEI
                           : ALTERACAO_TIPO_ALIMENTACAO,
-                        pedido
+                        pedido,
                       )}
                     >
                       <tr className="row">
