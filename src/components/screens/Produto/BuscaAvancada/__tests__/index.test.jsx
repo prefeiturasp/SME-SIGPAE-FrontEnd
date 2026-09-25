@@ -59,7 +59,7 @@ const setup = () => {
     >
       <BuscaAvancadaProdutoPage />
     </MemoryRouter>,
-    initialState
+    initialState,
   );
 };
 
@@ -67,17 +67,17 @@ test("Relatorio autorizadas temporariamente", async () => {
   setup();
 
   await waitFor(() =>
-    expect(produtoService.getNomesUnicosProdutos).toHaveBeenCalled()
+    expect(produtoService.getNomesUnicosProdutos).toHaveBeenCalled(),
   );
 
-  expect(screen.getByText(/Edital/i)).toBeInTheDocument();
+  expect(screen.getByTestId("edital")).toBeInTheDocument();
 
   const divInputEdital = screen.getByTestId("edital");
   const inputEdital = divInputEdital.querySelector("input");
 
   expect(inputEdital).toBeInTheDocument();
 
-  const botao = screen.getByText("Consultar").closest("button");
+  const botao = screen.getByText("Filtrar").closest("button");
 
   fireEvent.click(botao);
 

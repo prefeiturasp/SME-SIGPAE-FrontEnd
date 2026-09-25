@@ -7,7 +7,7 @@ import "./styles.scss";
 const ListagemProdutos = ({ produtos, ativos, setAtivos }) => {
   return (
     <section className="resultado-busca-produto-avancada">
-      <header>Veja os resultados para busca</header>
+      <header>Resultado da Pesquisa</header>
       <article>
         <div className="grid-produto-table header-table-produtos">
           <div>Tipo</div>

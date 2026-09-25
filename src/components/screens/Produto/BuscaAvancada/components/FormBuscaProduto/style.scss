@@ -15,6 +15,15 @@
     margin-bottom: 20px;
   }
 
+  .input-filtro-form {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+
+    label {
+      padding-top: 0;
+    }
+  }
+
   .marca-fabricante-inputs {
     display: grid;
     grid-template-columns: 49% 49%;
@@ -144,6 +153,26 @@
       color: #42474a !important;
       padding: 2px !important;
     }
+  }
+
+  .pl-0 {
+    padding-left: 0 !important;
+  }
+
+  .pr-0 {
+    padding-right: 0 !important;
+  }
+
+  .pl-6 {
+    padding-left: 6px !important;
+  }
+
+  .pl-14 {
+    padding-left: 14px !important;
+  }
+
+  .pr-14 {
+    padding-right: 14px !important;
   }
 }
 
