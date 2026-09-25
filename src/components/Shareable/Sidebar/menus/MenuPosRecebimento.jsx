@@ -4,6 +4,7 @@ import {
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_DEFINITIVO,
   TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR,
+  PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
 } from "src/configs/constants";
 import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 
@@ -23,12 +24,20 @@ const MenuPosRecebimento = () => {
           Termo de Recebimento Definitivo
         </LeafItem>
       ) : (
-        <LeafItem
-          to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`}
-          dataTestId="termo-recebimento-definitivo"
-        >
-          Termo de Recebimento Definitivo
-        </LeafItem>
+        <>
+          <LeafItem
+            to={`/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`}
+            dataTestId="painel-assinatura-termos-recebimento"
+          >
+            Painel de Assinaturas
+          </LeafItem>
+          <LeafItem
+            to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`}
+            dataTestId="termo-recebimento-definitivo"
+          >
+            Termo de Recebimento Definitivo
+          </LeafItem>
+        </>
       )}
     </Menu>
   );

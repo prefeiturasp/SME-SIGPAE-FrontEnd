@@ -141,3 +141,23 @@ export const getTermoRecebimentoDefinitivo = async (uuid: string) => {
     throw error;
   }
 };
+
+export const getTermosPendentesAssinatura = async (
+  params?: URLSearchParams,
+) => {
+  try {
+    return await axios.get("/pos-recebimento/termos/pendentes-assinatura/", {
+      params,
+    });
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
+
+export const getTermosAssinados = async (params?: URLSearchParams) => {
+  try {
+    return await axios.get("/pos-recebimento/termos/assinados/", { params });
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
