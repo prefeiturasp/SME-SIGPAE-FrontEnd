@@ -531,4 +531,39 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
 
     localStorage.removeItem("possui_alunos_regulares");
   });
+
+  it("Remove rascunho pelo teclado", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
+    await act(async () => {
+      fireEvent.keyDown(botaoRemoverRascunho, { key: "Enter" });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-remover-rascunho"), {
+        key: " ",
+      });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-remover-rascunho"), {
+        key: "a",
+      });
+    });
+  });
+
+  it("Carrega rascunho pelo teclado", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.keyDown(botaoCarregarRascunho, { key: "Enter" });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-carregar-rascunho"), {
+        key: " ",
+      });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-carregar-rascunho"), {
+        key: "a",
+      });
+    });
+  });
 });

@@ -70,11 +70,40 @@ const mockRascunhoDatasInvertidas = {
   ],
 };
 
+const mockRascunhoSalvo = {
+  ...mockRascunhosAlteracaoCardapioEMEF.results[0],
+  id_externo: "SALVO1",
+  uuid: "aaaaaaaa-1111-2222-3333-444444444444",
+  status: "SALVO",
+  criado_em: "16/03/2025 09:00:00",
+};
+
+const mockRascunhoAlterarDia = {
+  ...mockRascunhosAlteracaoCardapioEMEF.results[0],
+  id_externo: "ALT1",
+  uuid: "bbbbbbbb-1111-2222-3333-444444444444",
+  data_inicial: undefined,
+  data_final: undefined,
+  alterar_dia: "02/02/2025",
+  criado_em: "17/03/2025 09:00:00",
+};
+
+const mockRascunhoComData = {
+  ...mockRascunhosAlteracaoCardapioEMEF.results[0],
+  id_externo: "DATA1",
+  uuid: "cccccccc-1111-2222-3333-444444444444",
+  data: "20/06/2025",
+  criado_em: "18/03/2025 09:00:00",
+};
+
 const setupMocks = (
   rascunhos = [
     mockRascunhosAlteracaoCardapioEMEF.results[0],
     mockRascunhoComPeriodo,
     mockRascunhoDatasInvertidas,
+    mockRascunhoSalvo,
+    mockRascunhoAlterarDia,
+    mockRascunhoComData,
   ],
 ) => {
   const escolaUuid =
@@ -187,6 +216,18 @@ describe("Teste Formulário Alteração de Cardápio - Complementos - EMEF", () 
     expect(toastError).toHaveBeenCalledWith(
       "Data inicial deve ser anterior à data final.",
     );
+  });
+
+  it("renderiza rascunho com status SALVO", () => {
+    expect(screen.getByText("SALVO")).toBeInTheDocument();
+  });
+
+  it("renderiza rascunho com alterar_dia", () => {
+    expect(screen.getByText("Dia: 02/02/2025")).toBeInTheDocument();
+  });
+
+  it("renderiza rascunho com data", () => {
+    expect(screen.getByText("Dia: 20/06/2025")).toBeInTheDocument();
   });
 });
 
