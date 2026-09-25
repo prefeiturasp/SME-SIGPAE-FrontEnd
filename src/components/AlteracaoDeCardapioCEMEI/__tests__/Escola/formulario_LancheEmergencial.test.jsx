@@ -27,7 +27,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock.onGet("/alteracoes-cardapio-cemei/").reply(200, []);
@@ -59,14 +59,14 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
             <AlteracaoDeCardapioCEMEIPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página e o breadcrumb `Alteração do Tipo de Alimentação`", async () => {
     expect(
-      screen.queryAllByText("Alteração do Tipo de Alimentação").length
+      screen.queryAllByText("Alteração do Tipo de Alimentação").length,
     ).toBe(2);
   });
 
@@ -82,14 +82,14 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
 
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   const selecionaAlunosEMEI = () => {
     const selectAlunosDiv = screen.getByTestId(
-      "div-select-alunos-cei-e-ou-emei"
+      "div-select-alunos-cei-e-ou-emei",
     );
     const selectElementAlunos = selectAlunosDiv.querySelector("select");
     fireEvent.change(selectElementAlunos, {
@@ -101,7 +101,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
     const uuidLancheEmergencial = mockMotivosAlteracaoCardapio.results.find(
-      (motivo) => motivo.nome.includes("Lanche Emergencial")
+      (motivo) => motivo.nome.includes("Lanche Emergencial"),
     ).uuid;
     fireEvent.change(selectElementMotivo, {
       target: { value: uuidLancheEmergencial },
@@ -119,7 +119,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
       target: { value: "30/01/2025" },
     });
 
-    const divInputDataFinal = screen.getByTestId("div-input-data-inicial");
+    const divInputDataFinal = screen.getByTestId("div-input-data-final");
     const inputElementDataFinal = divInputDataFinal.querySelector("input");
     fireEvent.change(inputElementDataFinal, {
       target: { value: "01/02/2025" },
@@ -139,10 +139,10 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
     expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
 
     const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-de-EMEI"
+      "select-alterar-alimentacao-de-EMEI",
     );
     const selectControlDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
-      "combobox"
+      "combobox",
     );
     fireEvent.mouseDown(selectControlDe);
 
@@ -150,10 +150,10 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
     fireEvent.click(optionDe);
 
     const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-para-EMEI"
+      "select-alterar-alimentacao-para-EMEI",
     );
     const selectControlPara = within(
-      selectAlterarAlimentacaoParaEMEI
+      selectAlterarAlimentacaoParaEMEI,
     ).getByRole("combobox");
     fireEvent.mouseDown(selectControlPara);
 
@@ -161,7 +161,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
     fireEvent.click(optionPara);
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
-      `substituicoes[0][emei][quantidade_alunos]`
+      `substituicoes[0][emei][quantidade_alunos]`,
     );
     fireEvent.change(inputElementNumeroAlunosEMEI, {
       target: { value: "1" },
@@ -171,5 +171,43 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
       .getByText("Salvar rascunho")
       .closest("button");
     fireEvent.click(botaoSalvarRascunho);
+  });
+
+  it("Limpa a data inicial", () => {
+    selecionaAlunosEMEI();
+    selecionaMotivoLancheEmergencial();
+
+    const divInputDataInicial = screen.getByTestId("div-input-data-inicial");
+    const inputElementDataInicial = divInputDataInicial.querySelector("input");
+    fireEvent.change(inputElementDataInicial, {
+      target: { value: "30/01/2025" },
+    });
+
+    const botaoLimparDataInicial = divInputDataInicial.querySelector(
+      ".react-datepicker__close-icon",
+    );
+    fireEvent.click(botaoLimparDataInicial);
+  });
+
+  it("Limpa a data final", () => {
+    selecionaAlunosEMEI();
+    selecionaMotivoLancheEmergencial();
+
+    const divInputDataInicial = screen.getByTestId("div-input-data-inicial");
+    const inputElementDataInicial = divInputDataInicial.querySelector("input");
+    fireEvent.change(inputElementDataInicial, {
+      target: { value: "30/01/2025" },
+    });
+
+    const divInputDataFinal = screen.getByTestId("div-input-data-final");
+    const inputElementDataFinal = divInputDataFinal.querySelector("input");
+    fireEvent.change(inputElementDataFinal, {
+      target: { value: "31/01/2025" },
+    });
+
+    const botaoLimparDataFinal = divInputDataFinal.querySelector(
+      ".react-datepicker__close-icon",
+    );
+    fireEvent.click(botaoLimparDataFinal);
   });
 });

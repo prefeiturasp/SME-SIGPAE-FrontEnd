@@ -29,4 +29,16 @@ export const mockQuantidadeAlunoCEMEIporCEIEMEI = [
     ],
     EMEI: 108,
   },
+  {
+    nome: "MANHA",
+    CEI: [
+      {
+        uuid: "71c6b4ef-5ba5-42ab-97c1-9c5ee24f3e0a",
+        faixa: "06 meses",
+        quantidade_alunos: 1,
+        inicio: 6,
+      },
+    ],
+    EMEI: 5,
+  },
 ];
