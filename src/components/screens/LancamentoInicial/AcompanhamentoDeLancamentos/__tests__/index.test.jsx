@@ -11,6 +11,10 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { AcompanhamentoDeLancamentos } from "src/components/screens/LancamentoInicial/AcompanhamentoDeLancamentos";
 import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import {
   MODULO_GESTAO,
   PERFIL,
   TIPO_PERFIL,
@@ -33,19 +37,29 @@ import { mockGetMesesAnosSolicitacoesMedicaoinicial } from "src/mocks/services/m
 import mock from "src/services/_mock";
 
 const RECREIO_MARCO_UUID = "04753691-d8a3-40ce-a133-ee975115f258";
+const SOLICITACAO_CORRIGIDA_UUID = "2debcde1-3af8-405e-8c5e-3336f5c10bdb";
+
+jest.mock("src/components/Shareable/Toast/dialogs", () => ({
+  ...jest.requireActual("src/components/Shareable/Toast/dialogs"),
+  toastError: jest.fn(),
+  toastSuccess: jest.fn(),
+}));
 
 const renderComponent = async (
   mockMeusDados = mockMeusDadosSuperUsuarioMedicao,
+  initialEntries,
 ) => {
+  let resultado;
   await act(async () => {
-    render(
-      <MemoryRouter>
+    resultado = render(
+      <MemoryRouter initialEntries={initialEntries}>
         <MeusDadosContext.Provider value={{ meusDados: mockMeusDados }}>
           <AcompanhamentoDeLancamentos />
         </MeusDadosContext.Provider>
       </MemoryRouter>,
     );
   });
+  return resultado;
 };
 
 const selecionarDRE = async () => {
@@ -63,7 +77,12 @@ const selecionarDRE = async () => {
   });
 };
 
-const setupMocks = ({ totalHistorico = 100, totalRecreio = 7 } = {}) => {
+const setupMocks = ({
+  totalHistorico = 100,
+  totalRecreio = 7,
+  totalizadores = mockGetDashboardMedicaoInicial,
+  resultados = mockDashboardResultados,
+} = {}) => {
   mock
     .onGet("/diretorias-regionais-simplissima/")
     .reply(200, mockDiretoriaRegionalSimplissima);
@@ -78,7 +97,7 @@ const setupMocks = ({ totalHistorico = 100, totalRecreio = 7 } = {}) => {
     .onGet(
       "/medicao-inicial/solicitacao-medicao-inicial/dashboard-totalizadores/",
     )
-    .reply(200, mockGetDashboardMedicaoInicial);
+    .reply(200, totalizadores);
   mock
     .onGet("/medicao-inicial/historico-acesso-ue/total-por-dre/")
     .reply(200, totalHistorico);
@@ -87,7 +106,7 @@ const setupMocks = ({ totalHistorico = 100, totalRecreio = 7 } = {}) => {
     .reply(200, totalRecreio);
   mock
     .onGet("/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/")
-    .reply(200, mockDashboardResultados);
+    .reply(200, resultados);
   mock
     .onGet("/escolas-simplissima-com-dre-unpaginated/terc-total/")
     .reply(200, mockGetEscolaTercTotal);
@@ -100,6 +119,7 @@ const setupErrorMocks = (endpoint) => {
 
 describe("AcompanhamentoDeLancamentos", () => {
   beforeEach(async () => {
+    jest.clearAllMocks();
     setupMocks();
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.clear();
@@ -211,9 +231,102 @@ describe("AcompanhamentoDeLancamentos", () => {
         ),
       ).toBeInTheDocument();
     });
+
+    it("deve retornar erro quando falhar ao obter os resultados do dashboard", async () => {
+      setupErrorMocks(
+        "/medicao-inicial/solicitacao-medicao-inicial/dashboard-resultados/",
+      );
+
+      await selecionarDRE();
+
+      const divMesReferencia = screen.getByTestId("div-select-mes-referencia");
+      const selectMesReferencia = divMesReferencia.querySelector("select");
+      await act(async () => {
+        fireEvent.change(selectMesReferencia, {
+          target: { value: "03_2025" },
+        });
+      });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            "Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde.",
+          ),
+        ).toBeInTheDocument(),
+      );
+    });
   });
 
   describe("Interações com a interface", () => {
+    const solicitacaoCorrigida = {
+      uuid: SOLICITACAO_CORRIGIDA_UUID,
+      escola: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+      escola_uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
+      mes: "03",
+      ano: "2025",
+      mes_ano: "Março 2025",
+      tipo_unidade: "EMEF",
+      status: "Corrigido para CODAE",
+      pendente_acao_dre: true,
+      log_mais_recente: "20/03/2025 10:00",
+      dre_ciencia_correcao_data: null,
+      todas_medicoes_e_ocorrencia_aprovados_por_medicao: true,
+      escola_cei_com_inclusao_parcial_autorizada: false,
+      sem_lancamentos: false,
+    };
+
+    const prepararCenarioCienciaDRE = async (statusResposta, dadosResposta) => {
+      cleanup();
+      mock.reset();
+      setupMocks({
+        totalizadores: {
+          results: [
+            {
+              status: "MEDICAO_CORRIGIDA_PARA_CODAE",
+              label: "Corrigido para CODAE",
+              total: 1,
+              dados: [solicitacaoCorrigida],
+              total_pendentes_acao_dre: 1,
+              possui_pendencias_acao_dre: true,
+            },
+          ],
+        },
+        resultados: {
+          results: {
+            total: 1,
+            dados: [solicitacaoCorrigida],
+          },
+        },
+      });
+      mock.onGet("/grupos-unidade-escolar/por-dre/").reply(200, { grupos: [] });
+      mock
+        .onPatch(
+          `/medicao-inicial/solicitacao-medicao-inicial/${SOLICITACAO_CORRIGIDA_UUID}/`,
+        )
+        .reply(statusResposta, dadosResposta);
+      localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+      const resultadoRenderizacao = await renderComponent(mockMeusDadosDRE);
+
+      const seletorMes = screen
+        .getByTestId("div-select-mes-referencia")
+        .querySelector("select");
+      await act(async () => {
+        fireEvent.change(seletorMes, { target: { value: "03_2025" } });
+      });
+
+      const card = await screen.findByTestId("MEDICAO_CORRIGIDA_PARA_CODAE");
+      fireEvent.click(card);
+
+      await act(async () => {
+        fireEvent.click(screen.getByText("Filtrar"));
+      });
+
+      await screen.findByText("EMEF PERICLES EUGENIO DA SILVA RAMOS");
+      return resultadoRenderizacao.container
+        .querySelector(".fa-edit")
+        .closest("button");
+    };
+
     describe("selecionar DRE Ipiranga com diferentes perfis", () => {
       const perfis = [
         {
@@ -444,6 +557,128 @@ describe("AcompanhamentoDeLancamentos", () => {
       );
     });
 
+    it("deve sinalizar e filtrar itens pendentes de ação da DRE", async () => {
+      cleanup();
+      mock.reset();
+      setupMocks({
+        totalizadores: {
+          results: [
+            {
+              status: "MEDICAO_CORRIGIDA_PARA_CODAE",
+              label: "Corrigido para CODAE",
+              total: 1,
+              total_pendentes_acao_dre: 1,
+              possui_pendencias_acao_dre: true,
+            },
+          ],
+        },
+        resultados: {
+          results: {
+            total: 1,
+            dados: [
+              {
+                uuid: "2debcde1-3af8-405e-8c5e-3336f5c10bdb",
+                escola: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
+                escola_uuid: "3c32be8e-f191-468d-a4e2-3dd8751e5e7a",
+                mes: "03",
+                ano: "2025",
+                mes_ano: "Março 2025",
+                tipo_unidade: "EMEF",
+                status: "Corrigido para CODAE",
+                pendente_acao_dre: true,
+                log_mais_recente: "20/03/2025 10:00",
+                dre_ciencia_correcao_data: null,
+                todas_medicoes_e_ocorrencia_aprovados_por_medicao: true,
+                escola_cei_com_inclusao_parcial_autorizada: false,
+                sem_lancamentos: false,
+              },
+            ],
+          },
+        },
+      });
+      mock.onGet("/grupos-unidade-escolar/por-dre/").reply(200, { grupos: [] });
+      localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
+      await renderComponent(mockMeusDadosDRE);
+
+      const seletorMes = screen
+        .getByTestId("div-select-mes-referencia")
+        .querySelector("select");
+      await act(async () => {
+        fireEvent.change(seletorMes, { target: { value: "03_2025" } });
+      });
+
+      const card = await screen.findByTestId("MEDICAO_CORRIGIDA_PARA_CODAE");
+      expect(
+        screen.getByText("Existem itens pendentes de ação"),
+      ).toBeInTheDocument();
+      expect(
+        card.querySelector(".icone-warning-pendencia"),
+      ).toBeInTheDocument();
+
+      fireEvent.click(card);
+      const checkbox = await screen.findByRole("checkbox", {
+        name: "Exibir itens pendentes de ação",
+      });
+      expect(checkbox).not.toBeChecked();
+
+      fireEvent.click(checkbox);
+      fireEvent.click(screen.getByText("Filtrar"));
+
+      await waitFor(() => {
+        const requisicoes = mock.history.get.filter((request) =>
+          request.url.includes("dashboard-resultados"),
+        );
+        const ultimaRequisicao = requisicoes[requisicoes.length - 1];
+        expect(ultimaRequisicao.params).toEqual(
+          expect.objectContaining({ somente_pendentes_acao_dre: true }),
+        );
+      });
+      expect(
+        await screen.findByText("EMEF PERICLES EUGENIO DA SILVA RAMOS"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("Item pendente de ação"),
+      ).toBeInTheDocument();
+
+      fireEvent.click(screen.getByText("Limpar"));
+      await waitFor(() => expect(checkbox).not.toBeChecked());
+    });
+
+    it("deve confirmar a ciência das correções pela DRE", async () => {
+      const botaoCiencia = await prepararCenarioCienciaDRE(200, {});
+
+      await act(async () => {
+        fireEvent.click(botaoCiencia);
+      });
+
+      await waitFor(() =>
+        expect(toastSuccess).toHaveBeenCalledWith(
+          "Assinatura confirmada com sucesso!",
+        ),
+      );
+      expect(mock.history.patch).toHaveLength(1);
+      expect(mock.history.patch[0].url).toBe(
+        `medicao-inicial/solicitacao-medicao-inicial/${SOLICITACAO_CORRIGIDA_UUID}/`,
+      );
+    });
+
+    it("deve exibir erro quando não for possível confirmar a ciência pela DRE", async () => {
+      const botaoCiencia = await prepararCenarioCienciaDRE(400, {
+        detail: "Não foi possível confirmar a ciência.",
+      });
+
+      await act(async () => {
+        fireEvent.click(botaoCiencia);
+      });
+
+      await waitFor(() =>
+        expect(toastError).toHaveBeenCalledWith(
+          "Não foi possível confirmar a ciência.",
+        ),
+      );
+      expect(toastSuccess).not.toHaveBeenCalled();
+    });
+
     it("deve exibir a label com total de unidades da DRE para usuário Terceirizada ao selecionar DRE e mês", async () => {
       cleanup();
       mock.reset();
@@ -586,7 +821,7 @@ describe("AcompanhamentoDeLancamentos", () => {
       ).toBe(true);
     });
 
-    it("deve preencher mes e ocorrencias, filtrar e verificar resultados", async () => {
+    it("deve filtrar os resultados com ocorrências", async () => {
       await selecionarDRE();
       setMesReferencia();
 
@@ -595,12 +830,24 @@ describe("AcompanhamentoDeLancamentos", () => {
       );
       const statusCard = screen.getByTestId("TODOS_OS_LANCAMENTOS");
       fireEvent.click(statusCard);
+      setOcorrencias("true");
+      mock.resetHistory();
 
       const botaoFiltrar = screen.getByText("Filtrar");
       await act(async () => {
         fireEvent.click(botaoFiltrar);
       });
 
+      await waitFor(() => {
+        const requisicaoResultados = mock.history.get.find((request) =>
+          request.url.includes("dashboard-resultados"),
+        );
+        expect(requisicaoResultados.params).toEqual(
+          expect.objectContaining({
+            ocorrencias: "true",
+          }),
+        );
+      });
       await waitFor(async () => {
         expect(
           await screen.findAllByText("CEI DIRET OLGA BENARIO PRESTES"),
@@ -611,14 +858,33 @@ describe("AcompanhamentoDeLancamentos", () => {
       });
     });
 
-    it("deve exibir o título do recreio nas férias no dropdown de mês de referência", async () => {
-      await selecionarDRE();
+    it("não deve reconstruir o mês quando o Recreio nas Férias da URL não existir", async () => {
+      const recreioInexistenteUUID = "91ce7c10-2708-4a29-a358-8dfb5b16b43c";
+      cleanup();
+      mock.reset();
+      setupMocks();
+      mock.onGet("/grupos-unidade-escolar/por-dre/").reply(200, { grupos: [] });
+      localStorage.setItem("tipo_perfil", TIPO_PERFIL.DIRETORIA_REGIONAL);
 
-      await waitFor(() => {
+      await renderComponent(mockMeusDadosDRE, [
+        `/?recreio_nas_ferias=${recreioInexistenteUUID}`,
+      ]);
+
+      const seletorMes = screen
+        .getByTestId("div-select-mes-referencia")
+        .querySelector("select");
+
+      await waitFor(() =>
         expect(
           screen.getByRole("option", { name: "recreio março" }),
-        ).toBeInTheDocument();
-      });
+        ).toBeInTheDocument(),
+      );
+      expect(seletorMes.value).toBe("");
+      expect(
+        mock.history.get.filter((request) =>
+          request.url.includes("dashboard-resultados"),
+        ),
+      ).toHaveLength(0);
     });
 
     it("deve requisitar o dashboard com recreio_nas_ferias e manter o recreio selecionado", async () => {

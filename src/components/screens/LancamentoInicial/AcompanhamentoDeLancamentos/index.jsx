@@ -1,3 +1,4 @@
+import { WarningOutlined } from "@ant-design/icons";
 import StatefulMultiSelect from "src/components/Shareable/MultiSelect/StatefulMultiSelect";
 import { Select as SelectAntd, Spin } from "antd";
 import HTTP_STATUS from "http-status-codes";
@@ -183,6 +184,7 @@ export const AcompanhamentoDeLancamentos = () => {
     tipo_unidade: searchParams.get("tipo_unidade"),
     escola: searchParams.get("escola"),
     ocorrencias: searchParams.get("ocorrencias"),
+    somente_pendentes_acao_dre: false,
   });
 
   const [gruposHabilitadosPorDre, setGruposHabilitadosPorDre] = useState({});
@@ -578,6 +580,7 @@ export const AcompanhamentoDeLancamentos = () => {
       diretoria_regional: diretoria_regional?.value,
       mes_ano: mes_ano?.value,
       recreio_nas_ferias: recreioSelecionado,
+      somente_pendentes_acao_dre: false,
     });
     setMesAno(mesAnoSelecionado);
     setRecreioNasFerias(recreioSelecionado);
@@ -1009,6 +1012,10 @@ export const AcompanhamentoDeLancamentos = () => {
                                     }`
                               }
                               dataTestId={dadosPorStatus.status}
+                              exibirSinalizacaoPendencia={
+                                usuarioEhDRE() &&
+                                dadosPorStatus.possui_pendencias_acao_dre
+                              }
                               getDashboardMedicaoInicialAsync={
                                 getDashboardMedicaoInicialAsync
                               }
@@ -1125,6 +1132,25 @@ export const AcompanhamentoDeLancamentos = () => {
                                 }}
                               />
                             </div>
+                            {usuarioEhDRE() &&
+                              statusSelecionado ===
+                                "MEDICAO_CORRIGIDA_PARA_CODAE" && (
+                                <div className="col-4 d-flex align-items-end">
+                                  <Field
+                                    name="somente_pendentes_acao_dre"
+                                    type="checkbox"
+                                  >
+                                    {({ input }) => (
+                                      <label className="filtro-pendencias-acao-dre">
+                                        <input {...input} type="checkbox" />
+                                        <span>
+                                          Exibir itens pendentes de ação
+                                        </span>
+                                      </label>
+                                    )}
+                                  </Field>
+                                </div>
+                              )}
                           </div>
                           <div className="row">
                             <div className="col-12 mt-auto text-end">
@@ -1188,10 +1214,21 @@ export const AcompanhamentoDeLancamentos = () => {
                                     return (
                                       <tr key={key} className="row">
                                         <td className="col-5 ps-2 pt-3">
-                                          {usuarioEhEscolaTerceirizadaQualquerPerfil()
-                                            ? dado.recreio_nas_ferias?.titulo ||
-                                              dado.mes_ano
-                                            : dado.escola}
+                                          {usuarioEhEscolaTerceirizadaQualquerPerfil() ? (
+                                            dado.recreio_nas_ferias?.titulo ||
+                                            dado.mes_ano
+                                          ) : (
+                                            <>
+                                              {dado.escola}
+                                              {usuarioEhDRE() &&
+                                                dado.pendente_acao_dre && (
+                                                  <WarningOutlined
+                                                    className="icone-pendencia-acao-dre ms-2"
+                                                    aria-label="Item pendente de ação"
+                                                  />
+                                                )}
+                                            </>
+                                          )}
                                         </td>
                                         {!usuarioEhEscolaTerceirizadaQualquerPerfil() && (
                                           <td className="col-1 text-center pt-3">
