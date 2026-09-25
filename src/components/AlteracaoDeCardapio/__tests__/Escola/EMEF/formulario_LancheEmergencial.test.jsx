@@ -49,12 +49,12 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
       .reply(200, mockRascunhosAlteracaoCardapioEMEF);
     mock
       .onGet(
-        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/3c32be8e-f191-468d-a4e2-3dd8751e5e7a/"
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/3c32be8e-f191-468d-a4e2-3dd8751e5e7a/",
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarEMEF);
     mock
       .onGet(
-        "/quantidade-alunos-por-periodo/escola/3c32be8e-f191-468d-a4e2-3dd8751e5e7a/"
+        "/quantidade-alunos-por-periodo/escola/3c32be8e-f191-468d-a4e2-3dd8751e5e7a/",
       )
       .reply(200, mockQuantidadeAlunosPorPeriodoEMEF);
     mock
@@ -62,12 +62,12 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
       .reply(201, mockRascunhoAlteracaoCardapioEMEF);
     mock
       .onPatch(
-        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`
+        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`,
       )
       .reply(200, mockRascunhoAlteracaoCardapioEMEF);
     mock
       .onPatch(
-        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/inicio-pedido/`
+        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/inicio-pedido/`,
       )
       .reply(200, {
         ...mockRascunhoAlteracaoCardapioEMEF,
@@ -75,14 +75,14 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
       });
     mock
       .onDelete(
-        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`
+        `/alteracoes-cardapio/${mockRascunhoAlteracaoCardapioEMEF.uuid}/`,
       )
       .reply(204, {});
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "nome_instituicao",
-      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`
+      `"EMEF PERICLES EUGENIO DA SILVA RAMOS"`,
     );
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
@@ -104,14 +104,14 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
           >
             <AlteracaoDeCardapioPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página e o breadcrumb `Alteração do Tipo de Alimentação`", async () => {
     expect(
-      screen.queryAllByText("Alteração do Tipo de Alimentação").length
+      screen.queryAllByText("Alteração do Tipo de Alimentação").length,
     ).toBe(2);
   });
 
@@ -120,19 +120,19 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     expect(screen.getByText("524")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação # 807A8")
+      screen.getByText("Alteração do Tipo de Alimentação # 807A8"),
     ).toBeInTheDocument();
     expect(screen.getByText("Dia: 18/06/2025")).toBeInTheDocument();
     expect(
-      screen.getByText("Salvo em: 13/03/2025 10:12:31")
+      screen.getByText("Salvo em: 13/03/2025 10:12:31"),
     ).toBeInTheDocument();
   });
 
@@ -140,7 +140,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
     const uuidLancheEmergencial = mockMotivosAlteracaoCardapio.results.find(
-      (motivo) => motivo.nome.includes("Lanche Emergencial")
+      (motivo) => motivo.nome.includes("Lanche Emergencial"),
     ).uuid;
     fireEvent.change(selectElementMotivo, {
       target: { value: uuidLancheEmergencial },
@@ -187,16 +187,16 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
 
     await selectOption(
       screen.getByTestId("select-tipos-alimentacao-de-MANHA"),
-      "Refeição"
+      "Refeição",
     );
 
     await selectOption(
       screen.getByTestId("select-tipos-alimentacao-para-MANHA"),
-      "Lanche Emergencial"
+      "Lanche Emergencial",
     );
 
     const divInputNumeroAlunosMANHA = screen.getByTestId(
-      "div-input-numero-alunos-MANHA"
+      "div-input-numero-alunos-MANHA",
     );
     const inputElementNumeroAlunosMANHA =
       divInputNumeroAlunosMANHA.querySelector("input");
@@ -216,6 +216,73 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
       .getByText("Salvar rascunho")
       .closest("button");
     fireEvent.click(botaoSalvarRascunho);
+
+    jest.useRealTimers();
+  });
+
+  it("Limpa a data final ao limpar a data inicial", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-01-30T00:00:00Z"));
+
+    selecionaMotivoLancheEmergencial();
+
+    const divInputDataInicial = screen.getByTestId("div-input-data-inicial");
+    const inputElementDataInicial = divInputDataInicial.querySelector("input");
+    await waitFor(async () => {
+      fireEvent.change(inputElementDataInicial, {
+        target: { value: "30/01/2025" },
+      });
+    });
+
+    const divInputDataFinal = screen.getByTestId("div-input-data-final");
+    const inputElementDataFinal = divInputDataFinal.querySelector("input");
+    fireEvent.change(inputElementDataFinal, {
+      target: { value: "31/01/2025" },
+    });
+    expect(inputElementDataFinal.value).toBe("31/01/2025");
+
+    const botaoLimparDataInicial = divInputDataInicial.querySelector(
+      ".react-datepicker__close-icon",
+    );
+    await act(async () => {
+      fireEvent.click(botaoLimparDataInicial);
+    });
+
+    const inputDataInicialAtualizado = screen
+      .getByTestId("div-input-data-inicial")
+      .querySelector("input");
+    expect(inputDataInicialAtualizado.value).toBe("");
+
+    const inputDataFinalAtualizado = screen
+      .getByTestId("div-input-data-final")
+      .querySelector("input");
+    expect(inputDataFinalAtualizado.disabled).toBe(true);
+
+    jest.useRealTimers();
+  });
+
+  it("Exibe erro ao carregar limite da data final ao preencher a data inicial", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-01-30T00:00:00Z"));
+
+    selecionaMotivoLancheEmergencial();
+    mock.onGet("/dias-uteis/").reply(500, { detail: "Erro" });
+
+    const divInputDataInicial = screen.getByTestId("div-input-data-inicial");
+    const inputElementDataInicial = divInputDataInicial.querySelector("input");
+    await waitFor(async () => {
+      fireEvent.change(inputElementDataInicial, {
+        target: { value: "30/01/2025" },
+      });
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Erro ao carregar limite da data final da Alteração de dia de Cardápio",
+        ),
+      ).toBeInTheDocument();
+    });
 
     jest.useRealTimers();
   });
