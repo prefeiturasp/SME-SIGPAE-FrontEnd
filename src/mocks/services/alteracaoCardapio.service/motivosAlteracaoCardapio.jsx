@@ -1,5 +1,5 @@
 export const mockMotivosAlteracaoCardapio = {
-  count: 3,
+  count: 4,
   next: null,
   previous: null,
   results: [
@@ -17,6 +17,11 @@ export const mockMotivosAlteracaoCardapio = {
       nome: "Lanche Emergencial",
       ativo: true,
       uuid: "1ddec320-cd24-4cf4-9666-3e7b3a2b903c",
+    },
+    {
+      nome: "Alteração de Cardápio",
+      ativo: true,
+      uuid: "33333333-3333-3333-3333-333333333333",
     },
   ],
 };

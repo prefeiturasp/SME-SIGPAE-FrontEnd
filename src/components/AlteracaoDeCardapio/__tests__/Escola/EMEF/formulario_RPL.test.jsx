@@ -462,4 +462,73 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
     const botaoOk = screen.getByText("OK").closest("button");
     fireEvent.click(botaoOk);
   });
+
+  it("renderiza opções de alimentação para um motivo sem classificação RPL/LPR/Lanche Emergencial", () => {
+    const selectMotivoDiv = screen.getByTestId("div-select-motivo");
+    const selectElementMotivo = selectMotivoDiv.querySelector("select");
+    const uuidNeutro = mockMotivosAlteracaoCardapio.results.find(
+      (motivo) => motivo.nome === "Alteração de Cardápio",
+    ).uuid;
+    fireEvent.change(selectElementMotivo, {
+      target: { value: uuidNeutro },
+    });
+
+    expect(screen.getByTestId("div-checkbox-MANHA")).toBeInTheDocument();
+    expect(screen.getByTestId("div-checkbox-TARDE")).toBeInTheDocument();
+  });
+
+  it("renderiza opções de alimentação para o motivo LPR", () => {
+    const selectMotivoDiv = screen.getByTestId("div-select-motivo");
+    const selectElementMotivo = selectMotivoDiv.querySelector("select");
+    const uuidLPR = mockMotivosAlteracaoCardapio.results.find((motivo) =>
+      motivo.nome.includes("LPR"),
+    ).uuid;
+    fireEvent.change(selectElementMotivo, {
+      target: { value: uuidLPR },
+    });
+
+    expect(screen.getByTestId("div-checkbox-MANHA")).toBeInTheDocument();
+    expect(screen.getByTestId("div-checkbox-TARDE")).toBeInTheDocument();
+  });
+
+  it("Desmarca período selecionado", async () => {
+    selecionaMotivoRPL();
+
+    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
+    await act(async () => {
+      fireEvent.click(divCheckboxMANHA.querySelector("span"));
+    });
+    await act(async () => {
+      fireEvent.click(divCheckboxMANHA.querySelector("span"));
+    });
+  });
+
+  it("Marca e desmarca período pelo teclado", async () => {
+    selecionaMotivoRPL();
+
+    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
+    await act(async () => {
+      fireEvent.keyDown(divCheckboxMANHA.querySelector("span"), {
+        key: "Enter",
+      });
+    });
+    await act(async () => {
+      fireEvent.keyDown(divCheckboxMANHA.querySelector("span"), { key: " " });
+    });
+    await act(async () => {
+      fireEvent.keyDown(divCheckboxMANHA.querySelector("span"), { key: "a" });
+    });
+  });
+
+  it("Valida número de alunos quando a escola não possui alunos regulares", async () => {
+    localStorage.setItem("possui_alunos_regulares", "false");
+    await preencherFormularioRPL();
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    localStorage.removeItem("possui_alunos_regulares");
+  });
 });
