@@ -73,7 +73,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
   const [erroRascunhos, setErroRascunhos] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [motivoEspecifico, setMotivoEspecifico] = useState(false);
-  const [carregandoRascunho, setCarregandoRascunho] = useState(false);
   const [uuid, setUuid] = useState<string | undefined>(undefined);
   const [idExterno, setIdExterno] = useState<string | undefined>(undefined);
 
@@ -102,7 +101,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
     form.change("tipos_alimentacao_selecionados", []);
     form.change("periodo_escolar");
     form.change("numero_alunos", undefined);
-    setCarregandoRascunho(false);
     setUuid(undefined);
     setIdExterno(undefined);
   };
@@ -252,7 +250,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
       | RascunhosInclusaoDeAlimentacaoNormalInterface
       | RascunhosInclusaoDeAlimentacaoContinuaInterface,
   ): Promise<void> => {
-    setCarregandoRascunho(true);
     setUuid(inclusao.uuid);
     setIdExterno(inclusao.id_externo);
     form.change("uuid", inclusao.uuid);
@@ -263,7 +260,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
     } else {
       carregarRascunhoContinuo(form, values, inclusao_);
     }
-    setCarregandoRascunho(false);
   };
 
   const carregarRascunhoNormal = async (
@@ -517,15 +513,8 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
   const checaMotivoInclusaoEspecifico = (
     values: ValuesFormInclusaoDeAlimentacaoInterface,
     form: FormApi<any, Partial<any>>,
-    value: string,
   ): void => {
-    if (
-      (ehMotivoInclusaoEspecifico(values) && !carregandoRascunho) ||
-      (motivosSimples
-        .find((motivo: MotivoSimplesInterface) => motivo.uuid === value)
-        .nome.includes("Específico") &&
-        carregandoRascunho)
-    ) {
+    if (ehMotivoInclusaoEspecifico(values)) {
       setMotivoEspecifico(true);
       form.change("quantidades_periodo", undefined);
       form.change("quantidades_periodo", periodosMotivoEspecifico);
@@ -644,7 +633,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                                     await checaMotivoInclusaoEspecifico(
                                       values_,
                                       form,
-                                      value,
                                     );
                                   } else if (
                                     motivosContinuos.find(
@@ -661,12 +649,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                                       periodoNoite,
                                     );
                                     form.change("reload", !values_.reload);
-                                  } else if (
-                                    motivosContinuos.find(
-                                      (motivo: MotivoContinuoInterface) =>
-                                        motivo.uuid === value,
-                                    )
-                                  ) {
+                                  } else {
                                     form.change("dias_semana", undefined);
                                     form.change(
                                       "tipos_alimentacao_selecionados",
@@ -675,11 +658,6 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                                     form.change("periodo_escolar", undefined);
                                     form.change("numero_alunos", undefined);
                                     form.change("observacao", undefined);
-                                    form.change(
-                                      "quantidades_periodo",
-                                      undefined,
-                                    );
-                                  } else {
                                     form.change(
                                       "quantidades_periodo",
                                       undefined,
@@ -739,8 +717,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                         form={form}
                         values={values}
                         periodos={
-                          ehMotivoInclusaoEspecifico(values) ||
-                          (carregandoRascunho && motivoEspecifico)
+                          ehMotivoInclusaoEspecifico(values)
                             ? periodosMotivoEspecifico
                             : periodos
                         }
@@ -771,8 +748,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                         values={form.getState().values}
                         form={form}
                         periodos={
-                          ehMotivoInclusaoEspecifico(form.getState().values) ||
-                          (carregandoRascunho && motivoEspecifico)
+                          ehMotivoInclusaoEspecifico(form.getState().values)
                             ? periodosMotivoEspecifico
                             : periodos
                         }
@@ -792,8 +768,7 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                           <RecorrenciaTabela
                             values={values}
                             periodos={
-                              ehMotivoInclusaoEspecifico(values) ||
-                              (carregandoRascunho && motivoEspecifico)
+                              ehMotivoInclusaoEspecifico(values)
                                 ? periodosMotivoEspecifico
                                 : periodos
                             }
