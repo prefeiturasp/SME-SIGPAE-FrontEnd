@@ -35,6 +35,30 @@
             padding: 0.5em;
             border-left: 1px solid $grayDisabled;
             border-bottom: 1px solid $grayDisabled;
+
+            .edital-com-etiqueta {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              gap: 8px;
+            }
+
+            .etiqueta-parametrizacao-vigente {
+              display: inline-block;
+              margin-left: auto;
+              flex-shrink: 0;
+              background-color: #f0cd7b;
+              color: $blackSubtle;
+              padding: 2px 6px;
+              border-radius: 3px;
+              font-size: 9px;
+              font-weight: 700;
+              line-height: 14px;
+              letter-spacing: 0.2px;
+              text-transform: uppercase;
+              white-space: nowrap;
+            }
+
             i.verde {
               cursor: pointer;
               color: $green;
