@@ -300,22 +300,11 @@ export function RelatorioFinanceiroConsolidado() {
                     mesesAnos={mesesAnos}
                     exibirReabrirLancamentos={!modoVisualizacao}
                     showReabrirLancamentos={() => setReabrirLancamentos(true)}
+                    showAplicarDesconto={() => setAplicarDesconto(true)}
                   />
                 </form>
               )}
             </Form>
-            {!modoVisualizacao && (
-              <div className="row mt-4">
-                <div className="col-12 d-flex gap-3">
-                  <Botao
-                    texto="Aplicar Descontos"
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    onClick={() => setAplicarDesconto(true)}
-                  />
-                </div>
-              </div>
-            )}
             {!carregando && relatorioConsolidado && (
               <div className="tabelas-relatorio-consolidado mt-5 mb-4">
                 {Object.entries(GRUPOS_POR_COMPONENTE).map(
