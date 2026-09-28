@@ -153,58 +153,11 @@ export const PeriodosInclusaoNormal = ({
   }, [form, uuid, idExterno]);
 
   const onTiposAlimentacaoChanged = (values_, indice) => {
-    if (ehETEC) {
-      const LANCHE_4H_UUID = periodos[0].tipos_alimentacao.find(
-        (ta) => ta.nome === "Lanche 4h",
-      ).uuid;
-      const LANCHE_EMERGENCIAL = periodos[0].tipos_alimentacao.find(
-        (ta) => ta.nome === "Lanche Emergencial",
-      ).uuid;
-      const NOT_LANCHE_4H_OR_EMERGENCIAL_UUID_ARRAY =
-        periodos[0].tipos_alimentacao
-          .filter(
-            (ta) => ![LANCHE_4H_UUID, LANCHE_EMERGENCIAL].includes(ta.uuid),
-          )
-          .map((ta) => ta.uuid);
-      if (values_.at(-1) === LANCHE_4H_UUID) {
-        form.change(
-          `quantidades_periodo[
-        ${indice}].tipos_alimentacao_selecionados`,
-          [LANCHE_4H_UUID],
-        );
-      } else if (values_.at(-1) === LANCHE_EMERGENCIAL) {
-        form.change(
-          `quantidades_periodo[
-        ${indice}].tipos_alimentacao_selecionados`,
-          [LANCHE_EMERGENCIAL],
-        );
-      } else if (
-        !values_.at(-1) ||
-        values.quantidades_periodo[
-          indice
-        ].tipos_alimentacao_selecionados.includes(values_.at(-1))
-      ) {
-        form.change(
-          `quantidades_periodo[
-        ${indice}].tipos_alimentacao_selecionados`,
-          [],
-        );
-      } else if (
-        NOT_LANCHE_4H_OR_EMERGENCIAL_UUID_ARRAY.includes(values_.at(-1))
-      ) {
-        form.change(
-          `quantidades_periodo[
-        ${indice}].tipos_alimentacao_selecionados`,
-          NOT_LANCHE_4H_OR_EMERGENCIAL_UUID_ARRAY,
-        );
-      }
-    } else {
-      form.change(
-        `quantidades_periodo[
+    form.change(
+      `quantidades_periodo[
             ${indice}].tipos_alimentacao_selecionados`,
-        values_,
-      );
-    }
+      values_,
+    );
   };
   const handleNumeroAlunosValidate = (motivoEspecifico, periodos, indice) => {
     return motivoEspecifico || usuarioEhEscolaSemAlunosRegulares()
@@ -314,11 +267,10 @@ export const PeriodosInclusaoNormal = ({
                         component={StatefulMultiSelect}
                         name="tipos_alimentacao"
                         selected={
-                          getPeriodo(indice).tipos_alimentacao_selecionados ||
-                          []
+                          getPeriodo(indice).tipos_alimentacao_selecionados
                         }
                         options={formatarParaMultiselect(
-                          getPeriodo(indice).tipos_alimentacao || [],
+                          getPeriodo(indice).tipos_alimentacao,
                         )}
                         onSelectedChanged={(values_) =>
                           onTiposAlimentacaoChanged(values_, indice)
