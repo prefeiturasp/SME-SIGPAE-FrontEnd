@@ -24,6 +24,7 @@ import { mockDiasUteis } from "src/mocks/diasUseisMock";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockMeusDadosEscolaEMEFPericles } from "src/mocks/meusDados/escolaEMEFPericles";
 import React from "react";
+import { ToastContainer } from "react-toastify";
 import {
   getTiposDeAlimentacao,
   getVinculosTipoAlimentacaoMotivoInclusaoEspecifico,
@@ -208,6 +209,7 @@ const setupBase = async () => {
         value={{ meusDados: mockMeusDadosEscolaEMEFPericles }}
       >
         <Container />
+        <ToastContainer />
       </MeusDadosContext.Provider>,
     ));
   });
@@ -247,7 +249,7 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
     expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
   });
 
-  it("exibe erro ao remover rascunho", async () => {
+  it("exibe erro ao remover rascunho no toast", async () => {
     await awaitServices();
     escolaExcluirSolicitacaoDeInclusaoDeAlimentacao.mockResolvedValueOnce({
       data: {},
@@ -259,6 +261,12 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
     });
 
     expect(escolaExcluirSolicitacaoDeInclusaoDeAlimentacao).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Houve um erro ao excluir o rascunho: Erro"),
+      ).toBeInTheDocument();
+    });
   });
 
   it("não remove rascunho quando a confirmação é negada", async () => {
@@ -274,7 +282,7 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
     ).not.toHaveBeenCalled();
   });
 
-  it("exibe erro de validação ao enviar formulário sem período selecionado", async () => {
+  it("exibe erro de validação ao enviar formulário sem período selecionado no toast", async () => {
     await awaitServices();
     setMotivoValueReposicaoDeAula();
 
@@ -288,9 +296,15 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
     await act(async () => {
       fireEvent.click(botaoEnviar);
     });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Necessário selecionar ao menos um período"),
+      ).toBeInTheDocument();
+    });
   });
 
-  it("exibe erro ao criar inclusão", async () => {
+  it("exibe erro ao criar inclusão no toast", async () => {
     await awaitServices();
     await setupInclusaoNormal();
     createInclusaoAlimentacao.mockResolvedValueOnce({
@@ -301,9 +315,13 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
     await act(async () => {
       fireEvent.click(screen.getByTestId("botao-enviar-inclusao"));
     });
+
+    await waitFor(() => {
+      expect(screen.getByText("Erro")).toBeInTheDocument();
+    });
   });
 
-  it("exibe erro ao iniciar pedido", async () => {
+  it("exibe erro ao iniciar pedido no toast", async () => {
     await awaitServices();
     await setupInclusaoNormal();
     iniciaFluxoInclusaoAlimentacao.mockResolvedValueOnce({
@@ -313,6 +331,10 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
 
     await act(async () => {
       fireEvent.click(screen.getByTestId("botao-enviar-inclusao"));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Erro")).toBeInTheDocument();
     });
   });
 
@@ -330,7 +352,7 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
     expect(iniciaFluxoInclusaoAlimentacao).toHaveBeenCalled();
   });
 
-  it("exibe erro ao atualizar rascunho", async () => {
+  it("exibe erro ao atualizar rascunho no toast", async () => {
     await awaitServices();
     await act(async () => {
       fireEvent.click(screen.getByTestId("rascunho-06E82"));
@@ -343,6 +365,10 @@ describe("Teste Formulário Inclusão de Alimentação - fluxos adicionais", () 
 
     await act(async () => {
       fireEvent.click(screen.getByTestId("botao-salvar-rascunho"));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Erro")).toBeInTheDocument();
     });
   });
 
