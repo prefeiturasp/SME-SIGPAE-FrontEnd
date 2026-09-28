@@ -14,14 +14,11 @@ import { ListaOcorrenciasPage } from "src/pages/IMR/ListaOcorrenciasPage";
 import { RegistrarNovaOcorrenciaPage } from "src/pages/IMR/RegistrarNovaOcorrenciaPage";
 import { AcompanhamentoDeLancamentosPage } from "src/pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
 import { CadastroDeClausulasPage } from "src/pages/LancamentoMedicaoInicial/CadastroDeClausulasPage";
-import { CadastroDeEmpenhoPage } from "src/pages/LancamentoMedicaoInicial/CadastroDeEmpenhoPage";
 import { ClausulasParaDescontosPage } from "src/pages/LancamentoMedicaoInicial/ClausulasParaDescontosPage";
 import { ConferenciaDosLancamentosPage } from "src/pages/LancamentoMedicaoInicial/ConferenciaDosLancamentosPage";
 import { ControleDeFrequenciaPage } from "src/pages/LancamentoMedicaoInicial/ControleDeFrequenciaPage";
 import { DetalhamentoDoLancamentoPage } from "src/pages/LancamentoMedicaoInicial/DetalhamentoDoLancamentoPage";
 import { EditarClausulaPage } from "src/pages/LancamentoMedicaoInicial/EditarClausulaPage";
-import { EditarEmpenhoPage } from "src/pages/LancamentoMedicaoInicial/EditarEmpenhoPage";
-import { EmpenhosPage } from "src/pages/LancamentoMedicaoInicial/EmpenhosPage";
 import { LancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicaoInicial/LancamentoMedicaoInicialPage";
 import { AdicionarParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceiraPage";
 import { EditarParametrizacaoFinanceiraPage } from "src/pages/LancamentoMedicaoInicial/ParametrizacaoFinanceira/EditarParametrizacaoFinanceiraPage";
@@ -93,21 +90,6 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
     path: `/${constants.MEDICAO_INICIAL}/${constants.DETALHAMENTO_DO_LANCAMENTO}`,
     component: DetalhamentoDoLancamentoPage,
     tipoUsuario: usuarioEhEscolaTerceirizadaQualquerPerfil(),
-  },
-  {
-    path: `/${constants.MEDICAO_INICIAL}/${constants.EMPENHOS}`,
-    component: EmpenhosPage,
-    tipoUsuario: usuarioEhMedicao(),
-  },
-  {
-    path: `/${constants.MEDICAO_INICIAL}/${constants.EMPENHOS}/${constants.CADASTRO_DE_EMPENHO}`,
-    component: CadastroDeEmpenhoPage,
-    tipoUsuario: usuarioEhMedicao(),
-  },
-  {
-    path: `/${constants.MEDICAO_INICIAL}/${constants.EMPENHOS}/${constants.EDITAR_EMPENHO}`,
-    component: EditarEmpenhoPage,
-    tipoUsuario: usuarioEhMedicao(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.CLAUSULAS_PARA_DESCONTOS}`,

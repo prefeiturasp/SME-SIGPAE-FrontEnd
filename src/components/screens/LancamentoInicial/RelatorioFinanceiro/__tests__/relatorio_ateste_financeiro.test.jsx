@@ -6,7 +6,6 @@ import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuar
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockRelatoriosFinanceiro } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatoriosFinanceiro";
-import { mockDadosLiquidacao } from "src/mocks/services/relatorioFinanceiro.service/mockGetDadosLiquidacao";
 import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import {
@@ -56,9 +55,6 @@ describe("Testes da interface de Análise do Relatório Financeiro - Relatorio F
       .onGet("/tipos-unidade-escolar-agrupados/")
       .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
-    mock
-      .onGet("/medicao-inicial/dados-liquidacao/")
-      .reply(200, mockDadosLiquidacao);
     mock
       .onGet("/medicao-inicial/clausulas-de-descontos/")
       .reply(200, mockClausulasDeDesconto);

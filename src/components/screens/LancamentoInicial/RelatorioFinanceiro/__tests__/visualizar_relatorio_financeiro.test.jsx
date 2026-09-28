@@ -6,7 +6,6 @@ import { mockMeusDadosSuperUsuarioMedicao } from "src/mocks/meusDados/superUsuar
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mockGetGrupoUnidadeEscolar";
 import { mockRelatoriosFinanceiro } from "src/mocks/services/relatorioFinanceiro.service/mockGetRelatoriosFinanceiro";
-import { mockDadosLiquidacao } from "src/mocks/services/relatorioFinanceiro.service/mockGetDadosLiquidacao";
 import { mockGetMesesAnosMedicaoInicial } from "src/mocks/services/dashboard.service/mockGetMesesAnosMedicaoInicial";
 import { mockGetTiposUnidadeEscolarTiposAlimentacao } from "src/mocks/services/cadastroTipoAlimentacao.service/mockGetTiposUnidadeEscolarTiposAlimentacao";
 import { mockTotaisAtendimentoFaixaEtaria } from "src/mocks/services/relatorioFinanceiro.service/mockGetTotaisConsumoAtendimento";
@@ -41,9 +40,6 @@ describe("Testes da interface em caso de Visualização do Relatório Financeiro
       .onGet("/tipos-unidade-escolar-agrupados/")
       .reply(200, mockGetTiposUnidadeEscolarTiposAlimentacao);
     mock.onGet("/faixas-etarias/").reply(200, mockFaixasEtarias);
-    mock
-      .onGet("/medicao-inicial/dados-liquidacao/")
-      .reply(200, mockDadosLiquidacao);
     mock
       .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
       .reply(200, mockRelatorioFinanceiroFaixaEtaria);
@@ -130,7 +126,6 @@ describe("Testes da interface em caso de Visualização do Relatório Financeiro
   });
 
   it("deve ocultar ações de edição no modo visualização", async () => {
-    expect(screen.queryByText("Editar Empenhos")).not.toBeInTheDocument();
     expect(screen.queryByText("Aplicar Descontos")).not.toBeInTheDocument();
     expect(screen.queryByText("Finalizar Análise")).not.toBeInTheDocument();
     expect(screen.getByTestId("botao-pdf")).toBeInTheDocument();
