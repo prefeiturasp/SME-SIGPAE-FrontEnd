@@ -32,14 +32,6 @@ export const formatarPeriodos = (periodos) => {
   return periodos;
 };
 
-export const extrairTiposALimentacao = (tiposAlimentacao) => {
-  let uuidsTiposAlimentacao = [];
-  tiposAlimentacao.forEach((tipoAlimentacao) => {
-    uuidsTiposAlimentacao.push(tipoAlimentacao.uuid);
-  });
-  return uuidsTiposAlimentacao;
-};
-
 export const formatarSubmissaoSolicitacaoContinua = (values) => {
   values.motivo = values.inclusoes[0].motivo;
   values.data_inicial = values.inclusoes[0].data_inicial;
