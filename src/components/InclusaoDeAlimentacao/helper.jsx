@@ -3,12 +3,6 @@ import {
   usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 
-export const formatarTiposDeAlimentacao = (tiposAlimentacao) => {
-  return tiposAlimentacao.map((element) => {
-    return { value: element.uuid, label: element.nome };
-  });
-};
-
 export const formatarPeriodosEspecificosEMEF = (periodos) => {
   periodos.forEach((periodo) => {
     periodo["checked"] = false;
@@ -44,14 +38,6 @@ export const extrairTiposALimentacao = (tiposAlimentacao) => {
     uuidsTiposAlimentacao.push(tipoAlimentacao.uuid);
   });
   return uuidsTiposAlimentacao;
-};
-
-export const formatarDiasSemana = (diasSemana) => {
-  let paraStringDiasSemana = [];
-  diasSemana.forEach((diaSemana) => {
-    paraStringDiasSemana.push(diaSemana.toString());
-  });
-  return paraStringDiasSemana;
 };
 
 export const formatarSubmissaoSolicitacaoContinua = (values) => {
