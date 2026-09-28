@@ -283,6 +283,29 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
     });
   });
 
+  it("envia inclusão carregada de rascunho ETEC com tipos de alimentação achatados", async () => {
+    await awaitServices();
+    const botaoCarregarRascunho = screen.getByTestId("rascunho-667F9");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Solicitação # 667F9")).toBeInTheDocument();
+    });
+
+    updateInclusaoAlimentacao.mockClear();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId("botao-enviar-inclusao"));
+    });
+
+    const payload = updateInclusaoAlimentacao.mock.calls[0][1];
+    expect(payload.quantidades_periodo[0].tipos_alimentacao).toEqual([
+      "6b2ed407-ca7d-4849-9ee1-46de89056efc",
+      "af8a89ec-59be-4bed-b81c-348d4e70957d",
+    ]);
+  });
+
   it("remove rascunho", async () => {
     window.confirm = jest.fn().mockImplementation(() => true);
     await awaitServices();
