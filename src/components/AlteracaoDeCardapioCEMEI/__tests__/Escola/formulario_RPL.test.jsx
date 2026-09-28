@@ -702,6 +702,45 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     );
     fireEvent.click(botaoLimpar);
   });
+
+  it("Remove rascunho pelo teclado", async () => {
+    window.confirm = jest.fn().mockImplementation(() => true);
+    const botaoRemoverRascunho = screen.getByTestId(
+      "botao-remover-rascunho-BEFB9",
+    );
+    await act(async () => {
+      fireEvent.keyDown(botaoRemoverRascunho, { key: "Enter" });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-remover-rascunho-BEFB9"), {
+        key: " ",
+      });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-remover-rascunho-BEFB9"), {
+        key: "a",
+      });
+    });
+  });
+
+  it("Carrega rascunho pelo teclado", async () => {
+    const botaoCarregarRascunho = screen.getByTestId(
+      "botao-carregar-rascunho-BEFB9",
+    );
+    await act(async () => {
+      fireEvent.keyDown(botaoCarregarRascunho, { key: "Enter" });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-carregar-rascunho-BEFB9"), {
+        key: " ",
+      });
+    });
+    await act(async () => {
+      fireEvent.keyDown(screen.getByTestId("botao-carregar-rascunho-BEFB9"), {
+        key: "a",
+      });
+    });
+  });
 });
 
 describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI sem quantidade_alunos", () => {
@@ -766,5 +805,67 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI sem quantidad
   it("renderiza o formulário sem quantidade_alunos", async () => {
     expect(screen.getByText("Total de Matriculados")).toBeInTheDocument();
     expect(screen.getByText("187")).toBeInTheDocument();
+  });
+});
+
+describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI rascunho sem alterar_dia", () => {
+  const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
+
+  const mockRascunhoSemAlterarDia = {
+    ...mockAlteracoesCEMEIRascunho.results[0],
+    alterar_dia: null,
+    data_inicial: "10/06/2025",
+    data_final: "10/06/2025",
+  };
+
+  beforeEach(async () => {
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
+    mock
+      .onGet("/motivos-alteracao-cardapio/")
+      .reply(200, mockMotivosAlteracaoCardapio);
+    mock.onGet("/dias-uteis/").reply(200, mockDiasUteis);
+    mock
+      .onGet("/alunos/quantidade-cemei-por-cei-emei/")
+      .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
+    mock
+      .onGet("/alteracoes-cardapio-cemei/")
+      .reply(200, { results: [mockRascunhoSemAlterarDia] });
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("eh_cemei", "true");
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEMEI,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <AlteracaoDeCardapioCEMEIPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("exibe o dia a partir de data_inicial quando não há alterar_dia", () => {
+    expect(screen.getByText("Dia: 10/06/2025")).toBeInTheDocument();
   });
 });
