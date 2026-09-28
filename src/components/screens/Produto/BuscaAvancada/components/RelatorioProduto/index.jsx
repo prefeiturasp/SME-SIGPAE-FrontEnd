@@ -1,12 +1,10 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState } from "react";
 import { getProduto, getInformacoesGrupo } from "src/services/produto.service";
 import ResultadoMock from "./components/resultadoMock";
 import CorpoRelatorio from "./components/corpoRelatorio";
 
 import { Spin } from "antd";
 import { retornaTodosOsLogs } from "./helpers";
-import { ENVIRONMENT } from "src/constants/config";
-import CorpoRelatorioDesenvolvimento from "./components/corpoRelatorio/index_development";
 
 const RelatorioProduto = () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -37,27 +35,14 @@ const RelatorioProduto = () => {
           </Spin>
         )}
         {produto && informacoesNutricionais && !!produto && (
-          <Fragment>
-            {!ENVIRONMENT.includes("production") ? (
-              <CorpoRelatorioDesenvolvimento
-                informacoesNutricionais={informacoesNutricionais}
-                produto={{
-                  ...produto,
-                  todos_logs: retornaTodosOsLogs(produto.homologacao),
-                }}
-                historico={produto.ultima_homologacao}
-              />
-            ) : (
-              <CorpoRelatorio
-                informacoesNutricionais={informacoesNutricionais}
-                produto={{
-                  ...produto,
-                  todos_logs: retornaTodosOsLogs(produto.homologacao),
-                }}
-                historico={produto.ultima_homologacao}
-              />
-            )}
-          </Fragment>
+          <CorpoRelatorio
+            informacoesNutricionais={informacoesNutricionais}
+            produto={{
+              ...produto,
+              todos_logs: retornaTodosOsLogs(produto.homologacao),
+            }}
+            historico={produto.ultima_homologacao}
+          />
         )}
       </div>
     </div>
