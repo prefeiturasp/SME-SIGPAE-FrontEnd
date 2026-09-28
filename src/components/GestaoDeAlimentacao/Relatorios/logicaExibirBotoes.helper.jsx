@@ -2,11 +2,11 @@ import { CODAE, DRE, TERCEIRIZADA } from "src/configs/constants";
 import { statusEnum, TIPO_PERFIL } from "src/constants/shared";
 import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
-const tipoPerfil = localStorage.getItem("tipo_perfil");
+const getTipoPerfil = () => localStorage.getItem("tipo_perfil");
 
 export const exibeBotaoNaoAprovar = (solicitacao, textoBotaoNaoAprova) => {
   return (
-    tipoPerfil !== TIPO_PERFIL.TERCEIRIZADA ||
+    getTipoPerfil() !== TIPO_PERFIL.TERCEIRIZADA ||
     (solicitacao &&
       solicitacao.prioridade !== "REGULAR" &&
       solicitacao.status === statusEnum.CODAE_QUESTIONADO &&
@@ -18,7 +18,7 @@ const ehLancheEmergencial = (solicitacao, visao) => {
   return (
     visao === CODAE &&
     solicitacao.status === statusEnum.DRE_VALIDADO &&
-    tipoPerfil === TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA &&
+    getTipoPerfil() === TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA &&
     solicitacao.motivo?.nome === "Lanche Emergencial"
   );
 };
@@ -30,7 +30,7 @@ export const exibeBotaoAprovar = (solicitacao, visao, textoBotaoAprova) => {
     (![
       TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
       TIPO_PERFIL.TERCEIRIZADA,
-    ].includes(tipoPerfil) ||
+    ].includes(getTipoPerfil()) ||
       solicitacao.prioridade === "REGULAR" ||
       [
         statusEnum.TERCEIRIZADA_RESPONDEU_QUESTIONAMENTO,
@@ -43,7 +43,7 @@ export const exibeBotaoAprovar = (solicitacao, visao, textoBotaoAprova) => {
           solicitacao.logs.find(
             (log) =>
               log.status_evento_explicacao ===
-                "Terceirizada respondeu questionamento" && log.resposta_sim_nao
+                "Terceirizada respondeu questionamento" && log.resposta_sim_nao,
           ))))
   );
 };
@@ -51,7 +51,7 @@ export const exibeBotaoAprovar = (solicitacao, visao, textoBotaoAprova) => {
 export const exibirBotaoQuestionamento = (
   solicitacao,
   visao,
-  tipoPerfil_ = tipoPerfil
+  tipoPerfil_ = getTipoPerfil(),
 ) => {
   if (ehLancheEmergencial(solicitacao, visao)) return false;
   return (
@@ -63,14 +63,14 @@ export const exibirBotaoQuestionamento = (
     (solicitacao.prioridade !== "REGULAR" ||
       (visao === CODAE && solicitacao.prioridade !== "REGULAR")) &&
     [statusEnum.DRE_VALIDADO, statusEnum.CODAE_QUESTIONADO].includes(
-      solicitacao.status
+      solicitacao.status,
     )
   );
 };
 
 export const exibirModalAutorizacaoAposQuestionamento = (
   solicitacao,
-  visao
+  visao,
 ) => {
   if (ehLancheEmergencial(solicitacao, visao)) return false;
   return (
@@ -86,7 +86,7 @@ export const exibirBotaoMarcarConferencia = (solicitacao, visao) => {
     visao === TERCEIRIZADA &&
     solicitacao &&
     [statusEnum.CODAE_AUTORIZADO, statusEnum.ESCOLA_CANCELOU].includes(
-      solicitacao.status
+      solicitacao.status,
     )
   );
 };
