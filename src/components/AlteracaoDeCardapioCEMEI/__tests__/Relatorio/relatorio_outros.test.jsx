@@ -87,6 +87,33 @@ const solicitacaoQuestionada = {
   status: "CODAE_QUESTIONADO",
 };
 
+const solicitacaoAutorizadaComJustificativa = {
+  ...base,
+  prioridade: "REGULAR",
+  alterar_dia: null,
+  data_inicial: "01/05/2025",
+  data_final: "06/05/2025",
+  datas_intervalo: [
+    { data: "01/05/2025" },
+    { data: "02/05/2025" },
+    { data: "03/05/2025" },
+    { data: "04/05/2025" },
+    { data: "05/05/2025" },
+    { data: "06/05/2025" },
+  ],
+  logs: [
+    ...base.logs,
+    {
+      status_evento_explicacao: "CODAE autorizou",
+      resposta_sim_nao: false,
+      criado_em: "27/05/2025 10:00:00",
+      justificativa: "justificativa da autorização",
+      usuario: {},
+      descricao: "",
+    },
+  ],
+};
+
 const setupMocks = ({ solicitacao = base, meusDados, status = 200 }) => {
   mock.onGet("/usuarios/meus-dados/").reply(200, meusDados);
   mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
@@ -271,6 +298,40 @@ describe("Relatório CEMEI - Terceirizada questiona", () => {
     await waitFor(() => {
       expect(screen.getByText("Sim")).toBeInTheDocument();
     });
+  });
+});
+
+describe("Relatório CEMEI - corpo do relatório com autorização e múltiplas datas", () => {
+  beforeEach(async () => {
+    setupMocks({
+      solicitacao: solicitacaoAutorizadaComJustificativa,
+      meusDados: mockMeusDadosCODAEGA,
+    });
+    localStorage.setItem(
+      "tipo_perfil",
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+    localStorage.setItem(
+      "perfil",
+      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    );
+    await renderRelatorio(mockMeusDadosCODAEGA, <Relatorios.RelatorioCODAE />);
+  });
+
+  it("exibe coluna de período de dias, autorização e múltiplas datas", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Alteração do Tipo de Alimentação - Solicitação #/),
+      ).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Dia(s) de Alteração")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("27/05/2025 10:00:00 - Informações da CODAE"),
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Autorizou")).toBeInTheDocument();
   });
 });
 
