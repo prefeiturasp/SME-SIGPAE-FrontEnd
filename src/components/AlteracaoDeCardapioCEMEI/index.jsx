@@ -662,7 +662,7 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       disabled={submitting}
                       onClick={() => {
                         values["status"] = STATUS_DRE_A_VALIDAR;
-                        handleSubmit((values) => onSubmit(values, form));
+                        handleSubmit();
                       }}
                       style={BUTTON_STYLE.GREEN}
                       className="ms-3"

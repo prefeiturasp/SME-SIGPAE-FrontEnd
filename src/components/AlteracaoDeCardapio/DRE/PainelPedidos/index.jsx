@@ -1,6 +1,5 @@
 import { Select as SelectAntd, Spin } from "antd";
 import { ASelect } from "src/components/Shareable/MakeField";
-import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { FiltroEnum, TIPODECARD, TIPO_SOLICITACAO } from "src/constants/shared";
 import {
   filtraNoLimite,
@@ -11,7 +10,6 @@ import {
 import {
   dataAtualDDMMYYYY,
   formatarOpcoesLote,
-  getError,
   safeConcatOn,
 } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
@@ -34,21 +32,13 @@ export const PainelPedidos = ({ ...props }) => {
   const fetchSolicitacoes = async (
     filtro,
     tipoSolicitacao,
-    paramsFromPrevPage
+    paramsFromPrevPage,
   ) => {
     const response = await dreListarSolicitacoesDeAlteracaoDeCardapio(
       filtro,
       tipoSolicitacao,
-      paramsFromPrevPage
+      paramsFromPrevPage,
     );
-
-    if (response.status === HTTP_STATUS.BAD_REQUEST) {
-      toastError(
-        `Erro ao carregar alterações ${tipoSolicitacao}: ${getError(
-          response.data
-        )}`
-      );
-    }
 
     return response;
   };
@@ -63,17 +53,17 @@ export const PainelPedidos = ({ ...props }) => {
       fetchSolicitacoes(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        paramsFromPrevPage
+        paramsFromPrevPage,
       ),
       fetchSolicitacoes(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_CEI,
-        paramsFromPrevPage
+        paramsFromPrevPage,
       ),
       fetchSolicitacoes(
         filtro,
         TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
-        paramsFromPrevPage
+        paramsFromPrevPage,
       ),
     ]);
 
@@ -81,7 +71,7 @@ export const PainelPedidos = ({ ...props }) => {
       "results",
       responseAvulsas,
       responseCEI,
-      responseCEMEI
+      responseCEMEI,
     );
 
     const processarPedidos = (alteracoes, filtro) => {
@@ -90,7 +80,7 @@ export const PainelPedidos = ({ ...props }) => {
 
     const pedidosPrioritarios = processarPedidos(
       alteracoes,
-      filtraPrioritarios
+      filtraPrioritarios,
     );
     const pedidosNoPrazoLimite = processarPedidos(alteracoes, filtraNoLimite);
     const pedidosNoPrazoRegular = processarPedidos(alteracoes, filtraRegular);
@@ -114,7 +104,7 @@ export const PainelPedidos = ({ ...props }) => {
           <Option value="" key={0}>
             Filtrar por Lote
           </Option>,
-        ].concat(lotes_)
+        ].concat(lotes_),
       );
     }
   };

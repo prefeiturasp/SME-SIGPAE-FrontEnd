@@ -35,7 +35,7 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
       .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
     mock
@@ -46,17 +46,17 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
       .reply(201, { uuid: mockAlteracoesCEMEIRascunho.results[1].uuid });
     mock
       .onPut(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`,
       )
       .reply(200, {});
     mock
       .onPatch(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/inicio-pedido/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
     mock
       .onDelete(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`,
       )
       .reply(204, {});
 
@@ -84,14 +84,14 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
             <AlteracaoDeCardapioCEMEIPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza título da página e o breadcrumb `Alteração do Tipo de Alimentação`", async () => {
     expect(
-      screen.queryAllByText("Alteração do Tipo de Alimentação").length
+      screen.queryAllByText("Alteração do Tipo de Alimentação").length,
     ).toBe(2);
   });
 
@@ -107,25 +107,25 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
 
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Alteração do Tipo de Alimentação # 47096")
+      screen.getByText("Alteração do Tipo de Alimentação # 47096"),
     ).toBeInTheDocument();
     expect(screen.getByText("Dia: 11/06/2025")).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 23/05/2025 17:26:07")
+      screen.getByText("Criado em: 23/05/2025 17:26:07"),
     ).toBeInTheDocument();
   });
 
   const selecionaAlunosTodos = () => {
     const selectAlunosDiv = screen.getByTestId(
-      "div-select-alunos-cei-e-ou-emei"
+      "div-select-alunos-cei-e-ou-emei",
     );
     const selectElementAlunos = selectAlunosDiv.querySelector("select");
     fireEvent.change(selectElementAlunos, {
@@ -137,7 +137,7 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
     const uuidLPR = mockMotivosAlteracaoCardapio.results.find((motivo) =>
-      motivo.nome.includes("LPR")
+      motivo.nome.includes("LPR"),
     ).uuid;
     fireEvent.change(selectElementMotivo, {
       target: { value: uuidLPR },
@@ -146,10 +146,10 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
 
   const selecionaTipoAlimentacaoDeLanche = () => {
     const selectAlterarAlimentacaoDeCEI = screen.getByTestId(
-      "select-alterar-alimentacao-de-CEI"
+      "select-alterar-alimentacao-de-CEI",
     );
     const selectControlDe = within(selectAlterarAlimentacaoDeCEI).getByRole(
-      "combobox"
+      "combobox",
     );
     fireEvent.mouseDown(selectControlDe);
 
@@ -159,10 +159,10 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
 
   const selecionaTipoAlimentacaoParaRefeicaoDaTarde = () => {
     const selectAlterarAlimentacaoParaCEI = screen.getByTestId(
-      "select-alterar-alimentacao-para-CEI"
+      "select-alterar-alimentacao-para-CEI",
     );
     const selectControlPara = within(selectAlterarAlimentacaoParaCEI).getByRole(
-      "combobox"
+      "combobox",
     );
     fireEvent.mouseDown(selectControlPara);
 
@@ -197,14 +197,14 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
     selecionaTipoAlimentacaoParaRefeicaoDaTarde();
 
     const inputElementNumeroAlunosFaixa1 = screen.getByTestId(
-      `substituicoes[0][cei][faixas_etarias][2][quantidade_alunos]`
+      `substituicoes[0][cei][faixas_etarias][2][quantidade_alunos]`,
     );
     fireEvent.change(inputElementNumeroAlunosFaixa1, {
       target: { value: "69" },
     });
 
     const inputElementNumeroAlunosFaixa2 = screen.getByTestId(
-      `substituicoes[0][cei][faixas_etarias][3][quantidade_alunos]`
+      `substituicoes[0][cei][faixas_etarias][3][quantidade_alunos]`,
     );
     fireEvent.change(inputElementNumeroAlunosFaixa2, {
       target: { value: "1" },
@@ -213,10 +213,10 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
     expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
 
     const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-de-EMEI"
+      "select-alterar-alimentacao-de-EMEI",
     );
     const selectControlDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
-      "combobox"
+      "combobox",
     );
     fireEvent.mouseDown(selectControlDe);
 
@@ -224,10 +224,10 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
     fireEvent.click(optionDe);
 
     const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-para-EMEI"
+      "select-alterar-alimentacao-para-EMEI",
     );
     const selectControlPara = within(
-      selectAlterarAlimentacaoParaEMEI
+      selectAlterarAlimentacaoParaEMEI,
     ).getByRole("combobox");
     fireEvent.mouseDown(selectControlPara);
 
@@ -235,7 +235,7 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
     fireEvent.click(optionPara);
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
-      `substituicoes[0][emei][quantidade_alunos]`
+      `substituicoes[0][emei][quantidade_alunos]`,
     );
     fireEvent.change(inputElementNumeroAlunosEMEI, {
       target: { value: "1" },
@@ -248,14 +248,14 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação Rascunho criada com sucesso!")
+        screen.getByText("Solicitação Rascunho criada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
 
   it("Carrega rascunho e envia", async () => {
     const botaoCarregarRascunho = screen.getByTestId(
-      `botao-carregar-rascunho-47096`
+      `botao-carregar-rascunho-47096`,
     );
     await act(async () => {
       fireEvent.click(botaoCarregarRascunho);
@@ -264,7 +264,7 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
     expect(screen.getByText("Solicitação # 47096")).toBeInTheDocument();
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
-      `substituicoes[0][emei][quantidade_alunos]`
+      `substituicoes[0][emei][quantidade_alunos]`,
     );
     expect(inputElementNumeroAlunosEMEI).toHaveAttribute("value", "1");
 
@@ -275,7 +275,7 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
   it("Exclui rascunho", async () => {
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId(
-      "botao-remover-rascunho-47096"
+      "botao-remover-rascunho-47096",
     );
     mock.onGet("/alteracoes-cardapio-cemei/").reply(200, []);
     await act(async () => {
@@ -287,15 +287,49 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
-        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`
+        `/alteracoes-cardapio-cemei/${mockAlteracoesCEMEIRascunho.results[1].uuid}/`,
       )
       .reply(400, { detail: "Erro ao excluir rascunho" });
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId(
-      "botao-remover-rascunho-47096"
+      "botao-remover-rascunho-47096",
     );
     await act(async () => {
       fireEvent.click(botaoRemoverRascunho);
     });
+  });
+
+  it("preenche faixa CEI e dispara a validação de frequência", async () => {
+    selecionaAlunosTodos();
+    selecionaMotivoLPR();
+
+    fireEvent.change(
+      screen.getByTestId("div-input-alterar-dia").querySelector("input"),
+      { target: { value: "20/02/2025" } },
+    );
+
+    const span = screen
+      .getByTestId("div-checkbox-INTEGRAL")
+      .querySelector("span");
+    fireEvent.click(span.querySelector("input"));
+
+    fireEvent.change(
+      screen.getByTestId(
+        "substituicoes[0][cei][faixas_etarias][2][quantidade_alunos]",
+      ),
+      { target: { value: "69" } },
+    );
+
+    await act(async () => {});
+
+    fireEvent.click(
+      screen
+        .getByTestId("div-checkbox-INTEGRAL")
+        .querySelector("span")
+        .querySelector("input"),
+    );
+
+    expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
+    expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
   });
 });
