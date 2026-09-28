@@ -66,6 +66,7 @@ export interface ParametrizacaoFinanceiraInterface {
   data_inicial: string;
   data_final: string;
   legenda: string;
+  vigente?: boolean;
   tabelas?: TabelaParametrizacao[];
 }
 
