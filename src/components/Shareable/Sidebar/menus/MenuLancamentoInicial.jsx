@@ -2,7 +2,6 @@ import {
   ACOMPANHAMENTO_DE_LANCAMENTOS,
   CLAUSULAS_PARA_DESCONTOS,
   CONTROLE_DE_FREQUENCIA,
-  EMPENHOS,
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   MEDICAO_INICIAL,
@@ -84,7 +83,6 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
             title="Cadastros"
             activeMenu={activeSubmenu}
           >
-            <LeafItem to={`/${MEDICAO_INICIAL}/${EMPENHOS}`}>Empenhos</LeafItem>
             <LeafItem to={`/${MEDICAO_INICIAL}/${CLAUSULAS_PARA_DESCONTOS}`}>
               Cláusulas para Descontos
             </LeafItem>

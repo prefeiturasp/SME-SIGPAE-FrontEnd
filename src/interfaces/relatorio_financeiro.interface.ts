@@ -76,23 +76,6 @@ export type TipoUnidade = {
   iniciais: string;
 };
 
-export type DadosLiquidacaoEmpenho = {
-  uuid?: string;
-  relatorio_financeiro?: string | RelatorioFinanceiroInterface;
-  numero_empenho: string;
-  tipo_empenho: string;
-  unidades_educacionais: any[];
-  total_pagamento?: number;
-};
-
-export interface DadosLiquidacaoResponse {
-  next: string | null;
-  previous: string | null;
-  count: number;
-  page_size: number;
-  results: DadosLiquidacaoEmpenho[];
-}
-
 export type Escola = {
   uuid: string;
   nome: string;
