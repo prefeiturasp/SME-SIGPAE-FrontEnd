@@ -417,6 +417,24 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
     );
   };
 
+  const ehMotivoInclusaoProgramasContinuos = (
+    values: ValuesFormInclusaoDeAlimentacaoInterface,
+  ): boolean => {
+    const motivos = motivoContinuoSelecionado(values)
+      ? motivosContinuos
+      : motivosSimples;
+    return (
+      values.inclusoes &&
+      values.inclusoes[0].motivo &&
+      motivos
+        .find(
+          (motivo: MotivoInterface) =>
+            motivo.uuid === values.inclusoes[0].motivo,
+        )
+        .nome.includes("Contínuos")
+    );
+  };
+
   const onSubmit = async (
     values: ValuesFormInclusaoDeAlimentacaoInterface,
     form: FormApi<any, Partial<any>>,
@@ -738,6 +756,9 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                         periodosProgramas={periodosProgramas}
                         push={push}
                         ehMotivoInclusaoEspecifico={ehMotivoInclusaoEspecifico(
+                          form.getState().values,
+                        )}
+                        ehMotivoInclusaoProgramasContinuos={ehMotivoInclusaoProgramasContinuos(
                           form.getState().values,
                         )}
                         uuid={uuid}

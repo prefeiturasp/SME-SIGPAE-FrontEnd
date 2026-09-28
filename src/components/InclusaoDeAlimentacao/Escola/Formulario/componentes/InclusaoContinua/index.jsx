@@ -93,6 +93,7 @@ export const Recorrencia = ({
   periodosProgramas,
   push,
   ehMotivoInclusaoEspecifico,
+  ehMotivoInclusaoProgramasContinuos,
   uuid,
   idExterno,
 }) => {
@@ -134,7 +135,12 @@ export const Recorrencia = ({
   const getMaximoAlunos = () => {
     if (ehMotivoInclusaoEspecifico) return null;
 
-    return getTotalProgramas();
+    if (ehMotivoInclusaoProgramasContinuos) {
+      return getTotalProgramas();
+    }
+
+    return periodos.find((p) => p.uuid === values.periodo_escolar)
+      ?.maximo_alunos;
   };
 
   const adicionarRecorrencia = async (form, values) => {
@@ -246,8 +252,24 @@ export const Recorrencia = ({
       return composeValidators(naoPodeSerZero, numericInteger);
     }
 
-    const maximo = getTotalProgramas();
-    return composeValidators(naoPodeSerZero, numericInteger, maxValue(maximo));
+    if (ehMotivoInclusaoProgramasContinuos) {
+      const maximo = getTotalProgramas();
+      return composeValidators(
+        naoPodeSerZero,
+        numericInteger,
+        maxValue(maximo),
+      );
+    }
+
+    const periodoRegular = periodos.find(
+      (p) => p.uuid === values.periodo_escolar,
+    );
+
+    return composeValidators(
+      naoPodeSerZero,
+      numericInteger,
+      maxValue(periodoRegular?.maximo_alunos),
+    );
   };
 
   const optionsTiposAlimentacao = () => {
