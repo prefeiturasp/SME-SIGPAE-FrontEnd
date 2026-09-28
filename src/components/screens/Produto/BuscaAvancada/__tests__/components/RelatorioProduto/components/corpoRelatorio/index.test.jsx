@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { getRelatorioProduto } from "src/services/relatorios";
-import CorpoRelatorioDesenvolvimento from "../../../../../components/RelatorioProduto/components/corpoRelatorio/index_development";
+import CorpoRelatorio from "../../../../../components/RelatorioProduto/components/corpoRelatorio";
 
 const mockFluxoDeStatus = jest.fn();
 
@@ -159,12 +159,12 @@ const criarProdutoMock = () => ({
   },
 });
 
-describe("CorpoRelatorioDesenvolvimento", () => {
+describe("CorpoRelatorio", () => {
   let produtoMock;
 
   const renderizarComponente = () =>
     render(
-      <CorpoRelatorioDesenvolvimento
+      <CorpoRelatorio
         produto={produtoMock}
         historico={historicoMock}
         informacoesNutricionais={informacoesNutricionaisMock}
