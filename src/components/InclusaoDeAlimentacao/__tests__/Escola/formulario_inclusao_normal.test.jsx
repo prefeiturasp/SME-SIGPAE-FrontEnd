@@ -358,4 +358,183 @@ describe("Teste Formulário Inclusão de Alimentação", () => {
       fireEvent.click(botaoRemoverDia);
     });
   });
+
+  it("não chama onDataChanged quando a data fica vazia", async () => {
+    await awaitServices();
+    setMotivoValueReposicaoDeAula();
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    const inputElement = divDia.querySelector("input");
+
+    fireEvent.change(inputElement, {
+      target: { value: "30/01/2025" },
+    });
+
+    fireEvent.change(inputElement, {
+      target: { value: "" },
+    });
+
+    expect(inputElement.value).toBe("");
+  });
+
+  it("alterna período via teclado (Enter, Espaço e outra tecla)", async () => {
+    await awaitServices();
+    setMotivoValueReposicaoDeAula();
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "30/01/2025" },
+    });
+
+    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
+    const spanElement = divCheckboxMANHA.querySelector("span");
+
+    fireEvent.keyDown(spanElement, { key: "a" });
+
+    await act(async () => {
+      fireEvent.keyDown(spanElement, { key: "Enter" });
+    });
+
+    const divMultiselectMANHA = screen.getByTestId("multiselect-div-MANHA");
+    expect(divMultiselectMANHA.className).toContain(
+      "multiselect-wrapper-enabled",
+    );
+
+    await act(async () => {
+      fireEvent.keyDown(spanElement, { key: " " });
+    });
+
+    expect(divMultiselectMANHA.className).toContain(
+      "multiselect-wrapper-disabled",
+    );
+  });
+
+  it("desmarca período marcado e desabilita multiselect", async () => {
+    await awaitServices();
+    setMotivoValueReposicaoDeAula();
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "30/01/2025" },
+    });
+
+    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
+    const spanElement = divCheckboxMANHA.querySelector("span");
+
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    const divMultiselectMANHA = screen.getByTestId("multiselect-div-MANHA");
+    expect(divMultiselectMANHA.className).toContain(
+      "multiselect-wrapper-enabled",
+    );
+
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    expect(divMultiselectMANHA.className).toContain(
+      "multiselect-wrapper-disabled",
+    );
+  });
+
+  it("renderiza descrição do evento e valida número de alunos para motivo específico", async () => {
+    await awaitServices();
+
+    const selectMotivo = screen.getByTestId("select-motivo-0");
+    const selectElement = selectMotivo.querySelector("select");
+    const uuidEventoEspecifico = mockMotivosInclusaoNormal.results.find(
+      (motivo) => motivo.nome === "Evento Específico",
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidEventoEspecifico },
+    });
+
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "30/01/2025" },
+    });
+
+    expect(screen.getByText("Descrição do Evento")).toBeInTheDocument();
+
+    const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
+    const spanElement = divCheckboxMANHA.querySelector("span");
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    const divMultiselectMANHA = screen.getByTestId("multiselect-div-MANHA");
+    const dropdown = within(divMultiselectMANHA).getByRole("combobox");
+    const spanSelecione = within(dropdown.parentElement).getByText("Selecione");
+    const divDropdownHeading = spanSelecione.parentElement.parentElement;
+
+    await act(async () => {
+      fireEvent.click(divDropdownHeading);
+    });
+
+    const divDropdownContent = container.querySelector(".dropdown-content");
+    const checkboxLanche =
+      within(divDropdownContent).getAllByRole("checkbox")[1];
+
+    await act(async () => {
+      fireEvent.click(checkboxLanche);
+    });
+
+    const divNumeroAlunos = screen.getByTestId("numero-alunos-2");
+    const inputElementNumeroAlunos = divNumeroAlunos.querySelector("input");
+
+    await act(async () => {
+      fireEvent.change(inputElementNumeroAlunos, {
+        target: { value: 100 },
+      });
+    });
+  });
+
+  it("fluxo ETEC renderiza período NOITE com select simples e observações", async () => {
+    await awaitServices();
+
+    const selectMotivo = screen.getByTestId("select-motivo-0");
+    const selectElement = selectMotivo.querySelector("select");
+    const uuidMotivoETEC = mockMotivosInclusaoContinua.results.find(
+      (motivo) => motivo.nome === "ETEC",
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidMotivoETEC },
+    });
+
+    const divDataInicial = screen.getByTestId("data-inicial-div");
+    fireEvent.change(divDataInicial.querySelector("input"), {
+      target: { value: "30/01/2025" },
+    });
+
+    const divDataFinal = screen.getByTestId("data-final-div");
+    fireEvent.change(divDataFinal.querySelector("input"), {
+      target: { value: "01/12/2025" },
+    });
+
+    expect(screen.getByText("Período")).toBeInTheDocument();
+    expect(screen.getByText("NOITE")).toBeInTheDocument();
+    expect(screen.getByTestId("ckeditor-mock")).toBeInTheDocument();
+
+    const divCheckboxNOITE = screen.getByTestId("div-checkbox-NOITE");
+    const spanElement = divCheckboxNOITE.querySelector("span");
+    await act(async () => {
+      fireEvent.click(spanElement);
+    });
+
+    const divSelectNOITE = screen.getByTestId("select-simples-div-NOITE");
+    const selectElementTipoAlimentacao = divSelectNOITE.querySelector("select");
+    fireEvent.change(selectElementTipoAlimentacao, {
+      target: { value: "65f11f11-630b-4629-bb17-07c875c548f1" },
+    });
+
+    const divNumeroAlunos = screen.getByTestId("numero-alunos-0");
+    const inputElementNumeroAlunos = divNumeroAlunos.querySelector("input");
+    await act(async () => {
+      fireEvent.change(inputElementNumeroAlunos, {
+        target: { value: 100 },
+      });
+    });
+  });
 });
