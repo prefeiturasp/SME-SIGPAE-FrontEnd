@@ -229,7 +229,9 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CMCT", () => {
   it("Exclui rascunho", async () => {
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
-    mock.onGet("/alteracoes-cardapio/minhas-solicitacoes/").reply(200, []);
+    mock
+      .onGet("/alteracoes-cardapio/minhas-solicitacoes/")
+      .reply(200, { results: [] });
     await act(async () => {
       fireEvent.click(botaoRemoverRascunho);
     });

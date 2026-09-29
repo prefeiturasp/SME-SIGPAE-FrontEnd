@@ -223,7 +223,9 @@ describe("Teste Formulário Inversão de dia de Cardápio - Escola CEMEI", () =>
       .replyOnce(204, {});
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
-    mock.onGet("/inversoes-dia-cardapio/minhas-solicitacoes/").reply(200, []);
+    mock
+      .onGet("/inversoes-dia-cardapio/minhas-solicitacoes/")
+      .reply(200, { results: [] });
     await act(async () => {
       fireEvent.click(botaoRemoverRascunho);
     });

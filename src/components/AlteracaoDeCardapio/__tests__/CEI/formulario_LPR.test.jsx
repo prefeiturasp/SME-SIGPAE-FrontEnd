@@ -313,7 +313,9 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
   it("Exclui rascunho", async () => {
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
-    mock.onGet("/alteracoes-cardapio-cei/minhas-solicitacoes/").reply(200, []);
+    mock
+      .onGet("/alteracoes-cardapio-cei/minhas-solicitacoes/")
+      .reply(200, { results: [] });
     await act(async () => {
       fireEvent.click(botaoRemoverRascunho);
     });
