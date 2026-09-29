@@ -13,6 +13,8 @@ import Botao from "src/components/Shareable/Botao";
 import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
+  exibirBlocoFabricante,
+  exibirNumeroRegistro,
   imprimirFicha,
   montarLinhaDoTempoFichaTecnica,
 } from "../../helpers";
@@ -151,6 +153,11 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
       modo_preparo_correcoes: values.modo_preparo_correcoes,
     };
 
+    if (!exibirBlocoFabricante(ficha)) {
+      delete payload.fabricante_envasador_conferido;
+      delete payload.fabricante_envasador_correcoes;
+    }
+
     return payload;
   };
 
@@ -219,6 +226,10 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
       delete conferidos.informacoes_nutricionais;
       delete conferidos.modo_preparo;
       delete conferidos.temperatura_e_transporte;
+
+      if (!exibirBlocoFabricante(ficha)) {
+        delete conferidos.fabricante_envasador;
+      }
     }
 
     return Object.values(conferidosFiltrados).some(
@@ -270,18 +281,27 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
               const ehFLV =
                 values["categoria"] === "FLV (Frutas, Legumes e Verduras)" &&
                 values["tipo_entrega"] === "Ponto a Ponto";
+              const mostrarNumeroRegistro = exibirNumeroRegistro({
+                categoria: ficha.categoria,
+                tipo_entrega: ficha.tipo_entrega,
+                numero_registro: ficha.numero_registro,
+              });
               const collapseConfigsFLV = [
                 {
                   titulo: <span className="verde-escuro">Proponente</span>,
                 },
-                {
-                  titulo: (
-                    <span className="verde-escuro">
-                      Fabricante, Produtor, Envasador ou Distribuidor
-                    </span>
-                  ),
-                  tag: true,
-                },
+                ...(exibirBlocoFabricante(ficha)
+                  ? [
+                      {
+                        titulo: (
+                          <span className="verde-escuro">
+                            Fabricante, Produtor, Envasador ou Distribuidor
+                          </span>
+                        ),
+                        tag: true,
+                      },
+                    ]
+                  : []),
                 {
                   titulo: (
                     <span className="verde-escuro">Detalhes do Produto</span>
@@ -498,6 +518,8 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                       ficha={ficha}
                       values={values}
                       somenteLeitura={somenteLeitura}
+                      mostrarBlocoFabricante={exibirBlocoFabricante(ficha)}
+                      mostrarNumeroRegistro={mostrarNumeroRegistro}
                       proponente={proponente}
                       aprovaCollapse={aprovaCollapse}
                       reprovaCollapse={reprovaCollapse}
