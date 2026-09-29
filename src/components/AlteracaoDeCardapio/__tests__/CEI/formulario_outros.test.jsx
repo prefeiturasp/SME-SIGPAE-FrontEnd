@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
@@ -13,6 +20,17 @@ import { AlteracaoDeCardapioCEIPage } from "src/pages/Escola/AlteracaoDeCardapio
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: ({ input: { value, onChange } }) => (
+    <textarea
+      data-testid="ckeditor-mock"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  ),
+}));
 
 const mockRascunhoLPR = {
   escola: mockRascunhosAlteracaoCEI.results[0].escola,
@@ -166,6 +184,7 @@ const renderPagina = async () => {
           }}
         >
           <AlteracaoDeCardapioCEIPage />
+          <ToastContainer />
         </MeusDadosContext.Provider>
       </MemoryRouter>,
     );
@@ -174,7 +193,6 @@ const renderPagina = async () => {
 
 describe("Teste Formulário Alteração do tipo de Alimentação CEI - Complementos", () => {
   beforeEach(async () => {
-    process.env.IS_TEST = true;
     setupMocks();
     await renderPagina();
   });
@@ -218,19 +236,32 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Complemen
       fireEvent.click(spanElement);
     });
   });
-});
 
-describe("Teste Formulário Alteração do tipo de Alimentação CEI - Sem IS_TEST", () => {
-  beforeEach(async () => {
-    delete process.env.IS_TEST;
-    setupMocks();
-    await renderPagina();
-  });
+  it("Exibe erro de validação ao salvar sem selecionar período", async () => {
+    const selectMotivo = screen.getByTestId("select-motivo");
+    const selectElement = selectMotivo.querySelector("select");
+    const uuidMotivoLPR = mockMotivosAlteracaoCardapioCEI.results.find(
+      (motivo) => motivo.nome.includes("LPR"),
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidMotivoLPR },
+    });
 
-  it("Renderiza o formulário sem IS_TEST", () => {
-    expect(
-      screen.getByText("Descrição da Alteração do Tipo de Alimentação"),
-    ).toBeInTheDocument();
-    expect(screen.getAllByText("Nova Solicitação").length).toBeGreaterThan(0);
+    const divDia = screen.getByTestId("data-alterar-dia");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "23/04/2025" },
+    });
+
+    fireEvent.change(screen.getByTestId("ckeditor-mock"), {
+      target: { value: "<p>Observações</p>" },
+    });
+
+    fireEvent.click(screen.getByText("Enviar").closest("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("É necessário selecionar pelo menos um período"),
+      ).toBeInTheDocument();
+    });
   });
 });

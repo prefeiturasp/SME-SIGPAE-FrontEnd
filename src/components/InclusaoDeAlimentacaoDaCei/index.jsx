@@ -608,23 +608,19 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                       <td className="text-center">
                                         {values.periodos_e_faixas[
                                           periodo_faixa_idx
-                                        ].faixas_etarias
-                                          ? values.periodos_e_faixas[
-                                              periodo_faixa_idx
-                                            ].faixas_etarias.reduce(
-                                              (somatorio, f) => {
-                                                return (
-                                                  somatorio +
-                                                  parseInt(
-                                                    f.quantidade_alunos
-                                                      ? f.quantidade_alunos
-                                                      : 0,
-                                                  )
-                                                );
-                                              },
-                                              0,
-                                            )
-                                          : 0}
+                                        ].faixas_etarias.reduce(
+                                          (somatorio, f) => {
+                                            return (
+                                              somatorio +
+                                              parseInt(
+                                                f.quantidade_alunos
+                                                  ? f.quantidade_alunos
+                                                  : 0,
+                                              )
+                                            );
+                                          },
+                                          0,
+                                        )}
                                       </td>
                                     </tr>
                                   </tbody>
@@ -813,26 +809,21 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                               <td className="text-center">
                                                 {values.periodos_e_faixas[
                                                   periodo_faixa_idx
-                                                ].periodos[periodo_idx]
-                                                  .faixas_etarias
-                                                  ? values.periodos_e_faixas[
-                                                      periodo_faixa_idx
-                                                    ].periodos[
-                                                      periodo_idx
-                                                    ].faixas_etarias.reduce(
-                                                      (somatorio, f) => {
-                                                        return (
-                                                          somatorio +
-                                                          parseInt(
-                                                            f.quantidade_alunos
-                                                              ? f.quantidade_alunos
-                                                              : 0,
-                                                          )
-                                                        );
-                                                      },
-                                                      0,
-                                                    )
-                                                  : 0}
+                                                ].periodos[
+                                                  periodo_idx
+                                                ].faixas_etarias.reduce(
+                                                  (somatorio, f) => {
+                                                    return (
+                                                      somatorio +
+                                                      parseInt(
+                                                        f.quantidade_alunos
+                                                          ? f.quantidade_alunos
+                                                          : 0,
+                                                      )
+                                                    );
+                                                  },
+                                                  0,
+                                                )}
                                               </td>
                                             </tr>
                                           </tbody>
@@ -880,7 +871,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                         disabled={submitting}
                         onClick={() => {
                           values["status"] = STATUS_DRE_A_VALIDAR;
-                          handleSubmit((values) => onSubmit(values));
+                          handleSubmit();
                         }}
                         style={BUTTON_STYLE.GREEN}
                         className="ms-3"

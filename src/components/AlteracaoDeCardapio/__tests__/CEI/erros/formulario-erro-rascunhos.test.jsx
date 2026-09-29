@@ -16,8 +16,6 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
   const escolaUuid = mockMeusDadosCEI.vinculo_atual.instituicao.uuid;
 
   beforeEach(async () => {
-    process.env.IS_TEST = true;
-
     mock
       .onGet("/motivos-alteracao-cardapio/")
       .reply(200, mockMotivosAlteracaoCardapioCEI);
@@ -29,7 +27,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
     });
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarCEI);
     mock
@@ -61,7 +59,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI", () => {
           >
             <AlteracaoDeCardapioCEIPage />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });

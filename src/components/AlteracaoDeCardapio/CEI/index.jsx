@@ -727,14 +727,11 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                         component={CKEditorField}
                         label="Observações"
                         name="observacao"
-                        required={!process.env.IS_TEST}
-                        validate={
-                          !process.env.IS_TEST &&
-                          composeValidators(
-                            textAreaRequired,
-                            peloMenosUmCaractere,
-                          )
-                        }
+                        required
+                        validate={composeValidators(
+                          textAreaRequired,
+                          peloMenosUmCaractere,
+                        )}
                       />
                     </div>
                     <div className="row float-end mt-4">

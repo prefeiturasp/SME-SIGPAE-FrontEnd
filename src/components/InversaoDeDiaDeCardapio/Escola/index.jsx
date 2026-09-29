@@ -52,7 +52,7 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
         refresh(form);
       } else {
         toastError(
-          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde.",
         );
       }
     }
@@ -104,7 +104,7 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
     form.change("id_externo", solicitacao.id_externo);
     form.change(
       "tipos_alimentacao",
-      solicitacao.tipos_alimentacao.map((ta) => ta.uuid)
+      solicitacao.tipos_alimentacao.map((ta) => ta.uuid),
     );
     form.change("data_de", solicitacao.data_de);
     form.change("data_para", solicitacao.data_para);
@@ -149,7 +149,7 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
   const onSubmit = async (values, form) => {
     values["alunos_da_cemei"] = prepararAlunosCemei(values["alunos_da_cemei"]);
     values["alunos_da_cemei_2"] = prepararAlunosCemei(
-      values["alunos_da_cemei_2"]
+      values["alunos_da_cemei_2"],
     );
     values.escola = meusDados.vinculo_atual.instituicao.uuid;
     if (!values.uuid) {
@@ -167,7 +167,7 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
     } else {
       const response = await atualizarInversaoDeDiaDeCardapio(
         values.uuid,
-        values
+        values,
       );
       if (response.status === HTTP_STATUS.OK) {
         if (values.status === STATUS_DRE_A_VALIDAR) {
@@ -236,7 +236,7 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
                         onSelectedChanged={(values_) => {
                           form.change(
                             "tipos_alimentacao",
-                            values_.map((value_) => value_.value)
+                            values_.map((value_) => value_.value),
                           );
                         }}
                       />
@@ -285,14 +285,11 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
                         component={CKEditorField}
                         label="Motivo"
                         name="motivo"
-                        required={!process.env.IS_TEST}
-                        validate={
-                          !process.env.IS_TEST &&
-                          composeValidators(
-                            textAreaRequired,
-                            peloMenosUmCaractere
-                          )
-                        }
+                        required
+                        validate={composeValidators(
+                          textAreaRequired,
+                          peloMenosUmCaractere,
+                        )}
                       />
                     </div>
                   </div>
@@ -323,7 +320,7 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
                         texto="Enviar"
                         onClick={() => {
                           values["status"] = STATUS_DRE_A_VALIDAR;
-                          handleSubmit((values) => onSubmit(values, form));
+                          handleSubmit();
                         }}
                         style={BUTTON_STYLE.GREEN}
                         type={BUTTON_TYPE.BUTTON}

@@ -211,7 +211,9 @@ describe("Teste Formulário Alteração de Cardápio - Complementos - EMEF", () 
     const botaoAtualizar = screen
       .getByText("Atualizar rascunho")
       .closest("button");
-    fireEvent.click(botaoAtualizar);
+    await act(async () => {
+      fireEvent.click(botaoAtualizar);
+    });
 
     expect(toastError).toHaveBeenCalledWith(
       "Data inicial deve ser anterior à data final.",
@@ -238,7 +240,7 @@ describe("Teste Formulário Alteração de Cardápio - Sem IS_TEST - EMEF", () =
     await renderPagina();
   });
 
-  it("Renderiza o formulário sem IS_TEST", () => {
+  it("Renderiza o formulário sem IS_TEST", async () => {
     expect(screen.getByText("Descrição da Alteração")).toBeInTheDocument();
     expect(screen.getAllByText("Nova Solicitação").length).toBeGreaterThan(0);
 
@@ -247,8 +249,10 @@ describe("Teste Formulário Alteração de Cardápio - Sem IS_TEST - EMEF", () =
     const uuidRPL = mockMotivosAlteracaoCardapio.results.find((motivo) =>
       motivo.nome.includes("RPL"),
     ).uuid;
-    fireEvent.change(selectElementMotivo, {
-      target: { value: uuidRPL },
+    await act(async () => {
+      fireEvent.change(selectElementMotivo, {
+        target: { value: uuidRPL },
+      });
     });
 
     expect(screen.getByText("Alterar dia")).toBeInTheDocument();
