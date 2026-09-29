@@ -59,7 +59,6 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   const [erroRascunhos, setErroRascunhos] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [motivoEspecifico, setMotivoEspecifico] = useState(false);
-  const [carregandoRascunho, setCarregandoRascunho] = useState(false);
 
   const {
     meusDados,
@@ -87,7 +86,6 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     form.change("tipos_alimentacao_selecionados", []);
     form.change("periodo_escolar");
     form.change("numero_alunos", undefined);
-    setCarregandoRascunho(false);
   };
 
   const motivoSimplesSelecionado = (values) => {
@@ -202,14 +200,12 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   };
 
   const carregarRascunho = async (form, values, inclusao) => {
-    setCarregandoRascunho(true);
     const inclusao_ = deepCopy(inclusao);
     if (inclusao_.dias_motivos_da_inclusao_cemei) {
       carregarRascunhoNormal(form, inclusao_);
     } else {
       carregarRascunhoContinuo(form, values, inclusao_);
     }
-    setCarregandoRascunho(false);
     form.change("uuid_", inclusao.uuid);
     form.change("id_externo_", inclusao.id_externo);
   };
@@ -423,14 +419,8 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     );
   };
 
-  const checaMotivoInclusaoEspecifico = (values, form, value) => {
-    if (
-      (ehMotivoInclusaoEspecifico(values) && !carregandoRascunho) ||
-      (motivosSimples
-        .find((motivo) => motivo.uuid === value)
-        .nome.includes("Específico") &&
-        carregandoRascunho)
-    ) {
+  const checaMotivoInclusaoEspecifico = (values, form) => {
+    if (ehMotivoInclusaoEspecifico(values)) {
       setMotivoEspecifico(true);
       form.change("quantidades_periodo", undefined);
       form.change("quantidades_periodo", periodosMotivoEspecifico);
@@ -441,8 +431,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
   };
 
   const getPeriodos = (values) => {
-    return ehMotivoInclusaoEspecifico(values) ||
-      (carregandoRascunho && motivoEspecifico)
+    return ehMotivoInclusaoEspecifico(values)
       ? periodosMotivoEspecifico
       : motivoContinuoSelecionado(values)
         ? periodosInclusaoContinua
@@ -547,11 +536,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                                   )
                                 ) {
                                   form.change("quantidades_periodo", undefined);
-                                  checaMotivoInclusaoEspecifico(
-                                    values_,
-                                    form,
-                                    value,
-                                  );
+                                  checaMotivoInclusaoEspecifico(values_, form);
                                   form.change("reload", !values_.reload);
                                 }
                                 if (
@@ -701,7 +686,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                       disabled={submitting}
                       onClick={() => {
                         values["status"] = STATUS_DRE_A_VALIDAR;
-                        handleSubmit((values) => onSubmit(values, form));
+                        handleSubmit();
                       }}
                       style={BUTTON_STYLE.GREEN}
                       className="ms-3"
