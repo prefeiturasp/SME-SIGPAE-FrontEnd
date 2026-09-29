@@ -1,6 +1,7 @@
 export interface TermoRecebimentoAssinaturaDashboard {
   uuid: string;
   empresa: string;
+  razao_social?: string;
   numero_contrato?: string;
   numeros_cronogramas?: string[];
   nomes_produtos?: string[];

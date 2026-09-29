@@ -105,7 +105,7 @@ describe("PainelAssinaturaTermosRecebimentoPage", () => {
       await setup();
 
       expect(
-        await screen.findByText("BOM GUSTO ALIMENTAR - ARROZ - 200/2024"),
+        await screen.findByText("22222/23 - BOM GUSTO ALIMENTAR"),
       ).toBeInTheDocument();
       expect(screen.getByText(/ALIMENTE-SE/)).toBeInTheDocument();
     });
@@ -113,9 +113,7 @@ describe("PainelAssinaturaTermosRecebimentoPage", () => {
     it("aponta cada item para a tela de Detalhar do termo", async () => {
       await setup();
 
-      const item = await screen.findByText(
-        "BOM GUSTO ALIMENTAR - ARROZ - 200/2024",
-      );
+      const item = await screen.findByText("22222/23 - BOM GUSTO ALIMENTAR");
       const link = item.closest("a");
       expect(link).toHaveAttribute(
         "href",
@@ -133,10 +131,10 @@ describe("PainelAssinaturaTermosRecebimentoPage", () => {
         screen.getByPlaceholderText("Pesquisar por Nº do Contrato"),
       ).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText("Pesquisar por Produto"),
+        screen.getByPlaceholderText("Pesquisar por Nome do Produto"),
       ).toBeInTheDocument();
       expect(
-        screen.getByPlaceholderText("Pesquisar por Empresa"),
+        screen.getByPlaceholderText("Pesquisar por Nome do Fornecedor"),
       ).toBeInTheDocument();
     });
 
@@ -144,9 +142,12 @@ describe("PainelAssinaturaTermosRecebimentoPage", () => {
       await setup();
       await screen.findByText("Pendentes de Assinatura");
 
-      fireEvent.change(screen.getByPlaceholderText("Pesquisar por Produto"), {
-        target: { value: "ARR" },
-      });
+      fireEvent.change(
+        screen.getByPlaceholderText("Pesquisar por Nome do Produto"),
+        {
+          target: { value: "ARR" },
+        },
+      );
 
       await waitFor(() =>
         expect(
