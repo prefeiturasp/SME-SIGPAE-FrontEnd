@@ -3,6 +3,8 @@ import TermoRecebimentoDefinitivoFornecedorPage from "src/pages/PosRecebimento/T
 import TermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/TermoRecebimentoDefinitivoPage";
 import DetalharTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoDefinitivoPage";
 import PainelAssinaturaTermosRecebimentoPage from "src/pages/PosRecebimento/PainelAssinaturaTermosRecebimentoPage";
+import StatusTermoPendentesAssinatura from "src/pages/PosRecebimento/CardsAssinaturaTermos/StatusTermoPendentesAssinatura";
+import StatusTermoAssinados from "src/pages/PosRecebimento/CardsAssinaturaTermos/StatusTermoAssinados";
 import {
   usuarioEhCronogramaOuCodae,
   usuarioEhDilogDiretoria,
@@ -44,6 +46,22 @@ export const rotasPosRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`,
     component: PainelAssinaturaTermosRecebimentoPage,
+    tipoUsuario:
+      usuarioEhCronogramaOuCodae() ||
+      usuarioEhDilogDiretoria() ||
+      usuarioEhDilogQualidade(),
+  },
+  {
+    path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}/${constants.PENDENTES_ASSINATURA_TERMOS}/`,
+    component: StatusTermoPendentesAssinatura,
+    tipoUsuario:
+      usuarioEhCronogramaOuCodae() ||
+      usuarioEhDilogDiretoria() ||
+      usuarioEhDilogQualidade(),
+  },
+  {
+    path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}/${constants.ASSINADOS_TERMOS}/`,
+    component: StatusTermoAssinados,
     tipoUsuario:
       usuarioEhCronogramaOuCodae() ||
       usuarioEhDilogDiretoria() ||
