@@ -21,6 +21,17 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: ({ input: { value, onChange } }) => (
+    <textarea
+      data-testid="ckeditor-mock"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  ),
+}));
+
 describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RPL", () => {
   const escolaUuid = mockMeusDadosCEI.vinculo_atual.instituicao.uuid;
 
@@ -40,8 +51,6 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
   };
 
   beforeEach(async () => {
-    process.env.IS_TEST = true;
-
     mock
       .onGet("/motivos-alteracao-cardapio/")
       .reply(200, mockMotivosAlteracaoCardapioCEI);
