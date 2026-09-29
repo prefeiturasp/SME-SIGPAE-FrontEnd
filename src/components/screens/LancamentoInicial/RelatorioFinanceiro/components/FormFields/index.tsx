@@ -18,6 +18,7 @@ type FieldsProps = {
   mesesAnos: SelectOption[];
   exibirReabrirLancamentos?: boolean;
   showReabrirLancamentos?: (_value: boolean) => void;
+  showAplicarDesconto?: () => void;
 };
 
 export function FormFields({
@@ -26,6 +27,7 @@ export function FormFields({
   mesesAnos,
   exibirReabrirLancamentos,
   showReabrirLancamentos,
+  showAplicarDesconto,
 }: FieldsProps) {
   const [searchParams] = useSearchParams();
   const uuidRelatorioFinanceiro = searchParams.get("uuid");
@@ -84,16 +86,27 @@ export function FormFields({
         />
       </div>
       {exibirReabrirLancamentos && (
-        <div className="col-3 mt-2">
+        <div className="col-4 mt-2">
           <br />
-          <Botao
-            dataTestId="botao-carregar"
-            texto="Reabrir Lançamentos"
-            style={BUTTON_STYLE.ORANGE_OUTLINE}
-            type={BUTTON_TYPE.BUTTON}
-            icon={BUTTON_ICON.REFRESH}
-            onClick={() => showReabrirLancamentos(true)}
-          />
+          <div className="d-flex align-items-end gap-2 flex-wrap">
+            <Botao
+              dataTestId="botao-carregar"
+              texto="Reabrir Lançamentos"
+              style={BUTTON_STYLE.ORANGE_OUTLINE}
+              type={BUTTON_TYPE.BUTTON}
+              icon={BUTTON_ICON.REFRESH}
+              onClick={() => showReabrirLancamentos(true)}
+            />
+            {showAplicarDesconto && (
+              <Botao
+                texto="Aplicar Descontos"
+                type={BUTTON_TYPE.BUTTON}
+                style={BUTTON_STYLE.GREEN_OUTLINE}
+                icon={BUTTON_ICON.PERCENT}
+                onClick={showAplicarDesconto}
+              />
+            )}
+          </div>
         </div>
       )}
     </div>

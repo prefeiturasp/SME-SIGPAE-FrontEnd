@@ -7,4 +7,10 @@ export type IFiltros = {
   tipos_alimentacao?: Array<string> | undefined;
   periodo_lancamento_de?: string;
   periodo_lancamento_ate?: string;
+  resultado_individual_por_data?: boolean;
+};
+
+export type IResultadoIndividual = {
+  data: string;
+  tipo_unidade: string;
 };

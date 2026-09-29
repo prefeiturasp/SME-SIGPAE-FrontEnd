@@ -11,6 +11,7 @@ import {
   TIPO_SOLICITACAO,
 } from "src/constants/shared";
 import { v4 as uuidv4 } from "uuid";
+import { statusErrors } from "./statusErrors";
 import { RELATORIO } from "../configs/constants";
 import {
   MODULO_GESTAO,
@@ -923,7 +924,10 @@ export const getKey = (obj) => {
 };
 
 export const getError = (obj) => {
-  if (typeof obj === "string") return obj;
+  if (typeof obj === "string") {
+    if (obj.trim().startsWith("<")) return statusErrors[500];
+    return obj;
+  }
   let result = "Erro";
   if (!obj[getKey(obj)]) {
     return "Erro";

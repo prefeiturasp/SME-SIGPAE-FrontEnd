@@ -3,12 +3,13 @@ import {
   RelatorioAdesaoResponse,
 } from "src/services/medicaoInicial/relatorio.interface";
 
-import { Filtros } from "../../types";
+import { IFiltros, IResultadoIndividual } from "../../types";
 
 export type Props = {
-  params: Filtros;
-  filtros: Filtros;
+  params: IFiltros;
+  filtros: IFiltros;
   resultado: RelatorioAdesaoResponse;
   escola?: RelatorioAdesaoEscola | null;
+  resultadoIndividual?: IResultadoIndividual | null;
   exibirTitulo: boolean;
 };

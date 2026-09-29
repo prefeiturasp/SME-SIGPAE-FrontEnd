@@ -1,12 +1,25 @@
 import React from "react";
 import { Collapse } from "react-collapse";
 
+import "../style.scss";
 import "./style.scss";
 
+import { DataInclusao } from "../DataInclusao";
 import { InclusoesCEI } from "./InclusoesCEI";
 
 export const SolicitacoesSimilaresInclusaoCEI = ({ ...props }) => {
   const { solicitacao, index } = props;
+
+  const todasDatasCanceladas =
+    solicitacao.dias_motivos_da_inclusao_cei?.length > 0 &&
+    solicitacao.dias_motivos_da_inclusao_cei.every(
+      (inclusao) => inclusao.cancelado,
+    );
+
+  const justificativaCancelamento =
+    solicitacao.dias_motivos_da_inclusao_cei?.find(
+      (inclusao) => inclusao.cancelado_justificativa,
+    )?.cancelado_justificativa;
 
   const renderDataSolicitacao = (solicitacao) => {
     if (solicitacao.data_inicial && solicitacao.data_final) {
@@ -14,30 +27,41 @@ export const SolicitacoesSimilaresInclusaoCEI = ({ ...props }) => {
         <>
           <div className="col-2">
             <p>DE:</p>
-            <p>
+            <p className={todasDatasCanceladas ? "data-periodo-cancelado" : ""}>
               <b>{solicitacao.data_inicial}</b>
             </p>
           </div>
           <div className="col-2">
             <p>ATÉ:</p>
-            <p>
+            <p className={todasDatasCanceladas ? "data-periodo-cancelado" : ""}>
               <b>{solicitacao.data_final}</b>
             </p>
           </div>
+          {todasDatasCanceladas && justificativaCancelamento && (
+            <div className="col-4">
+              <p className="justificativa-cancelamento dark-red">
+                <span className="fw-bold">justificativa: </span>
+                {justificativaCancelamento}
+              </p>
+            </div>
+          )}
         </>
       );
     }
     return (
       <div className="col-4">
         <p>Dia(s) de inclusão:</p>
-        <p>
+        <div>
           {solicitacao.dias_motivos_da_inclusao_cei &&
             solicitacao.dias_motivos_da_inclusao_cei.map((inclusao, index) => (
-              <b className="me-4" key={index}>
-                {inclusao.data}
-              </b>
+              <DataInclusao
+                key={index}
+                inclusao={inclusao}
+                status={solicitacao.status}
+                logs={solicitacao.logs}
+              />
             ))}
-        </p>
+        </div>
       </div>
     );
   };

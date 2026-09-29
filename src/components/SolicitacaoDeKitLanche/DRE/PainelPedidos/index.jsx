@@ -1,88 +1,65 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import {
-  FiltroEnum,
-  TIPODECARD,
-  TIPO_SOLICITACAO,
-} from "../../../../constants/shared";
-import { dataAtualDDMMYYYY, safeConcatOn } from "../../../../helpers/utilities";
+import { FiltroEnum, TIPODECARD } from "../../../../constants/shared";
+import { dataAtualDDMMYYYY } from "../../../../helpers/utilities";
 import { getDREPedidosDeKitLanche } from "src/services/kitLanche";
 import { getLotesSimples } from "src/services/lote.service";
 import HTTP_STATUS from "http-status-codes";
 import { ASelect } from "src/components/Shareable/MakeField";
-import { Select as SelectAntd } from "antd";
+import { Select as SelectAntd, Spin } from "antd";
 import { formatarOpcoesLote } from "src/helpers/utilities";
 import { meusDados } from "src/services/perfil.service";
 import { CardPendenteAcao } from "../../components/CardPendenteAcao";
-import {
-  filtraNoLimite,
-  filtraPrioritarios,
-  filtraRegular,
-  ordenarPedidosDataMaisRecente,
-} from "./../../../../helpers/painelPedidos";
+
+const TEMPO_DEBOUNCE_BUSCA = 1500;
+
+const CARDS = [
+  {
+    chave: "prioritario",
+    prazo: "PRIORITARIO",
+    titulo: "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+    tipoDeCard: TIPODECARD.PRIORIDADE,
+  },
+  {
+    chave: "limite",
+    prazo: "LIMITE",
+    titulo: "Solicitações no prazo limite",
+    tipoDeCard: TIPODECARD.NO_LIMITE,
+  },
+  {
+    chave: "regular",
+    prazo: "REGULAR",
+    titulo: "Solicitações no prazo regular",
+    tipoDeCard: TIPODECARD.REGULAR,
+  },
+];
+
+const novoCardData = () => ({
+  pedidos: [],
+  count: 0,
+  page: 1,
+  escolasSolicitantes: 0,
+  buscando: true,
+  busca: "",
+});
 
 class PainelPedidos extends Component {
   constructor(props) {
     super(props);
     this.state = {
       meusDados: null,
-      pedidosCarregados: 0,
-      pedidosPrioritarios: [],
-      pedidosNoPrazoLimite: [],
-      pedidosNoPrazoRegular: [],
       filtros: this.props.filtros || {
         lote: undefined,
       },
       lotes: [],
+      prioritario: novoCardData(),
+      limite: novoCardData(),
+      regular: novoCardData(),
     };
-  }
-
-  filtrar(filtro, filtros) {
-    let pedidosPrioritarios = [];
-    let pedidosNoPrazoLimite = [];
-    let pedidosNoPrazoRegular = [];
-    this.setState({ pedidosCarregados: 0 });
-
-    Promise.all([
-      getDREPedidosDeKitLanche(
-        filtro,
-        TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        filtros,
-      ),
-      getDREPedidosDeKitLanche(
-        filtro,
-        TIPO_SOLICITACAO.SOLICITACAO_CEI,
-        filtros,
-      ),
-      getDREPedidosDeKitLanche(
-        filtro,
-        TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
-        filtros,
-      ),
-    ]).then(([response, responseCei, responseCEMEI]) => {
-      const results = safeConcatOn(
-        "results",
-        response,
-        responseCei,
-        responseCEMEI,
-      );
-      pedidosPrioritarios = ordenarPedidosDataMaisRecente(
-        filtraPrioritarios(results),
-      );
-      pedidosNoPrazoLimite = ordenarPedidosDataMaisRecente(
-        filtraNoLimite(results),
-      );
-      pedidosNoPrazoRegular = ordenarPedidosDataMaisRecente(
-        filtraRegular(results),
-      );
-      this.setState((prevState) => ({
-        pedidosPrioritarios,
-        pedidosNoPrazoLimite,
-        pedidosNoPrazoRegular,
-        pedidosCarregados: prevState.pedidosCarregados + 1,
-      }));
-    });
+    this.buscaTimeouts = {};
+    this.onBusca = this.onBusca.bind(this);
+    this.onPageChange = this.onPageChange.bind(this);
   }
 
   componentDidMount() {
@@ -95,10 +72,37 @@ class PainelPedidos extends Component {
     const paramsFromPrevPage = this.props.filtros || {
       lote: undefined,
     };
-    this.filtrar(FiltroEnum.SEM_FILTRO, paramsFromPrevPage);
+    CARDS.forEach(({ chave }) =>
+      this.filtrarPrazo(chave, {
+        filtros: paramsFromPrevPage,
+        busca: "",
+        page: 1,
+      }),
+    );
     if (this.props.filtros) {
       this.props.change("lote", this.props.filtros.lote);
     }
+  }
+
+  filtrarPrazo(chave, { filtros, busca, page }) {
+    const prazo = CARDS.find((card) => card.chave === chave).prazo;
+    const params = { ...filtros, page, prazo };
+    if (busca) {
+      params.busca = busca;
+    }
+    this.setState({ [chave]: { ...this.state[chave], buscando: true, busca } });
+    getDREPedidosDeKitLanche(FiltroEnum.SEM_FILTRO, params).then((data) => {
+      this.setState({
+        [chave]: {
+          pedidos: data.results || [],
+          count: data.count || 0,
+          escolasSolicitantes: data.escolas_solicitantes || 0,
+          page,
+          buscando: false,
+          busca,
+        },
+      });
+    });
   }
 
   async getLotesAsync(uuid) {
@@ -118,98 +122,104 @@ class PainelPedidos extends Component {
     }
   }
 
-  setFiltros(filtros) {
-    this.setState({ filtros: filtros });
+  onBusca(chave, termo) {
+    this.setState({ [chave]: { ...this.state[chave], busca: termo } });
+    clearTimeout(this.buscaTimeouts[chave]);
+    this.buscaTimeouts[chave] = setTimeout(() => {
+      if (termo.length === 0 || termo.length > 2) {
+        this.filtrarPrazo(chave, {
+          filtros: this.state.filtros,
+          busca: termo,
+          page: 1,
+        });
+      }
+    }, TEMPO_DEBOUNCE_BUSCA);
+  }
+
+  onPageChange(chave, page) {
+    this.filtrarPrazo(chave, {
+      filtros: this.state.filtros,
+      busca: this.state[chave].busca,
+      page,
+    });
+  }
+
+  componentWillUnmount() {
+    Object.values(this.buscaTimeouts).forEach((timeout) =>
+      clearTimeout(timeout),
+    );
   }
 
   render() {
-    const {
-      pedidosCarregados,
-      pedidosPrioritarios,
-      pedidosNoPrazoLimite,
-      pedidosNoPrazoRegular,
-      lotes,
-    } = this.state;
-    const { valorDoFiltro } = this.props;
-    const todosOsPedidosForamCarregados = pedidosCarregados;
+    const { lotes } = this.state;
     return (
       <div>
-        {!todosOsPedidosForamCarregados ? (
-          <div>Carregando...</div>
-        ) : (
-          <form onSubmit={this.props.handleSubmit}>
-            <div className="card mt-3">
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-3 font-10 my-auto">
-                    Data: {dataAtualDDMMYYYY()}
-                  </div>
-                  <div className="offset-6 col-3">
-                    <Field
-                      component={ASelect}
-                      showSearch
-                      onChange={(value) => {
-                        const filtros_ = {
-                          lote: value || undefined,
-                        };
-                        this.setFiltros(filtros_);
-                        this.filtrar(FiltroEnum.SEM_FILTRO, filtros_);
-                      }}
-                      onBlur={(e) => {
-                        e.preventDefault();
-                      }}
-                      name="lote"
-                      filterOption={(inputValue, option) =>
-                        option.props.children
-                          .toString()
-                          .toLowerCase()
-                          .includes(inputValue.toLowerCase())
-                      }
-                    >
-                      {lotes}
-                    </Field>
-                  </div>
+        <form onSubmit={this.props.handleSubmit}>
+          <div className="card mt-3">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-3 font-10 my-auto">
+                  Data: {dataAtualDDMMYYYY()}
                 </div>
-                <div className="row pt-3">
-                  <div className="col-12">
-                    <CardPendenteAcao
-                      titulo={
-                        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-                      }
-                      tipoDeCard={TIPODECARD.PRIORIDADE}
-                      pedidos={pedidosPrioritarios}
-                      ultimaColunaLabel={"Data do Evento"}
-                    />
-                  </div>
+                <div className="offset-6 col-3">
+                  <Field
+                    component={ASelect}
+                    showSearch
+                    onChange={(value) => {
+                      const filtros_ = {
+                        lote: value || undefined,
+                      };
+                      this.setState({ filtros: filtros_ });
+                      CARDS.forEach(({ chave }) =>
+                        this.filtrarPrazo(chave, {
+                          filtros: filtros_,
+                          busca: this.state[chave].busca,
+                          page: 1,
+                        }),
+                      );
+                    }}
+                    onBlur={(e) => {
+                      e.preventDefault();
+                    }}
+                    name="lote"
+                    filterOption={(inputValue, option) =>
+                      option.props.children
+                        .toString()
+                        .toLowerCase()
+                        .includes(inputValue.toLowerCase())
+                    }
+                  >
+                    {lotes}
+                  </Field>
                 </div>
-                {valorDoFiltro !== "hoje" && (
-                  <div className="row pt-3">
-                    <div className="col-12">
-                      <CardPendenteAcao
-                        titulo={"Solicitações no prazo limite"}
-                        tipoDeCard={TIPODECARD.NO_LIMITE}
-                        pedidos={pedidosNoPrazoLimite}
-                        ultimaColunaLabel={"Data do Evento"}
-                      />
-                    </div>
-                  </div>
-                )}
-                {valorDoFiltro !== "hoje" && (
-                  <div className="row pt-3">
-                    <div className="col-12">
-                      <CardPendenteAcao
-                        titulo={"Solicitações no prazo regular"}
-                        tipoDeCard={TIPODECARD.REGULAR}
-                        pedidos={pedidosNoPrazoRegular}
-                        ultimaColunaLabel={"Data do Evento"}
-                      />
-                    </div>
-                  </div>
-                )}
               </div>
+              {CARDS.map(({ chave, titulo, tipoDeCard }) => {
+                const card = this.state[chave];
+                return (
+                  <div className="row pt-3" key={chave}>
+                    <div className="col-12">
+                      <Spin spinning={card.buscando}>
+                        <CardPendenteAcao
+                          titulo={titulo}
+                          tipoDeCard={tipoDeCard}
+                          pedidos={card.pedidos}
+                          totalSolicitacoes={card.count}
+                          escolasSolicitantes={card.escolasSolicitantes}
+                          page={card.page}
+                          onPageChange={(page) =>
+                            this.onPageChange(chave, page)
+                          }
+                          busca={card.busca}
+                          onBusca={(termo) => this.onBusca(chave, termo)}
+                        />
+                      </Spin>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </form>
-        )}
+          </div>
+        </form>
       </div>
     );
   }

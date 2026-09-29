@@ -119,8 +119,8 @@ export default () => {
                   <table>
                     <thead>
                       <tr className="row">
-                        <th className="col-3">Edital</th>
-                        <th className="col-4">DRE</th>
+                        <th className="col-4">Edital</th>
+                        <th className="col-3">DRE</th>
                         <th className="col-1">Lote</th>
                         <th className="col-3">Tipo de Unidade</th>
                         <th className="col-1"></th>
@@ -130,10 +130,17 @@ export default () => {
                     <tbody>
                       {parametrizacoes.map((parametrizacao) => (
                         <tr className="row" key={parametrizacao.uuid}>
-                          <td className="col-3">
-                            {parametrizacao.edital.numero}
+                          <td className="col-4">
+                            <div className="edital-com-etiqueta">
+                              <span>{parametrizacao.edital.numero}</span>
+                              {parametrizacao.vigente && (
+                                <span className="etiqueta-parametrizacao-vigente">
+                                  PARAMETRIZAÇÃO VIGENTE
+                                </span>
+                              )}
+                            </div>
                           </td>
-                          <td className="col-4">{parametrizacao.dre}</td>
+                          <td className="col-3">{parametrizacao.dre}</td>
                           <td className="col-1">{parametrizacao.lote.nome}</td>
                           <td className="col-3">
                             {formataTiposUnidades(

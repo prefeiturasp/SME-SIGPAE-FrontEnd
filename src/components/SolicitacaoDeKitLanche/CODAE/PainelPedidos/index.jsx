@@ -1,18 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Field, formValueSelector, reduxForm } from "redux-form";
-import {
-  FiltroEnum,
-  TIPODECARD,
-  TIPO_SOLICITACAO,
-} from "../../../../constants/shared";
-import {
-  filtraNoLimite,
-  filtraPrioritarios,
-  filtraRegular,
-  ordenarPedidosDataMaisRecente,
-} from "../../../../helpers/painelPedidos";
-import { dataAtualDDMMYYYY, safeConcatOn } from "../../../../helpers/utilities";
+import { FiltroEnum, TIPODECARD } from "../../../../constants/shared";
+import { dataAtualDDMMYYYY } from "../../../../helpers/utilities";
 import { getCodaePedidosDeKitLanche } from "src/services/kitLanche";
 import Select from "../../../Shareable/Select";
 import {
@@ -25,71 +15,59 @@ import { getLotesSimples } from "src/services/lote.service";
 import HTTP_STATUS from "http-status-codes";
 import { CardPendenteAcao } from "../../components/CardPendenteAcao";
 import { ASelect } from "src/components/Shareable/MakeField";
-import { Select as SelectAntd } from "antd";
+import { Select as SelectAntd, Spin } from "antd";
+
+const TEMPO_DEBOUNCE_BUSCA = 1500;
+
+const CARDS = [
+  {
+    chave: "prioritario",
+    prazo: "PRIORITARIO",
+    titulo: "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+    tipoDeCard: TIPODECARD.PRIORIDADE,
+  },
+  {
+    chave: "limite",
+    prazo: "LIMITE",
+    titulo: "Solicitações no prazo limite",
+    tipoDeCard: TIPODECARD.NO_LIMITE,
+  },
+  {
+    chave: "regular",
+    prazo: "REGULAR",
+    titulo: "Solicitações no prazo regular",
+    tipoDeCard: TIPODECARD.REGULAR,
+  },
+];
+
+const novoCardData = () => ({
+  pedidos: [],
+  count: 0,
+  page: 1,
+  escolasSolicitantes: 0,
+  buscando: true,
+  busca: "",
+});
 
 class PainelPedidos extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pedidosCarregados: 0,
-      pedidosPrioritarios: [],
-      pedidosNoPrazoLimite: [],
-      pedidosNoPrazoRegular: [],
       filtros: this.props.filtros || {
         lote: undefined,
         diretoria_regional: undefined,
       },
       lotes: [],
       diretoriasRegionais: [],
+      filtro: FiltroEnum.SEM_FILTRO,
+      prioritario: novoCardData(),
+      limite: novoCardData(),
+      regular: novoCardData(),
     };
-    this.setFiltros = this.setFiltros.bind(this);
-  }
-
-  filtrar(filtro, paramsFromPrevPage = {}) {
-    let pedidosPrioritarios = [];
-    let pedidosNoPrazoLimite = [];
-    let pedidosNoPrazoRegular = [];
-    this.setState({ pedidosCarregados: 0 });
-
-    Promise.all([
-      getCodaePedidosDeKitLanche(
-        filtro,
-        TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        paramsFromPrevPage,
-      ),
-      getCodaePedidosDeKitLanche(
-        filtro,
-        TIPO_SOLICITACAO.SOLICITACAO_CEI,
-        paramsFromPrevPage,
-      ),
-      getCodaePedidosDeKitLanche(
-        filtro,
-        TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
-        paramsFromPrevPage,
-      ),
-    ]).then(([response, responseCei, responseCEMEI]) => {
-      const results = safeConcatOn(
-        "results",
-        response,
-        responseCei,
-        responseCEMEI,
-      );
-      pedidosPrioritarios = ordenarPedidosDataMaisRecente(
-        filtraPrioritarios(results),
-      );
-      pedidosNoPrazoLimite = ordenarPedidosDataMaisRecente(
-        filtraNoLimite(results),
-      );
-      pedidosNoPrazoRegular = ordenarPedidosDataMaisRecente(
-        filtraRegular(results),
-      );
-      this.setState((prevState) => ({
-        pedidosPrioritarios,
-        pedidosNoPrazoLimite,
-        pedidosNoPrazoRegular,
-        pedidosCarregados: prevState.pedidosCarregados + 1,
-      }));
-    });
+    this.buscaTimeouts = {};
+    this.onBusca = this.onBusca.bind(this);
+    this.onPageChange = this.onPageChange.bind(this);
+    this.onFiltroSelected = this.onFiltroSelected.bind(this);
   }
 
   componentDidMount() {
@@ -99,7 +77,14 @@ class PainelPedidos extends Component {
       lote: [],
       diretoria_regional: [],
     };
-    this.filtrar(FiltroEnum.SEM_FILTRO, paramsFromPrevPage);
+    CARDS.forEach(({ chave }) =>
+      this.filtrarPrazo(chave, {
+        filtro: this.state.filtro,
+        filtros: paramsFromPrevPage,
+        busca: "",
+        page: 1,
+      }),
+    );
     if (this.props.filtros) {
       this.props.change(
         "diretoria_regional",
@@ -107,6 +92,27 @@ class PainelPedidos extends Component {
       );
       this.props.change("lote", this.props.filtros.lote);
     }
+  }
+
+  filtrarPrazo(chave, { filtro, filtros, busca, page }) {
+    const prazo = CARDS.find((card) => card.chave === chave).prazo;
+    const params = { ...filtros, page, prazo };
+    if (busca) {
+      params.busca = busca;
+    }
+    this.setState({ [chave]: { ...this.state[chave], buscando: true, busca } });
+    getCodaePedidosDeKitLanche(filtro, params).then((data) => {
+      this.setState({
+        [chave]: {
+          pedidos: data.results || [],
+          count: data.count || 0,
+          escolasSolicitantes: data.escolas_solicitantes || 0,
+          page,
+          buscando: false,
+          busca,
+        },
+      });
+    });
   }
 
   async getLotesAsync() {
@@ -143,156 +149,171 @@ class PainelPedidos extends Component {
     }
   }
 
-  setFiltros(filtros) {
-    this.setState({ filtros: filtros });
+  onBusca(chave, termo) {
+    this.setState({ [chave]: { ...this.state[chave], busca: termo } });
+    clearTimeout(this.buscaTimeouts[chave]);
+    this.buscaTimeouts[chave] = setTimeout(() => {
+      if (termo.length === 0 || termo.length > 2) {
+        this.filtrarPrazo(chave, {
+          filtro: this.state.filtro,
+          filtros: this.state.filtros,
+          busca: termo,
+          page: 1,
+        });
+      }
+    }, TEMPO_DEBOUNCE_BUSCA);
+  }
+
+  onPageChange(chave, page) {
+    this.filtrarPrazo(chave, {
+      filtro: this.state.filtro,
+      filtros: this.state.filtros,
+      busca: this.state[chave].busca,
+      page,
+    });
   }
 
   onFiltroSelected(value) {
-    const { filtros } = this.state;
-    switch (value) {
-      case FiltroEnum.HOJE:
-        this.filtrarHoje();
-        break;
-      default:
-        this.filtrar(value, filtros);
-        break;
-    }
+    this.setState({ filtro: value });
+    CARDS.forEach(({ chave }) =>
+      this.filtrarPrazo(chave, {
+        filtro: value,
+        filtros: this.state.filtros,
+        busca: this.state[chave].busca,
+        page: 1,
+      }),
+    );
+  }
+
+  componentWillUnmount() {
+    Object.values(this.buscaTimeouts).forEach((timeout) =>
+      clearTimeout(timeout),
+    );
   }
 
   render() {
-    const {
-      pedidosCarregados,
-      pedidosPrioritarios,
-      pedidosNoPrazoLimite,
-      pedidosNoPrazoRegular,
-      diretoriasRegionais,
-      lotes,
-      filtros,
-    } = this.state;
-    const { visaoPorCombo, valorDoFiltro } = this.props;
-    const todosOsPedidosForamCarregados = pedidosCarregados;
+    const { lotes, diretoriasRegionais, filtros } = this.state;
+    const { visaoPorCombo } = this.props;
     return (
       <div>
-        {!todosOsPedidosForamCarregados ? (
-          <div>Carregando...</div>
-        ) : (
-          <form onSubmit={this.props.handleSubmit}>
-            <div className="card mt-3">
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-3 font-10 my-auto">
-                    Data: {dataAtualDDMMYYYY()}
-                  </div>
-                  {usuarioEhCODAEGestaoAlimentacao() ? (
-                    <>
-                      <div className="offset-3 col-3">
-                        <Field
-                          component={ASelect}
-                          showSearch
-                          onChange={(value) => {
-                            const filtros_ = {
-                              diretoria_regional: value || undefined,
-                              lote: filtros.lote,
-                            };
-                            this.setFiltros(filtros_);
-                            this.filtrar(FiltroEnum.SEM_FILTRO, filtros_);
-                          }}
-                          onBlur={(e) => {
-                            e.preventDefault();
-                          }}
-                          name="diretoria_regional"
-                          filterOption={(inputValue, option) =>
-                            option.props.children
-                              .toString()
-                              .toLowerCase()
-                              .includes(inputValue.toLowerCase())
-                          }
-                        >
-                          {diretoriasRegionais}
-                        </Field>
-                      </div>
-                      <div className="col-3">
-                        <Field
-                          component={ASelect}
-                          showSearch
-                          onChange={(value) => {
-                            const filtros_ = {
-                              diretoria_regional: filtros.diretoria_regional,
-                              lote: value || undefined,
-                            };
-                            this.setFiltros(filtros_);
-                            this.filtrar(FiltroEnum.SEM_FILTRO, filtros_);
-                          }}
-                          onBlur={(e) => {
-                            e.preventDefault();
-                          }}
-                          name="lote"
-                          filterOption={(inputValue, option) =>
-                            option.props.children
-                              .toString()
-                              .toLowerCase()
-                              .includes(inputValue.toLowerCase())
-                          }
-                        >
-                          {lotes}
-                        </Field>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="offset-6 col-3 text-end">
+        <form onSubmit={this.props.handleSubmit}>
+          <div className="card mt-3">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-3 font-10 my-auto">
+                  Data: {dataAtualDDMMYYYY()}
+                </div>
+                {usuarioEhCODAEGestaoAlimentacao() ? (
+                  <>
+                    <div className="offset-3 col-3">
                       <Field
-                        component={Select}
-                        name="visao_por"
-                        naoDesabilitarPrimeiraOpcao
-                        onChange={(event) =>
-                          this.onFiltroSelected(event.target.value)
+                        component={ASelect}
+                        showSearch
+                        onChange={(value) => {
+                          const filtros_ = {
+                            diretoria_regional: value || undefined,
+                            lote: filtros.lote,
+                          };
+                          this.setState({ filtros: filtros_ });
+                          CARDS.forEach(({ chave }) =>
+                            this.filtrarPrazo(chave, {
+                              filtro: this.state.filtro,
+                              filtros: filtros_,
+                              busca: this.state[chave].busca,
+                              page: 1,
+                            }),
+                          );
+                        }}
+                        onBlur={(e) => {
+                          e.preventDefault();
+                        }}
+                        name="diretoria_regional"
+                        filterOption={(inputValue, option) =>
+                          option.props.children
+                            .toString()
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
                         }
-                        placeholder={"Filtro por"}
-                        options={visaoPorCombo}
-                      />
+                      >
+                        {diretoriasRegionais}
+                      </Field>
                     </div>
-                  )}
-                </div>
-                <div className="row pt-3">
-                  <div className="col-12">
-                    <CardPendenteAcao
-                      titulo={
-                        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
+                    <div className="col-3">
+                      <Field
+                        component={ASelect}
+                        showSearch
+                        onChange={(value) => {
+                          const filtros_ = {
+                            diretoria_regional: filtros.diretoria_regional,
+                            lote: value || undefined,
+                          };
+                          this.setState({ filtros: filtros_ });
+                          CARDS.forEach(({ chave }) =>
+                            this.filtrarPrazo(chave, {
+                              filtro: this.state.filtro,
+                              filtros: filtros_,
+                              busca: this.state[chave].busca,
+                              page: 1,
+                            }),
+                          );
+                        }}
+                        onBlur={(e) => {
+                          e.preventDefault();
+                        }}
+                        name="lote"
+                        filterOption={(inputValue, option) =>
+                          option.props.children
+                            .toString()
+                            .toLowerCase()
+                            .includes(inputValue.toLowerCase())
+                        }
+                      >
+                        {lotes}
+                      </Field>
+                    </div>
+                  </>
+                ) : (
+                  <div className="offset-6 col-3 text-end">
+                    <Field
+                      component={Select}
+                      name="visao_por"
+                      naoDesabilitarPrimeiraOpcao
+                      onChange={(event) =>
+                        this.onFiltroSelected(event.target.value)
                       }
-                      tipoDeCard={TIPODECARD.PRIORIDADE}
-                      pedidos={pedidosPrioritarios}
-                      ultimaColunaLabel={"Data do Evento"}
+                      placeholder={"Filtro por"}
+                      options={visaoPorCombo}
                     />
-                  </div>
-                </div>
-                {valorDoFiltro !== "hoje" && (
-                  <div className="row pt-3">
-                    <div className="col-12">
-                      <CardPendenteAcao
-                        titulo={"Solicitações no prazo limite"}
-                        tipoDeCard={TIPODECARD.NO_LIMITE}
-                        pedidos={pedidosNoPrazoLimite}
-                        ultimaColunaLabel={"Data do Evento"}
-                      />
-                    </div>
-                  </div>
-                )}
-                {valorDoFiltro !== "hoje" && (
-                  <div className="row pt-3">
-                    <div className="col-12">
-                      <CardPendenteAcao
-                        titulo={"Solicitações no prazo regular"}
-                        tipoDeCard={TIPODECARD.REGULAR}
-                        pedidos={pedidosNoPrazoRegular}
-                        ultimaColunaLabel={"Data do Evento"}
-                      />
-                    </div>
                   </div>
                 )}
               </div>
+              {CARDS.map(({ chave, titulo, tipoDeCard }) => {
+                const card = this.state[chave];
+                return (
+                  <div className="row pt-3" key={chave}>
+                    <div className="col-12">
+                      <Spin spinning={card.buscando}>
+                        <CardPendenteAcao
+                          titulo={titulo}
+                          tipoDeCard={tipoDeCard}
+                          pedidos={card.pedidos}
+                          totalSolicitacoes={card.count}
+                          escolasSolicitantes={card.escolasSolicitantes}
+                          page={card.page}
+                          onPageChange={(page) =>
+                            this.onPageChange(chave, page)
+                          }
+                          busca={card.busca}
+                          onBusca={(termo) => this.onBusca(chave, termo)}
+                        />
+                      </Spin>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </form>
-        )}
+          </div>
+        </form>
       </div>
     );
   }

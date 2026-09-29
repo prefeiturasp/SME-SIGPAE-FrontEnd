@@ -485,7 +485,6 @@ export const CorpoRelatorio = ({
                   </div>
                 </div>
               )}
-              <RelatorioHistoricoQuestionamento solicitacao={solicitacao} />
               {solicitacao.status !== "ESCOLA_CANCELOU" && (
                 <RelatorioHistoricoJustificativaEscola
                   solicitacao={solicitacao}
@@ -495,6 +494,7 @@ export const CorpoRelatorio = ({
           </div>
         );
       })}
+      <RelatorioHistoricoQuestionamento solicitacao={solicitacao} />
       {solicitacao.status === "CODAE_AUTORIZADO" &&
         !existeLogDeQuestionamentoDaCODAE(solicitacao.logs) && (
           <>

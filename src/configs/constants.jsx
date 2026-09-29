@@ -223,9 +223,6 @@ export const PERIODO_LANCAMENTO_CEI = "periodo-lancamento-cei";
 export const ACOMPANHAMENTO_DE_LANCAMENTOS = "acompanhamento-de-lancamentos";
 export const CONFERENCIA_DOS_LANCAMENTOS = "conferencia-dos-lancamentos";
 export const DETALHAMENTO_DO_LANCAMENTO = "detalhamento-do-lancamento";
-export const CADASTRO_DE_EMPENHO = "cadastro-de-empenho";
-export const EDITAR_EMPENHO = "editar-empenho";
-export const EMPENHOS = "empenhos";
 export const CLAUSULAS_PARA_DESCONTOS = "clausulas-para-descontos";
 export const PARAMETRIZACAO_FINANCEIRA = "parametrizacao-financeira";
 export const ADICIONAR_PARAMETRIZACAO_FINANCEIRA =
@@ -342,6 +339,8 @@ export const DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO =
   "detalhar-termo-recebimento-definitivo";
 export const TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR =
   "termo-recebimento-definitivo-fornecedor";
+export const PAINEL_ASSINATURA_TERMOS_RECEBIMENTO =
+  "painel-assinatura-termos-recebimento";
 export const QUESTOES_POR_PRODUTO = "questoes-por-produto";
 export const ATRIBUIR_QUESTOES_CONFERENCIA = "atribuir-questoes-conferencia";
 export const EDITAR_ATRIBUICAO_QUESTOES_CONFERENCIA =

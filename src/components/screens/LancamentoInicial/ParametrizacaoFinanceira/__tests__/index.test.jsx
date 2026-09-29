@@ -145,6 +145,24 @@ describe("Testes da interface de Listagem - Parametrização Financeira", () => 
     });
   });
 
+  it("exibe a etiqueta PARAMETRIZAÇÃO VIGENTE somente na parametrização vigente", async () => {
+    await waitFor(() => {
+      expect(screen.getAllByText("PARAMETRIZAÇÃO VIGENTE")).toHaveLength(1);
+    });
+
+    const linhaDaTabela = (texto) =>
+      screen
+        .getAllByText(texto)
+        .find((elemento) => elemento.closest("tbody"))
+        .closest("tr");
+
+    const linhaVigente = linhaDaTabela("Edital de Pregão n° 36/SME/2022");
+    const linhaNaoVigente = linhaDaTabela("303030A");
+
+    expect(linhaVigente).toHaveTextContent("PARAMETRIZAÇÃO VIGENTE");
+    expect(linhaNaoVigente).not.toHaveTextContent("PARAMETRIZAÇÃO VIGENTE");
+  });
+
   it("deve carregar opções dos selects de filtro", async () => {
     await waitFor(() => {
       const editalSelect = screen

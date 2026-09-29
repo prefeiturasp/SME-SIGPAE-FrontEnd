@@ -60,11 +60,13 @@ export const URL_INCLUSAO_NORMAL = `${API_URL}/grupos-inclusao-alimentacao-norma
 export const URL_INCLUSAO_CONTINUA = `${API_URL}/inclusoes-alimentacao-continua`;
 export const URL_INCLUSAO_CEI = `${API_URL}/inclusoes-alimentacao-da-cei`;
 export const URL_INCLUSAO_CEMEI = `${API_URL}/inclusao-alimentacao-cemei`;
+export const URL_INCLUSAO_PAINEL = `${API_URL}/inclusao-alimentacao`;
 
 export const URL_KIT_LANCHES = `${API_URL}/kit-lanches`;
 export const URL_KIT_LANCHES_SOLICITACOES_AVULSA = `${API_URL}/solicitacoes-kit-lanche-avulsa`;
 export const URL_KIT_LANCHES_SOLICITACOES_CEI = `${API_URL}/solicitacoes-kit-lanche-cei-avulsa`;
 export const URL_KIT_LANCHES_SOLICITACOES_CEMEI = `${API_URL}/solicitacao-kit-lanche-cemei`;
+export const URL_KIT_LANCHES_SOLICITACOES_PAINEL = `${API_URL}/solicitacao-kit-lanche`;
 
 export const AUTH_TOKEN = {
   Authorization: `JWT ${authService.getToken()}`,

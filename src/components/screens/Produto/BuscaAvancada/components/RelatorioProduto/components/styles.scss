@@ -282,6 +282,47 @@
     max-height: 250px;
     overflow-y: auto;
 
+    .preenchimento-dados-produto .log-selecionado-justificativa-valor {
+      margin-top: 10px;
+    }
+
+    .dados-do-produto-empresa-container,
+    .dados-do-produto-criado-em-container,
+    .dados-do-produto-produto-container,
+    .dados-do-produto-marca-container,
+    .dados-do-produto-fabricante-container {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .dados-do-produto-componentes-container,
+    .dados-do-produto-dieta-especial-container {
+      margin-bottom: 10px;
+    }
+
+    .dados-do-produto-marca-fabricante-container {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+    }
+
+    .dados-do-produto-empresa-valor,
+    .dados-do-produto-criado-em-valor,
+    .dados-do-produto-produto-valor,
+    .dados-do-produto-marca-valor,
+    .dados-do-produto-fabricante-valor,
+    .dados-do-produto-dieta-especial-valor,
+    .dados-do-produto-componentes-valor {
+      font-weight: 400;
+    }
+
+    .dados-do-produto-componentes-valor,
+    .dados-do-produto-dieta-especial-valor {
+      margin-top: 10px;
+    }
+
     header {
       font-style: normal;
       font-weight: bold;

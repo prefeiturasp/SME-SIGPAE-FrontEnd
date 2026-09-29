@@ -1,0 +1,48 @@
+@use "src/styles/variables.scss" as *;
+
+.dark-red {
+  color: $redToastError;
+}
+
+.data-inclusao {
+  display: inline-block;
+  vertical-align: top;
+
+  &.cancelado {
+    b {
+      color: $redToastError;
+      text-decoration: line-through;
+    }
+
+    .dark-red {
+      font-weight: normal;
+    }
+  }
+}
+
+.data-periodo-cancelado {
+  b {
+    color: $redToastError;
+    text-decoration: line-through;
+  }
+}
+
+.justificativa-cancelamento {
+  word-break: break-word;
+}
+
+table.periodos-emef {
+  tr.cancelado {
+    td {
+      p:not(.justificativa-cancelamento) {
+        color: $grayLight;
+        font-weight: bold;
+        text-decoration: line-through;
+      }
+
+      p:is(.justificativa-cancelamento) {
+        word-break: break-word;
+      }
+    }
+  }
+}

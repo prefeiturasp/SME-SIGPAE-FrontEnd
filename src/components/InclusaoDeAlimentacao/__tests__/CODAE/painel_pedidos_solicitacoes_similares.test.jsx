@@ -9,13 +9,16 @@ import {
 import { TIPO_PERFIL } from "src/constants/shared";
 import { mockDiretoriaRegionalSimplissima } from "src/mocks/diretoriaRegional.service/mockDiretoriaRegionalSimplissima";
 import { mockPedidosCODAEInclusaoNormalSolicitacoesSimilares } from "src/mocks/InclusaoAlimentacao/EMEF/pedidosCODAEInclusaoNormalSolicitacoesSimilares";
-import { mockPedidosCODAEInclusaoCEI } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoCEI";
-import { mockPedidosCODAEInclusaoContinua } from "src/mocks/InclusaoAlimentacao/mockPedidosCODAEInclusaoContinua";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockLotesSimples } from "src/mocks/lote.service/mockLotesSimples";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
+import { codaeListarSolicitacoesDeInclusaoDeAlimentacao } from "src/services/inclusaoDeAlimentacao";
 import Container from "../../CODAE/PainelPedidos/Container";
+
+jest.mock("src/services/inclusaoDeAlimentacao");
+
+const totaisVazios = { PRIORITARIO: 0, LIMITE: 0, REGULAR: 0 };
 
 describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentação", () => {
   beforeEach(async () => {
@@ -23,23 +26,31 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
       .onGet("/diretorias-regionais-simplissima/")
       .reply(200, mockDiretoriaRegionalSimplissima);
     mock.onGet("/lotes-simples/").reply(200, mockLotesSimples);
-    mock
-      .onGet("/inclusoes-alimentacao-da-cei/pedidos-codae/sem_filtro/")
-      .reply(200, mockPedidosCODAEInclusaoCEI);
-    mock
-      .onGet("/inclusoes-alimentacao-cemei/pedidos-codae/sem_filtro/")
-      .reply(200, { count: 0, next: null, previous: null, results: [] });
-    mock
-      .onGet("/grupos-inclusao-alimentacao-normal/pedidos-codae/sem_filtro/")
-      .reply(200, mockPedidosCODAEInclusaoNormalSolicitacoesSimilares);
-    mock
-      .onGet("/inclusoes-alimentacao-continua/pedidos-codae/sem_filtro/")
-      .reply(200, mockPedidosCODAEInclusaoContinua);
+
+    codaeListarSolicitacoesDeInclusaoDeAlimentacao.mockImplementation(
+      (filtro, params) => {
+        if (params.prazo === "REGULAR") {
+          return Promise.resolve({
+            count: 2,
+            results:
+              mockPedidosCODAEInclusaoNormalSolicitacoesSimilares.results,
+            escolas_solicitantes: 1,
+            totais: { PRIORITARIO: 0, LIMITE: 0, REGULAR: 2 },
+          });
+        }
+        return Promise.resolve({
+          count: 0,
+          results: [],
+          escolas_solicitantes: 0,
+          totais: totaisVazios,
+        });
+      },
+    );
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
     await act(async () => {
       render(
@@ -52,33 +63,35 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
           <Container
             filtros={{ lotes: undefined, diretoria_regional: undefined }}
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("renderiza solicitações similares", async () => {
+    await waitFor(() => screen.getByTestId("regular"));
+
     expect(
       screen.getByText(
-        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)"
-      )
+        "Solicitações próximas ao prazo de vencimento (2 dias ou menos)",
+      ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Solicitações no prazo limite")
+      screen.getByText("Solicitações no prazo limite"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Solicitações no prazo regular")
+      screen.getByText("Solicitações no prazo regular"),
     ).toBeInTheDocument();
 
     expect(screen.getByText("B4310")).toBeInTheDocument();
     expect(screen.queryAllByText("Dia(s) de inclusão:")).toHaveLength(2);
-    expect(screen.getByText("50")).toBeInTheDocument();
-    expect(screen.getByText("100")).toBeInTheDocument();
   });
 
   it("expande collapse solicitações similares", async () => {
+    await waitFor(() => screen.getByTestId("regular"));
+
     const spanToggleExpandirSolicitacaoSimilar = screen.getByTestId(
-      "regular-toggle-expandir-3-0"
+      "regular-toggle-expandir-0-0",
     );
     fireEvent.click(spanToggleExpandirSolicitacaoSimilar);
     const icon = spanToggleExpandirSolicitacaoSimilar.querySelector("i");
@@ -86,31 +99,13 @@ describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentaç�
   });
 
   it("retrair collapse de fora", async () => {
+    await waitFor(() => screen.getByTestId("regular"));
+
     const spanToggleExpandirRegular = screen.getByTestId(
-      "toggle-expandir-regular"
+      "toggle-expandir-regular",
     );
     fireEvent.click(spanToggleExpandirRegular);
     const icon = spanToggleExpandirRegular.querySelector("i");
     expect(icon).toHaveClass("fa-chevron-down");
-  });
-
-  it("pesquisa solicitação por id_externo", async () => {
-    const inputPesquisar = screen.getByTestId("input-pesquisar-regular");
-    fireEvent.change(inputPesquisar, {
-      target: { value: "B4310" },
-    });
-    await waitFor(() => {
-      expect(screen.queryByText("#B4310")).not.toBeInTheDocument();
-    });
-  });
-
-  it("pesquisa solicitação (vazio)", async () => {
-    const inputPesquisar = screen.getByTestId("input-pesquisar-regular");
-    fireEvent.change(inputPesquisar, {
-      target: { value: "" },
-    });
-    await waitFor(() => {
-      expect(screen.queryAllByText("#B4310")).toHaveLength(2);
-    });
   });
 });

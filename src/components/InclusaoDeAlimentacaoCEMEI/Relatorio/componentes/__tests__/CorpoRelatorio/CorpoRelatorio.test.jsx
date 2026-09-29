@@ -39,11 +39,13 @@ jest.mock("src/helpers/utilities", () => ({
   usuarioEhDRE: () => false,
 }));
 
+let mockPeriodosDaInclusao = ["Manhã"];
+
 jest.mock("src/components/InclusaoDeAlimentacaoCEMEI/helpers", () => ({
   tiposAlimentacaoPorPeriodoETipoUnidade: () => "Tipo A, Tipo B",
   inclusaoPossuiCEInestePeriodo: () => true,
   inclusaoPossuiEMEInestePeriodo: () => false,
-  periodosDaInclusao: () => ["Manhã"],
+  periodosDaInclusao: () => mockPeriodosDaInclusao,
 }));
 
 jest.mock(
@@ -133,5 +135,22 @@ describe("CorpoRelatorio", () => {
     expect(screen.getByTestId("fluxo-status")).toBeInTheDocument();
 
     expect(screen.getByRole("button")).toBeInTheDocument();
+  });
+
+  test("Renderiza o bloco Histórico de questionamento apenas uma vez, mesmo com múltiplos períodos", () => {
+    mockPeriodosDaInclusao = ["Manhã", "Tarde", "Integral"];
+
+    render(
+      <CorpoRelatorio
+        solicitacao={solicitacaoMock}
+        vinculos={vinculosMock}
+        ehMotivoEspecifico={false}
+        solicitacoesSimilares={[]}
+      />,
+    );
+
+    const blocosHistorico = screen.getAllByTestId("historico-questionamento");
+
+    expect(blocosHistorico).toHaveLength(1);
   });
 });

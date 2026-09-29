@@ -7,10 +7,11 @@ import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities
 
 import useView from "./view";
 
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { IFiltros } from "../../types";
 import { validateDataFinal, validateDataInicial } from "./helpers";
+import "./style.scss";
 
 const { SHOW_CHILD } = TreeSelect;
 
@@ -25,6 +26,17 @@ export default (props: Props) => {
   const view = useView({ form, onChange });
 
   const values = form.getState().values;
+  const periodoLancamentoCompleto = Boolean(
+    values.periodo_lancamento_de && values.periodo_lancamento_ate,
+  );
+
+  useEffect(() => {
+    if (!values.resultado_individual_por_data || periodoLancamentoCompleto) {
+      return;
+    }
+    form.change("resultado_individual_por_data", false);
+    view.onChangeResultadoIndividualPorData(false);
+  }, [periodoLancamentoCompleto, values.resultado_individual_por_data]);
 
   return (
     <>
@@ -85,6 +97,9 @@ export default (props: Props) => {
             <Field name="tipos_unidades">
               {({ input }) => (
                 <div className="input">
+                  {values.resultado_individual_por_data && (
+                    <span className="required-asterisk">*</span>
+                  )}
                   <label className="col-form-label">Tipo de Unidade</label>
                   <TreeSelect
                     data-testid="select-tipos-unidades"
@@ -130,7 +145,9 @@ export default (props: Props) => {
               }}
               placeholder="Selecione as unidades educacionais"
               disabled={
-                !values.mes || usuarioEhEscolaTerceirizadaQualquerPerfil()
+                !values.mes ||
+                usuarioEhEscolaTerceirizadaQualquerPerfil() ||
+                Boolean(values.resultado_individual_por_data)
               }
             />
           </Spin>
@@ -185,47 +202,81 @@ export default (props: Props) => {
             />
           )}
         </div>
-        <div className="col-2">
-          {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
-            <Skeleton paragraph={false} active />
-          ) : (
-            <Field
-              component={InputComData}
-              dataTestId="div-periodo-lancamento-de"
-              name="periodo_lancamento_de"
-              label="Período de Lançamento"
-              placeholder="De"
-              minDate={validateDataInicial(form.getState().values, "de")}
-              maxDate={validateDataFinal(form.getState().values)}
-              disabled={!form.getState().values.mes}
-              inputOnChange={(value: string) => {
-                view.onChangePeriodoLancamentoDe(value);
-              }}
-              showMonthDropdown={true}
-              showYearDropdown={true}
-            />
-          )}
-        </div>
-        <div className="col-2">
-          {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
-            <Skeleton paragraph={false} active />
-          ) : (
-            <Field
-              component={InputComData}
-              dataTestId="div-periodo-lancamento-ate"
-              name="periodo_lancamento_ate"
-              label="&nbsp;"
-              placeholder="Até"
-              minDate={validateDataInicial(form.getState().values)}
-              maxDate={validateDataFinal(form.getState().values, "ate")}
-              disabled={!form.getState().values.mes}
-              inputOnChange={(value: string) => {
-                view.onChangePeriodoLancamentoAte(value);
-              }}
-              showMonthDropdown={true}
-              showYearDropdown={true}
-            />
-          )}
+        <div className="col-4">
+          <div className="row">
+            <div className="col-6">
+              {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
+                <Skeleton paragraph={false} active />
+              ) : (
+                <Field
+                  component={InputComData}
+                  dataTestId="div-periodo-lancamento-de"
+                  name="periodo_lancamento_de"
+                  label="Período de Lançamento"
+                  placeholder="De"
+                  minDate={validateDataInicial(form.getState().values, "de")}
+                  maxDate={validateDataFinal(form.getState().values)}
+                  disabled={!form.getState().values.mes}
+                  inputOnChange={(value: string) => {
+                    view.onChangePeriodoLancamentoDe(value);
+                  }}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
+                />
+              )}
+            </div>
+            <div className="col-6">
+              {view.buscandoOpcoes.buscandoTiposAlimentacao ? (
+                <Skeleton paragraph={false} active />
+              ) : (
+                <Field
+                  component={InputComData}
+                  dataTestId="div-periodo-lancamento-ate"
+                  name="periodo_lancamento_ate"
+                  label="&nbsp;"
+                  placeholder="Até"
+                  minDate={validateDataInicial(form.getState().values)}
+                  maxDate={validateDataFinal(form.getState().values, "ate")}
+                  disabled={!form.getState().values.mes}
+                  inputOnChange={(value: string) => {
+                    view.onChangePeriodoLancamentoAte(value);
+                  }}
+                  showMonthDropdown={true}
+                  showYearDropdown={true}
+                />
+              )}
+            </div>
+            <div className="col-12">
+              <Field name="resultado_individual_por_data" type="checkbox">
+                {({ input }) => (
+                  <div className="resultado-individual-por-data">
+                    <input
+                      id="resultado_individual_por_data"
+                      type="checkbox"
+                      name={input.name}
+                      checked={Boolean(input.checked)}
+                      disabled={!periodoLancamentoCompleto}
+                      data-testid="checkbox-resultado-individual-por-data"
+                      onChange={(e) => {
+                        input.onChange(e.target.checked);
+                        view.onChangeResultadoIndividualPorData(
+                          e.target.checked,
+                        );
+                      }}
+                      onBlur={input.onBlur}
+                      onFocus={input.onFocus}
+                    />
+                    <label
+                      className="col-form-label"
+                      htmlFor="resultado_individual_por_data"
+                    >
+                      Resultado individual por data
+                    </label>
+                  </div>
+                )}
+              </Field>
+            </div>
+          </div>
         </div>
       </div>
     </>

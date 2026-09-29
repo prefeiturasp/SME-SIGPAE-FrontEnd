@@ -33,6 +33,7 @@ jest.mock("src/services/notificacoes.service");
 const URL_LISTAGEM = "/cronogramas-semanais/listagem-relatorio/";
 const URL_EMPRESAS = "/terceirizadas/lista-empresas-cronograma/";
 const URL_PRODUTOS = "/cadastro-produtos-edital/lista-completa-logistica/";
+const URL_EXCEL = "/cronogramas-semanais/gerar-relatorio-xlsx-async/";
 
 const setup = async () => {
   await act(async () => {
@@ -63,6 +64,10 @@ const chamadasListagem = () =>
   mock.history.get.filter((c) => c.url === URL_LISTAGEM);
 
 const paramsListagem = () => chamadasListagem()[0]?.params as URLSearchParams;
+
+const chamadasExcel = () => mock.history.get.filter((c) => c.url === URL_EXCEL);
+
+const paramsExcel = () => chamadasExcel()[0]?.params as URLSearchParams;
 
 describe("RelatorioCronogramaSemanalPage", () => {
   beforeEach(() => {
@@ -318,6 +323,61 @@ describe("RelatorioCronogramaSemanalPage", () => {
         await screen.findByText("Nenhum resultado encontrado"),
       ).toBeInTheDocument();
       expect(toastError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Exportação em Excel", () => {
+    const filtrarComResultados = async () => {
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanais);
+
+      await setup();
+      await screen.findByText("Filtrar por Empresa");
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o nº do Cronograma Semanal"),
+        { target: { value: "135/2024" } },
+      );
+      await clicarFiltrar();
+      await screen.findByText("Empresa Alfa Alimentos LTDA");
+    };
+
+    it("chama o serviço de exportação com os filtros aplicados e abre o modal da Central de Downloads", async () => {
+      mock.onGet(URL_EXCEL).reply(200, { status: 200 });
+
+      await filtrarComResultados();
+
+      await act(async () => {
+        fireEvent.click(screen.getByText("Baixar em Excel"));
+      });
+
+      await waitFor(() => expect(chamadasExcel().length).toBeGreaterThan(0));
+      expect(paramsExcel().get("numero_cronograma_semanal")).toBe("135/2024");
+      expect(paramsExcel().has("page")).toBe(false);
+
+      expect(
+        await screen.findByText("Geração solicitada com sucesso."),
+      ).toBeInTheDocument();
+    });
+
+    it("exibe toast de erro quando a exportação falha", async () => {
+      mock.onGet(URL_EXCEL).reply(500);
+
+      await filtrarComResultados();
+
+      await act(async () => {
+        fireEvent.click(screen.getByText("Baixar em Excel"));
+      });
+
+      await waitFor(() =>
+        expect(toastError).toHaveBeenCalledWith(
+          "Erro ao exportar Excel. Tente novamente mais tarde.",
+        ),
+      );
+      expect(
+        screen.queryByText("Geração solicitada com sucesso."),
+      ).not.toBeInTheDocument();
     });
   });
 });

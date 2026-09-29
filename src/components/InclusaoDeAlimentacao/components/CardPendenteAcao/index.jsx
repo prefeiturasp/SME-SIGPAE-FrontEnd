@@ -1,21 +1,30 @@
 import { SolicitacoesSimilaresInclusao } from "src/components/Shareable/SolicitacoesSimilaresInclusao";
 import { ToggleExpandir } from "src/components/Shareable/ToggleExpandir";
+import { Paginacao } from "src/components/Shareable/Paginacao";
 import {
   gerarLinkRelatorio,
   talvezPluralizar,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhDRE,
 } from "src/helpers/utilities";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Collapse } from "react-collapse";
 import { Link } from "react-router-dom";
-import { calcularNumeroDeEscolasUnicas, getDataMaisProxima } from "./helper";
+import { getDataMaisProxima } from "./helper";
+
+const PAGE_SIZE = 10;
 
 export const CardPendenteAcao = ({ ...props }) => {
   const { titulo, tipoDeCard, pedidos, colunaDataLabel, dataTestId } = props;
+  const totalSolicitacoes = props.totalSolicitacoes || 0;
+  const escolasSolicitantes = props.escolasSolicitantes || 0;
 
   const [collapsed, setCollapsed] = useState(false);
   const [pedidosFiltrados, setPedidosFiltrados] = useState(pedidos);
+
+  useEffect(() => {
+    setPedidosFiltrados(pedidos);
+  }, [pedidos]);
 
   const collapseSolicitacaoSimilar = (indexPedido, indexSolicitacaoSimilar) => {
     setPedidosFiltrados((prevPedidos) =>
@@ -29,25 +38,11 @@ export const CardPendenteAcao = ({ ...props }) => {
               ...sol,
               collapsed:
                 iSol === indexSolicitacaoSimilar ? !sol.collapsed : false,
-            })
+            }),
           ),
         };
-      })
+      }),
     );
-  };
-
-  const filtrarPedidos = (filtro) => {
-    const termo = filtro.toLowerCase();
-
-    const pedidosFiltrados = pedidos.filter(({ id_externo, escola }) => {
-      return (
-        id_externo.toLowerCase().includes(termo) ||
-        escola.nome.toLowerCase().includes(termo) ||
-        escola.codigo_eol.includes(termo)
-      );
-    });
-
-    setPedidosFiltrados(pedidosFiltrados);
   };
 
   const renderSolicitacoesSimilares = (idxPedido, pedido) => {
@@ -64,7 +59,7 @@ export const CardPendenteAcao = ({ ...props }) => {
                 `inclusao-de-alimentacao${
                   solicitacao.dias_motivos_da_inclusao_cemei ? "-cemei" : ""
                 }`,
-                solicitacao
+                solicitacao,
               )}
             >
               {`#${solicitacao.id_externo}`}
@@ -90,28 +85,23 @@ export const CardPendenteAcao = ({ ...props }) => {
       <div className="row">
         <div className="col-2">
           <div className={"order-box " + tipoDeCard}>
-            <span className="number">{pedidos.length}</span>
+            <span className="number">{totalSolicitacoes}</span>
             <span className="order">
-              {pedidos.length === 1 ? "solicitação" : "solicitações"}
+              {totalSolicitacoes === 1 ? "solicitação" : "solicitações"}
             </span>
           </div>
         </div>
-        {pedidos.length > 0 && (
+        {totalSolicitacoes > 0 && (
           <div className="col-9">
             <div className="order-lines">
               <div className="label" />
               <span className="text">
-                <span className="value">
-                  {calcularNumeroDeEscolasUnicas(pedidos)}{" "}
-                </span>
+                <span className="value">{escolasSolicitantes} </span>
                 {`
                     ${talvezPluralizar(
-                      calcularNumeroDeEscolasUnicas(pedidos),
-                      "escola"
-                    )} ${talvezPluralizar(
-                  calcularNumeroDeEscolasUnicas(pedidos),
-                  "solicitante"
-                )}
+                      escolasSolicitantes,
+                      "escola",
+                    )} ${talvezPluralizar(escolasSolicitantes, "solicitante")}
                     `}
               </span>
             </div>
@@ -127,121 +117,137 @@ export const CardPendenteAcao = ({ ...props }) => {
           )}
         </div>
       </div>
-      <Collapse isOpened={!collapsed}>
-        <div className="row">
-          <div className="input-search-full-width col-12">
-            <input
-              type="text"
-              data-testid={`input-pesquisar-${dataTestId}`}
-              className="form-control"
-              placeholder="Pesquisar"
-              onChange={(event) => filtrarPedidos(event.target.value)}
-            />
-            <i className="fas fa-search inside-input" />
-          </div>
-          <table className="orders-table mt-4 ms-3 me-3">
-            <thead>
-              <tr className="row">
-                <th className="col-2">Código do Pedido</th>
-                <th className="col-2">Código EOL</th>
-                <th className="col-3">Nome da Escola</th>
-                <th className="col-3">{colunaDataLabel || "Data"}</th>
-                {(usuarioEhCODAEGestaoAlimentacao() || usuarioEhDRE()) && (
-                  <th className="col-2">Solic. Similares</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {pedidosFiltrados.map((pedido, key) => {
-                return (
-                  <Fragment key={key}>
-                    <tr className="row">
-                      <td className="col-2">
-                        <Link
-                          className="text-dark"
-                          to={gerarLinkRelatorio(
-                            `inclusao-de-alimentacao${
-                              pedido.dias_motivos_da_inclusao_cemei
-                                ? "-cemei"
-                                : ""
-                            }`,
-                            pedido
-                          )}
-                        >
-                          {pedido.id_externo}
-                        </Link>
-                      </td>
-                      <td className="col-2">
-                        <Link
-                          className="text-dark"
-                          to={gerarLinkRelatorio(
-                            `inclusao-de-alimentacao${
-                              pedido.dias_motivos_da_inclusao_cemei
-                                ? "-cemei"
-                                : ""
-                            }`,
-                            pedido
-                          )}
-                        >
-                          {pedido.escola.codigo_eol}
-                        </Link>
-                      </td>
-                      <td className="col-3">
-                        <Link
-                          className="text-dark"
-                          to={gerarLinkRelatorio(
-                            `inclusao-de-alimentacao${
-                              pedido.dias_motivos_da_inclusao_cemei
-                                ? "-cemei"
-                                : ""
-                            }`,
-                            pedido
-                          )}
-                        >
-                          {pedido.escola.nome}
-                        </Link>
-                      </td>
-                      <td className="col-3">
-                        <Link
-                          className="text-dark"
-                          to={gerarLinkRelatorio(
-                            `inclusao-de-alimentacao${
-                              pedido.dias_motivos_da_inclusao_cemei
-                                ? "-cemei"
-                                : ""
-                            }`,
-                            pedido
-                          )}
-                        >
-                          {pedido.data_inicial || getDataMaisProxima(pedido)}
-                        </Link>
-                      </td>
-                      {(usuarioEhCODAEGestaoAlimentacao() ||
-                        usuarioEhDRE()) && (
-                        <td className="col-2 solicitacao-consolidada-collapse">
-                          {renderSolicitacoesSimilares(key, pedido)}
+      {pedidos.length > 0 && (
+        <Collapse isOpened={!collapsed}>
+          <div className="row">
+            <div className="col-12">
+              <div className="input-search-full-width">
+                <input
+                  type="text"
+                  data-testid={`input-pesquisar-${dataTestId}`}
+                  className="form-control"
+                  placeholder="Pesquisar"
+                  value={props.busca}
+                  onChange={(event) => props.onBusca(event.target.value)}
+                />
+                <i className="fas fa-search inside-input" />
+              </div>
+              <small className="form-text text-muted" style={{ fontSize: 10 }}>
+                Pesquisa por: código do pedido, código EOL e nome da escola
+              </small>
+            </div>
+            <table className="orders-table mt-4 ms-3 me-3">
+              <thead>
+                <tr className="row">
+                  <th className="col-2">Código do Pedido</th>
+                  <th className="col-2">Código EOL</th>
+                  <th className="col-3">Nome da Escola</th>
+                  <th className="col-3">{colunaDataLabel || "Data"}</th>
+                  {(usuarioEhCODAEGestaoAlimentacao() || usuarioEhDRE()) && (
+                    <th className="col-2">Solic. Similares</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {pedidosFiltrados.map((pedido, key) => {
+                  return (
+                    <Fragment key={key}>
+                      <tr className="row">
+                        <td className="col-2">
+                          <Link
+                            className="text-dark"
+                            to={gerarLinkRelatorio(
+                              `inclusao-de-alimentacao${
+                                pedido.dias_motivos_da_inclusao_cemei
+                                  ? "-cemei"
+                                  : ""
+                              }`,
+                              pedido,
+                            )}
+                          >
+                            {pedido.id_externo}
+                          </Link>
                         </td>
-                      )}
-                    </tr>
-                    {(usuarioEhCODAEGestaoAlimentacao() || usuarioEhDRE()) &&
-                      pedido.solicitacoes_similares.map(
-                        (s, idxSolicitacaoSimilar) => {
-                          return (
-                            <SolicitacoesSimilaresInclusao
-                              key={idxSolicitacaoSimilar}
-                              solicitacao={s}
-                              index={idxSolicitacaoSimilar}
-                            />
-                          );
-                        }
-                      )}
-                  </Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </Collapse>
+                        <td className="col-2">
+                          <Link
+                            className="text-dark"
+                            to={gerarLinkRelatorio(
+                              `inclusao-de-alimentacao${
+                                pedido.dias_motivos_da_inclusao_cemei
+                                  ? "-cemei"
+                                  : ""
+                              }`,
+                              pedido,
+                            )}
+                          >
+                            {pedido.escola.codigo_eol}
+                          </Link>
+                        </td>
+                        <td className="col-3">
+                          <Link
+                            className="text-dark"
+                            to={gerarLinkRelatorio(
+                              `inclusao-de-alimentacao${
+                                pedido.dias_motivos_da_inclusao_cemei
+                                  ? "-cemei"
+                                  : ""
+                              }`,
+                              pedido,
+                            )}
+                          >
+                            {pedido.escola.nome}
+                          </Link>
+                        </td>
+                        <td className="col-3">
+                          <Link
+                            className="text-dark"
+                            to={gerarLinkRelatorio(
+                              `inclusao-de-alimentacao${
+                                pedido.dias_motivos_da_inclusao_cemei
+                                  ? "-cemei"
+                                  : ""
+                              }`,
+                              pedido,
+                            )}
+                          >
+                            {pedido.data_inicial || getDataMaisProxima(pedido)}
+                          </Link>
+                        </td>
+                        {(usuarioEhCODAEGestaoAlimentacao() ||
+                          usuarioEhDRE()) && (
+                          <td className="col-2 solicitacao-consolidada-collapse">
+                            {renderSolicitacoesSimilares(key, pedido)}
+                          </td>
+                        )}
+                      </tr>
+                      {(usuarioEhCODAEGestaoAlimentacao() || usuarioEhDRE()) &&
+                        pedido.solicitacoes_similares.map(
+                          (s, idxSolicitacaoSimilar) => {
+                            return (
+                              <SolicitacoesSimilaresInclusao
+                                key={idxSolicitacaoSimilar}
+                                solicitacao={s}
+                                index={idxSolicitacaoSimilar}
+                              />
+                            );
+                          },
+                        )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+            {totalSolicitacoes > PAGE_SIZE && (
+              <Paginacao
+                current={props.page}
+                pageSize={PAGE_SIZE}
+                total={totalSolicitacoes}
+                onChange={props.onPageChange}
+              />
+            )}
+          </div>
+        </Collapse>
+      )}
     </div>
   );
 };

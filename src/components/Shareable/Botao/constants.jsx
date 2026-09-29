@@ -41,6 +41,7 @@ export const BUTTON_ICON = {
   TRASH: "fas fa-trash-alt",
   EYE: "fas fa-eye",
   PEN: "fas fa-pen",
+  PERCENT: "fas fa-percent",
   PAPER_CLIP: "fas fa-paperclip",
   REFRESH: "fas fa-undo",
 };
