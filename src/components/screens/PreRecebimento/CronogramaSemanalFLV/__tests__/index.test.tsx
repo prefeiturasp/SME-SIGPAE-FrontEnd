@@ -14,8 +14,14 @@ import { mockGetCronogramasMensalAssinados2 } from "src/mocks/services/cronogram
 import { mockListaSimplesTerceirizadas } from "src/mocks/services/terceirizada.service/mockListaSimplesTerceirizadas";
 import { PERFIL, TIPO_PERFIL, TIPO_SERVICO } from "src/constants/shared";
 import { localStorageMock } from "src/mocks/localStorageMock";
+import { usuarioComAcessoAoCalendarioCronograma } from "src/helpers/utilities";
 
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
+jest.mock("src/helpers/utilities", () => ({
+  ...jest.requireActual("src/helpers/utilities"),
+  usuarioComAcessoAoCalendarioCronograma: jest.fn(),
+}));
 
 describe("CronogramaSemanalFLV - Component", () => {
   beforeEach(() => {
@@ -331,5 +337,69 @@ describe("CronogramaSemanalFLV - Component - Usuário Fornecedor", () => {
 
       expect(screen.queryByText("Filtrar por Empresa")).not.toBeInTheDocument();
     });
+  });
+});
+
+describe("CronogramaSemanalFLV - Component - Coluna Nº do Cronograma Semanal", () => {
+  beforeEach(() => {
+    mock.reset();
+    mock.onGet("/cronogramas-semanais/").reply(200, mockGetCronogramasSemanais);
+    mock
+      .onGet("/cronogramas-semanais/cronogramas-mensal-assinados/")
+      .reply(200, mockGetCronogramasMensalAssinados2);
+    mock
+      .onGet("/terceirizadas/lista-simples/")
+      .reply(200, mockListaSimplesTerceirizadas);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("nome_instituicao", "CODAE - DILOG");
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
+    localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const setup = async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CronogramaSemanalFLV />
+        </MemoryRouter>,
+      );
+    });
+  };
+
+  it("exibe a coluna 'Nº do Cronograma Semanal' quando o usuário tem acesso", async () => {
+    (usuarioComAcessoAoCalendarioCronograma as jest.Mock).mockReturnValue(true);
+
+    await setup();
+
+    await waitFor(() => {
+      expect(screen.getByText("Nº do Cronograma Semanal")).toBeInTheDocument();
+    });
+
+    const gridTable = document.querySelector(".grid-table");
+    expect(gridTable).not.toHaveClass("sem-numero-semanal");
+  });
+
+  it("não exibe a coluna 'Nº do Cronograma Semanal' quando o usuário não tem acesso", async () => {
+    (usuarioComAcessoAoCalendarioCronograma as jest.Mock).mockReturnValue(
+      false,
+    );
+
+    await setup();
+
+    await waitFor(() => {
+      expect(screen.getAllByText("001/2026P")).toHaveLength(10);
+    });
+
+    expect(
+      screen.queryByText("Nº do Cronograma Semanal"),
+    ).not.toBeInTheDocument();
+
+    const gridTable = document.querySelector(".grid-table");
+    expect(gridTable).toHaveClass("sem-numero-semanal");
   });
 });

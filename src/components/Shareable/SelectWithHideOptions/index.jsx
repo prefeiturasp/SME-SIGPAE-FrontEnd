@@ -7,12 +7,17 @@ const { Option } = Select;
 export class SelectWithHideOptions extends React.Component {
   state = {};
 
+  handleChange = (value) => {
+    const { input, handleChange } = this.props;
+    if (handleChange) handleChange(value);
+    input.onChange(value);
+  };
+
   render() {
     const {
       input,
       options,
       placeholder,
-      handleChange,
       selectedItems,
       onSelect,
       onDeselect,
@@ -22,10 +27,10 @@ export class SelectWithHideOptions extends React.Component {
     return (
       <Select
         {...input}
+        value={selectedItems}
         mode={mode || "multiple"}
         placeholder={placeholder}
-        value={selectedItems}
-        onChange={handleChange}
+        onChange={this.handleChange}
         onSelect={onSelect}
         onDeselect={onDeselect}
         style={{

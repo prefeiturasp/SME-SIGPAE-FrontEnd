@@ -6,6 +6,7 @@ import {
   acionaComEnterOuEspaco,
   usuarioEhEmpresaFornecedor,
   formataMilharDecimal,
+  usuarioComAcessoAoCalendarioCronograma,
 } from "src/helpers/utilities";
 import { Tooltip } from "antd";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -20,6 +21,11 @@ import { imprimirCronogramaSemanal } from "src/services/cronogramaSemanal.servic
 
 const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
   const ehFornecedor = usuarioEhEmpresaFornecedor();
+  const visualizaNumeroSemanal = usuarioComAcessoAoCalendarioCronograma();
+
+  const classesGridTable = `grid-table ${ehFornecedor ? "sem-fornecedor" : ""} ${
+    !visualizaNumeroSemanal ? "sem-numero-semanal" : ""
+  }`;
 
   const statusValue = (status) => {
     if (status === "Enviado ao Fornecedor" && ehFornecedor) {
@@ -54,10 +60,9 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
         </div>
       </header>
       <article>
-        <div
-          className={`grid-table header-table ${ehFornecedor ? "sem-fornecedor" : ""}`}
-        >
+        <div className={`header-table ${classesGridTable}`}>
           <div>N° do Cronograma Ponto a Ponto</div>
+          {visualizaNumeroSemanal && <div>Nº do Cronograma Semanal</div>}
           <div>Nome do Produto</div>
           <div>Quantidade</div>
           {!ehFornecedor && <div>Fornecedor</div>}
@@ -69,10 +74,9 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
             ativos && ativos.includes(cronograma.uuid) ? "desativar-borda" : "";
           return (
             <div key={`${cronograma.numero}_${index}`}>
-              <div
-                className={`grid-table body-table ${ehFornecedor ? "sem-fornecedor" : ""}`}
-              >
+              <div className={`body-table ${classesGridTable}`}>
                 <div className={bordas}>{cronograma.numero}</div>
+                <div>{cronograma.numero_semanal}</div>
                 <div className="d-flex align-items-center justify-content-between">
                   <Tooltip
                     color="#42474a"
