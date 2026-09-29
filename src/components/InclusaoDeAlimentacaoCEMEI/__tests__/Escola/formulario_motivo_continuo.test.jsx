@@ -23,6 +23,19 @@ import { mockQuantidadeAlunosPorPeriodoCEMEI } from "src/mocks/services/escola.s
 import { InclusaoDeAlimentacaoCEMEIPage } from "src/pages/Escola/InclusaoDeAlimentacaoCEMEIPage";
 import mock from "src/services/_mock";
 
+const mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido = {
+  ...mockRascunhosInclusaoAlimentacaoContinuaCEMEI,
+  results: [
+    {
+      ...mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0],
+      motivo: {
+        nome: "Programas/Projetos Contínuos",
+        uuid: "a32cfa53-0197-4c2c-95f7-cf68611ed98a",
+      },
+    },
+  ],
+};
+
 describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI", () => {
   const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
 
@@ -59,7 +72,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
       .reply(200, { count: 0, next: null, previous: null, results: [] });
     mock
       .onGet("/inclusoes-alimentacao-continua/minhas-solicitacoes/")
-      .reply(200, mockRascunhosInclusaoAlimentacaoContinuaCEMEI);
+      .reply(200, mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido);
     mock.onGet("/tipos-alimentacao/").reply(200, mockTiposAlimentacao);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
@@ -236,12 +249,12 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
 
     mock
       .onPut(
-        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`,
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].uuid}/`,
       )
       .reply(200, {});
     mock
       .onPatch(
-        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/inicio-pedido/`,
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
 
@@ -258,7 +271,7 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
   it("Exclui rascunho", async () => {
     mock
       .onDelete(
-        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].uuid}/`,
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].uuid}/`,
       )
       .reply(204, {});
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -269,8 +282,124 @@ describe("Teste Formulário Inclusão de Alimentação Contínua - Escola CEMEI"
     await waitFor(() => {
       expect(
         screen.getByText(
-          `Rascunho # ${mockRascunhosInclusaoAlimentacaoContinuaCEMEI.results[0].id_externo} excluído com sucesso`,
+          `Rascunho # ${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].id_externo} excluído com sucesso`,
         ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Envia inclusão de alimentação contínua CEMEI para validação", async () => {
+    mock
+      .onPost("/inclusoes-alimentacao-continua/")
+      .reply(201, { uuid: "novo-uuid-continuo" });
+    mock
+      .onPatch(
+        "/inclusoes-alimentacao-continua/novo-uuid-continuo/inicio-pedido/",
+      )
+      .reply(200, {});
+
+    await setupInclusaoContinua();
+
+    const botaoEnviar = screen.getByText("Enviar inclusão").closest("button");
+    fireEvent.click(botaoEnviar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Erro ao criar rascunho de inclusão de alimentação contínua CEMEI", async () => {
+    mock
+      .onPost("/inclusoes-alimentacao-continua/")
+      .reply(400, { detail: "Erro ao criar rascunho contínuo" });
+
+    await setupInclusaoContinua();
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    fireEvent.click(botaoSalvarRascunho);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao criar rascunho contínuo"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Atualiza rascunho de inclusão de alimentação contínua CEMEI com sucesso", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    mock
+      .onPut(
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].uuid}/`,
+      )
+      .reply(200, {});
+
+    const botaoAtualizar = screen
+      .getByText("Atualizar rascunho")
+      .closest("button");
+    fireEvent.click(botaoAtualizar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Rascunho atualizado com sucesso"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Erro ao atualizar rascunho de inclusão de alimentação contínua CEMEI", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    mock
+      .onPut(
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].uuid}/`,
+      )
+      .reply(400, { detail: "Erro ao atualizar rascunho contínuo" });
+
+    const botaoAtualizar = screen
+      .getByText("Atualizar rascunho")
+      .closest("button");
+    fireEvent.click(botaoAtualizar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao atualizar rascunho contínuo"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("Erro ao enviar inclusão de alimentação contínua CEMEI para validação", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    mock
+      .onPut(
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].uuid}/`,
+      )
+      .reply(200, {});
+    mock
+      .onPatch(
+        `/inclusoes-alimentacao-continua/${mockRascunhosInclusaoAlimentacaoContinuaCEMEIValido.results[0].uuid}/inicio-pedido/`,
+      )
+      .reply(400, { detail: "Erro ao iniciar pedido contínuo" });
+
+    const botaoEnviar = screen.getByText("Enviar inclusão").closest("button");
+    fireEvent.click(botaoEnviar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Erro ao iniciar pedido contínuo"),
       ).toBeInTheDocument();
     });
   });
