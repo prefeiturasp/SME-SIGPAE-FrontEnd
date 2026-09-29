@@ -275,6 +275,90 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
     });
   });
 
+  it("remove rascunho pelo teclado com Enter", async () => {
+    mock
+      .onDelete(
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`,
+      )
+      .reply(204, {});
+    window.confirm = jest.fn().mockImplementation(() => true);
+
+    fireEvent.keyDown(screen.getByTestId("botao-remover-rascunho"), {
+      key: "Enter",
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Rascunho # ${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].id_externo} excluído com sucesso`,
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("remove rascunho pelo teclado com Espaço", async () => {
+    mock
+      .onDelete(
+        `/inclusao-alimentacao-cemei/${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].uuid}/`,
+      )
+      .reply(204, {});
+    window.confirm = jest.fn().mockImplementation(() => true);
+
+    fireEvent.keyDown(screen.getByTestId("botao-remover-rascunho"), {
+      key: " ",
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          `Rascunho # ${mockRascunhosInclusaoAlimentacaoCEMEI.results[0].id_externo} excluído com sucesso`,
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("ignora tecla neutra ao remover rascunho", async () => {
+    const onDelete = jest.fn();
+    mock.onDelete("/inclusao-alimentacao-cemei/").reply((config) => {
+      onDelete(config.url);
+      return [204, {}];
+    });
+
+    fireEvent.keyDown(screen.getByTestId("botao-remover-rascunho"), {
+      key: "a",
+    });
+
+    expect(onDelete).not.toHaveBeenCalled();
+  });
+
+  it("carrega rascunho pelo teclado com Enter", async () => {
+    fireEvent.keyDown(screen.getByTestId("botao-carregar-rascunho"), {
+      key: "Enter",
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Solicitação # 00FA3")).toBeInTheDocument();
+    });
+  });
+
+  it("carrega rascunho pelo teclado com Espaço", async () => {
+    fireEvent.keyDown(screen.getByTestId("botao-carregar-rascunho"), {
+      key: " ",
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Solicitação # 00FA3")).toBeInTheDocument();
+    });
+  });
+
+  it("ignora tecla neutra ao carregar rascunho", async () => {
+    fireEvent.keyDown(screen.getByTestId("botao-carregar-rascunho"), {
+      key: "a",
+    });
+
+    expect(screen.queryByText("Solicitação # 00FA3")).not.toBeInTheDocument();
+  });
+
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
@@ -755,5 +839,150 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI sem quanti
         "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
       ),
     ).toBeInTheDocument();
+  });
+});
+
+describe("Teste Formulário Inclusão de Alimentação - Rascunhos variados - Escola CEMEI", () => {
+  const escolaUuid = mockMeusDadosEscolaCEMEI.vinculo_atual.instituicao.uuid;
+
+  beforeEach(async () => {
+    const mockRascunhosVariados = {
+      results: [
+        {
+          uuid: "continua-uuid",
+          id_externo: "CONT1",
+          status: "RASCUNHO",
+          criado_em: "08/07/2025 16:02:27",
+          data_inicial: "01/01/2025",
+          data_final: "31/01/2025",
+          motivo: { nome: "Programas/Projetos Contínuos" },
+          quantidades_periodo: [],
+        },
+        {
+          uuid: "sem-dados-uuid",
+          id_externo: "SEM1",
+          status: "RASCUNHO",
+          criado_em: "08/07/2025 16:02:27",
+        },
+      ],
+    };
+
+    mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
+    mock
+      .onGet("/motivos-inclusao-normal/")
+      .reply(200, mockMotivosInclusaoNormal);
+    mock
+      .onGet("/motivos-inclusao-continua/")
+      .reply(200, mockMotivosInclusaoContinua);
+    mock
+      .onGet(`/quantidade-alunos-por-periodo/escola/${escolaUuid}/`)
+      .reply(200, mockQuantidadeAlunosPorPeriodoCEMEI);
+    mock
+      .onGet("/alunos/quantidade-cemei-por-cei-emei/")
+      .reply(200, mockQuantidadeAlunoCEMEIporCEIEMEI);
+    mock
+      .onGet(
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
+      )
+      .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
+    mock
+      .onGet("/dias-uteis/")
+      .reply(200, {
+        proximos_cinco_dias_uteis: "2025-07-16",
+        proximos_dois_dias_uteis: "2025-07-14",
+      });
+    mock
+      .onGet(
+        "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
+      )
+      .reply(200, mockGetVinculosMotivoEspecificoCEMEI);
+    mock
+      .onGet("/inclusao-alimentacao-cemei/")
+      .reply(200, mockRascunhosVariados);
+    mock
+      .onGet("/inclusoes-alimentacao-continua/minhas-solicitacoes/")
+      .reply(200, { count: 0, next: null, previous: null, results: [] });
+    mock
+      .onDelete("/inclusoes-alimentacao-continua/continua-uuid/")
+      .reply(204, {});
+    mock.onDelete("/inclusao-alimentacao-cemei/sem-dados-uuid/").reply(204, {});
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("nome_instituicao", `"CEMEI SUZANA CAMPOS TAUIL"`);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("eh_cemei", "true");
+    window.confirm = jest.fn().mockImplementation(() => true);
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaCEMEI,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <InclusaoDeAlimentacaoCEMEIPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  });
+
+  it("exibe intervalo de datas para rascunho contínuo e zero dias para rascunho sem dados", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inclusão de Alimentação # CONT1"),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText(
+        "Programas/Projetos Contínuos - (01/01/2025 - 31/01/2025)",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Inclusão de Alimentação # SEM1"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("0 dia(s)")).toBeInTheDocument();
+  });
+
+  it("remove rascunho contínuo pelo teclado", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inclusão de Alimentação # CONT1"),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.keyDown(screen.getAllByTestId("botao-remover-rascunho")[0], {
+      key: "Enter",
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Rascunho # CONT1 excluído com sucesso"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("remove rascunho contínuo com clique", async () => {
+    await waitFor(() => {
+      expect(
+        screen.getByText("Inclusão de Alimentação # CONT1"),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getAllByTestId("botao-remover-rascunho")[0]);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Rascunho # CONT1 excluído com sucesso"),
+      ).toBeInTheDocument();
+    });
   });
 });
