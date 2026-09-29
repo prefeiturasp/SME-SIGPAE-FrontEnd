@@ -430,6 +430,14 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     }
   };
 
+  const initialValues = React.useMemo(
+    () => ({
+      escola: meusDados.vinculo_atual.instituicao.uuid,
+      inclusoes: [{ motivo: undefined }],
+    }),
+    [meusDados],
+  );
+
   const getPeriodos = (values) => {
     return ehMotivoInclusaoEspecifico(values)
       ? periodosMotivoEspecifico
@@ -458,10 +466,7 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
         mutators={{
           ...arrayMutators,
         }}
-        initialValues={{
-          escola: meusDados.vinculo_atual.instituicao.uuid,
-          inclusoes: [{ motivo: undefined }],
-        }}
+        initialValues={initialValues}
         onSubmit={onSubmit}
       >
         {({
