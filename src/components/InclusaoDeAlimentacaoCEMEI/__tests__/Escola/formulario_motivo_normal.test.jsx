@@ -634,6 +634,38 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
       expect(screen.getByText("Qual o motivo?")).toBeInTheDocument();
     });
   });
+
+  it("carrega os períodos ao trocar de motivo específico para normal e selecionar alunos", async () => {
+    const selectMotivo = screen.getByTestId("select-motivo-0");
+    const selectElement = selectMotivo.querySelector("select");
+
+    const uuidEspecifico = mockMotivosInclusaoNormal.results.find(
+      (motivo) => motivo.nome === "Evento Específico",
+    ).uuid;
+    fireEvent.change(selectElement, {
+      target: { value: uuidEspecifico },
+    });
+    await act(async () => {});
+
+    fireEvent.change(selectElement, {
+      target: {
+        value: mockMotivosInclusaoNormal.results.find(
+          (motivo) => motivo.nome === "Reposição de aula",
+        ).uuid,
+      },
+    });
+    await act(async () => {});
+
+    fireEvent.change(
+      screen
+        .getByTestId("div-select-alunos-cei-e-ou-emei")
+        .querySelector("select"),
+      { target: { value: "TODOS" } },
+    );
+    await act(async () => {});
+
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+  });
 });
 
 describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI sem quantidade de alunos", () => {
