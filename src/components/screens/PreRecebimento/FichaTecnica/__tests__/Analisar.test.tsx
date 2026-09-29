@@ -306,8 +306,15 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
       .reply(201);
   });
 
-  const setupFLV = async (somenteLeitura = false) => {
-    const search = `?uuid=${mockFichaTecnicaComDetalheFLV.uuid}`;
+  const setupFLV = async (
+    somenteLeitura = false,
+    ficha: any = mockFichaTecnicaComDetalheFLV,
+  ) => {
+    mock
+      .onGet(`/ficha-tecnica/${ficha.uuid}/detalhar-com-analise/`)
+      .reply(200, ficha);
+
+    const search = `?uuid=${ficha.uuid}`;
     window.history.pushState({}, "", search);
 
     await act(async () => {
@@ -438,5 +445,76 @@ describe("Cenários FLV (Frutas, Legumes e Verduras)", () => {
     await waitFor(() => {
       expect(toastError).not.toHaveBeenCalled();
     });
+  });
+
+  it("não exibe o bloco do fabricante em FLV Ponto a Ponto sem fabricante", async () => {
+    const fichaSemFabricante = {
+      ...mockFichaTecnicaComDetalheFLV,
+      uuid: "detalhe-flv-sem-fabricante",
+      fabricante: null,
+      envasador_distribuidor: null,
+      numero_registro: "",
+      analise: {
+        ...mockFichaTecnicaComDetalheFLV.analise,
+        fabricante_envasador_conferido: null,
+        fabricante_envasador_correcoes: "",
+      },
+    };
+
+    await setupFLV(false, fichaSemFabricante);
+
+    expect(
+      screen.queryByText("Fabricante, Produtor, Envasador ou Distribuidor"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("numero_registro")).not.toBeInTheDocument();
+    expect(screen.getByText("Detalhes do Produto")).toBeInTheDocument();
+  });
+
+  it("envia análise FLV sem fabricante sem fabricante_envasador_conferido", async () => {
+    const fichaSemFabricante = {
+      ...mockFichaTecnicaComDetalheFLV,
+      uuid: "detalhe-flv-sem-fabricante-analise",
+      fabricante: null,
+      envasador_distribuidor: null,
+      analise: {
+        ...mockFichaTecnicaComDetalheFLV.analise,
+        fabricante_envasador_conferido: null,
+        fabricante_envasador_correcoes: "",
+      },
+    };
+
+    mock
+      .onPost(`/ficha-tecnica/${fichaSemFabricante.uuid}/analise-gpcodae/`)
+      .reply(201);
+
+    await setupFLV(false, fichaSemFabricante);
+
+    const botoesCiente = screen.getAllByText("Ciente");
+    const botoesConferido = screen.getAllByText("Conferido");
+
+    [...botoesCiente, ...botoesConferido].forEach((span) => {
+      fireEvent.click(span.closest("button"));
+    });
+
+    const btnAnalise = screen.getByText("Enviar Análise").closest("button");
+    await waitFor(() => {
+      expect(btnAnalise).not.toBeDisabled();
+    });
+    fireEvent.click(btnAnalise);
+
+    await waitFor(() => {
+      expect(
+        mock.history.post.some((call) =>
+          call.url.includes(`/${fichaSemFabricante.uuid}/analise-gpcodae/`),
+        ),
+      ).toBe(true);
+    });
+
+    const chamada = mock.history.post.find((call) =>
+      call.url.includes(`/${fichaSemFabricante.uuid}/analise-gpcodae/`),
+    );
+    const payload = JSON.parse(chamada.data);
+    expect(payload).not.toHaveProperty("fabricante_envasador_conferido");
+    expect(payload).not.toHaveProperty("fabricante_envasador_correcoes");
   });
 });
