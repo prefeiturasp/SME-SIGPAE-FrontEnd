@@ -81,7 +81,7 @@ export default () => {
   );
 
   return (
-    <Dropdown overlay={menu} trigger={["click"]}>
+    <Dropdown trigger={["click"]} popupRender={() => menu}>
       <div className="navbar-notificacoes">
         <div className="nav-link text-center">
           <div className="icone-verde-fundo">

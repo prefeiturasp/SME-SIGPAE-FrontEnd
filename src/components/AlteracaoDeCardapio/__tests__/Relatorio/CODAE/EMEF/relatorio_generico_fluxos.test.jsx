@@ -87,7 +87,9 @@ describe("Relatório Alteração do Tipo de Alimentação - DRE valida pedido", 
       expect(screen.getByText("Validar")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("Validar").closest("button"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Validar").closest("button"));
+    });
   });
 });
 
@@ -108,14 +110,18 @@ describe("Relatório Alteração do Tipo de Alimentação - CODAE autoriza pedid
       expect(screen.getByText("Autorizar")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("Autorizar").closest("button"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Autorizar").closest("button"));
+    });
 
     expect(
       screen.getByText("Deseja autorizar a solicitação?"),
     ).toBeInTheDocument();
 
     const botaoNao = screen.getAllByText("Não")[0].closest("button");
-    fireEvent.click(botaoNao);
+    await act(async () => {
+      fireEvent.click(botaoNao);
+    });
 
     await waitFor(() => {
       expect(
@@ -143,15 +149,23 @@ describe("Relatório Alteração do Tipo de Alimentação - Terceirizada questio
     });
 
     const botoesNao = screen.getAllByText("Não");
-    fireEvent.click(botoesNao[botoesNao.length - 1].closest("button"));
+    await act(async () => {
+      fireEvent.click(botoesNao[botoesNao.length - 1].closest("button"));
+    });
 
-    fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    });
     await waitFor(() => {
       expect(screen.queryByText("Cancelar")).not.toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("Sim").closest("button"));
-    fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Sim").closest("button"));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    });
   });
 });
 
@@ -175,8 +189,12 @@ describe("Relatório Alteração do Tipo de Alimentação - CODAE questiona", ()
       expect(screen.getByText("Questionar")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("Questionar").closest("button"));
-    fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Questionar").closest("button"));
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    });
   });
 });
 
@@ -202,13 +220,17 @@ describe("Relatório Alteração do Tipo de Alimentação - Terceirizada marca c
       expect(screen.getByText("Marcar Conferência")).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText("Marcar Conferência").closest("button"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Marcar Conferência").closest("button"));
+    });
 
     expect(
       screen.getByText("Marcar Conferência da Solicitação"),
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    await act(async () => {
+      fireEvent.click(screen.getByText("Cancelar").closest("button"));
+    });
 
     await waitFor(() => {
       expect(

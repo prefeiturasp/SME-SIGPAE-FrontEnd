@@ -148,19 +148,21 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
       screen.getByText("Salvo em: 11/04/2025 10:10:43"),
     ).toBeInTheDocument();
   });
-  const setMotivoLPR = () => {
+  const setMotivoLPR = async () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoLPR = mockMotivosAlteracaoCardapioCEI.results.find(
       (motivo) => motivo.nome.includes("LPR"),
     ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidMotivoLPR },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: uuidMotivoLPR },
+      });
     });
   };
 
   it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
-    setMotivoLPR();
+    await setMotivoLPR();
     const divDia = screen.getByTestId("data-alterar-dia");
     const inputElement = divDia.querySelector("input");
 
@@ -171,8 +173,10 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
       ),
     ).not.toBeInTheDocument();
 
-    fireEvent.change(inputElement, {
-      target: { value: "17/04/2025" },
+    await act(async () => {
+      fireEvent.change(inputElement, {
+        target: { value: "17/04/2025" },
+      });
     });
 
     expect(screen.queryByText("Atenção")).toBeInTheDocument();
@@ -183,19 +187,23 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
     ).toBeInTheDocument();
   });
 
-  const setTipoAlimentacaoDeLanche = () => {
+  const setTipoAlimentacaoDeLanche = async () => {
     const selectTiposAlimentacaoDe = screen.getByTestId(
       "select-tipos-alimentacao-de",
     );
     const selectControl = within(selectTiposAlimentacaoDe).getByRole(
       "combobox",
     );
-    fireEvent.mouseDown(selectControl);
+    await act(async () => {
+      fireEvent.mouseDown(selectControl);
+    });
     const optionLanche = screen.getByText("Lanche");
-    fireEvent.click(optionLanche);
+    await act(async () => {
+      fireEvent.click(optionLanche);
+    });
   };
 
-  const setTipoAlimentacaoParaRefeicaoDaTarde = () => {
+  const setTipoAlimentacaoParaRefeicaoDaTarde = async () => {
     const selectMotivo = screen.getByTestId("select-tipos-alimentacao-para");
     const selectElement = selectMotivo.querySelector("select");
     const uuidRefeicaoDaTarde =
@@ -204,30 +212,36 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
         .tipos_alimentacao.find((tipo_alimentacao) =>
           tipo_alimentacao.nome.includes("Refeição da tarde"),
         ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidRefeicaoDaTarde },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: uuidRefeicaoDaTarde },
+      });
     });
   };
 
   it("renderiza label `Período` após selecionar um motivo e um dia", async () => {
-    setMotivoLPR();
+    await setMotivoLPR();
 
     const divDia = screen.getByTestId("data-alterar-dia");
     const inputElement = divDia.querySelector("input");
-    fireEvent.change(inputElement, {
-      target: { value: "23/04/2025" },
+    await act(async () => {
+      fireEvent.change(inputElement, {
+        target: { value: "23/04/2025" },
+      });
     });
 
     expect(screen.getByText("Período")).toBeInTheDocument();
   });
 
   it("renderiza tabela de faixas etárias após selecionar um período", async () => {
-    setMotivoLPR();
+    await setMotivoLPR();
 
     const divDia = screen.getByTestId("data-alterar-dia");
     const inputElementDia = divDia.querySelector("input");
-    fireEvent.change(inputElementDia, {
-      target: { value: "23/04/2025" },
+    await act(async () => {
+      fireEvent.change(inputElementDia, {
+        target: { value: "23/04/2025" },
+      });
     });
 
     expect(screen.getByText("Período")).toBeInTheDocument();
@@ -248,26 +262,32 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
       ).toBeInTheDocument();
     });
 
-    setTipoAlimentacaoDeLanche();
-    setTipoAlimentacaoParaRefeicaoDaTarde();
+    await setTipoAlimentacaoDeLanche();
+    await setTipoAlimentacaoParaRefeicaoDaTarde();
 
     const divInputQuantidade = screen.getByTestId(
       "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4",
     );
     const inputElementQuantidade = divInputQuantidade.querySelector("input");
-    fireEvent.change(inputElementQuantidade, {
-      target: { value: "50" },
+    await act(async () => {
+      fireEvent.change(inputElementQuantidade, {
+        target: { value: "50" },
+      });
     });
 
     const textarea = screen.getByTestId("ckeditor-mock");
-    fireEvent.change(textarea, {
-      target: { value: "teste observacoes" },
+    await act(async () => {
+      fireEvent.change(textarea, {
+        target: { value: "teste observacoes" },
+      });
     });
 
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
       .closest("button");
-    fireEvent.click(botaoSalvarRascunho);
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
   });
 
   it("Carrega rascunho e envia", async () => {
@@ -285,7 +305,9 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo LP
     expect(inputElementQuantidade).toHaveAttribute("value", "50");
 
     const botaoEnviar = screen.getByText("Enviar").closest("button");
-    fireEvent.click(botaoEnviar);
+    await act(async () => {
+      fireEvent.click(botaoEnviar);
+    });
   });
 
   it("Exclui rascunho", async () => {
