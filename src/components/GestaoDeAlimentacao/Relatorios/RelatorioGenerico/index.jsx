@@ -37,7 +37,7 @@ export const RelatorioGenerico = ({ ...props }) => {
 
   const [uuid, setUuid] = useState();
   const [tipoSolicitacao, setTipoSolicitacao] = useState();
-  const [solicitacao, setSolicitacao] = useState();
+  const [solicitacao, setSolicitacao] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
@@ -75,14 +75,14 @@ export const RelatorioGenerico = ({ ...props }) => {
 
     if (!uuid_) {
       setErro(
-        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente."
+        "Parâmetro `uuid` é obrigatório na URL para carregar a página corretamente.",
       );
       return;
     }
 
     if (tipoSolicitacaoObrigatorio && !tipoSolicitacao_) {
       setErro(
-        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente."
+        "Parâmetro `tipoSolicitacao` é obrigatório na URL para carregar a página corretamente.",
       );
       return;
     }
@@ -94,7 +94,7 @@ export const RelatorioGenerico = ({ ...props }) => {
 
   const getSolicitacaoAsync = async (
     uuid_ = uuid,
-    tipoSolicitacao_ = tipoSolicitacao
+    tipoSolicitacao_ = tipoSolicitacao,
   ) => {
     setLoading(true);
     const response = await getSolicitacao(uuid_, tipoSolicitacao_);
@@ -103,7 +103,7 @@ export const RelatorioGenerico = ({ ...props }) => {
       setPrazoMensagem(prazoDoPedidoMensagem(response.data.prioridade));
     } else {
       setErro(
-        `Erro ao carregar ${nomeSolicitacao}. Tente novamente mais tarde.`
+        `Erro ao carregar ${nomeSolicitacao}. Tente novamente mais tarde.`,
       );
     }
     setLoading(false);
@@ -123,7 +123,7 @@ export const RelatorioGenerico = ({ ...props }) => {
     const response = await endpointAprovaSolicitacao(
       uuid,
       values.justificativa,
-      tipoSolicitacao
+      tipoSolicitacao,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(toastAprovaMensagem);
@@ -219,7 +219,7 @@ export const RelatorioGenerico = ({ ...props }) => {
                           <div className="col-12 text-end">
                             {exibeBotaoNaoAprovar(
                               solicitacao,
-                              textoBotaoNaoAprova
+                              textoBotaoNaoAprova,
                             ) && (
                               <Botao
                                 texto={textoBotaoNaoAprova}
@@ -235,7 +235,7 @@ export const RelatorioGenerico = ({ ...props }) => {
                             {exibeBotaoAprovar(
                               solicitacao,
                               visao,
-                              textoBotaoAprova
+                              textoBotaoAprova,
                             ) && (
                               <Botao
                                 texto={textoBotaoAprova}
@@ -249,7 +249,7 @@ export const RelatorioGenerico = ({ ...props }) => {
                             {exibirBotaoQuestionamento(
                               solicitacao,
                               visao,
-                              tipoPerfil
+                              tipoPerfil,
                             ) && (
                               <>
                                 {solicitacao.status ===
@@ -289,7 +289,7 @@ export const RelatorioGenerico = ({ ...props }) => {
                             )}
                             {exibirBotaoMarcarConferencia(
                               solicitacao,
-                              visao
+                              visao,
                             ) && (
                               <div className="form-group float-end mt-4">
                                 {solicitacao.terceirizada_conferiu_gestao ? (
@@ -338,6 +338,6 @@ RelatorioGenerico.propTypes = {
   getSolicitacao: PropTypes.func.isRequired,
   nomeSolicitacao: PropTypes.string.isRequired,
   endpointMarcarConferencia: PropTypes.func.isRequired,
-  CorpoRelatorio: PropTypes.element.isRequired,
+  CorpoRelatorio: PropTypes.elementType.isRequired,
   tipoSolicitacaoObrigatorio: PropTypes.bool,
 };

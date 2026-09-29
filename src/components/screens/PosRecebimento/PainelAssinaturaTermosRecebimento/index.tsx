@@ -32,9 +32,10 @@ export default () => {
 
   const formatarItens = (itens: TermoRecebimentoAssinaturaDashboard[]) =>
     itens.map((item) => {
-      const cronogramas = (item.numeros_cronogramas || []).join(" | ");
-      const produtos = (item.nomes_produtos || []).join(" | ");
-      const texto = `${item.empresa} - ${produtos} - ${cronogramas}`;
+      const empresa = item.razao_social
+        ? `${item.empresa} - ${item.razao_social}`
+        : item.empresa;
+      const texto = `${item.numero_contrato} - ${empresa}`;
 
       return {
         text: truncarString(texto, 40),
@@ -113,7 +114,7 @@ export default () => {
                   <Field
                     component={InputText}
                     name="nome_produto"
-                    placeholder="Pesquisar por Produto"
+                    placeholder="Pesquisar por Nome do Produto"
                     inputOnChange={() => filtrarTermos(form.getState().values)}
                   />
                 </div>
@@ -121,7 +122,7 @@ export default () => {
                   <Field
                     component={InputText}
                     name="nome_empresa"
-                    placeholder="Pesquisar por Empresa"
+                    placeholder="Pesquisar por Nome do Fornecedor"
                     inputOnChange={() => filtrarTermos(form.getState().values)}
                   />
                 </div>

@@ -1,4 +1,4 @@
-import { calcularNumeroDeEscolasUnicas } from "../../components/CardPendenteAcao/helper";
+import { calcularNumeroDeEscolasUnicas } from "src/helpers/utilities";
 
 describe("Teste de helper.jsx - calcularNumeroDeEscolasUnicas", () => {
   it("deve retornar 0 quando não houver pedidos", () => {

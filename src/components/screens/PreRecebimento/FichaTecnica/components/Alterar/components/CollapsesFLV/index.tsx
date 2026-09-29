@@ -35,6 +35,8 @@ interface CollapsesFLVProps {
   desabilitaEndereco: boolean[];
   arquivo: ArquivoForm[];
   setArquivo: Dispatch<SetStateAction<ArquivoForm[]>>;
+  mostrarBlocoFabricante: boolean;
+  mostrarNumeroRegistro?: boolean;
 }
 
 export default ({
@@ -52,6 +54,8 @@ export default ({
   desabilitaEndereco,
   arquivo,
   setArquivo,
+  mostrarBlocoFabricante,
+  mostrarNumeroRegistro = true,
 }: CollapsesFLVProps) => {
   return (
     <Collapse
@@ -68,6 +72,7 @@ export default ({
         <FormProponente proponente={proponente} />
       </section>
 
+      {mostrarBlocoFabricante && (
       <section id="fabricante_envasador">
         {!conferidos.fabricante_envasador && (
           <div className="row campo-correcao mb-4">
@@ -88,8 +93,10 @@ export default ({
           values={values}
           somenteLeitura={conferidos.fabricante_envasador}
           ocultarBotaoCadastroFabricante={true}
+          camposOpcionais
         />
       </section>
+      )}
 
       <section id="detalhes_produto">
         {!conferidos.detalhes_produto && (
@@ -106,6 +113,7 @@ export default ({
         <FormPereciveisENaoPereciveis
           values={values}
           desabilitar={conferidos.detalhes_produto}
+          mostrarNumeroRegistro={mostrarNumeroRegistro}
         />
       </section>
 

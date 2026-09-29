@@ -77,7 +77,7 @@ export const Container = () => {
 
   const getQuantidadeAlunosCEMEIporCEIEMEIAsync = async (
     escola,
-    manha_e_tarde_sempre = null,
+    manha_e_tarde_sempre,
   ) => {
     const response = await getQuantidadeAlunosCEMEIporCEIEMEI(
       escola.codigo_eol,

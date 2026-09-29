@@ -198,7 +198,7 @@ export const CorpoRelatorio = ({ ...props }) => {
   const todasEncerradaMesmaData =
     encerradoDates.length > 0 &&
     encerradoDates.length ===
-      (inclusaoDeAlimentacao.quantidades_periodo || []).length &&
+      inclusaoDeAlimentacao.quantidades_periodo.length &&
     encerradoDates.every((d) => d === encerradoDates[0]);
 
   const [solicitacoesSimilares, setSolicitacoesSimilares] = useState(
@@ -379,13 +379,7 @@ export const CorpoRelatorio = ({ ...props }) => {
         : renderParteAvulsa(
             inclusaoDeAlimentacao,
             inclusaoDeAlimentacao.inclusoes ||
-              inclusaoDeAlimentacao.dias_motivos_da_inclusao_cei || [
-                {
-                  data: inclusaoDeAlimentacao.data,
-                  motivo: inclusaoDeAlimentacao.motivo,
-                  outro_motivo: inclusaoDeAlimentacao.outro_motivo,
-                },
-              ],
+              inclusaoDeAlimentacao.dias_motivos_da_inclusao_cei,
             tipoSolicitacao,
           )}
       {exibirNovoComponeneteCEI ? (
@@ -515,10 +509,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                 )
               ) : (
                 <tr>
-                  <td>
-                    {inclusaoDeAlimentacao.periodo_escolar &&
-                      inclusaoDeAlimentacao.periodo_escolar.nome}
-                  </td>
+                  <td>{inclusaoDeAlimentacao.periodo_escolar?.nome}</td>
                   <td>
                     {stringSeparadaPorVirgulas(
                       inclusaoDeAlimentacao.tipos_alimentacao,

@@ -8,12 +8,14 @@ interface Props {
   values: Record<string, any>;
   desabilitar?: boolean;
   atualizacao?: boolean;
+  mostrarNumeroRegistro?: boolean;
 }
 
 const FormPereciveisENaoPereciveis: React.FC<Props> = ({
   values,
   desabilitar = false,
   atualizacao = false,
+  mostrarNumeroRegistro = true,
 }) => {
   const ehFLV =
     (values.categoria === "FLV" ||
@@ -292,19 +294,21 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
 
       {ehFLV && (
         <>
-          <div className="row">
-            <div className="col-8">
-              <Field
-                component={InputText}
-                dataTestId="numero_registro"
-                label="Nº do Registro do Produto e Nome do Órgão Competente"
-                name={`numero_registro`}
-                placeholder="Digite o Número do Registro do Órgão Competente"
-                className="input-ficha-tecnica"
-                disabled={desabilitar}
-              />
+          {mostrarNumeroRegistro && (
+            <div className="row">
+              <div className="col-8">
+                <Field
+                  component={InputText}
+                  dataTestId="numero_registro"
+                  label="Nº do Registro do Produto e Nome do Órgão Competente"
+                  name={`numero_registro`}
+                  placeholder="Digite o Número do Registro do Órgão Competente"
+                  className="input-ficha-tecnica"
+                  disabled={desabilitar}
+                />
+              </div>
             </div>
-          </div>
+          )}
           <div className="row">
             <div className="col-4">
               <p className="label-radio">

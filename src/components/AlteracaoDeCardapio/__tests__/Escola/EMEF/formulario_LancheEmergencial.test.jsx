@@ -136,14 +136,16 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     ).toBeInTheDocument();
   });
 
-  const selecionaMotivoLancheEmergencial = () => {
+  const selecionaMotivoLancheEmergencial = async () => {
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
     const uuidLancheEmergencial = mockMotivosAlteracaoCardapio.results.find(
       (motivo) => motivo.nome.includes("Lanche Emergencial"),
     ).uuid;
-    fireEvent.change(selectElementMotivo, {
-      target: { value: uuidLancheEmergencial },
+    await act(async () => {
+      fireEvent.change(selectElementMotivo, {
+        target: { value: uuidLancheEmergencial },
+      });
     });
   };
 
@@ -153,16 +155,20 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
 
   const selectOption = async (container, optionText) => {
     const placeholder = getByText(container, "Selecione tipos de alimentação");
-    fireEvent.keyDown(placeholder, keyDownEvent);
+    await act(async () => {
+      fireEvent.keyDown(placeholder, keyDownEvent);
+    });
     await findByText(container, optionText);
-    fireEvent.click(getByText(container, optionText));
+    await act(async () => {
+      fireEvent.click(getByText(container, optionText));
+    });
   };
 
   it("Testa Alteração - Motivo Lanche Emergencial", async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-01-30T00:00:00Z"));
 
-    selecionaMotivoLancheEmergencial();
+    await selecionaMotivoLancheEmergencial();
     expect(screen.getByText("Alterar dia")).toBeInTheDocument();
 
     const divInputDataInicial = screen.getByTestId("div-input-data-inicial");
@@ -175,8 +181,10 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
 
     const divInputDataFinal = screen.getByTestId("div-input-data-final");
     const inputElementDataFinal = divInputDataFinal.querySelector("input");
-    fireEvent.change(inputElementDataFinal, {
-      target: { value: "01/02/2025" },
+    await act(async () => {
+      fireEvent.change(inputElementDataFinal, {
+        target: { value: "01/02/2025" },
+      });
     });
 
     const divCheckboxMANHA = screen.getByTestId("div-checkbox-MANHA");
@@ -200,13 +208,17 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     );
     const inputElementNumeroAlunosMANHA =
       divInputNumeroAlunosMANHA.querySelector("input");
-    fireEvent.change(inputElementNumeroAlunosMANHA, {
-      target: { value: "123" },
+    await act(async () => {
+      fireEvent.change(inputElementNumeroAlunosMANHA, {
+        target: { value: "123" },
+      });
     });
 
     const textarea = screen.getByTestId("ckeditor-mock");
-    fireEvent.change(textarea, {
-      target: { value: "justificativa da alteração" },
+    await act(async () => {
+      fireEvent.change(textarea, {
+        target: { value: "justificativa da alteração" },
+      });
     });
     await waitFor(() => {
       expect(textarea.value).toBe("justificativa da alteração");
@@ -215,7 +227,9 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
       .closest("button");
-    fireEvent.click(botaoSalvarRascunho);
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
 
     jest.useRealTimers();
   });
@@ -224,7 +238,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-01-30T00:00:00Z"));
 
-    selecionaMotivoLancheEmergencial();
+    await selecionaMotivoLancheEmergencial();
 
     const divInputDataInicial = screen.getByTestId("div-input-data-inicial");
     const inputElementDataInicial = divInputDataInicial.querySelector("input");
@@ -236,8 +250,10 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
 
     const divInputDataFinal = screen.getByTestId("div-input-data-final");
     const inputElementDataFinal = divInputDataFinal.querySelector("input");
-    fireEvent.change(inputElementDataFinal, {
-      target: { value: "31/01/2025" },
+    await act(async () => {
+      fireEvent.change(inputElementDataFinal, {
+        target: { value: "31/01/2025" },
+      });
     });
     expect(inputElementDataFinal.value).toBe("31/01/2025");
 
@@ -265,7 +281,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-01-30T00:00:00Z"));
 
-    selecionaMotivoLancheEmergencial();
+    await selecionaMotivoLancheEmergencial();
     mock.onGet("/dias-uteis/").reply(500, { detail: "Erro" });
 
     const divInputDataInicial = screen.getByTestId("div-input-data-inicial");

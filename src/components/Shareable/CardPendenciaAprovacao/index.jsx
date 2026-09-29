@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Collapse } from "react-collapse";
 import { Link } from "react-router-dom";
-import { calcularNumeroDeEscolasUnicas } from "./helper";
+import { calcularNumeroDeEscolasUnicas } from "src/helpers/utilities";
 import { talvezPluralizar } from "../../../helpers/utilities";
 import "../style.scss";
 import {
@@ -47,7 +47,7 @@ export class CardPendenteAcao extends Component {
               <span className="order">
                 {`${talvezPluralizar(
                   calcularNumeroDeEscolasUnicas(pedidos),
-                  "pedido"
+                  "pedido",
                 )}`}
               </span>
             </div>
@@ -63,10 +63,10 @@ export class CardPendenteAcao extends Component {
                   {`
                   ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "escola"
+                    "escola",
                   )} ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "solicitante"
+                    "solicitante",
                   )}
                   `}
                 </span>

@@ -21,6 +21,17 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
+jest.mock("src/components/Shareable/CKEditorField", () => ({
+  __esModule: true,
+  default: ({ input: { value, onChange } }) => (
+    <textarea
+      data-testid="ckeditor-mock"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  ),
+}));
+
 describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RPL", () => {
   const escolaUuid = mockMeusDadosCEI.vinculo_atual.instituicao.uuid;
 
@@ -40,8 +51,6 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
   };
 
   beforeEach(async () => {
-    process.env.IS_TEST = true;
-
     mock
       .onGet("/motivos-alteracao-cardapio/")
       .reply(200, mockMotivosAlteracaoCardapioCEI);
@@ -144,19 +153,21 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
       screen.getByText("Salvo em: 11/04/2025 10:10:43"),
     ).toBeInTheDocument();
   });
-  const setMotivoRPL = () => {
+  const setMotivoRPL = async () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
     const uuidMotivoRPL = mockMotivosAlteracaoCardapioCEI.results.find(
       (motivo) => motivo.nome.includes("RPL"),
     ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidMotivoRPL },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: uuidMotivoRPL },
+      });
     });
   };
 
   it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
-    setMotivoRPL();
+    await setMotivoRPL();
     const divDia = screen.getByTestId("data-alterar-dia");
     const inputElement = divDia.querySelector("input");
 
@@ -167,8 +178,10 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
       ),
     ).not.toBeInTheDocument();
 
-    fireEvent.change(inputElement, {
-      target: { value: "17/04/2025" },
+    await act(async () => {
+      fireEvent.change(inputElement, {
+        target: { value: "17/04/2025" },
+      });
     });
 
     expect(screen.queryByText("Atenção")).toBeInTheDocument();
@@ -179,7 +192,7 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     ).toBeInTheDocument();
   });
 
-  const setTipoAlimentacaoDeAlmoco = () => {
+  const setTipoAlimentacaoDeAlmoco = async () => {
     const selectMotivo = screen.getByTestId("select-tipos-alimentacao-de");
     const selectElement = selectMotivo.querySelector("select");
     const uuidAlmoco = mockVinculosTipoAlimentacaoPeriodoEscolarCEI.results
@@ -187,12 +200,14 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
       .tipos_alimentacao.find((tipo_alimentacao) =>
         tipo_alimentacao.nome.includes("Almoço"),
       ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidAlmoco },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: uuidAlmoco },
+      });
     });
   };
 
-  const setTipoAlimentacaoParaLanche = () => {
+  const setTipoAlimentacaoParaLanche = async () => {
     const selectMotivo = screen.getByTestId("select-tipos-alimentacao-para");
     const selectElement = selectMotivo.querySelector("select");
     const uuidLanche = mockVinculosTipoAlimentacaoPeriodoEscolarCEI.results
@@ -200,30 +215,36 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
       .tipos_alimentacao.find((tipo_alimentacao) =>
         tipo_alimentacao.nome.includes("Lanche"),
       ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidLanche },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: uuidLanche },
+      });
     });
   };
 
   it("renderiza label `Período` após selecionar um motivo e um dia", async () => {
-    setMotivoRPL();
+    await setMotivoRPL();
 
     const divDia = screen.getByTestId("data-alterar-dia");
     const inputElement = divDia.querySelector("input");
-    fireEvent.change(inputElement, {
-      target: { value: "23/04/2025" },
+    await act(async () => {
+      fireEvent.change(inputElement, {
+        target: { value: "23/04/2025" },
+      });
     });
 
     expect(screen.getByText("Período")).toBeInTheDocument();
   });
 
   it("renderiza tabela de faixas etárias após selecionar um período", async () => {
-    setMotivoRPL();
+    await setMotivoRPL();
 
     const divDia = screen.getByTestId("data-alterar-dia");
     const inputElementDia = divDia.querySelector("input");
-    fireEvent.change(inputElementDia, {
-      target: { value: "23/04/2025" },
+    await act(async () => {
+      fireEvent.change(inputElementDia, {
+        target: { value: "23/04/2025" },
+      });
     });
 
     expect(screen.getByText("Período")).toBeInTheDocument();
@@ -244,26 +265,32 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
       ).toBeInTheDocument();
     });
 
-    setTipoAlimentacaoDeAlmoco();
-    setTipoAlimentacaoParaLanche();
+    await setTipoAlimentacaoDeAlmoco();
+    await setTipoAlimentacaoParaLanche();
 
     const divInputQuantidade = screen.getByTestId(
       "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4",
     );
     const inputElementQuantidade = divInputQuantidade.querySelector("input");
-    fireEvent.change(inputElementQuantidade, {
-      target: { value: "50" },
+    await act(async () => {
+      fireEvent.change(inputElementQuantidade, {
+        target: { value: "50" },
+      });
     });
 
     const textarea = screen.getByTestId("ckeditor-mock");
-    fireEvent.change(textarea, {
-      target: { value: "teste observacoes" },
+    await act(async () => {
+      fireEvent.change(textarea, {
+        target: { value: "teste observacoes" },
+      });
     });
 
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
       .closest("button");
-    fireEvent.click(botaoSalvarRascunho);
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
   });
 
   it("Carrega rascunho e envia", async () => {
@@ -281,13 +308,17 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     expect(inputElementQuantidade).toHaveAttribute("value", "50");
 
     const botaoEnviar = screen.getByText("Enviar").closest("button");
-    fireEvent.click(botaoEnviar);
+    await act(async () => {
+      fireEvent.click(botaoEnviar);
+    });
   });
 
   it("Exclui rascunho", async () => {
     window.confirm = jest.fn().mockImplementation(() => true);
     const botaoRemoverRascunho = screen.getByTestId("botao-remover-rascunho");
-    mock.onGet("/alteracoes-cardapio-cei/minhas-solicitacoes/").reply(200, []);
+    mock
+      .onGet("/alteracoes-cardapio-cei/minhas-solicitacoes/")
+      .reply(200, { results: [] });
     await act(async () => {
       fireEvent.click(botaoRemoverRascunho);
     });
@@ -307,11 +338,13 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     });
   });
 
-  const setDataAlteracao = (data) => {
+  const setDataAlteracao = async (data) => {
     const divDia = screen.getByTestId("data-alterar-dia");
     const inputElement = divDia.querySelector("input");
-    fireEvent.change(inputElement, {
-      target: { value: data },
+    await act(async () => {
+      fireEvent.change(inputElement, {
+        target: { value: data },
+      });
     });
   };
 
@@ -324,42 +357,50 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
   };
 
   const preencherFormularioRPL = async () => {
-    setMotivoRPL();
-    setDataAlteracao("23/04/2025");
+    await setMotivoRPL();
+    await setDataAlteracao("23/04/2025");
     await marcarPeriodoIntegral();
     await waitFor(() => {
       expect(screen.getByText("Faixa Etária")).toBeInTheDocument();
     });
-    setTipoAlimentacaoDeAlmoco();
-    setTipoAlimentacaoParaLanche();
+    await setTipoAlimentacaoDeAlmoco();
+    await setTipoAlimentacaoParaLanche();
     const divInputQuantidade = screen.getByTestId(
       "substituicoes[0].faixas.e3030bd1-2e85-4676-87b3-96b4032370d4",
     );
     const inputElementQuantidade = divInputQuantidade.querySelector("input");
-    fireEvent.change(inputElementQuantidade, {
-      target: { value: "50" },
+    await act(async () => {
+      fireEvent.change(inputElementQuantidade, {
+        target: { value: "50" },
+      });
     });
     const textarea = screen.getByTestId("ckeditor-mock");
-    fireEvent.change(textarea, {
-      target: { value: "teste observacoes" },
+    await act(async () => {
+      fireEvent.change(textarea, {
+        target: { value: "teste observacoes" },
+      });
     });
   };
 
   it("Valida formulário: exibe erro ao enviar sem selecionar período", async () => {
-    setMotivoRPL();
-    setDataAlteracao("23/04/2025");
+    await setMotivoRPL();
+    await setDataAlteracao("23/04/2025");
 
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
       .closest("button");
-    fireEvent.click(botaoSalvarRascunho);
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
   });
 
   it("Cria nova solicitação e inicia pedido ao enviar", async () => {
     await preencherFormularioRPL();
 
     const botaoEnviar = screen.getByText("Enviar").closest("button");
-    fireEvent.click(botaoEnviar);
+    await act(async () => {
+      fireEvent.click(botaoEnviar);
+    });
   });
 
   it("Exibe erro ao criar solicitação", async () => {
@@ -371,7 +412,9 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     const botaoSalvarRascunho = screen
       .getByText("Salvar rascunho")
       .closest("button");
-    fireEvent.click(botaoSalvarRascunho);
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
   });
 
   it("Atualiza rascunho salvo sem iniciar pedido", async () => {
@@ -383,7 +426,9 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     const botaoAtualizar = screen
       .getByText("Atualizar rascunho")
       .closest("button");
-    fireEvent.click(botaoAtualizar);
+    await act(async () => {
+      fireEvent.click(botaoAtualizar);
+    });
   });
 
   it("Exibe erro ao alterar solicitação", async () => {
@@ -400,7 +445,9 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     const botaoAtualizar = screen
       .getByText("Atualizar rascunho")
       .closest("button");
-    fireEvent.click(botaoAtualizar);
+    await act(async () => {
+      fireEvent.click(botaoAtualizar);
+    });
   });
 
   it("Exibe erro ao iniciar pedido", async () => {
@@ -415,7 +462,9 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     });
 
     const botaoEnviar = screen.getByText("Enviar").closest("button");
-    fireEvent.click(botaoEnviar);
+    await act(async () => {
+      fireEvent.click(botaoEnviar);
+    });
   });
 
   it("Não exclui rascunho quando a confirmação é cancelada", async () => {
@@ -429,8 +478,8 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
   });
 
   it("Desmarca período selecionado", async () => {
-    setMotivoRPL();
-    setDataAlteracao("23/04/2025");
+    await setMotivoRPL();
+    await setDataAlteracao("23/04/2025");
     await marcarPeriodoIntegral();
     await waitFor(() => {
       expect(screen.getByText("Faixa Etária")).toBeInTheDocument();
@@ -440,8 +489,8 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
   });
 
   it("Marca período pelo teclado", async () => {
-    setMotivoRPL();
-    setDataAlteracao("23/04/2025");
+    await setMotivoRPL();
+    await setDataAlteracao("23/04/2025");
     const divCheckboxINTEGRAL = screen.getByTestId("div-checkbox-INTEGRAL");
     const spanElement = divCheckboxINTEGRAL.querySelector("span");
 
@@ -462,75 +511,87 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
   });
 
   it("Recarrega faixas etárias ao alterar o dia com período marcado", async () => {
-    setMotivoRPL();
-    setDataAlteracao("23/04/2025");
+    await setMotivoRPL();
+    await setDataAlteracao("23/04/2025");
     await marcarPeriodoIntegral();
     await waitFor(() => {
       expect(screen.getByText("Faixa Etária")).toBeInTheDocument();
     });
 
-    setDataAlteracao("24/04/2025");
+    await setDataAlteracao("24/04/2025");
   });
 
-  it("Chama onChangeEffect com valor vazio ao limpar o motivo", () => {
+  it("Chama onChangeEffect com valor vazio ao limpar o motivo", async () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
-    fireEvent.change(selectElement, {
-      target: { value: "" },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: "" },
+      });
     });
   });
 
-  it("Chama inputOnChange com valor vazio ao limpar a data", () => {
-    setMotivoRPL();
-    setDataAlteracao("23/04/2025");
+  it("Chama inputOnChange com valor vazio ao limpar a data", async () => {
+    await setMotivoRPL();
+    await setDataAlteracao("23/04/2025");
 
     const botaoLimparData = document.querySelector(
       ".react-datepicker__close-icon",
     );
-    fireEvent.click(botaoLimparData);
+    await act(async () => {
+      fireEvent.click(botaoLimparData);
+    });
   });
 
-  it("Fecha modal de data prioritária", () => {
-    setMotivoRPL();
-    setDataAlteracao("17/04/2025");
+  it("Fecha modal de data prioritária", async () => {
+    await setMotivoRPL();
+    await setDataAlteracao("17/04/2025");
 
     expect(screen.getByText("Atenção")).toBeInTheDocument();
     const botaoOk = screen.getByText("OK").closest("button");
-    fireEvent.click(botaoOk);
+    await act(async () => {
+      fireEvent.click(botaoOk);
+    });
   });
 
-  it("Cancelar reseta o formulário", () => {
-    setMotivoRPL();
+  it("Cancelar reseta o formulário", async () => {
+    await setMotivoRPL();
 
     const botaoCancelar = screen.getByText("Cancelar").closest("button");
-    fireEvent.click(botaoCancelar);
+    await act(async () => {
+      fireEvent.click(botaoCancelar);
+    });
   });
 
-  it("Renderiza opções de alimentação para um motivo que não é RPL nem LPR", () => {
+  it("Renderiza opções de alimentação para um motivo que não é RPL nem LPR", async () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
     const uuidOutroMotivo = mockMotivosAlteracaoCardapioCEI.results.find(
       (motivo) => motivo.nome === "Alteração de cardápio",
     ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidOutroMotivo },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: uuidOutroMotivo },
+      });
     });
-    setDataAlteracao("23/04/2025");
+    await setDataAlteracao("23/04/2025");
 
     expect(screen.getByText("Período")).toBeInTheDocument();
     expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
   });
 
-  it("Seleciona tipo de alimentação no multiselect para motivo que não é RPL nem LPR", () => {
+  it("Seleciona tipo de alimentação no multiselect para motivo que não é RPL nem LPR", async () => {
     const selectMotivo = screen.getByTestId("select-motivo");
     const selectElement = selectMotivo.querySelector("select");
     const uuidOutroMotivo = mockMotivosAlteracaoCardapioCEI.results.find(
       (motivo) => motivo.nome === "Alteração de cardápio",
     ).uuid;
-    fireEvent.change(selectElement, {
-      target: { value: uuidOutroMotivo },
+    await act(async () => {
+      fireEvent.change(selectElement, {
+        target: { value: uuidOutroMotivo },
+      });
     });
-    setDataAlteracao("23/04/2025");
+    await setDataAlteracao("23/04/2025");
 
     const selectTiposAlimentacaoDe = screen.getByTestId(
       "select-tipos-alimentacao-de",
@@ -538,8 +599,12 @@ describe("Teste Formulário Alteração do tipo de Alimentação CEI - Motivo RP
     const selectControl = within(selectTiposAlimentacaoDe).getByRole(
       "combobox",
     );
-    fireEvent.mouseDown(selectControl);
+    await act(async () => {
+      fireEvent.mouseDown(selectControl);
+    });
     const optionLanche = within(selectTiposAlimentacaoDe).getByText("Lanche");
-    fireEvent.click(optionLanche);
+    await act(async () => {
+      fireEvent.click(optionLanche);
+    });
   });
 });

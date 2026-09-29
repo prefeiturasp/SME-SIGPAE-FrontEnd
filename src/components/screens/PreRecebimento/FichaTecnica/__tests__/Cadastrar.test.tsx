@@ -324,6 +324,11 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       target: { value: "FLV" },
     });
 
+    preencheInput("fabricante_0", mockListaFabricantes.results[0].uuid);
+    preencheInput("email_fabricante_0", "fabricante@teste.com");
+    preencheInput("telefone_fabricante_0", "123456789");
+    preencheInput("numero_registro", "11111");
+
     let selectTipoEntrega = screen
       .getByTestId("tipo_entrega")
       .querySelector("select");
@@ -343,11 +348,12 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
 
     preencheInput("pregao_chamada_publica", "123");
 
-    preencheInput("fabricante_0", mockListaFabricantes.results[0].uuid);
-    preencheInput("email_fabricante_0", "fabricante@teste.com");
-    preencheInput("telefone_fabricante_0", "123456789");
+    expect(
+      screen.queryByText(/Fabricante, Produtor, Envasador/),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("fabricante_0")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("numero_registro")).not.toBeInTheDocument();
 
-    preencheInput("numero_registro", "11111");
     clickRadio("organico-nao");
     preencheInput("especie_variedade", "Variedade X");
 
@@ -400,6 +406,17 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
         mock.history.post.some((call) => call.url.includes("/ficha-tecnica/")),
       ).toBe(true);
     });
+
+    const chamadasFichaTecnica = mock.history.post.filter((call) =>
+      call.url.includes("/ficha-tecnica/"),
+    );
+    const payloadEnviado = JSON.parse(
+      chamadasFichaTecnica[chamadasFichaTecnica.length - 1].data,
+    );
+    expect(payloadEnviado.fabricante).toBeUndefined();
+    expect(payloadEnviado.envasador_distribuidor).toBeUndefined();
+    expect(payloadEnviado.numero_registro).toBeUndefined();
+    expect(payloadEnviado.empresa).toBeDefined();
   });
 
   it("cadastra um produto pelo Modal", async () => {
@@ -521,6 +538,12 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       const inputEspecieVariedade = screen.getByTestId("especie_variedade");
       expect(inputEspecieVariedade).toHaveValue("Alface X");
     });
+
+    expect(screen.getByTestId("fabricante_0")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Fabricante, Produtor, Envasador/),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("numero_registro")).toBeInTheDocument();
 
     expect(screen.queryByTestId("componentes_produto")).not.toBeInTheDocument();
     expect(screen.queryByTestId("gluten-nao")).not.toBeInTheDocument();

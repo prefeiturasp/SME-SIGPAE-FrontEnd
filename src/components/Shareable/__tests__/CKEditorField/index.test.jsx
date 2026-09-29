@@ -1,26 +1,63 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
+
+jest.unmock("src/components/Shareable/CKEditorField");
+
+jest.mock(
+  "ckeditor5",
+  () => {
+    const plugin = class Plugin {};
+    return {
+      Alignment: plugin,
+      AutoImage: plugin,
+      Base64UploadAdapter: plugin,
+      Bold: plugin,
+      ClassicEditor: class ClassicEditor {},
+      Essentials: plugin,
+      Font: plugin,
+      FontBackgroundColor: plugin,
+      FontColor: plugin,
+      FontFamily: plugin,
+      Image: plugin,
+      ImageCaption: plugin,
+      ImageInsert: plugin,
+      ImageStyle: plugin,
+      ImageToolbar: plugin,
+      ImageUpload: plugin,
+      Italic: plugin,
+      List: plugin,
+      Paragraph: plugin,
+      Strikethrough: plugin,
+      Table: plugin,
+      TableCellProperties: plugin,
+      TableColumnResize: plugin,
+      TableProperties: plugin,
+      TableToolbar: plugin,
+    };
+  },
+  { virtual: true },
+);
+
 import CKEditorField from "src/components/Shareable/CKEditorField";
 import "ckeditor5/ckeditor5.css";
 
 jest.mock("@ckeditor/ckeditor5-react", () => ({
-  CKEditor: ({ data, onChange, onBlur, config, ...rest }) => {
+  __esModule: true,
+  CKEditor: ({ data, onChange, onBlur, config }) => {
     return (
-      <div data-testid={rest["data-testid"] || "ckeditor-mock"}>
-        <textarea
-          data-testid="ckeditor-mock"
-          value={data || ""}
-          onChange={(e) => {
-            const mockEditor = {
-              getData: () => e.target.value,
-            };
-            onChange && onChange(null, mockEditor);
-          }}
-          onBlur={onBlur}
-          placeholder={config?.placeholder}
-        />
-      </div>
+      <textarea
+        data-testid="ckeditor-mock"
+        value={data || ""}
+        onChange={(e) => {
+          const mockEditor = {
+            getData: () => e.target.value,
+          };
+          onChange && onChange(null, mockEditor);
+        }}
+        onBlur={onBlur}
+        placeholder={config?.placeholder}
+      />
     );
   },
 }));
@@ -30,6 +67,7 @@ jest.mock("src/components/Shareable/HelpText", () => ({
 }));
 
 jest.mock("src/components/Shareable/Input/InputErroMensagemCKEditor", () => ({
+  __esModule: true,
   default: ({ meta, touched }) => (
     <div data-testid="error-message">
       {meta?.error && touched && meta.error}
@@ -103,5 +141,38 @@ describe("CKEditorField", () => {
     render(<CKEditorField {...props} />);
 
     expect(screen.getByTestId("ckeditor-mock")).toBeInTheDocument();
+  });
+
+  it("deve renderizar com label e asterisco quando required é true", () => {
+    const props = {
+      ...defaultProps,
+      label: "Observações",
+      required: true,
+    };
+
+    render(<CKEditorField {...props} />);
+
+    expect(screen.getByText("Observações")).toBeInTheDocument();
+    expect(screen.getByText("*")).toBeInTheDocument();
+  });
+
+  it("deve renderizar com suporte a imagens quando allowImages é true", () => {
+    const props = {
+      ...defaultProps,
+      allowImages: true,
+    };
+
+    render(<CKEditorField {...props} />);
+
+    expect(screen.getByTestId("ckeditor-mock")).toBeInTheDocument();
+  });
+
+  it("deve repassar o conteúdo digitado para o input", () => {
+    render(<CKEditorField {...defaultProps} />);
+
+    const editor = screen.getByTestId("ckeditor-mock");
+    fireEvent.change(editor, { target: { value: "texto digitado" } });
+
+    expect(defaultProps.input.onChange).toHaveBeenCalledWith("texto digitado");
   });
 });

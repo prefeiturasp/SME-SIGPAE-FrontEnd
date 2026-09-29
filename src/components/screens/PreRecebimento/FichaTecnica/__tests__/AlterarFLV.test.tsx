@@ -47,8 +47,12 @@ beforeEach(() => {
   Object.defineProperty(global, "localStorage", { value: localStorageMock });
 });
 
-const setup = async () => {
-  const search = `?uuid=${mockFichaTecnicaFLVCorrigir.uuid}`;
+const setup = async (ficha: any = mockFichaTecnicaFLVCorrigir) => {
+  mock
+    .onGet(`/ficha-tecnica/${ficha.uuid}/detalhar-com-analise/`)
+    .reply(200, ficha);
+
+  const search = `?uuid=${ficha.uuid}`;
   window.history.pushState({}, "", search);
 
   await act(async () => {
@@ -81,6 +85,7 @@ describe("Teste - Alterar Ficha técnica FLV", () => {
       screen.getByText("Fabricante, Produtor, Envasador ou Distribuidor"),
     ).toBeInTheDocument();
     expect(screen.getByText("Detalhes do Produto")).toBeInTheDocument();
+    expect(screen.getByTestId("numero_registro")).toBeInTheDocument();
     expect(
       screen.getByText("Responsável Técnico e Anexos"),
     ).toBeInTheDocument();
@@ -97,5 +102,52 @@ describe("Teste - Alterar Ficha técnica FLV", () => {
     expect(screen.queryByText("Armazenamento")).not.toBeInTheDocument();
     expect(screen.queryByText("Embalagem e Rotulagem")).not.toBeInTheDocument();
     expect(screen.queryByText("Modo de Preparo")).not.toBeInTheDocument();
+  });
+
+  it("não exibe o bloco do fabricante em FLV Ponto a Ponto sem fabricante", async () => {
+    const fichaSemFabricante = {
+      ...mockFichaTecnicaFLVCorrigir,
+      uuid: "ficha-flv-sem-fabricante",
+      fabricante: null,
+      envasador_distribuidor: null,
+      numero_registro: "",
+      analise: {
+        ...mockFichaTecnicaFLVCorrigir.analise,
+        fabricante_envasador_conferido: null,
+        fabricante_envasador_correcoes: "",
+      },
+    };
+
+    await setup(fichaSemFabricante);
+
+    await waitFor(() =>
+      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
+    );
+
+    expect(
+      screen.queryByText("Fabricante, Produtor, Envasador ou Distribuidor"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByTestId("fabricante_0")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("numero_registro")).not.toBeInTheDocument();
+    expect(screen.getByText("Detalhes do Produto")).toBeInTheDocument();
+  });
+
+  it("exibe o bloco do fabricante quando há correção pendente mesmo sem fabricante", async () => {
+    const fichaComCorrecaoPendente = {
+      ...mockFichaTecnicaFLVCorrigir,
+      uuid: "ficha-flv-correcao-pendente",
+      fabricante: null,
+      envasador_distribuidor: null,
+    };
+
+    await setup(fichaComCorrecaoPendente);
+
+    await waitFor(() =>
+      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
+    );
+
+    expect(
+      screen.getByText("Fabricante, Produtor, Envasador ou Distribuidor"),
+    ).toBeInTheDocument();
   });
 });

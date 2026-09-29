@@ -10,7 +10,7 @@ import PainelAssinaturaTermosRecebimento from "src/components/screens/PosRecebim
 
 const atual = {
   href: `/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`,
-  titulo: "Painel de Assinaturas - Termo de Recebimento Definitivo",
+  titulo: "Painel de Assinaturas",
 };
 
 const anteriores = [

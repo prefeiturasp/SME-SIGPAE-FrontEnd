@@ -38,6 +38,9 @@ import {
   carregarDadosAtualizar,
   carregarFabricantes,
   cepCalculator,
+  ehFLVPontoAPonto,
+  exibirBlocoFabricante,
+  exibirNumeroRegistro,
   formataPayloadAtualizacaoFichaTecnica,
   inserirArquivoFichaAssinadaRT,
   removerArquivoFichaAssinadaRT,
@@ -105,17 +108,24 @@ export default () => {
     })();
   }, []);
 
-  const obterCollapseConfigs = (ehPerecivel: Boolean) => [
+  const obterCollapseConfigs = (
+    ehPerecivel: Boolean,
+    mostrarBlocoFabricante: boolean,
+  ) => [
     {
       titulo: <span className="verde-escuro">Proponente</span>,
     },
-    {
-      titulo: (
-        <span className="verde-escuro">
-          Fabricante e ou Envasador/Distribuidor
-        </span>
-      ),
-    },
+    ...(mostrarBlocoFabricante
+      ? [
+          {
+            titulo: (
+              <span className="verde-escuro">
+                Fabricante e ou Envasador/Distribuidor
+              </span>
+            ),
+          },
+        ]
+      : []),
     {
       titulo: <span className="verde-escuro">Detalhes do Produto</span>,
     },
@@ -164,6 +174,16 @@ export default () => {
             render={({ handleSubmit, values, errors }) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
+              const mostrarBlocoFabricante = exibirBlocoFabricante(ficha);
+              const camposOpcionais = ehFLVPontoAPonto(
+                ficha.categoria,
+                ficha.tipo_entrega,
+              );
+              const mostrarNumeroRegistro = exibirNumeroRegistro({
+                categoria: ficha.categoria,
+                tipo_entrega: ficha.tipo_entrega,
+                numero_registro: ficha.numero_registro,
+              });
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -223,7 +243,10 @@ export default () => {
                   <Collapse
                     collapse={collapse}
                     setCollapse={setCollapse}
-                    collapseConfigs={obterCollapseConfigs(ehPerecivel)}
+                    collapseConfigs={obterCollapseConfigs(
+                      ehPerecivel,
+                      mostrarBlocoFabricante,
+                    )}
                     id={idCollapse}
                   >
                     <section id="proponenteFabricante">
@@ -233,6 +256,7 @@ export default () => {
                       <FormProponente proponente={proponente} />
                     </section>
 
+                    {mostrarBlocoFabricante && (
                     <section>
                       <FormFabricante
                         fabricantesCount={fabricantesCount}
@@ -242,6 +266,7 @@ export default () => {
                         values={values}
                         somenteLeitura={false}
                         ocultarBotaoCadastroFabricante={true}
+                        camposOpcionais={camposOpcionais}
                       />
                       {fabricantesCount === 1 && (
                         <div className="row mt-3">
@@ -265,12 +290,14 @@ export default () => {
                         </div>
                       )}
                     </section>
+                    )}
 
                     <section id="detalhes_produto">
                       <FormPereciveisENaoPereciveis
                         values={values}
                         desabilitar={true}
                         atualizacao={true}
+                        mostrarNumeroRegistro={mostrarNumeroRegistro}
                       />
                     </section>
 
@@ -917,6 +944,7 @@ export default () => {
                         fabricantesCount,
                         arquivo,
                         password,
+                        mostrarBlocoFabricante,
                       );
 
                       atualizarAssinarFichaTecnica(

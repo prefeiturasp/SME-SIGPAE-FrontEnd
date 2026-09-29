@@ -109,10 +109,6 @@ export const formataInclusaoCEMEI = (values, vinculos) => {
   return values;
 };
 
-export const tiposAlimentacaoMotivoEspecifico = (periodo) => {
-  return periodo.tipos_alimentacao.map((ta) => ta.nome).join(", ");
-};
-
 export const validarSubmit = (values) => {
   let erro = false;
 
