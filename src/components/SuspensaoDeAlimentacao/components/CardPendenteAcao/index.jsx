@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Collapse } from "react-collapse";
 import { Link } from "react-router-dom";
 import { talvezPluralizar } from "../../../../helpers/utilities";
-import { calcularNumeroDeEscolasUnicas } from "./helper";
+import { calcularNumeroDeEscolasUnicas } from "src/helpers/utilities";
 import { SUSPENSAO_ALIMENTACAO } from "../../../../configs/constants";
 import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
 
@@ -62,10 +62,10 @@ export class CardPendenteAcao extends Component {
                   {`
                   ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "escola"
+                    "escola",
                   )} ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "solicitante"
+                    "solicitante",
                   )}
                   `}
                 </span>
