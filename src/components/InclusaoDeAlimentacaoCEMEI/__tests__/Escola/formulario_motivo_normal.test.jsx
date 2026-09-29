@@ -750,6 +750,95 @@ describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI", () => {
 
     expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
   });
+
+  it("alterna o período pelo teclado com Enter", async () => {
+    await setMotivoValueReposicaoDeAula();
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "31/07/2025" },
+    });
+    selecionaAlunos("TODOS");
+    await act(async () => {});
+
+    const checkbox = screen
+      .getByTestId("div-checkbox-INTEGRAL")
+      .querySelector("[data-cy='checkbox-INTEGRAL']");
+    fireEvent.keyDown(checkbox, { key: "Enter" });
+    await act(async () => {});
+
+    expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
+  });
+
+  it("alterna o período pelo teclado com Espaço", async () => {
+    await setMotivoValueReposicaoDeAula();
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "31/07/2025" },
+    });
+    selecionaAlunos("TODOS");
+    await act(async () => {});
+
+    const checkbox = screen
+      .getByTestId("div-checkbox-INTEGRAL")
+      .querySelector("[data-cy='checkbox-INTEGRAL']");
+    fireEvent.keyDown(checkbox, { key: " " });
+    await act(async () => {});
+
+    expect(screen.getByText("Alunos CEI")).toBeInTheDocument();
+  });
+
+  it("não exibe erro de total quando as faixas estão vazias", async () => {
+    await setMotivoValueReposicaoDeAula();
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "31/07/2025" },
+    });
+    selecionaAlunos("TODOS");
+    await act(async () => {});
+
+    const divCheckboxINTEGRAL = screen.getByTestId("div-checkbox-INTEGRAL");
+    await act(async () => {
+      fireEvent.click(divCheckboxINTEGRAL.querySelector("span"));
+    });
+
+    const divInputFaixaEtaria0 = screen.getByTestId(
+      "quantidades_periodo[0].faixas.0",
+    );
+    const inputElementQuantidade0 = divInputFaixaEtaria0.querySelector("input");
+    await act(async () => {
+      fireEvent.change(inputElementQuantidade0, { target: { value: "1" } });
+    });
+    await act(async () => {
+      fireEvent.change(inputElementQuantidade0, { target: { value: "" } });
+    });
+    await act(async () => {
+      fireEvent.blur(inputElementQuantidade0);
+    });
+
+    expect(
+      screen.queryByText(
+        "Pelo menos uma das faixas deve possuir quantidade maior que 0.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("ignora tecla neutra ao alternar o período", async () => {
+    await setMotivoValueReposicaoDeAula();
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "31/07/2025" },
+    });
+    selecionaAlunos("TODOS");
+    await act(async () => {});
+
+    const checkbox = screen
+      .getByTestId("div-checkbox-INTEGRAL")
+      .querySelector("[data-cy='checkbox-INTEGRAL']");
+    fireEvent.keyDown(checkbox, { key: "a" });
+    await act(async () => {});
+
+    expect(screen.queryByText("Alunos CEI")).not.toBeInTheDocument();
+  });
 });
 
 describe("Teste Formulário Inclusão de Alimentação - Escola CEMEI sem quantidade de alunos", () => {
@@ -885,12 +974,10 @@ describe("Teste Formulário Inclusão de Alimentação - Rascunhos variados - Es
         `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockGetVinculosTipoAlimentacaoPorEscolaCEMEI);
-    mock
-      .onGet("/dias-uteis/")
-      .reply(200, {
-        proximos_cinco_dias_uteis: "2025-07-16",
-        proximos_dois_dias_uteis: "2025-07-14",
-      });
+    mock.onGet("/dias-uteis/").reply(200, {
+      proximos_cinco_dias_uteis: "2025-07-16",
+      proximos_dois_dias_uteis: "2025-07-14",
+    });
     mock
       .onGet(
         "/vinculos-tipo-alimentacao-u-e-periodo-escolar/motivo_inclusao_especifico/",
