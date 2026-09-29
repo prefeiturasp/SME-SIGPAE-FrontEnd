@@ -25,6 +25,7 @@ interface Props {
   gerenciaModalCadastroExterno?: () => void;
   somenteLeitura?: boolean;
   ocultarBotaoCadastroFabricante?: boolean;
+  camposOpcionais?: boolean;
 }
 
 const FormFabricante: React.FC<Props> = ({
@@ -35,6 +36,7 @@ const FormFabricante: React.FC<Props> = ({
   somenteLeitura,
   gerenciaModalCadastroExterno,
   ocultarBotaoCadastroFabricante = false,
+  camposOpcionais = false,
 }) => {
   return (
     <>
@@ -92,8 +94,8 @@ const FormFabricante: React.FC<Props> = ({
                     idx === 0 ? "Fabricante" : "Envasador/Distribuidor"
                   }`}
                   className="input-ficha-tecnica"
-                  required
-                  validate={required}
+                  required={!camposOpcionais}
+                  validate={camposOpcionais ? undefined : required}
                 />
               )}
             </div>
@@ -210,8 +212,10 @@ const FormFabricante: React.FC<Props> = ({
                 dataTestId={`email_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o E-mail"}
                 className="input-ficha-tecnica"
-                required
-                validate={composeValidators(required, email)}
+                required={!camposOpcionais}
+                validate={
+                  camposOpcionais ? email : composeValidators(required, email)
+                }
                 disabled={somenteLeitura}
               />
             </div>
@@ -224,8 +228,8 @@ const FormFabricante: React.FC<Props> = ({
                 dataTestId={`telefone_fabricante_${idx}`}
                 placeholder={somenteLeitura ? "" : "Digite o Telefone"}
                 className="input-ficha-tecnica"
-                required
-                validate={required}
+                required={!camposOpcionais}
+                validate={camposOpcionais ? undefined : required}
                 disabled={somenteLeitura}
               />
             </div>
