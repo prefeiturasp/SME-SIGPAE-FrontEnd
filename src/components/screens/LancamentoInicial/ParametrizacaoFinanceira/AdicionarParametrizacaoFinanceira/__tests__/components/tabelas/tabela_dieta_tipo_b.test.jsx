@@ -1,5 +1,6 @@
 import {
   act,
+  cleanup,
   render,
   screen,
   fireEvent,
@@ -16,7 +17,7 @@ describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
       e.periodo_escolar.nome === "MANHA",
   ).tipos_alimentacao;
 
-  const setup = async ({ grupo, tipoTurma = "" }) => {
+  const setup = async ({ grupo, tipoTurma, temaTag, bloqueiaEdicao } = {}) => {
     await act(async () => {
       render(
         <Form
@@ -26,7 +27,8 @@ describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
               form={form}
               tiposAlimentacao={tiposAlimentacao}
               grupoSelecionado={grupo}
-              tipoTurma={tipoTurma}
+              bloqueiaEdicao={bloqueiaEdicao}
+              {...(tipoTurma ? { tipoTurma, temaTag } : {})}
             />
           )}
         />,
@@ -85,5 +87,51 @@ describe("Testes de Tabela Dietas Tipo B - Parametrização Financeira", () => {
         ).value,
       ).toBe("10,00");
     });
+  });
+
+  it("não replica o percentual das demais linhas e cobre os títulos alternativos", async () => {
+    await setup({ grupo: "Grupo 3" });
+    setInput("tabelas[Dietas Tipo B].Lanche 4h.percentual_acrescimo", "4,00");
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId("tabelas[Dietas Tipo B].Lanche.percentual_acrescimo")
+          .value,
+      ).toBe("");
+    });
+
+    cleanup();
+    await setup({
+      grupo: "Grupo 5",
+      tipoTurma: "EMEBS Infantil",
+      temaTag: "turma-emebs-infantil",
+    });
+    expect(screen.getByText("EMEBS Infantil")).toBeInTheDocument();
+
+    cleanup();
+    await setup({ grupo: "Grupo 6" });
+    expect(screen.queryByText("Lanche")).not.toBeInTheDocument();
+    expect(screen.getByText("Lanche 4h")).toBeInTheDocument();
+  });
+
+  it("exibe o grupo informado no tipo de alimentação", async () => {
+    await act(async () => {
+      render(
+        <Form
+          onSubmit={jest.fn()}
+          render={({ form }) => (
+            <TabelaDietaTipoB
+              form={form}
+              tiposAlimentacao={[
+                { uuid: "l4", nome: "Lanche 4h", grupo: "Extra" },
+              ]}
+              grupoSelecionado="Grupo 3"
+            />
+          )}
+        />,
+      );
+    });
+
+    expect(screen.getByText("Lanche 4h - Extra")).toBeInTheDocument();
   });
 });

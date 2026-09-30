@@ -17,7 +17,7 @@ export default ({
   grupoSelecionado,
   bloqueiaEdicao,
 }: Props) => {
-  const _TIPOS_ALIMENTACAO = tiposAlimentacao.includes(
+  const _TIPOS_ALIMENTACAO = tiposAlimentacao.some(
     (e: TipoAlimentacao) => e.nome === "Kit Lanche",
   )
     ? tiposAlimentacao
