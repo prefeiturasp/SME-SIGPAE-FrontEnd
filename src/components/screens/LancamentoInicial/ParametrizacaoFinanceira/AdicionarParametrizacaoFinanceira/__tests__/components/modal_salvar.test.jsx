@@ -44,6 +44,13 @@ describe("Testes comportamento ModalSalvar - Parametrização Financeira", () =>
     expect(onSubmit).toHaveBeenCalledWith();
   });
 
+  it("fecha o modal pelo botão de fechar", async () => {
+    await setup({ showModal: true });
+
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(mockSetShowModal).toHaveBeenCalledWith(false);
+  });
+
   it("não deve renderizar nada se showModal = false", async () => {
     await setup({ showModal: false });
 
