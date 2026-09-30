@@ -28,7 +28,7 @@ const anteriores = [
   },
   {
     href: `/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`,
-    titulo: "Painel de Assinaturas",
+    titulo: "Painel de Assinaturas - Termo de Recebimento",
   },
 ];
 
