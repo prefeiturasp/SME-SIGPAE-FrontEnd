@@ -35,14 +35,9 @@ export const PeriodosCEIeouEMEI = ({
     const faixas = values.quantidades_periodo[indice]?.faixas;
     if (!faixas) return false;
 
-    const valores = Object.values(faixas);
-
-    const possuiAlgumValor = valores.some(
-      (valor) => valor !== "" && valor !== null && valor !== undefined,
+    const possuiMaiorQueZero = Object.values(faixas).some(
+      (valor) => Number(valor) > 0,
     );
-    if (!possuiAlgumValor) return false;
-
-    const possuiMaiorQueZero = valores.some((valor) => Number(valor) > 0);
     return !possuiMaiorQueZero;
   };
 
@@ -103,8 +98,7 @@ export const PeriodosCEIeouEMEI = ({
                         name="tipos_alimentacao"
                         dataTestId={`select-tipos-alimentacao`}
                         selected={
-                          getPeriodo(indice).tipos_alimentacao_selecionados ||
-                          []
+                          getPeriodo(indice).tipos_alimentacao_selecionados
                         }
                         options={formatarParaMultiselect(
                           getPeriodo(indice).tipos_alimentacao,
@@ -295,11 +289,7 @@ export const PeriodosCEIeouEMEI = ({
                               />
                             </div>
                           </div>
-                          <table
-                            className={`faixas-etarias-cei ${
-                              motivoEspecifico ? "w-50" : ""
-                            }`}
-                          >
+                          <table className="faixas-etarias-cei">
                             <thead>
                               <tr className="row">
                                 {!motivoEspecifico && (
@@ -313,11 +303,7 @@ export const PeriodosCEIeouEMEI = ({
                                     </span>
                                   </th>
                                 )}
-                                <th
-                                  className={`${
-                                    motivoEspecifico ? "col-6" : "col-4"
-                                  } d-flex justify-content-center`}
-                                >
+                                <th className="col-4 d-flex justify-content-center">
                                   <span className="my-auto">Quantidade</span>
                                   <Field
                                     className="ms-3"

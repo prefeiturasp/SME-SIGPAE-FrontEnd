@@ -31,7 +31,7 @@ export default ({
   const TABELA_TIP_B_EMEI = "Dietas Tipo B - Turma Infantil - EMEI";
   const GRUPO_TABELAS_EMEI = [TABELA_TIPO_A_EMEI, TABELA_TIP_B_EMEI];
 
-  const _TIPOS_ALIMENTACAO = tiposAlimentacao.includes(
+  const _TIPOS_ALIMENTACAO = tiposAlimentacao.some(
     (e: TipoAlimentacao) => e.nome === "Kit Lanche",
   )
     ? tiposAlimentacao

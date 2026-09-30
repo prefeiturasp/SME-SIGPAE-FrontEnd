@@ -72,4 +72,59 @@ describe("Testes de Tabela Dietas CEI - Parametrização Financeira", () => {
       });
     });
   });
+
+  it("usa o rótulo de CEI no grupo 2 e não replica percentual das demais faixas", async () => {
+    await act(async () => {
+      render(
+        <Form
+          onSubmit={jest.fn()}
+          render={({ form }) => (
+            <TabelaDietasCEI
+              form={form}
+              faixasEtarias={faixasEtarias}
+              nomeTabela="Dietas Tipo A"
+              periodo="Parcial"
+              bloqueiaEdicao
+            />
+          )}
+        />,
+      );
+    });
+
+    expect(screen.getByText("Período Parcial")).toBeInTheDocument();
+
+    setInput(
+      `tabelas[Dietas Tipo A - Período Parcial].${faixasEtarias[1].__str__}.percentual_acrescimo`,
+      "3,00",
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(
+          `tabelas[Dietas Tipo A - Período Parcial].${faixasEtarias[0].__str__}.percentual_acrescimo`,
+        ).value,
+      ).toBe("");
+    });
+  });
+
+  it("identifica o período CEI quando o grupo selecionado é o grupo 2", async () => {
+    await act(async () => {
+      render(
+        <Form
+          onSubmit={jest.fn()}
+          render={({ form }) => (
+            <TabelaDietasCEI
+              form={form}
+              faixasEtarias={faixasEtarias}
+              grupoSelecionado="Grupo 2"
+              nomeTabela="Dietas Tipo B"
+              periodo="Integral"
+            />
+          )}
+        />,
+      );
+    });
+
+    expect(screen.getByText("CEI - Período Integral")).toBeInTheDocument();
+  });
 });

@@ -16,6 +16,7 @@ import { mockMotivosDRENaoValida } from "src/mocks/services/relatorios.service/m
 import * as RelatoriosInclusaoDeAlimentacao from "src/pages/InclusaoDeAlimentacao/RelatorioPage";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import mock from "src/services/_mock";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { getDiasUteis } from "src/services/diasUteis.service";
@@ -94,6 +95,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
             }}
           >
             <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+            <ToastContainer />
           </MemoryRouter>
         </MeusDadosContext.Provider>,
       );
@@ -286,6 +288,109 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
     ).toBeInTheDocument();
   });
 
+  it("exibe erro ao cancelar sem selecionar nenhuma data", async () => {
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    const divEncerrar = screen.getByTestId("encerrar-a-partir-de-div");
+    fireEvent.change(divEncerrar.querySelector("input"), {
+      target: { value: "07/05/2026" },
+    });
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "justificativa de teste" },
+    });
+
+    fireEvent.click(screen.getByText("Sim").closest("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Selecione pelo menos uma data"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("cancela todas as datas com sucesso", async () => {
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    const checkboxes = document.querySelectorAll(
+      "input[data-testid^='data-cancelamento-continuo']",
+    );
+    checkboxes.forEach((checkbox) => {
+      fireEvent.click(checkbox);
+    });
+
+    const divEncerrar = screen.getByTestId("encerrar-a-partir-de-div");
+    fireEvent.change(divEncerrar.querySelector("input"), {
+      target: { value: "07/05/2026" },
+    });
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "quero cancelar a solicitação." },
+    });
+
+    fireEvent.click(screen.getByText("Sim").closest("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitação cancelada com sucesso!"),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("exibe erro ao cancelar a solicitação", async () => {
+    mock
+      .onPatch(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/escola-cancela-pedido-48h-antes/",
+      )
+      .reply(400, { detail: "Não foi possível cancelar" });
+
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId("data-cancelamento-continuo-0"));
+
+    const divEncerrar = screen.getByTestId("encerrar-a-partir-de-div");
+    fireEvent.change(divEncerrar.querySelector("input"), {
+      target: { value: "07/05/2026" },
+    });
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "quero cancelar a solicitação." },
+    });
+
+    fireEvent.click(screen.getByText("Sim").closest("button"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Não foi possível cancelar")).toBeInTheDocument();
+    });
+  });
+
   it("exibe 'Encerramento previsto para' quando encerrado_a_partir_de está preenchido", async () => {
     mock
       .onGet(
@@ -302,6 +407,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua - Visão E
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+          <ToastContainer />
         </MemoryRouter>,
       );
     });
@@ -358,6 +464,7 @@ describe("Relatório Inclusão de Alimentação - Inclusão Contínua vencida - 
             }}
           >
             <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+            <ToastContainer />
           </MemoryRouter>
         </MeusDadosContext.Provider>,
       );
@@ -398,6 +505,7 @@ describe("HistoricoAlteracao - Inclusão Contínua - Visão Escola", () => {
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+          <ToastContainer />
         </MemoryRouter>,
       );
     });
@@ -486,6 +594,7 @@ describe("HistoricoAlteracao ausente - Inclusão Contínua sem encerrado_a_parti
           }}
         >
           <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+          <ToastContainer />
         </MemoryRouter>,
       );
     });
@@ -495,5 +604,277 @@ describe("HistoricoAlteracao ausente - Inclusão Contínua sem encerrado_a_parti
         screen.queryByText("Histórico de alteração"),
       ).not.toBeInTheDocument();
     });
+  });
+});
+
+describe("Relatório Inclusão de Alimentação - Cancelamento parcial - Visão Escola", () => {
+  const mockInclusaoContinuaDoisPeriodos = {
+    ...mockInclusaoContinuaPrazoLimite,
+    motivo: {
+      nome: "Programas/Projetos Contínuos",
+      uuid: "d1ccc288-c941-4ffe-9a19-ff586d971f02",
+    },
+    data_inicial: "01/01/2020",
+    data_final: "12/03/2035",
+    quantidades_periodo: [
+      {
+        uuid: "periodo-1",
+        dias_semana: [0, 1, 2, 3, 4],
+        encerrado_a_partir_de: null,
+        cancelado: false,
+        numero_alunos: 100,
+        observacao: "<p>observação</p>",
+        periodo_escolar: { nome: "MANHA", uuid: "uuid-manha" },
+        tipos_alimentacao: [{ nome: "Lanche" }],
+      },
+      {
+        uuid: "periodo-2",
+        dias_semana: [0, 2, 4],
+        encerrado_a_partir_de: null,
+        cancelado: false,
+        numero_alunos: 50,
+        observacao: "<p>outra</p>",
+        periodo_escolar: { nome: "TARDE", uuid: "uuid-tarde" },
+        tipos_alimentacao: [{ nome: "Refeição" }],
+      },
+    ],
+  };
+
+  beforeEach(async () => {
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
+    mock
+      .onGet("/dias-uteis/")
+      .reply(200, { proximos_dois_dias_uteis: "2026-05-13" });
+    mock
+      .onGet(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
+      )
+      .reply(200, mockInclusaoContinuaDoisPeriodos);
+    mock
+      .onPatch(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/escola-cancela-pedido-48h-antes/",
+      )
+      .reply(200, {});
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("meusDados", "true");
+    window.history.pushState(
+      {},
+      "",
+      "?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua",
+    );
+
+    await act(async () => {
+      render(
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosEscolaEMEFPericles,
+            setMeusDados: jest.fn(),
+          }}
+        >
+          <MemoryRouter
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+          >
+            <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+            <ToastContainer />
+          </MemoryRouter>
+        </MeusDadosContext.Provider>,
+      );
+    });
+    await act(async () => {});
+  });
+
+  it("exibe dias da semana marcados na modal", async () => {
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      document.querySelectorAll(".week-circle-clicked").length,
+    ).toBeGreaterThan(0);
+  });
+
+  it("cancela parcialmente e exibe o toast de sucesso parcial", async () => {
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTestId("data-cancelamento-continuo-0"));
+
+    const divEncerrar = screen.getByTestId("encerrar-a-partir-de-div");
+    fireEvent.change(divEncerrar.querySelector("input"), {
+      target: { value: "07/05/2026" },
+    });
+
+    const textarea = screen.getByTestId("textarea-justificativa");
+    fireEvent.change(textarea, {
+      target: { value: "quero cancelar parcialmente." },
+    });
+
+    fireEvent.click(screen.getByText("Sim").closest("button"));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Solicitação cancelada parcialmente com sucesso"),
+      ).toBeInTheDocument();
+    });
+  });
+});
+
+describe("Relatório Inclusão de Alimentação - Cancelamento ETEC - Visão Escola", () => {
+  beforeEach(async () => {
+    const mockInclusaoContinuaETEC = {
+      ...mockInclusaoContinuaPrazoLimite,
+      motivo: { nome: "ETEC", uuid: "d1ccc288-c941-4ffe-9a19-ff586d971f02" },
+      data_inicial: "01/01/2020",
+      data_final: "12/03/2035",
+    };
+
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
+    mock
+      .onGet("/dias-uteis/")
+      .reply(200, { proximos_dois_dias_uteis: "2026-05-13" });
+    mock
+      .onGet(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
+      )
+      .reply(200, mockInclusaoContinuaETEC);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("meusDados", "true");
+    window.history.pushState(
+      {},
+      "",
+      "?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua",
+    );
+
+    await act(async () => {
+      render(
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosEscolaEMEFPericles,
+            setMeusDados: jest.fn(),
+          }}
+        >
+          <MemoryRouter
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+          >
+            <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+            <ToastContainer />
+          </MemoryRouter>
+        </MeusDadosContext.Provider>,
+      );
+    });
+    await act(async () => {});
+  });
+
+  it("não exibe a coluna Repetir para motivo ETEC", async () => {
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Cancelar ou Alterar a Solicitação"),
+      ).toBeInTheDocument();
+    });
+
+    expect(document.querySelectorAll(".weekly").length).toBe(0);
+  });
+});
+
+describe("Relatório Inclusão de Alimentação - Cancelamento sem alteração - Visão Escola", () => {
+  beforeEach(async () => {
+    const mockSemAlteracao = {
+      ...mockInclusaoContinuaPrazoLimite,
+      data_final: "12/03/2035",
+    };
+    delete mockSemAlteracao.data_inicial;
+
+    mock
+      .onGet("/usuarios/meus-dados/")
+      .reply(200, mockMeusDadosEscolaEMEFPericles);
+    mock.onGet("/motivos-dre-nao-valida/").reply(200, mockMotivosDRENaoValida);
+    mock
+      .onGet("/dias-uteis/")
+      .reply(200, { proximos_dois_dias_uteis: "2026-05-13" });
+    mock
+      .onGet(
+        "/inclusoes-alimentacao-continua/a64f5054-873c-46bc-aefa-43966029a1a4/",
+      )
+      .reply(200, mockSemAlteracao);
+
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.ESCOLA);
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+    localStorage.setItem("modulo_gestao", MODULO_GESTAO.TERCEIRIZADA);
+    localStorage.setItem("meusDados", "true");
+    window.history.pushState(
+      {},
+      "",
+      "?uuid=a64f5054-873c-46bc-aefa-43966029a1a4&ehInclusaoContinua=true&tipoSolicitacao=solicitacao-continua",
+    );
+
+    await act(async () => {
+      render(
+        <MeusDadosContext.Provider
+          value={{
+            meusDados: mockMeusDadosEscolaEMEFPericles,
+            setMeusDados: jest.fn(),
+          }}
+        >
+          <MemoryRouter
+            future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+          >
+            <RelatoriosInclusaoDeAlimentacao.RelatorioEscola />
+            <ToastContainer />
+          </MemoryRouter>
+        </MeusDadosContext.Provider>,
+      );
+    });
+    await act(async () => {});
+  });
+
+  it("exibe título e textos de cancelamento sem alteração", async () => {
+    await waitFor(() => expect(getDiasUteis).toHaveBeenCalled());
+    const botaoCancelar = screen.getByText("Cancelar").closest("button");
+    fireEvent.click(botaoCancelar);
+
+    await waitFor(() => {
+      expect(screen.getByText("Cancelar a Solicitação")).toBeInTheDocument();
+    });
+
+    expect(
+      screen.getByText((content) =>
+        content.includes("Deseja seguir em frente com o cancelamento?"),
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Selecione a(s) data(s) para solicitar o cancelamento:"),
+    ).toBeInTheDocument();
   });
 });

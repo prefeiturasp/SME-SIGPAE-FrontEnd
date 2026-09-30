@@ -1,23 +1,25 @@
 import axios from "../_base";
-import { FLUXO, PEDIDOS, AUTH_TOKEN } from "src/services/constants";
+import {
+  FLUXO,
+  PEDIDOS,
+  AUTH_TOKEN,
+  URL_KIT_LANCHES_SOLICITACOES_PAINEL,
+} from "src/services/constants";
 import { ErrorHandlerFunction } from "src/services/service-helpers";
 import { getPath } from "./helper";
 
 export const getDREPedidosDeKitLanche = async (
   filtroAplicado,
-  tipoSolicitacao,
-  paramsFromPrevPage
+  paramsFromPrevPage,
 ) => {
-  const url = `${getPath(tipoSolicitacao)}/${PEDIDOS.DRE}/${filtroAplicado}/`;
+  const url = `${URL_KIT_LANCHES_SOLICITACOES_PAINEL}/${PEDIDOS.DRE}/${filtroAplicado}/`;
   const response = await axios.get(url, { params: paramsFromPrevPage });
-  const results = response.data.results;
-  const status = response.status;
-  return { results: results, status };
+  return response.data;
 };
 
 export const getDREPedidosDeKitLancheReprovados = (tipoSolicitacao) => {
   const url = `${getPath(
-    tipoSolicitacao
+    tipoSolicitacao,
   )}/pedidos-reprovados-diretoria-regional/`;
   const OBJ_REQUEST = {
     headers: AUTH_TOKEN,
@@ -27,9 +29,7 @@ export const getDREPedidosDeKitLancheReprovados = (tipoSolicitacao) => {
     .then((result) => {
       return result.json();
     })
-    .catch((error) => {
-      console.log(error);
-    });
+    .catch(() => {});
 };
 
 export const DREValidaKitLancheAvulso = (uuid, _, tipoSolicitacao) => {
@@ -55,7 +55,7 @@ export const DREValidaKitLancheAvulso = (uuid, _, tipoSolicitacao) => {
 export const DRENaoValidaKitLancheAvulso = async (
   uuid,
   payload,
-  tipoSolicitacao
+  tipoSolicitacao,
 ) => {
   const url = `${getPath(tipoSolicitacao)}/${uuid}/${FLUXO.DRE_NAO_VALIDA}/`;
   const response = await axios.patch(url, payload).catch(ErrorHandlerFunction);

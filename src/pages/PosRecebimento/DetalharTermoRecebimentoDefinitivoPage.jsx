@@ -32,7 +32,7 @@ const anteriores = [
 ];
 
 export default () => (
-  <Page botaoVoltar voltarPara={rotaListagem} titulo={atual.titulo}>
+  <Page botaoVoltar titulo={atual.titulo}>
     <Breadcrumb home={HOME} atual={atual} anteriores={anteriores} />
     <DetalharTermoRecebimentoDefinitivo />
   </Page>

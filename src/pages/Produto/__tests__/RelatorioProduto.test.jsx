@@ -2,14 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import PaginaRelatorioProduto from "../RelatorioProduto";
 
-const mockVerificaAmbienteProducao = jest.fn();
 const mockPage = jest.fn();
-
-jest.mock("src/constants/config", () => ({
-  ENVIRONMENT: {
-    includes: (...args) => mockVerificaAmbienteProducao(...args),
-  },
-}));
 
 jest.mock("../../../components/Shareable/Page/Page", () => {
   return function Page(props) {
@@ -45,8 +38,6 @@ describe("Página RelatorioProduto", () => {
   });
 
   it("renderiza a página com o título Visualizar Produto fora do ambiente de produção", () => {
-    mockVerificaAmbienteProducao.mockReturnValue(false);
-
     render(<PaginaRelatorioProduto />);
 
     expect(
@@ -54,8 +45,6 @@ describe("Página RelatorioProduto", () => {
         name: "Visualizar Produto",
       }),
     ).toBeInTheDocument();
-
-    expect(mockVerificaAmbienteProducao).toHaveBeenCalledWith("production");
 
     expect(mockPage).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -66,24 +55,5 @@ describe("Página RelatorioProduto", () => {
 
     expect(screen.getByTestId("breadcrumb")).toBeInTheDocument();
     expect(screen.getByTestId("relatorio-produto")).toBeInTheDocument();
-  });
-
-  it("renderiza a página com o título Consultar Produto em produção", () => {
-    mockVerificaAmbienteProducao.mockReturnValue(true);
-
-    render(<PaginaRelatorioProduto />);
-
-    expect(
-      screen.getByRole("heading", {
-        name: "Consultar Produto",
-      }),
-    ).toBeInTheDocument();
-
-    expect(mockPage).toHaveBeenCalledWith(
-      expect.objectContaining({
-        titulo: "Consultar Produto",
-        botaoVoltar: true,
-      }),
-    );
   });
 });

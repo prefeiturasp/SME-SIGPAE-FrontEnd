@@ -62,6 +62,38 @@ describe("Testes comportamento componente de Filtros - Parametrização Financei
     expect(screen.getByTestId("botao-carregar")).toBeInTheDocument();
   });
 
+  it("desabilita a data inicial quando o fluxo de conflito está na url", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter initialEntries={["/?fluxo=encerrar_novo"]}>
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosSuperUsuarioMedicao,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <Form
+              onSubmit={jest.fn()}
+              render={({ form }) => (
+                <Filtros
+                  ehCadastro
+                  setCarregarTabelas={jest.fn()}
+                  uuidParametrizacao={null}
+                  view={mockView}
+                  form={form}
+                />
+              )}
+            />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    expect(
+      screen.getByTestId("data-inicial-input").querySelector("input"),
+    ).toBeDisabled();
+  });
+
   it("não deve renderizar o botão carregar se ehCadastro = false", async () => {
     await setup({
       ehCadastro: false,

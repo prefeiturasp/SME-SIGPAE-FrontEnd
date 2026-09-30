@@ -32,6 +32,7 @@ import { FICHA_TECNICA, PRE_RECEBIMENTO } from "src/configs/constants";
 import {
   ArquivoForm,
   CategoriaFichaTecnicaChoices,
+  FabricanteFichaTecnica,
   FichaTecnicaDetalhada,
   FichaTecnicaDetalhadaComAnalise,
   OptionsGenerico,
@@ -467,6 +468,69 @@ export const validaAssinarEnviar = (
   );
 };
 
+export const ehFLVPontoAPonto = (
+  categoria?: string,
+  tipoEntrega?: string,
+): boolean => {
+  const categoriaUUID = CATEGORIA_OPTIONS.find(
+    (opcao) => opcao.uuid === categoria || opcao.nome === categoria,
+  )?.uuid;
+  const tipoEntregaUUID = TIPO_ENTREGA_OPTIONS.find(
+    (opcao) => opcao.uuid === tipoEntrega || opcao.nome === tipoEntrega,
+  )?.uuid;
+
+  return categoriaUUID === "FLV" && tipoEntregaUUID === "PONTO_A_PONTO";
+};
+
+const entidadeFabricantePossuiDados = (
+  entidade?: FabricanteFichaTecnica | FabricanteFichaPayload | null,
+): boolean => {
+  if (!entidade) {
+    return false;
+  }
+
+  return Boolean(
+    entidade.fabricante ||
+      entidade.cnpj ||
+      entidade.cep ||
+      entidade.endereco ||
+      entidade.numero ||
+      entidade.complemento ||
+      entidade.bairro ||
+      entidade.cidade ||
+      entidade.estado ||
+      entidade.email ||
+      entidade.telefone,
+  );
+};
+
+export const exibirBlocoFabricante = (ficha: {
+  categoria?: string;
+  tipo_entrega?: string;
+  fabricante?: FabricanteFichaTecnica | FabricanteFichaPayload | null;
+  envasador_distribuidor?:
+    | FabricanteFichaTecnica
+    | FabricanteFichaPayload
+    | null;
+}): boolean => {
+  return (
+    !ehFLVPontoAPonto(ficha.categoria, ficha.tipo_entrega) ||
+    entidadeFabricantePossuiDados(ficha.fabricante) ||
+    entidadeFabricantePossuiDados(ficha.envasador_distribuidor)
+  );
+};
+
+export const exibirNumeroRegistro = (ficha: {
+  categoria?: string;
+  tipo_entrega?: string;
+  numero_registro?: string;
+}): boolean => {
+  return (
+    !ehFLVPontoAPonto(ficha.categoria, ficha.tipo_entrega) ||
+    Boolean(ficha.numero_registro)
+  );
+};
+
 export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
   const valuesInformacoesNutricionais = {};
   ficha?.informacoes_nutricionais.forEach((informacao) => {
@@ -674,6 +738,8 @@ export const formataPayloadCadastroFichaTecnica = (
   arquivo: ArquivoForm[],
   fabricantesCount: number,
   password?: string,
+  mostrarBlocoFabricante: boolean = true,
+  mostrarNumeroRegistro: boolean = true,
 ) => {
   const ehPereciveis = values.categoria === "PERECIVEIS";
   const ehFLV =
@@ -692,8 +758,14 @@ export const formataPayloadCadastroFichaTecnica = (
         proponente,
         fabricantesOptions,
         fabricantesCount,
+        false,
+        mostrarBlocoFabricante,
       ),
-      ...gerarCamposDetalhesProduto(values, ehFLV),
+      ...gerarCamposDetalhesProduto(
+        values,
+        ehFLV,
+        mostrarNumeroRegistro,
+      ),
       ...gerarCamposResponsavelTecnico(values, arquivo),
       ...gerarCamposOutrasInformacoes(values),
       password: password,
@@ -709,8 +781,14 @@ export const formataPayloadCadastroFichaTecnica = (
         proponente,
         fabricantesOptions,
         fabricantesCount,
+        false,
+        mostrarBlocoFabricante,
       ),
-      ...gerarCamposDetalhesProduto(values, ehFLV),
+      ...gerarCamposDetalhesProduto(
+        values,
+        ehFLV,
+        mostrarNumeroRegistro,
+      ),
       ...gerarCamposInformacoesNutricionais(values),
       ...gerarCamposConservacao(values, ehPereciveis),
       ...(ehPereciveis
@@ -738,9 +816,10 @@ export const formataPayloadCorrecaoFichaTecnica = (
   ehPereciveis: boolean,
   password: string,
   ehFLV: boolean = false,
+  mostrarNumeroRegistro: boolean = true,
 ) => {
   let payload: FichaTecnicaPayload = {
-    ...(!conferidos.fabricante_envasador
+    ...(conferidos.fabricante_envasador === false
       ? gerarCamposProponenteFabricante(
           values,
           proponente,
@@ -750,7 +829,7 @@ export const formataPayloadCorrecaoFichaTecnica = (
         )
       : {}),
     ...(!conferidos.detalhes_produto
-      ? gerarCamposDetalhesProduto(values, ehFLV)
+      ? gerarCamposDetalhesProduto(values, ehFLV, mostrarNumeroRegistro)
       : {}),
     ...(!conferidos.responsavel_tecnico
       ? gerarCamposResponsavelTecnico(values, arquivo)
@@ -797,6 +876,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
   fabricantesCount: number,
   arquivo: ArquivoForm[],
   password: string,
+  mostrarBlocoFabricante: boolean = true,
 ): FichaTecnicaPayload => {
   let payload: FichaTecnicaPayload = {
     ...gerarCamposProponenteFabricante(
@@ -805,6 +885,7 @@ export const formataPayloadAtualizacaoFichaTecnica = (
       fabricantesOptions,
       fabricantesCount,
       true,
+      mostrarBlocoFabricante,
     ),
     password: password,
   };
@@ -852,6 +933,7 @@ const gerarCamposProponenteFabricante = (
   fabricantesOptions: OptionsGenerico[],
   fabricantesCount: number,
   ehAlterar: boolean = false,
+  incluirBlocoFabricante: boolean = true,
 ) => {
   const fabricantes: FabricanteFichaPayload[] = Array.from({
     length: fabricantesCount,
@@ -875,18 +957,29 @@ const gerarCamposProponenteFabricante = (
   });
   return {
     ...(ehAlterar ? {} : { empresa: proponente.uuid }),
-    fabricante: fabricantes[0]?.fabricante && fabricantes[0],
-    envasador_distribuidor: fabricantes[1]?.fabricante ? fabricantes[1] : null,
+    ...(incluirBlocoFabricante
+      ? {
+          fabricante: fabricantes[0]?.fabricante && fabricantes[0],
+          envasador_distribuidor: fabricantes[1]?.fabricante
+            ? fabricantes[1]
+            : null,
+        }
+      : {}),
   };
 };
 
 const gerarCamposDetalhesProduto = (
   values: Record<string, any>,
   ehFLV: boolean = false,
+  incluirNumeroRegistro: boolean = true,
 ) => {
+  const numeroRegistro = incluirNumeroRegistro
+    ? { numero_registro: values.numero_registro || "" }
+    : {};
+
   if (ehFLV) {
     return {
-      numero_registro: values.numero_registro || "",
+      ...numeroRegistro,
       organico: stringToBoolean(values.organico as string),
       mecanismo_controle: values.mecanismo_controle || undefined,
       especie_variedade: values.especie_variedade || "",
@@ -895,7 +988,7 @@ const gerarCamposDetalhesProduto = (
 
   return {
     prazo_validade: values.prazo_validade || "",
-    numero_registro: values.numero_registro || "",
+    ...numeroRegistro,
     organico: stringToBoolean(values.organico as string),
     mecanismo_controle: values.mecanismo_controle || undefined,
     componentes_produto: values.componentes_produto || "",

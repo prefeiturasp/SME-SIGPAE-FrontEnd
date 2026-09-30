@@ -440,7 +440,7 @@ class solicitacaoDietaEspecial extends Component {
                       texto={!deletandoImagem ? "Deletar imagem" : "Aguarde..."}
                       onClick={() => this.deletarFoto(codigo_eol)}
                       type={BUTTON_TYPE.BUTTON}
-                      style={BUTTON_STYLE.RED}
+                      style={BUTTON_STYLE.RED_OUTLINE}
                     />
                   </div>
                 </div>

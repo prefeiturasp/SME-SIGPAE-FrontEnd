@@ -305,7 +305,7 @@ const InformacoesAluno = ({
                       className="custom-col-width"
                       onClick={() => deletarFoto()}
                       type={BUTTON_TYPE.BUTTON}
-                      style={BUTTON_STYLE.RED}
+                      style={BUTTON_STYLE.RED_OUTLINE}
                     />
                   </div>
                 )}

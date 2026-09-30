@@ -304,4 +304,27 @@ describe("Teste Formulário Inclusão de Alimentação - motivo específico - Es
       ),
     ).toBe(true);
   });
+
+  it("alterna o período específico pelo teclado", async () => {
+    await setMotivoValueEventoEspecifico(0);
+    const divDia = screen.getByTestId("data-motivo-normal-0");
+    fireEvent.change(divDia.querySelector("input"), {
+      target: { value: "31/07/2025" },
+    });
+    const textarea = screen.getByTestId("textarea-descricao-do-evento-0");
+    fireEvent.change(textarea, {
+      target: { value: "Bolo" },
+    });
+    await act(async () => {});
+
+    expect(screen.getByText("INTEGRAL")).toBeInTheDocument();
+
+    const checkbox = screen
+      .getByTestId("div-checkbox-INTEGRAL")
+      .querySelector("[data-cy='checkbox-INTEGRAL']");
+    fireEvent.keyDown(checkbox, { key: "Enter" });
+    await act(async () => {});
+
+    expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
+  });
 });

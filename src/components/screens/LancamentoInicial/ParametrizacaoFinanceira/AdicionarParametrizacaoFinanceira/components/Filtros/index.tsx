@@ -40,14 +40,12 @@ export default (props: Props) => {
   const view = ehCadastro ? (props as Cadastro).view : filterView;
 
   const onChangeCopiar = async () => {
-    if (!ehCadastro) return;
-
     try {
-      const { uuidParametrizacao, setCarregarTabelas } = props;
+      const { uuidParametrizacao, setCarregarTabelas } = props as Cadastro;
 
       setSearchParams((prev) => {
         const params = new URLSearchParams(prev);
-        if (uuidParametrizacao) params.set("uuid_origem", uuidParametrizacao);
+        params.set("uuid_origem", uuidParametrizacao);
         params.delete("uuid");
         return params;
       });
@@ -179,10 +177,8 @@ export default (props: Props) => {
                     style={BUTTON_STYLE.ORANGE_OUTLINE}
                     type={BUTTON_TYPE.BUTTON}
                     onClick={() => {
-                      if (!ehCadastro) return;
-
                       const { uuidParametrizacao, setCarregarTabelas, view } =
-                        props;
+                        props as Cadastro;
 
                       if (uuidParametrizacao) {
                         setShowCopiar(true);

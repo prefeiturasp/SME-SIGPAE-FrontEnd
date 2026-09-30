@@ -1,5 +1,6 @@
 import {
   act,
+  cleanup,
   render,
   screen,
   fireEvent,
@@ -16,7 +17,7 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
       e.periodo_escolar.nome === "MANHA",
   ).tipos_alimentacao;
 
-  const setup = async ({ grupo, tipoTurma = null }) => {
+  const setup = async ({ grupo, tipoTurma, temaTag, bloqueiaEdicao } = {}) => {
     await act(async () => {
       render(
         <Form
@@ -26,7 +27,8 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
               form={form}
               tiposAlimentacao={tiposAlimentacao}
               grupoSelecionado={grupo}
-              tipoTurma={tipoTurma}
+              bloqueiaEdicao={bloqueiaEdicao}
+              {...(tipoTurma ? { tipoTurma, temaTag } : {})}
             />
           )}
         />,
@@ -95,5 +97,47 @@ describe("Testes de Tabela Dietas Tipo A - Parametrização Financeira", () => {
         ).value,
       ).toBe("10,00");
     });
+  });
+
+  it("não replica o percentual quando a linha alterada não é a primeira", async () => {
+    await setup({ grupo: "Grupo 3" });
+
+    setInput(
+      "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Lanche.percentual_acrescimo",
+      "7,00",
+    );
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(
+          "tabelas[Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos].Refeição.percentual_acrescimo",
+        ).value,
+      ).toBe("");
+    });
+  });
+
+  it("separa as refeições do grupo 4 e monta o título dos grupos 2 e 6", async () => {
+    await setup({ grupo: "Grupo 4", tipoTurma: "" });
+    expect(
+      screen.getByText(
+        "Refeição - Dieta Enteral - CEU EMEF, CEU GESTÃO, EMEF, EMEFM",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Refeição - Dieta Enteral - EJA"),
+    ).toBeInTheDocument();
+
+    cleanup();
+    await setup({
+      grupo: "Grupo 2",
+      tipoTurma: "Turma Infantil - EMEI",
+      temaTag: "turma-emei",
+    });
+    expect(screen.getByText("Turma Infantil - EMEI")).toBeInTheDocument();
+
+    cleanup();
+    await setup({ grupo: "Grupo 6" });
+    expect(screen.queryByText("Lanche")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Lanche 4h").length).toBeGreaterThan(0);
   });
 });

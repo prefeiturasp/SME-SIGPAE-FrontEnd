@@ -1,6 +1,4 @@
 import {
-  DadosLiquidacaoEmpenho,
-  DadosLiquidacaoResponse,
   FiltrosInterface,
   RelatorioFinanceiroConsolidado,
   PayloadRelatorioFinanceiro,
@@ -43,31 +41,6 @@ export const getRelatorioFinanceiroConsolidado = async (uuid: string) => {
   );
 };
 
-export const getRelatorioDadosLiquidacao = async (params) => {
-  return await axios.get<DadosLiquidacaoResponse>(
-    "/medicao-inicial/dados-liquidacao/",
-    {
-      params: params,
-    },
-  );
-};
-
-export const cadastroDadosEmpenho = async (
-  payload: Partial<DadosLiquidacaoEmpenho[]>,
-  relatorioFinanceiro: string,
-) => {
-  const response = await axios
-    .put(
-      `/medicao-inicial/dados-liquidacao/registrar-empenhos/${relatorioFinanceiro}/`,
-      payload,
-    )
-    .catch(ErrorHandlerFunction);
-  if (response) {
-    const data = { data: response.data, status: response.status };
-    return data;
-  }
-};
-
 export const exportarPDFAsyncRelatorioAtesteFinanceiro = async (
   relatorioFinanceiro: string,
 ) => {
@@ -105,7 +78,7 @@ export const getDescontoFinanceiro = async (params) => {
 };
 
 export const reabrirLancamentosRelatorio = async (
-  payload: Partial<DadosLiquidacaoEmpenho>,
+  payload: { unidades_educacionais: string[] },
   relatorioFinanceiro: string,
 ) => {
   const response = await axios

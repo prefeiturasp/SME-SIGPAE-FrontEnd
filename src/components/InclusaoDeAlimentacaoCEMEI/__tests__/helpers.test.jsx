@@ -6,7 +6,6 @@ import {
   totalAlunosPorPeriodoCEI,
   totalAlunosInputPorPeriodoCEI,
   formataInclusaoCEMEI,
-  tiposAlimentacaoMotivoEspecifico,
   validarSubmit,
 } from "../helpers";
 
@@ -34,7 +33,7 @@ describe("Funções helpers.js", () => {
       },
     ];
     expect(
-      tiposAlimentacaoPorPeriodoETipoUnidade(vinculos, "Integral", "CEI")
+      tiposAlimentacaoPorPeriodoETipoUnidade(vinculos, "Integral", "CEI"),
     ).toBe("Almoço");
   });
 
@@ -47,7 +46,7 @@ describe("Funções helpers.js", () => {
       },
     ];
     expect(
-      arrTiposAlimentacaoPorPeriodoETipoUnidade(vinculos, "Integral", "CEI")
+      arrTiposAlimentacaoPorPeriodoETipoUnidade(vinculos, "Integral", "CEI"),
     ).toEqual([{ nome: "Almoço" }]);
   });
 
@@ -91,17 +90,10 @@ describe("Funções helpers.js", () => {
     expect(result.quantidade_alunos_emei_da_inclusao_cemei.length).toBe(1);
   });
 
-  test("tiposAlimentacaoMotivoEspecifico concatena os nomes", () => {
-    const periodo = {
-      tipos_alimentacao: [{ nome: "Almoço" }, { nome: "Janta" }],
-    };
-    expect(tiposAlimentacaoMotivoEspecifico(periodo)).toBe("Almoço, Janta");
-  });
-
   test("validarSubmit retorna erro se nenhum período for marcado", () => {
     const values = { quantidades_periodo: [{ checked: false }] };
     expect(validarSubmit(values)).toBe(
-      "Necessário selecionar e preencher ao menos um período"
+      "Necessário selecionar e preencher ao menos um período",
     );
   });
 
@@ -110,7 +102,39 @@ describe("Funções helpers.js", () => {
       quantidades_periodo: [{ checked: true, faixas: null, alunos_emei: null }],
     };
     expect(validarSubmit(values)).toBe(
-      "Ao selecionar um período, preencher ao menos uma quantidade de alunos"
+      "Ao selecionar um período, preencher ao menos uma quantidade de alunos",
+    );
+  });
+
+  test("validarSubmit retorna erro se há alimentação sem alunos EMEI", () => {
+    const values = {
+      quantidades_periodo: [
+        {
+          checked: true,
+          faixas: { 1: 5 },
+          tipos_alimentacao_selecionados: ["Almoço"],
+          alunos_emei: null,
+        },
+      ],
+    };
+    expect(validarSubmit(values)).toBe(
+      "Selecionar alimentação e preencher quantidade de alunos",
+    );
+  });
+
+  test("validarSubmit retorna erro se há alunos EMEI sem alimentação", () => {
+    const values = {
+      quantidades_periodo: [
+        {
+          checked: true,
+          faixas: null,
+          alunos_emei: 8,
+          tipos_alimentacao_selecionados: [],
+        },
+      ],
+    };
+    expect(validarSubmit(values)).toBe(
+      "Selecionar alimentação e preencher quantidade de alunos",
     );
   });
 

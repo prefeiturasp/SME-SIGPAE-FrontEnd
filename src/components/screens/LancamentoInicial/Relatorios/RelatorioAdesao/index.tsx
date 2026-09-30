@@ -39,6 +39,7 @@ export default () => {
                 filtros={view.filtros}
                 resultado={view.resultado}
                 escola={view.escola}
+                resultadoIndividual={view.resultadoIndividual}
                 exibirTitulo={view.exibirTitulo}
               />
             </div>

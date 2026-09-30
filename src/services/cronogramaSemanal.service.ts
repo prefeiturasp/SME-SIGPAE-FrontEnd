@@ -26,6 +26,13 @@ export const getListagemRelatorioCronogramasSemanais = async (params) => {
   return response;
 };
 
+export const baixarRelatorioCronogramasSemanaisExcel = async (
+  params: URLSearchParams,
+) =>
+  await axios.get("/cronogramas-semanais/gerar-relatorio-xlsx-async/", {
+    params,
+  });
+
 export const criarCronogramaSemanalRascunho = async (
   payload: CronogramaSemanalCreate,
   config = {},

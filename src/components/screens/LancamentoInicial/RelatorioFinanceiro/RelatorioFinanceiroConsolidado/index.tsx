@@ -21,22 +21,18 @@ import GrupoEMEF from "../components/Tabelas/GrupoEMEF";
 import GrupoCIEJA from "../components/Tabelas/GrupoCIEJA";
 import GrupoCEMEI from "../components/Tabelas/GrupoCEMEI";
 import GrupoEMEBS from "../components/Tabelas/GrupoEMEBS";
-import DadosLiquidacao from "../components/DadosLiquidacao";
 import {
   BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
 import Botao from "src/components/Shareable/Botao";
-import ModalEditarEmpenhos from "../components/ModalEditarEmpenhos";
 import {
   exportarPDFAsyncRelatorioAtesteFinanceiro,
   getDescontoFinanceiro,
-  getRelatorioDadosLiquidacao,
   reabrirLancamentosRelatorio,
 } from "src/services/medicaoInicial/relatorioFinanceiro.service";
 import {
-  DadosLiquidacaoEmpenho,
   DescontoFinanceiro,
   Escola,
 } from "src/interfaces/relatorio_financeiro.interface";
@@ -57,14 +53,10 @@ type TotaisParams = {
 
 export function RelatorioFinanceiroConsolidado() {
   const [faixasEtarias, setFaixasEtarias] = useState<FaixaEtaria[]>([]);
-  const [dadosLiquidacao, setDadosLiquidacao] = useState<
-    DadosLiquidacaoEmpenho[]
-  >([]);
   const [descontos, setDescontos] = useState<DescontoFinanceiro[]>([]);
   const [totaisConsumo, setTotaisConsumo] = useState<any>([]);
   const [tiposAlimentacao, setTiposAlimentacao] = useState<any[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
-  const [editarEmpenhos, setEditarEmpenhos] = useState<boolean>(false);
   const [aplicarDesconto, setAplicarDesconto] = useState<boolean>(false);
   const [reabrirLancamentos, setReabrirLancamentos] = useState<boolean>(false);
   const [exportando, setExportando] = useState<boolean>(false);
@@ -180,16 +172,6 @@ export function RelatorioFinanceiroConsolidado() {
     setTiposAlimentacao(tiposAlimentacao);
   };
 
-  const getDadosLiquidacao = async () => {
-    const response = await getRelatorioDadosLiquidacao({
-      relatorio_financeiro: uuidRelatorioFinanceiro,
-    });
-
-    if (response.status === HTTP_STATUS.OK)
-      setDadosLiquidacao(response.data.results);
-    else toastError("Erro ao carregar dados para liquidação.");
-  };
-
   const getDadosDescontos = async () => {
     const response = await getDescontoFinanceiro({
       relatorio_financeiro: uuidRelatorioFinanceiro,
@@ -201,7 +183,6 @@ export function RelatorioFinanceiroConsolidado() {
 
   useEffect(() => {
     if (uuidRelatorioFinanceiro) {
-      getDadosLiquidacao();
       getDadosDescontos();
     }
   }, [uuidRelatorioFinanceiro]);
@@ -319,32 +300,11 @@ export function RelatorioFinanceiroConsolidado() {
                     mesesAnos={mesesAnos}
                     exibirReabrirLancamentos={!modoVisualizacao}
                     showReabrirLancamentos={() => setReabrirLancamentos(true)}
+                    showAplicarDesconto={() => setAplicarDesconto(true)}
                   />
                 </form>
               )}
             </Form>
-            <div className="row mt-4 align-items-start">
-              <div className="col-8">
-                <DadosLiquidacao dados={dadosLiquidacao} />
-              </div>
-
-              {!modoVisualizacao && (
-                <div className="col-4 d-flex gap-3">
-                  <Botao
-                    texto="Editar Empenhos"
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    onClick={() => setEditarEmpenhos(true)}
-                  />
-                  <Botao
-                    texto="Aplicar Descontos"
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    onClick={() => setAplicarDesconto(true)}
-                  />
-                </div>
-              )}
-            </div>
             {!carregando && relatorioConsolidado && (
               <div className="tabelas-relatorio-consolidado mt-5 mb-4">
                 {Object.entries(GRUPOS_POR_COMPONENTE).map(
@@ -377,14 +337,6 @@ export function RelatorioFinanceiroConsolidado() {
           </div>
         </div>
       </Spin>
-      <ModalEditarEmpenhos
-        showModal={editarEmpenhos}
-        setShowModal={setEditarEmpenhos}
-        empenhos={dadosLiquidacao}
-        relatorioFinanceiro={uuidRelatorioFinanceiro}
-        onSave={(e) => setDadosLiquidacao(e)}
-        unidadesEducacionais={unidadesEducacionais}
-      />
       <ModalSolicitacaoDownload
         show={exibirModalCentralDownloads}
         setShow={setExibirModalCentralDownloads}

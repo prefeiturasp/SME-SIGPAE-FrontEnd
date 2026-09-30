@@ -149,21 +149,21 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
         <form onSubmit={handleSubmit} className="busca-produtos">
           <FinalFormToRedux form={FORM_NAME} />
           <div className="row">
-            <div className="col-6">
+            <div className="col-4 input-filtro-form">
               <Field
                 component={AutoCompleteField}
                 dataSource={state.dados.editais}
                 data-testid="edital"
                 label="Edital"
-                className="input-busca-produto"
+                className="input-busca-produto input-filtro-form"
                 name="nome_edital"
                 required
                 validate={required}
+                placeholder="Selecione o edital"
               />
             </div>
-          </div>
-          <div className="form-row">
-            <div className="col-12 col-md-4 col-xl-4">
+
+            <div className="col-4 input-filtro-form">
               <div className="row">
                 <label className="ms-1">Data cadastro</label>
               </div>
@@ -204,8 +204,9 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
                 </div>
               </div>
             </div>
-            <div className="col-12 col-md-5 col-xl-5">
-              <label>Status</label>
+
+            <div className="col-4 input-filtro-form">
+              <label>Status do Produto</label>
               <Field
                 component={SelectWithHideOptions}
                 options={status.opcoesStatus}
@@ -213,15 +214,51 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
                 selectedItems={status.statusSelecionados}
                 onSelect={(value) => onSelectStatus(value)}
                 onDeselect={(value) => onDeselectStatus(value)}
+                placeholder="Selecione os status"
               />
             </div>
-            <div className="col-12 col-md-3 col-xl-3 check-tipos-prod">
+          </div>
+
+          <div className="form-row">
+            <div className="col-4 pr-0">
+              <Field
+                component={AutoCompleteFieldUnaccent}
+                dataSource={state.dados.produtos}
+                label="Produto"
+                placeholder="Digite o nome do produto"
+                className="input-busca-produto"
+                name="nome_produto"
+              />
+            </div>
+            <div className="col-4 pl-14 pr-14">
+              <Field
+                component={AutoCompleteFieldUnaccent}
+                dataSource={state.dados.marcas}
+                className="input-busca-produto"
+                label="Marca"
+                placeholder="Digite marca do produto"
+                name="nome_marca"
+              />
+            </div>
+            <div className="col-4 pl-0">
+              <Field
+                component={AutoCompleteFieldUnaccent}
+                dataSource={state.dados.fabricantes}
+                label="Fabricante"
+                placeholder="Digite fabricante do produto"
+                name="nome_fabricante"
+              />
+            </div>
+          </div>
+
+          <div className="form-row mt-2">
+            <div className="col-4 input-filtro-form check-tipos-prod">
               <div className="row">
-                <label className="ms-1">Tipo de produto</label>
+                <label className="pl-6">Tipo de produto</label>
               </div>
 
               <div className="row">
-                <div className="col mt-2 ms-1">
+                <div className="col mt-2 ms-1 pl-6">
                   <Field
                     className="check-tipo-produto"
                     component={CheckboxField}
@@ -241,68 +278,20 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="form-row mt-2">
-            <div className="col-md-3 col-xl-3">
-              <label>Ingredientes/aditivos alergênicos?</label>
-              <div className="check-produto_alergenico">
-                <Field
-                  component={CheckboxField}
-                  name="tem_aditivos_alergenicos"
-                  nomeInput={"Sim"}
-                  type="checkbox"
-                />
-              </div>
-            </div>
-            <div className="col-md-9 col-xl-9">
-              <label>
-                Quais? (Possível Informar um ou mais ingredientes separados por
-                vírgula)
-              </label>
+
+            <div className="col-8 pl-14">
               <Field
                 component={InputText}
                 name="aditivos"
-                disabled={!values.tem_aditivos_alergenicos}
+                placeholder="Digite os aditivos alergênicos"
+                label="Ingredientes/aditivos alergênicos? (Informe um ou mais separados por vírgula)"
               />
             </div>
           </div>
 
-          <div className="form-row">
-            <div className="col-md-12 col-xl-12">
-              <Field
-                component={AutoCompleteFieldUnaccent}
-                dataSource={state.dados.produtos}
-                label="Nome do Produto"
-                placeholder="Digite nome do produto"
-                className="input-busca-produto"
-                name="nome_produto"
-              />
-            </div>
-          </div>
-          <div className="form-row">
-            <div className="col-md-6 col-xl-6">
-              <Field
-                component={AutoCompleteFieldUnaccent}
-                dataSource={state.dados.marcas}
-                className="input-busca-produto"
-                label="Marca do Produto"
-                placeholder="Digite marca do produto"
-                name="nome_marca"
-              />
-            </div>
-            <div className="col-md-6 col-xl-6">
-              <Field
-                component={AutoCompleteFieldUnaccent}
-                dataSource={state.dados.fabricantes}
-                label="Fabricante do Produto"
-                placeholder="Digite fabricante do produto"
-                name="nome_fabricante"
-              />
-            </div>
-          </div>
           <div className="mt-4 mb-4">
             <Botao
-              texto="Consultar"
+              texto="Filtrar"
               type={BUTTON_TYPE.SUBMIT}
               style={BUTTON_STYLE.GREEN}
               className="float-end ms-3"
@@ -322,7 +311,6 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
                   nome_marca: undefined,
                   nome_produto: undefined,
                   aditivos: undefined,
-                  tem_aditivos_alergenicos: undefined,
                   status: undefined,
                   data_final: undefined,
                   data_inicial: undefined,

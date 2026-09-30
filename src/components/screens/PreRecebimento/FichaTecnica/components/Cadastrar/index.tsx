@@ -47,6 +47,9 @@ import {
   carregarProdutos,
   carregarUnidadesMedida,
   cepCalculator,
+  ehFLVPontoAPonto,
+  exibirBlocoFabricante,
+  exibirNumeroRegistro,
   formataPayloadCadastroFichaTecnica,
   gerenciaModalCadastroExterno,
   salvarRascunho,
@@ -107,6 +110,21 @@ export default () => {
   const [arquivo, setArquivo] = useState<ArquivoForm[]>([]);
 
   const navigate = useNavigate();
+
+  const mostrarBlocoFabricante = (values: Record<string, any>) =>
+    exibirBlocoFabricante({
+      categoria: values.categoria,
+      tipo_entrega: values.tipo_entrega,
+      fabricante: ficha.fabricante,
+      envasador_distribuidor: ficha.envasador_distribuidor,
+    });
+
+  const mostrarNumeroRegistro = (values: Record<string, any>) =>
+    exibirNumeroRegistro({
+      categoria: values.categoria,
+      tipo_entrega: values.tipo_entrega,
+      numero_registro: ficha.numero_registro,
+    });
 
   const atualizarDadosCarregados = async () => {
     setCarregando(true);
@@ -310,12 +328,17 @@ export default () => {
                           Empresa ou Organização{" "}
                           <span className="verde-escuro">Proponente</span>
                         </span>,
-                        <span className="fw-bold" key={1}>
-                          Empresa ou Organização{" "}
-                          <span className="verde-escuro">
-                            Fabricante, Produtor, Envasador e/ou Distribuidor
-                          </span>
-                        </span>,
+                        ...(mostrarBlocoFabricante(values)
+                          ? [
+                              <span className="fw-bold" key={1}>
+                                Empresa ou Organização{" "}
+                                <span className="verde-escuro">
+                                  Fabricante, Produtor, Envasador e/ou
+                                  Distribuidor
+                                </span>
+                              </span>,
+                            ]
+                          : []),
                         <span className="fw-bold" key={1}>
                           Detalhes do{" "}
                           <span className="verde-escuro">Produto</span>
@@ -327,12 +350,17 @@ export default () => {
                         <FormProponente proponente={proponente} />
                       </section>
 
+                      {mostrarBlocoFabricante(values) && (
                       <section id="formFabricante">
                         <FormFabricante
                           fabricantesCount={fabricantesCount}
                           setFabricantesCount={setFabricantesCount}
                           fabricantesOptions={fabricantesOptions}
                           values={values}
+                          camposOpcionais={ehFLVPontoAPonto(
+                            values.categoria,
+                            values.tipo_entrega,
+                          )}
                           gerenciaModalCadastroExterno={() => {
                             gerenciaModalCadastroExterno(
                               "FABRICANTE",
@@ -363,9 +391,13 @@ export default () => {
                           </div>
                         )}
                       </section>
+                      )}
 
                       <section id="formProduto">
-                        <FormPereciveisENaoPereciveis values={values} />
+                        <FormPereciveisENaoPereciveis
+                          values={values}
+                          mostrarNumeroRegistro={mostrarNumeroRegistro(values)}
+                        />
                       </section>
                     </Collapse>
                   </>
@@ -572,6 +604,9 @@ export default () => {
                             fabricantesOptions,
                             arquivo,
                             fabricantesCount,
+                            undefined,
+                            mostrarBlocoFabricante(values),
+                            mostrarNumeroRegistro(values),
                           );
 
                           salvarRascunho(
@@ -629,6 +664,8 @@ export default () => {
                       arquivo,
                       fabricantesCount,
                       password,
+                      mostrarBlocoFabricante(values),
+                      mostrarNumeroRegistro(values),
                     );
 
                     assinarEnviarFichaTecnica(

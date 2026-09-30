@@ -25,6 +25,8 @@ interface CollapsesPadraoProps {
   proponente: TerceirizadaComEnderecoInterface;
   aprovaCollapse: () => void;
   reprovaCollapse: () => void;
+  mostrarBlocoFabricante: boolean;
+  mostrarNumeroRegistro?: boolean;
 }
 
 export default ({
@@ -39,6 +41,8 @@ export default ({
   proponente,
   aprovaCollapse,
   reprovaCollapse,
+  mostrarBlocoFabricante,
+  mostrarNumeroRegistro = true,
 }: CollapsesPadraoProps) => {
   return (
     <Collapse
@@ -55,6 +59,7 @@ export default ({
         <FormProponente proponente={proponente} />
       </section>
 
+      {mostrarBlocoFabricante && (
       <section id="fabricante_envasador">
         {!conferidos.fabricante_envasador && (
           <div className="row campo-correcao mb-4">
@@ -85,6 +90,7 @@ export default ({
           />
         )}
       </section>
+      )}
 
       <section id="detalhes_produto">
         {!conferidos.detalhes_produto && (
@@ -98,7 +104,11 @@ export default ({
             </div>
           </div>
         )}
-        <FormPereciveisENaoPereciveis values={values} desabilitar={true} />
+        <FormPereciveisENaoPereciveis
+          values={values}
+          desabilitar={true}
+          mostrarNumeroRegistro={mostrarNumeroRegistro}
+        />
         {!somenteLeitura && (
           <FormAprovacao
             name={"detalhes_produto"}

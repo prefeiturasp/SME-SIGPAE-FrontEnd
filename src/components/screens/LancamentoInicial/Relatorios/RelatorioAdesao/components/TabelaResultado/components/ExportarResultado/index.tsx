@@ -9,10 +9,10 @@ import {
 import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 import useView from "./view";
-import { Filtros } from "../../../../types";
+import { IFiltros } from "../../../../types";
 
 type Props = {
-  params: Filtros;
+  params: IFiltros;
   className: string;
 };
 

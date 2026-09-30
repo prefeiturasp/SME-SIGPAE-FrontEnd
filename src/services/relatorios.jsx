@@ -153,21 +153,12 @@ export const getDetalheKitLancheAvulso = (uuid, tipoSolicitacao, escola) => {
     });
 };
 
-export const getRelatorioProduto = ({ uuid, id_externo }) => {
+export const getRelatorioProduto = async ({ uuid }) => {
   const url = `${API_URL}/produtos/${uuid}/relatorio/`;
-  fetch(url, {
-    method: "GET",
+
+  return axios.get(url, {
     headers: authToken,
-    responseType: "blob",
-  })
-    .then((response) => response.blob())
-    .then((data) => {
-      let a = document.createElement("a");
-      const fileURL = URL.createObjectURL(data);
-      a.href = fileURL;
-      a.download = `relatorio_produto_${id_externo}.pdf`;
-      a.click();
-    });
+  });
 };
 
 export const getRelatorioProdutoHistorico = async ({ uuid }) => {

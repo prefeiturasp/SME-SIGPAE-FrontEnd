@@ -40,17 +40,6 @@ jest.mock(
   },
 );
 
-jest.mock(
-  "../../../components/RelatorioProduto/components/corpoRelatorio/index_development",
-  () => {
-    return function CorpoRelatorioDesenvolvimento(props) {
-      mockCorpoRelatorioDesenvolvimento(props);
-
-      return <div data-testid="corpo-relatorio-desenvolvimento" />;
-    };
-  },
-);
-
 jest.mock("antd", () => ({
   Spin: ({ tip, children }) => (
     <div data-testid="spin">

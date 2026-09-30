@@ -238,7 +238,7 @@ export const Recorrencia = ({
 
     const totalJaAdicionado = (values.quantidades_periodo ?? []).reduce(
       (acc, qp) => {
-        if (!qp || !qp.numero_alunos) return acc;
+        if (!qp.numero_alunos) return acc;
         return acc + Number(qp.numero_alunos);
       },
       0,
@@ -265,13 +265,11 @@ export const Recorrencia = ({
       (p) => p.uuid === values.periodo_escolar,
     );
 
-    return periodoRegular
-      ? composeValidators(
-          naoPodeSerZero,
-          numericInteger,
-          maxValue(periodoRegular.maximo_alunos),
-        )
-      : null;
+    return composeValidators(
+      naoPodeSerZero,
+      numericInteger,
+      maxValue(periodoRegular?.maximo_alunos),
+    );
   };
 
   const optionsTiposAlimentacao = () => {
@@ -279,9 +277,7 @@ export const Recorrencia = ({
       values.periodo_escolar &&
       agregarDefault(
         periodos.find((p) => p.uuid === values.periodo_escolar)
-          ? periodos.find((p) => p.uuid === values.periodo_escolar)
-              .tipos_alimentacao
-          : [],
+          .tipos_alimentacao,
       );
     const alimentacaoLanche4h = tiposDeAlimentacao?.find(
       (tipoAlimentacao) => tipoAlimentacao.nome === "Lanche 4h",
@@ -407,32 +403,23 @@ export const RecorrenciaTabela = ({ form, values, periodos }) => {
   }, []);
 
   const getAlimentacoesTabelaRecorrencia = (values, indice, periodos) => {
-    let alimentacoes = "";
+    const periodo = periodos.find(
+      (p) => p.uuid === values.quantidades_periodo[indice].periodo_escolar,
+    );
+    let alimentacoes = periodo?.tipos_alimentacao
+      ?.filter((t) =>
+        values.quantidades_periodo[indice].tipos_alimentacao.includes(t.uuid),
+      )
+      .map((t) => t.nome)
+      .join(", ");
 
-    if (
-      values.quantidades_periodo[indice].tipos_alimentacao &&
-      values.quantidades_periodo[indice].periodo_escolar
-    ) {
-      const periodo = periodos.find(
-        (p) => p.uuid === values.quantidades_periodo[indice].periodo_escolar,
-      );
-      alimentacoes = periodo?.tipos_alimentacao
-        .filter((t) =>
+    if (!alimentacoes) {
+      alimentacoes = tiposDeAlimentacao
+        ?.filter((t) =>
           values.quantidades_periodo[indice].tipos_alimentacao.includes(t.uuid),
         )
         .map((t) => t.nome)
         .join(", ");
-
-      if (!alimentacoes) {
-        alimentacoes = tiposDeAlimentacao
-          ?.filter((t) =>
-            values.quantidades_periodo[indice].tipos_alimentacao.includes(
-              t.uuid,
-            ),
-          )
-          .map((t) => t.nome)
-          .join(", ");
-      }
     }
 
     return alimentacoes;

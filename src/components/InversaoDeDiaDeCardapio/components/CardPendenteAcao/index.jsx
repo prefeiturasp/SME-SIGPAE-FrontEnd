@@ -3,7 +3,7 @@ import { Collapse } from "react-collapse";
 import { Link } from "react-router-dom";
 import { INVERSAO_CARDAPIO, RELATORIO } from "../../../../configs/constants";
 import { talvezPluralizar } from "../../../../helpers/utilities";
-import { calcularNumeroDeEscolasUnicas } from "./helper";
+import { calcularNumeroDeEscolasUnicas } from "src/helpers/utilities";
 import { ToggleExpandir } from "../../../Shareable/ToggleExpandir";
 
 export class CardInversaoPendenciaAprovacao extends Component {
@@ -69,10 +69,10 @@ export class CardInversaoPendenciaAprovacao extends Component {
                   {`
                   ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "escola"
+                    "escola",
                   )} ${talvezPluralizar(
                     calcularNumeroDeEscolasUnicas(pedidos),
-                    "solicitante"
+                    "solicitante",
                   )}
                   `}
                 </span>

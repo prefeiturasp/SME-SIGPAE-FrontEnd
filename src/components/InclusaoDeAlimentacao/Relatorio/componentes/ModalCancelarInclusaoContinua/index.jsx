@@ -49,7 +49,7 @@ export const ModalCancelarInclusaoContinua = ({ ...props }) => {
       } else {
         toastSuccess("Solicitação cancelada com sucesso!");
       }
-      if (loadSolicitacao) loadSolicitacao(uuid, tipoSolicitacao);
+      loadSolicitacao(uuid, tipoSolicitacao);
     } else {
       closeModal();
       toastError(resp.data.detail);

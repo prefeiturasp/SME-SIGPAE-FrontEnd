@@ -45,6 +45,8 @@ import {
   carregarFabricantes,
   carregarUnidadesMedida,
   cepCalculator,
+  exibirBlocoFabricante,
+  exibirNumeroRegistro,
   formataPayloadCorrecaoFichaTecnica,
 } from "../../helpers";
 
@@ -113,18 +115,22 @@ export default () => {
     })();
   }, []);
 
-  const obterCollapseConfigsFLV = () => [
+  const obterCollapseConfigsFLV = (mostrarBlocoFabricante: boolean) => [
     {
       titulo: <span className="verde-escuro">Proponente</span>,
     },
-    {
-      titulo: (
-        <span className="verde-escuro">
-          Fabricante, Produtor, Envasador ou Distribuidor
-        </span>
-      ),
-      tag: true,
-    },
+    ...(mostrarBlocoFabricante
+      ? [
+          {
+            titulo: (
+              <span className="verde-escuro">
+                Fabricante, Produtor, Envasador ou Distribuidor
+              </span>
+            ),
+            tag: true,
+          },
+        ]
+      : []),
     {
       titulo: <span className="verde-escuro">Detalhes do Produto</span>,
       tag: true,
@@ -215,6 +221,14 @@ export default () => {
               const ehFLV =
                 ficha.categoria === "FLV" &&
                 ficha.tipo_entrega === "PONTO_A_PONTO";
+              const mostrarBlocoFabricante =
+                exibirBlocoFabricante(ficha) ||
+                conferidos.fabricante_envasador === false;
+              const mostrarNumeroRegistro = exibirNumeroRegistro({
+                categoria: ficha.categoria,
+                tipo_entrega: ficha.tipo_entrega,
+                numero_registro: ficha.numero_registro,
+              });
 
               return (
                 <form onSubmit={handleSubmit}>
@@ -301,7 +315,11 @@ export default () => {
                       idCollapse={idCollapse}
                       collapse={collapse}
                       setCollapse={setCollapse}
-                      collapseConfigs={obterCollapseConfigsFLV()}
+                      collapseConfigs={obterCollapseConfigsFLV(
+                        mostrarBlocoFabricante,
+                      )}
+                      mostrarBlocoFabricante={mostrarBlocoFabricante}
+                      mostrarNumeroRegistro={mostrarNumeroRegistro}
                       conferidos={conferidos}
                       ficha={ficha}
                       values={values}
@@ -1203,6 +1221,7 @@ export default () => {
                         ficha.categoria === "PERECIVEIS",
                         password,
                         ehFLV,
+                        mostrarNumeroRegistro,
                       );
 
                       assinarCorrigirFichaTecnica(

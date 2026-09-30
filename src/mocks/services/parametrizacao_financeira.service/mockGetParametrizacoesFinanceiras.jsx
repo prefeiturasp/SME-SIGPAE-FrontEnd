@@ -31,6 +31,7 @@ export const mockParametrizacoesFinanceiras = {
       uuid: "85271a47-d1cd-4416-96bb-960a1c9895ee",
       data_inicial: "02/12/2025",
       data_final: null,
+      vigente: true,
       legenda:
         "Fonte: Relatório de Medição Inicial do Serviço de Alimentação e Nutrição Escolar realizada pela direção das unidades educacionais, conforme disposto no edital Pregão XXX/XXX e nas Portarias Intersecretariais SMG/SME n° 005/2006 e 001/2008.",
     },
@@ -57,6 +58,7 @@ export const mockParametrizacoesFinanceiras = {
       uuid: "26c0dd02-a62e-490e-a8d4-eb0b2233bd65",
       data_inicial: "01/12/2025",
       data_final: null,
+      vigente: false,
       legenda:
         "Fonte: Relatório de Medição Inicial do Serviço de Alimentação e Nutrição Escolar realizada pela direção das unidades educacionais, conforme disposto no edital Pregão XXX/XXX e nas Portarias Intersecretariais SMG/SME n° 005/2006 e 001/2008.",
     },
@@ -90,6 +92,7 @@ export const mockParametrizacoesFinanceiras = {
       },
       data_inicial: "20/02/2026",
       data_final: "31/03/2026",
+      vigente: false,
       legenda:
         "Fonte: Relatório de Medição Inicial do Serviço de Alimentação e Nutrição Escolar realizada pela direção das unidades educacionais, conforme disposto no edital Pregão XXX/XXX e nas Portarias Intersecretariais SMG/SME n° 005/2006 e 001/2008.",
     },

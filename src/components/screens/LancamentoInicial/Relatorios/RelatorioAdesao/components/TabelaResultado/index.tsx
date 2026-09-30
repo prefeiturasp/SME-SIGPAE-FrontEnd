@@ -5,7 +5,14 @@ import { TotalAlimentacao } from "./components/TabelaResultadoPeriodo/types";
 import { Props } from "./types";
 
 export default (props: Props) => {
-  const { params, filtros, resultado, escola, exibirTitulo } = props;
+  const {
+    params,
+    filtros,
+    resultado,
+    escola,
+    resultadoIndividual,
+    exibirTitulo,
+  } = props;
   const temFiltros = filtros && Object.keys(filtros).length > 0;
   const resultadoVazio = resultado && Object.keys(resultado).length === 0;
 
@@ -25,6 +32,21 @@ export default (props: Props) => {
     );
   };
 
+  const temIdentificacaoIndividual = Boolean(
+    resultadoIndividual?.data || resultadoIndividual?.tipo_unidade,
+  );
+
+  const renderIdentificacaoResultadoIndividual = () => {
+    if (!temIdentificacaoIndividual) {
+      return null;
+    }
+    const partes = [
+      resultadoIndividual.tipo_unidade,
+      `Dia ${resultadoIndividual.data}`,
+    ].filter(Boolean);
+    return <b className="text-dark"> | {partes.join(" | ")}</b>;
+  };
+
   return (
     <div className="container-fluid mt-4">
       <h2 className="text-start texto-simples-verde">
@@ -36,27 +58,33 @@ export default (props: Props) => {
             {filtros.lotes?.length > 0 && (
               <b className="text-dark"> | {filtros.lotes.join(", ")}</b>
             )}
-            {filtros.tipos_unidades?.length > 0 && (
-              <b className="text-dark">
-                {" "}
-                | {filtros.tipos_unidades.join(", ")}
-              </b>
-            )}
-            {escola && (
-              <b className="text-dark">
-                {" "}
-                | {escola.codigo_eol} - {escola.nome}
-              </b>
-            )}
-            {filtros.unidade_educacional?.length > 0 && !escola && (
-              <b className="text-dark">
-                {" "}
-                | {filtros.unidade_educacional.join(", ")}
-              </b>
-            )}
-            {renderPeriodoLancamento(
-              filtros.periodo_lancamento_de,
-              filtros.periodo_lancamento_ate,
+            {temIdentificacaoIndividual ? (
+              renderIdentificacaoResultadoIndividual()
+            ) : (
+              <>
+                {filtros.tipos_unidades?.length > 0 && (
+                  <b className="text-dark">
+                    {" "}
+                    | {filtros.tipos_unidades.join(", ")}
+                  </b>
+                )}
+                {escola && (
+                  <b className="text-dark">
+                    {" "}
+                    | {escola.codigo_eol} - {escola.nome}
+                  </b>
+                )}
+                {filtros.unidade_educacional?.length > 0 && !escola && (
+                  <b className="text-dark">
+                    {" "}
+                    | {filtros.unidade_educacional.join(", ")}
+                  </b>
+                )}
+                {renderPeriodoLancamento(
+                  filtros.periodo_lancamento_de,
+                  filtros.periodo_lancamento_ate,
+                )}
+              </>
             )}
           </>
         )}

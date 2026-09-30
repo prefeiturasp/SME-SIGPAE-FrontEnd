@@ -6,17 +6,32 @@ import { usuarioEhEscolaTerceirizadaQualquerPerfil } from "src/helpers/utilities
 
 import {
   RelatorioAdesaoEscola,
+  RelatorioAdesaoEscolaResultado,
   RelatorioAdesaoPaginadoResponse,
   RelatorioAdesaoResponse,
+  RelatorioAdesaoResultadoIndividual,
 } from "src/services/medicaoInicial/relatorio.interface";
 import RelatorioService from "src/services/medicaoInicial/relatorio.service";
 
-import { IFiltros } from "./types";
+import {
+  devePaginarRelatorioAdesao,
+  montaIdentificacaoResultadoIndividual,
+  montaParamsRelatorioAdesao,
+} from "./helpers";
+import { IFiltros, IResultadoIndividual } from "./types";
 
 type Paginacao = {
   count: number;
   page_size: number;
 };
+
+const isResultadoIndividual = (
+  item:
+    | RelatorioAdesaoEscolaResultado
+    | RelatorioAdesaoResultadoIndividual
+    | undefined,
+): item is RelatorioAdesaoResultadoIndividual =>
+  Boolean(item && "data" in item);
 
 export default () => {
   const [loading, setLoading] = useState(false);
@@ -28,34 +43,44 @@ export default () => {
     useState<IFiltros | null>(null);
   const [resultado, setResultado] = useState<RelatorioAdesaoResponse>(null);
   const [escola, setEscola] = useState<RelatorioAdesaoEscola | null>(null);
+  const [resultadoIndividual, setResultadoIndividual] =
+    useState<IResultadoIndividual | null>(null);
   const [paginacao, setPaginacao] = useState<Paginacao | null>(null);
   const [paginaAtual, setPaginaAtual] = useState(1);
 
   const buscaRelatorioAdesao = async (values: IFiltros, page: number) => {
     setLoading(true);
-    const temFiltroEscola = values.unidade_educacional?.length > 0;
-    const response = await RelatorioService.getRelatorioAdesao({
-      mes_ano: values.mes,
-      lotes: values.lotes,
-      tipos_unidades: values.tipos_unidades,
-      escola__uuid: values.unidade_educacional,
-      periodos_escolares: values.periodos,
-      tipos_alimentacao: values.tipos_alimentacao,
-      periodo_lancamento_de: values.periodo_lancamento_de,
-      periodo_lancamento_ate: values.periodo_lancamento_ate,
-      ...(temFiltroEscola ? { page } : {}),
-    });
+    const devePaginar = devePaginarRelatorioAdesao(values);
+    const response = await RelatorioService.getRelatorioAdesao(
+      montaParamsRelatorioAdesao(values, devePaginar ? page : undefined),
+    );
     if (response.status === HTTP_STATUS.OK) {
-      if (temFiltroEscola) {
+      if (devePaginar) {
         const data =
           response.data as unknown as RelatorioAdesaoPaginadoResponse;
         const resultadoPagina = data.results?.[0];
-        setEscola(resultadoPagina?.escola ?? null);
+        if (values.resultado_individual_por_data) {
+          setEscola(null);
+          setResultadoIndividual(
+            montaIdentificacaoResultadoIndividual(
+              isResultadoIndividual(resultadoPagina)
+                ? resultadoPagina
+                : undefined,
+              filtrosSelecionados?.tipos_unidades,
+            ),
+          );
+        } else {
+          setResultadoIndividual(null);
+          setEscola(
+            (resultadoPagina as RelatorioAdesaoEscolaResultado)?.escola ?? null,
+          );
+        }
         setResultado(resultadoPagina?.resultados ?? {});
         setPaginacao({ count: data.count, page_size: data.page_size });
         setPaginaAtual(page);
       } else {
         setEscola(null);
+        setResultadoIndividual(null);
         setPaginacao(null);
         setResultado(response.data as unknown as RelatorioAdesaoResponse);
       }
@@ -74,6 +99,13 @@ export default () => {
     }
     if (!values.periodo_lancamento_de && values.periodo_lancamento_ate) {
       toastError("Se preencher o campo `Até`, `De` é obrigatório");
+      return;
+    }
+    if (
+      values.resultado_individual_por_data &&
+      (!values.tipos_unidades || values.tipos_unidades.length === 0)
+    ) {
+      toastError("O campo Tipo de Unidade é obrigatório");
       return;
     }
     setFiltros(filtrosSelecionados);
@@ -103,6 +135,7 @@ export default () => {
     }
     setResultado(null);
     setEscola(null);
+    setResultadoIndividual(null);
     setPaginacao(null);
     setExibirTitulo(false);
   };
@@ -126,6 +159,7 @@ export default () => {
     filtros,
     resultado,
     escola,
+    resultadoIndividual,
     paginacao,
     paginaAtual,
     filtrar,
