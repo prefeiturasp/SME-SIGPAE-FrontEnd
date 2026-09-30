@@ -1,25 +1,25 @@
 import "@testing-library/jest-dom";
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { mockGetDadosParametrizacaoFinanceira } from "src/mocks/services/parametrizacao_financeira.service/mockGetDadosParametrizacaoFinanceira";
+import { mockParametrizacoesFinanceiras } from "src/mocks/services/parametrizacao_financeira.service/mockGetParametrizacoesFinanceiras";
 import ModalConflito from "../../components/ModalConflito";
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useSearchParams: () => [new URLSearchParams()],
-}));
 
 describe("Testes comportamento ModalConflito - Parametrização Financeira", () => {
   const mockSetConflito = jest.fn();
   const mockOnContinuar = jest.fn();
-  const uuid = "123e4567-e89b-12d3-a456-426614174000";
+  const uuid = mockGetDadosParametrizacaoFinanceira.uuid;
 
-  const setup = async ({ conflito } = {}) => {
+  const setup = async ({ conflito, rota = "/" } = {}) => {
     await act(async () => {
       render(
-        <ModalConflito
-          conflito={conflito}
-          setConflito={mockSetConflito}
-          onContinuar={mockOnContinuar}
-        />,
+        <MemoryRouter initialEntries={[rota]}>
+          <ModalConflito
+            conflito={conflito}
+            setConflito={mockSetConflito}
+            onContinuar={mockOnContinuar}
+          />
+        </MemoryRouter>,
       );
     });
   };
@@ -99,6 +99,38 @@ describe("Testes comportamento ModalConflito - Parametrização Financeira", () 
     fireEvent.click(botao);
 
     expect(mockOnContinuar).not.toHaveBeenCalled();
+  });
+
+  it("oculta a opção de novos valores quando a tela veio de uma cópia", async () => {
+    await setup({
+      conflito: uuid,
+      rota: `/?uuid_origem=${mockParametrizacoesFinanceiras.results[1].uuid}`,
+    });
+
+    expect(
+      screen.queryByText(
+        "Encerrar parametrização anterior e cadastrar novos valores.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("fecha o modal e segue sem callback quando onContinuar não é informado", async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ModalConflito conflito={uuid} setConflito={mockSetConflito} />
+        </MemoryRouter>,
+      );
+    });
+
+    fireEvent.click(
+      screen.getByText("Manter parametrização anterior vigente."),
+    );
+    fireEvent.click(screen.getByText("Continuar"));
+    expect(mockSetConflito).toHaveBeenCalledWith(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(mockSetConflito).toHaveBeenCalledWith(null);
   });
 
   it("não deve renderizar conteúdo quando não houver conflito", async () => {

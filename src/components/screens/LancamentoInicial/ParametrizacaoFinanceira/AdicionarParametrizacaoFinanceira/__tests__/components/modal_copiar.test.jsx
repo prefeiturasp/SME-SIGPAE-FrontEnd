@@ -51,6 +51,13 @@ describe("Testes comportamento ModalCopiar - Parametrização Financeira", () =>
     expect(setShowModal).toHaveBeenCalledWith(false);
   });
 
+  it("fecha o modal pelo botão de fechar", () => {
+    setup();
+
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(setShowModal).toHaveBeenCalledWith(false);
+  });
+
   it("não deve renderizar quando showModal=false", () => {
     setup({ showModal: false });
 
