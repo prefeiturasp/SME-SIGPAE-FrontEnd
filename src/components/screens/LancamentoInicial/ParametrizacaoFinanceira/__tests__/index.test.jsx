@@ -204,3 +204,76 @@ describe("Testes da interface de Listagem - Parametrização Financeira", () => 
     });
   });
 });
+
+describe("Fluxos complementares da listagem - Parametrização Financeira", () => {
+  const renderLista = async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosSuperUsuarioMedicao,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <ParametrizacaoFinanceira />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  };
+
+  afterEach(() => {
+    cleanup();
+    mock.reset();
+  });
+
+  it("mostra o erro da API e o estado vazio", async () => {
+    mock
+      .onGet("/medicao-inicial/parametrizacao-financeira/")
+      .reply(500, { detail: "falha" });
+    await renderLista();
+
+    expect(
+      await screen.findByText(
+        "Erro ao carregar parametrizações financeiras. Tente novamente mais tarde.",
+      ),
+    ).toBeInTheDocument();
+
+    cleanup();
+    mock.reset();
+    mock.onGet("/medicao-inicial/parametrizacao-financeira/").reply(200, {
+      count: 0,
+      page_size: 10,
+      results: [],
+    });
+    await renderLista();
+    expect(
+      await screen.findByText("Nenhum resultado encontrado"),
+    ).toBeInTheDocument();
+  });
+
+  it("pagina os resultados e navega para o cadastro", async () => {
+    mock.onGet("/medicao-inicial/parametrizacao-financeira/").reply(200, {
+      ...mockParametrizacoesFinanceiras,
+      count: 30,
+      page_size: 10,
+    });
+    await renderLista();
+
+    await screen.findByText("Parametrizações Cadastradas");
+    const paginaDois = document.querySelector(".ant-pagination-item-2");
+    fireEvent.click(paginaDois);
+
+    await waitFor(() => {
+      expect(paginaDois).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText("Adicionar Parametrização"));
+  });
+});

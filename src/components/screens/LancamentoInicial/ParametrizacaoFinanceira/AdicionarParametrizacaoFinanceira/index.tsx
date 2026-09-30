@@ -63,12 +63,8 @@ export default () => {
   const uuidNovaParametrizacao = searchParams.get("nova_uuid");
   const uuidOrigem = searchParams.get("uuid_origem");
 
-  const validaTabelas = (tabelas: TabelaParametrizacao[] | object): boolean => {
-    if (!tabelas) return false;
-    if (Array.isArray(tabelas)) {
-      return tabelas.every((tabela) => tabela.valores.length > 0);
-    }
-  };
+  const validaTabelas = (tabelas: TabelaParametrizacao[]): boolean =>
+    tabelas.every((tabela) => tabela.valores.length > 0);
 
   const onSubmit = async (values: ParametrizacaoFinanceiraPayload) => {
     try {
@@ -115,10 +111,9 @@ export default () => {
 
   const onCancelar = async () => {
     try {
-      if (uuidNovaParametrizacao)
-        await ParametrizacaoFinanceiraService.deleteParametrizacaoFinanceira(
-          uuidNovaParametrizacao,
-        );
+      await ParametrizacaoFinanceiraService.deleteParametrizacaoFinanceira(
+        uuidNovaParametrizacao,
+      );
       navigate(`/${MEDICAO_INICIAL}/${PARAMETRIZACAO_FINANCEIRA}/`);
     } catch {
       toastError("Ocorreu um erro inesperado ao cancelar a parametrização.");
