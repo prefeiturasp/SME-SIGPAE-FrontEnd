@@ -48,6 +48,7 @@ export interface RelatorioAdesaoPaginadoResponse {
   previous: string | null;
   count: number;
   page_size: number;
+  possui_resultados: boolean;
   results: Array<
     RelatorioAdesaoEscolaResultado | RelatorioAdesaoResultadoIndividual
   >;

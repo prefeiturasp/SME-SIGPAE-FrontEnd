@@ -21,6 +21,7 @@ import { mockGetGrupoUnidadeEscolar } from "src/mocks/services/escola.service/mo
 import { mockMesesAnosRelatorioAdesao } from "src/mocks/services/medicaoInicial/dashboard.service/mesesAnosRelatorioAdesao";
 import { mockRelatorioAdesao10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesao10a20";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
+import { mockRelatorioAdesaoPaginado10a20Dezenbro2023 } from "src/mocks/services/medicaoInicial/relatorio.service/Dezembro2023/relatorioAdesaoPaginado";
 import mock from "src/services/_mock";
 
 describe("Teste Relatório de Adesão - Visão CODAE", () => {
@@ -365,5 +366,51 @@ describe("Teste Relatório de Adesão - Visão CODAE", () => {
         screen.getByText("Erro ao exportar pdf. Tente novamente mais tarde."),
       ).toBeInTheDocument();
     });
+  });
+
+  it("Desabilita botões de exportação quando não há resultados", async () => {
+    const selectMesReferencia = screen.getByTestId("select-mes-referencia");
+    const selectElementMesReferencia =
+      selectMesReferencia.querySelector("select");
+    fireEvent.change(selectElementMesReferencia, {
+      target: { value: "12_2023" },
+    });
+
+    const selectUnidadeEducacional = screen.getByTestId(
+      "select-unidade-educacional",
+    );
+    const selectControlUnidadeEducacional = within(
+      selectUnidadeEducacional,
+    ).getByRole("combobox");
+    fireEvent.mouseDown(selectControlUnidadeEducacional);
+
+    const optionUnidadeEducacional = await screen.findByText(
+      "015423 - EMEF PRESTES MAIA - LOTE 13",
+    );
+    fireEvent.click(optionUnidadeEducacional);
+
+    mock
+      .onPost("/medicao-inicial/relatorios/relatorio-adesao/")
+      .reply(200, mockRelatorioAdesaoPaginado10a20Dezenbro2023);
+
+    const botaoFiltrar = screen.getByText("Filtrar").closest("button");
+    fireEvent.click(botaoFiltrar);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Adesão das Alimentações Servidas"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("DEZEMBRO 2023")).toBeInTheDocument();
+    });
+
+    const botaoExportarXLSX = screen
+      .getByText("Exportar em XLSX")
+      .closest("button");
+    const botaoExportarPDF = screen
+      .getByText("Exportar em PDF")
+      .closest("button");
+
+    expect(botaoExportarXLSX).toBeDisabled();
+    expect(botaoExportarPDF).toBeDisabled();
   });
 });
