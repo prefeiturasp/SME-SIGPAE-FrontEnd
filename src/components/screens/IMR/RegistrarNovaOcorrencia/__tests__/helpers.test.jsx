@@ -1,4 +1,4 @@
-import { formataPayload } from "../helpers";
+import { formataPayload, getIntervaloMes } from "../helpers";
 
 describe("Helpers formataPayload - Registrar Nova Corrência", () => {
   it("deve formatar o payload corretamente com ocorrências e solicitacao_medicao_inicial", () => {
@@ -121,5 +121,29 @@ describe("Helpers formataPayload - Registrar Nova Corrência", () => {
 
     expect(values).toEqual(valuesOriginal);
     expect(values.solicitacao_medicao_inicial).toBeUndefined();
+  });
+});
+
+describe("Helpers getIntervaloMes - Registrar Nova Ocorrência", () => {
+  it("retorna o primeiro e o último dia do mês informado", () => {
+    const { minDate, maxDate } = getIntervaloMes("6", "2024");
+
+    expect(minDate).toEqual(new Date(2024, 5, 1));
+    expect(maxDate).toEqual(new Date(2024, 5, 30));
+  });
+
+  it("considera mês de fevereiro em ano bissexto", () => {
+    const { minDate, maxDate } = getIntervaloMes("02", "2024");
+
+    expect(minDate).toEqual(new Date(2024, 1, 1));
+    expect(maxDate).toEqual(new Date(2024, 1, 29));
+  });
+
+  it.each([
+    ["mês ausente", undefined, "2024"],
+    ["ano ausente", "6", undefined],
+    ["mês não numérico", "abc", "2024"],
+  ])("retorna intervalo nulo quando %s", (_cenario, mes, ano) => {
+    expect(getIntervaloMes(mes, ano)).toEqual({ minDate: null, maxDate: null });
   });
 });
