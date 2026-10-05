@@ -81,6 +81,7 @@ export default () => {
         setPaginacao({ count: data.count, page_size: data.page_size });
         setPaginaAtual(page);
       } else {
+        setHaAlgumaAdesao(true);
         setEscola(null);
         setResultadoIndividual(null);
         setPaginacao(null);
