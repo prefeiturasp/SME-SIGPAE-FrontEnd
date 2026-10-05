@@ -44,6 +44,8 @@ const mockLocation = {
   state: {
     editalUuid: EDITAL_UUID,
     solicitacaoMedicaoInicialUuid: SOLICITACAO_UUID,
+    mes: "6",
+    ano: "2024",
   },
 };
 
@@ -179,6 +181,7 @@ jest.mock("../components/ModalSalvar", () => ({
 }));
 
 jest.mock("../helpers", () => ({
+  ...jest.requireActual("../helpers"),
   formataPayload: (values: Record<string, any>, solicitacaoUuid: string) =>
     mockFormataPayload(values, solicitacaoUuid),
 }));
@@ -442,6 +445,34 @@ describe("RegistrarNovaOcorrencia", () => {
         name: "Adicionar resposta",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("limita a data da ocorrência ao mês e ano da medição", async () => {
+    renderizarComponente();
+
+    await selecionarTipoOcorrencia();
+
+    await waitFor(() => {
+      expect(mockSeletorDeDatas).toHaveBeenCalled();
+    });
+
+    const ultimaChamada =
+      mockSeletorDeDatas.mock.calls[
+        mockSeletorDeDatas.mock.calls.length - 1
+      ][0];
+
+    const hoje = new Date();
+    const ontem = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth(),
+      hoje.getDate() - 1,
+    );
+    const ultimoDiaMes = new Date(2024, 5, 30);
+
+    expect(ultimaChamada.minDate).toEqual(new Date(2024, 5, 1));
+    expect(ultimaChamada.maxDate).toEqual(
+      ontem < ultimoDiaMes ? ontem : ultimoDiaMes,
+    );
   });
 
   it("monta a escola selecionada com os dados do contexto e do edital", async () => {

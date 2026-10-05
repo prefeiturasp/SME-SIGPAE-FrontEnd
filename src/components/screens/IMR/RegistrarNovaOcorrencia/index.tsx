@@ -37,7 +37,7 @@ import { ModalCancelaPreenchimento } from "./components/ModalCancelaPreenchiment
 import { ModalSalvar } from "./components/ModalSalvar";
 import { SeletorCategoria } from "./components/SeletorCategoria";
 import { SeletorTipoOcorrencia } from "./components/SeletorTipoOcorrencia";
-import { formataPayload } from "./helpers";
+import { formataPayload, getIntervaloMes } from "./helpers";
 import { RegistrarNovaOcorrenciaFormInterface } from "./interfaces";
 import "./style.scss";
 
@@ -64,6 +64,11 @@ export const RegistrarNovaOcorrencia = () => {
   const location: Location<any> = useLocation();
   const navigate: NavigateFunction = useNavigate();
 
+  const { minDate, maxDate } = getIntervaloMes(
+    location.state?.mes,
+    location.state?.ano,
+  );
+
   const getTiposOcorrenciaPorEditalNutrisupervisaoAsync =
     async (): Promise<void> => {
       setLoadingTiposOcorrencia(true);
@@ -87,13 +92,13 @@ export const RegistrarNovaOcorrencia = () => {
                 self.findIndex(
                   (tipoOcorrencia) =>
                     tipoOcorrencia.nome === value.nome &&
-                    tipoOcorrencia.uuid === value.uuid
-                )
-            )
+                    tipoOcorrencia.uuid === value.uuid,
+                ),
+            ),
         );
       } else {
         setErroAPI(
-          "Erro ao carregar tipos de ocorrência do edital da unidade educacional. Tente novamente mais tarde."
+          "Erro ao carregar tipos de ocorrência do edital da unidade educacional. Tente novamente mais tarde.",
         );
       }
       setLoadingTiposOcorrencia(false);
@@ -113,7 +118,7 @@ export const RegistrarNovaOcorrencia = () => {
     }
   }, [meusDados]);
   const onSubmit = async (
-    values: RegistrarNovaOcorrenciaFormInterface
+    values: RegistrarNovaOcorrenciaFormInterface,
   ): Promise<void> => {
     if (!showModalSalvar) {
       setShowModalSalvar(true);
@@ -121,14 +126,14 @@ export const RegistrarNovaOcorrencia = () => {
     }
 
     const response = await createFormularioDiretor(
-      formataPayload(values, location.state?.solicitacaoMedicaoInicialUuid)
+      formataPayload(values, location.state?.solicitacaoMedicaoInicialUuid),
     );
     if (response.status === HTTP_STATUS.CREATED) {
       toastSuccess("Registro de Ocorrência realizado com sucesso!");
       navigate(-1);
     } else {
       toastError(
-        "Erro ao criar Registro de Ocorrência. Tente novamente mais tarde."
+        "Erro ao criar Registro de Ocorrência. Tente novamente mais tarde.",
       );
     }
   };
@@ -229,6 +234,8 @@ export const RegistrarNovaOcorrencia = () => {
                               form={form}
                               ehDataOcorrencia
                               somenteLeitura={false}
+                              minDate={minDate}
+                              maxDate={maxDate || undefined}
                             />
                           </div>
                         )}
@@ -248,7 +255,7 @@ export const RegistrarNovaOcorrencia = () => {
                                         onClick={() =>
                                           excluiGrupoDeResposta(
                                             form,
-                                            indexFieldArray
+                                            indexFieldArray,
                                           )
                                         }
                                         type={BUTTON_TYPE.BUTTON}
@@ -278,7 +285,7 @@ export const RegistrarNovaOcorrencia = () => {
                                           />
                                         </div>
                                       );
-                                    }
+                                    },
                                   )
                                 ) : (
                                   <div
