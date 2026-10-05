@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Field } from "react-final-form";
+import moment from "moment";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { InputText } from "src/components/Shareable/Input/InputText";
 import { required } from "src/helpers/fieldValidators";
@@ -100,6 +101,12 @@ export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
     form.change(name, newDates);
   };
 
+  const getDatasBloqueadas = (indexAtual: number): Date[] =>
+    dates
+      .filter((data, index) => index !== indexAtual && data)
+      .map((data) => moment(data, "DD/MM/YYYY", true).toDate())
+      .filter((data) => !Number.isNaN(data.getTime()));
+
   return (
     <>
       {Array.from({ length: dates.length }, (_, index) => index).map(
@@ -113,6 +120,11 @@ export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
                 tabindex="-1"
                 minDate={minDate !== undefined ? minDate : null}
                 maxDate={maxDate}
+                excludeDates={
+                  ehDataOcorrencia
+                    ? getDatasBloqueadas(_dateinputIndex)
+                    : undefined
+                }
                 required
                 disabled={somenteLeitura}
                 validate={required}
