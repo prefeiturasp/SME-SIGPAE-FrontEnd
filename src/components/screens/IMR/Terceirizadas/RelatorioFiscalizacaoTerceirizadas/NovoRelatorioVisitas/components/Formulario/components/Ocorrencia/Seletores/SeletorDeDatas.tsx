@@ -19,11 +19,21 @@ type SeletorDeDatasType = {
   form: FormApi<any, Partial<any>>;
   ehDataOcorrencia?: boolean;
   somenteLeitura?: boolean;
+  minDate?: Date | null;
+  maxDate?: Date | null;
 };
 
 export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
-  const { titulo, name, name_grupos, form, ehDataOcorrencia, somenteLeitura } =
-    props;
+  const {
+    titulo,
+    name,
+    name_grupos,
+    form,
+    ehDataOcorrencia,
+    somenteLeitura,
+    minDate,
+    maxDate,
+  } = props;
 
   const [dates, setDates] = useState<string[]>([""]);
 
@@ -52,7 +62,7 @@ export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
       for (let i = index; i < dates.length - 1; i += 1) {
         form.change(
           `${name}_${i}_${titulo}`,
-          form.getState().values[`${name}_${i + 1}_${titulo}`]
+          form.getState().values[`${name}_${i + 1}_${titulo}`],
         );
       }
       form.change(`${name}_${dates.length - 1}_${titulo}`, undefined);
@@ -66,14 +76,14 @@ export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
           `${key_name_grupos}[${index_name_grupos}].${key_data}_${i}_${titulo}`,
           form.getState().values[key_name_grupos][index_name_grupos][
             `${key_data}_${i + 1}_${titulo}`
-          ]
+          ],
         );
       }
       form.change(
         `${key_name_grupos}[${index_name_grupos}].${key_data}_${
           dates.length - 1
         }_${titulo}`,
-        undefined
+        undefined,
       );
     }
 
@@ -100,10 +110,9 @@ export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
                 component={InputComData}
                 label={titulo}
                 name={`${name}_${_dateinputIndex}_${titulo}`}
-                showMonthDropdown
-                showYearDropdown
                 tabindex="-1"
-                minDate={null}
+                minDate={minDate !== undefined ? minDate : null}
+                maxDate={maxDate}
                 required
                 disabled={somenteLeitura}
                 validate={required}
@@ -117,7 +126,7 @@ export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
               />
             </div>
           );
-        }
+        },
       )}
       {!somenteLeitura && (
         <div className="col-2 my-auto">

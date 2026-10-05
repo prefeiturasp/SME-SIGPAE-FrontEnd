@@ -45,3 +45,18 @@ export const formataPayload = (
 
   return values_;
 };
+
+export const getIntervaloMes = (
+  mes?: string,
+  ano?: string,
+): { minDate: Date | null; maxDate: Date | null } => {
+  const mesNumero = Number(mes);
+  const anoNumero = Number(ano);
+  if (!mes || !ano || Number.isNaN(mesNumero) || Number.isNaN(anoNumero)) {
+    return { minDate: null, maxDate: null };
+  }
+  return {
+    minDate: new Date(anoNumero, mesNumero - 1, 1),
+    maxDate: new Date(anoNumero, mesNumero, 0),
+  };
+};
