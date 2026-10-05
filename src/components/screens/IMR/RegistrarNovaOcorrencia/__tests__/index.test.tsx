@@ -461,8 +461,18 @@ describe("RegistrarNovaOcorrencia", () => {
         mockSeletorDeDatas.mock.calls.length - 1
       ][0];
 
+    const hoje = new Date();
+    const ontem = new Date(
+      hoje.getFullYear(),
+      hoje.getMonth(),
+      hoje.getDate() - 1,
+    );
+    const ultimoDiaMes = new Date(2024, 5, 30);
+
     expect(ultimaChamada.minDate).toEqual(new Date(2024, 5, 1));
-    expect(ultimaChamada.maxDate).toEqual(new Date(2024, 5, 30));
+    expect(ultimaChamada.maxDate).toEqual(
+      ontem < ultimoDiaMes ? ontem : ultimoDiaMes,
+    );
   });
 
   it("monta a escola selecionada com os dados do contexto e do edital", async () => {

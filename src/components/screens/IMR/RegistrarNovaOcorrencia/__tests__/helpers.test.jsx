@@ -125,15 +125,34 @@ describe("Helpers formataPayload - Registrar Nova Corrência", () => {
 });
 
 describe("Helpers getIntervaloMes - Registrar Nova Ocorrência", () => {
-  it("retorna o primeiro e o último dia do mês informado", () => {
-    const { minDate, maxDate } = getIntervaloMes("6", "2024");
+  it("retorna o primeiro e o último dia do mês quando ele já passou", () => {
+    const { minDate, maxDate } = getIntervaloMes(
+      "6",
+      "2024",
+      new Date(2026, 9, 5),
+    );
 
     expect(minDate).toEqual(new Date(2024, 5, 1));
     expect(maxDate).toEqual(new Date(2024, 5, 30));
   });
 
+  it("limita a data máxima ao dia anterior quando o mês é o corrente", () => {
+    const { minDate, maxDate } = getIntervaloMes(
+      "6",
+      "2024",
+      new Date(2024, 5, 10),
+    );
+
+    expect(minDate).toEqual(new Date(2024, 5, 1));
+    expect(maxDate).toEqual(new Date(2024, 5, 9));
+  });
+
   it("considera mês de fevereiro em ano bissexto", () => {
-    const { minDate, maxDate } = getIntervaloMes("02", "2024");
+    const { minDate, maxDate } = getIntervaloMes(
+      "02",
+      "2024",
+      new Date(2024, 3, 1),
+    );
 
     expect(minDate).toEqual(new Date(2024, 1, 1));
     expect(maxDate).toEqual(new Date(2024, 1, 29));
