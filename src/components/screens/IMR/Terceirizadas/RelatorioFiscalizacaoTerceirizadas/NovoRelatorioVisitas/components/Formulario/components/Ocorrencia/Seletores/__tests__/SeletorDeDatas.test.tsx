@@ -23,9 +23,16 @@ jest.mock("react-final-form", () => {
 jest.mock("src/components/Shareable/DatePicker", () => {
   const React = require("react");
 
+  const formatarData = (data) =>
+    `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(data.getDate()).padStart(2, "0")}`;
+
   return {
     InputComData: ({
       disabled,
+      excludeDates,
       form,
       indexTrash,
       inputOnChange,
@@ -45,6 +52,9 @@ jest.mock("src/components/Shareable/DatePicker", () => {
           label,
           React.createElement("input", {
             "aria-label": `${label} ${indexTrash + 1}`,
+            "data-exclude-dates": (excludeDates ?? [])
+              .map(formatarData)
+              .join(","),
             "data-max-date": String(maxDate),
             "data-min-date": String(minDate),
             "data-required": String(required),
@@ -167,6 +177,22 @@ describe("Seletor de datas do relatório de visitas", () => {
     expect(screen.getByLabelText(`${TITULO} 1`)).toHaveAttribute(
       "data-max-date",
       String(maxDate),
+    );
+  });
+
+  it("bloqueia nos demais campos as datas já selecionadas", () => {
+    const datasIniciais = ["10/09/2026", "11/09/2026"];
+    const form = criarFormulario({ estadoCampo: { value: datasIniciais } });
+
+    renderizarSeletor({ form });
+
+    expect(screen.getByLabelText(`${TITULO} 1`)).toHaveAttribute(
+      "data-exclude-dates",
+      "2026-09-11",
+    );
+    expect(screen.getByLabelText(`${TITULO} 2`)).toHaveAttribute(
+      "data-exclude-dates",
+      "2026-09-10",
     );
   });
 
