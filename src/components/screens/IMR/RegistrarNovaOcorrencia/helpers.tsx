@@ -49,14 +49,24 @@ export const formataPayload = (
 export const getIntervaloMes = (
   mes?: string,
   ano?: string,
+  dataReferencia: Date = new Date(),
 ): { minDate: Date | null; maxDate: Date | null } => {
   const mesNumero = Number(mes);
   const anoNumero = Number(ano);
   if (!mes || !ano || Number.isNaN(mesNumero) || Number.isNaN(anoNumero)) {
     return { minDate: null, maxDate: null };
   }
+
+  const minDate = new Date(anoNumero, mesNumero - 1, 1);
+  const ultimoDiaMes = new Date(anoNumero, mesNumero, 0);
+  const ontem = new Date(
+    dataReferencia.getFullYear(),
+    dataReferencia.getMonth(),
+    dataReferencia.getDate() - 1,
+  );
+
   return {
-    minDate: new Date(anoNumero, mesNumero - 1, 1),
-    maxDate: new Date(anoNumero, mesNumero, 0),
+    minDate,
+    maxDate: ontem < ultimoDiaMes ? ontem : ultimoDiaMes,
   };
 };
