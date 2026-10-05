@@ -5,6 +5,7 @@ export const mockRelatorioAdesaoPaginado10a20Dezenbro2023 = {
   previous: null,
   count: 2,
   page_size: 1,
+  possui_resultados: false,
   results: [
     {
       escola: {
