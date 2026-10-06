@@ -90,6 +90,9 @@ export const PERIODO_STATUS_DE_PROGRESSO = {
   MEDICAO_SEM_LANCAMENTOS: {
     nome: "Sem Lançamentos",
   },
+  SOLICITACAO_CORRECAO: {
+    nome: "Solicitação de Correção",
+  },
   OCORRENCIA_EXCLUIDA_PELA_ESCOLA: {
     nome: "Ocorrência excluída pela escola",
   },

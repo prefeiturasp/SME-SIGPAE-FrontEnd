@@ -206,6 +206,18 @@ export const codaeSolicitaCorrecaoUE = async (uuid) => {
   }
 };
 
+export const codaeSolicitaCorrecaoAlimentacaoExtraordinaria = async (
+  uuid,
+  params,
+) => {
+  const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/codae-solicita-correcao-lanche-emergencial-extraordinario/`;
+  const response = await axios.patch(url, params).catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
 export const escolaEnviaCorrecaoMedicaoInicialDRE = async (uuid) => {
   const url = `medicao-inicial/solicitacao-medicao-inicial/${uuid}/escola-corrige-medicao-para-dre/`;
   const response = await axios.patch(url).catch(ErrorHandlerFunction);

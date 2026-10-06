@@ -1199,25 +1199,28 @@ export const formatarLinhasTabelaDietaEnteral = (
   return linhasTabelasDietas;
 };
 
-export const formatarLinhasTabelaSolicitacoesAlimentacao = () => {
-  const linhasTabelaSolicitacoesAlimentacao = [];
-  linhasTabelaSolicitacoesAlimentacao.push(
+export const formatarLinhasTabelaSolicitacoesAlimentacao = (
+  incluirKitLanche = true,
+) => {
+  const linhasTabelaSolicitacoesAlimentacao = [
     {
       nome: "Lanche Emergencial",
       name: "lanche_emergencial",
       uuid: null,
     },
-    {
+  ];
+  if (incluirKitLanche) {
+    linhasTabelaSolicitacoesAlimentacao.push({
       nome: "Kit Lanche",
       name: "kit_lanche",
       uuid: null,
-    },
-    {
-      nome: "Observações",
-      name: "observacoes",
-      uuid: null,
-    },
-  );
+    });
+  }
+  linhasTabelaSolicitacoesAlimentacao.push({
+    nome: "Observações",
+    name: "observacoes",
+    uuid: null,
+  });
 
   return linhasTabelaSolicitacoesAlimentacao;
 };

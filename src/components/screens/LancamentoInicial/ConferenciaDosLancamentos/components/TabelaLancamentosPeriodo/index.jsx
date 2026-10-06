@@ -67,6 +67,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   codaePedeCorrecaPeriodo,
+  codaeSolicitaCorrecaoAlimentacaoExtraordinaria,
   drePedeCorrecaMedicao,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
@@ -112,6 +113,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     periodosGruposMedicao,
     diasLetivosSIGPAE,
     diasSuspensaoAtividades,
+    semMedicao = false,
   } = props;
 
   const [weekColumns, setWeekColumns] = useState(initialStateWeekColumns);
@@ -241,6 +243,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
 
   const ehGrupoColaboradores = () =>
     periodoGrupo?.nome_periodo_grupo === "Colaboradores";
+
+  const ehGrupoSolicitacoesExtraordinarias = () =>
+    periodoGrupo?.nome_periodo_grupo ===
+    "Solicitações de Alimentação Extraordinárias";
 
   const ehRecreioCemei = () => {
     return (
@@ -694,273 +700,268 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
         : showTabelaLancamentosPeriodo
     ) {
       const formatarTabelasAsync = async () => {
-        try {
-          setLoading(true);
-          const dataReferencia = getDataReferencia();
-          setData(dataReferencia);
-          const params_get_valores_periodos = {
-            uuid_medicao_periodo_grupo: periodoGrupo.uuid_medicao_periodo_grupo,
-          };
-          const response_valores_periodos = await getValoresPeriodosLancamentos(
-            params_get_valores_periodos,
-          );
-          setValoresLancamentos(response_valores_periodos.data);
-          const valoresDietasAutorizadas =
-            response_valores_periodos?.data.filter(
-              (valor) => valor.nome_campo === "dietas_autorizadas",
-            );
+        //try {
+        setLoading(true);
+        const dataReferencia = getDataReferencia();
+        setData(dataReferencia);
+        const params_get_valores_periodos = {
+          uuid_medicao_periodo_grupo: periodoGrupo.uuid_medicao_periodo_grupo,
+        };
+        const response_valores_periodos = semMedicao
+          ? { data: [] }
+          : await getValoresPeriodosLancamentos(params_get_valores_periodos);
+        setValoresLancamentos(response_valores_periodos.data);
+        const valoresDietasAutorizadas = response_valores_periodos?.data.filter(
+          (valor) => valor.nome_campo === "dietas_autorizadas",
+        );
 
-          const somaPorCategoria = {};
+        const somaPorCategoria = {};
 
-          valoresDietasAutorizadas.forEach((valor) => {
-            const catId = valor.categoria_medicao;
-            somaPorCategoria[catId] =
-              (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
-          });
+        valoresDietasAutorizadas.forEach((valor) => {
+          const catId = valor.categoria_medicao;
+          somaPorCategoria[catId] =
+            (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
+        });
 
-          response_valores_periodos.data =
-            response_valores_periodos.data.filter(
-              (valor) =>
-                valor.nome_campo !== "dietas_autorizadas" ||
-                (somaPorCategoria[valor.categoria_medicao] || 0) > 0,
-            );
+        response_valores_periodos.data = response_valores_periodos.data.filter(
+          (valor) =>
+            valor.nome_campo !== "dietas_autorizadas" ||
+            (somaPorCategoria[valor.categoria_medicao] || 0) > 0,
+        );
 
-          setValoresLancamentos(response_valores_periodos.data);
+        setValoresLancamentos(response_valores_periodos.data);
 
-          let categoriasMedicao = await getCategoriasDeMedicaoAsyncHelper(
-            categoriasDeMedicao,
-            setCategoriasDeMedicao,
+        let categoriasMedicao = await getCategoriasDeMedicaoAsyncHelper(
+          categoriasDeMedicao,
+          setCategoriasDeMedicao,
+          periodoGrupo,
+          solicitacao,
+          somaPorCategoria,
+        );
+        setTabItemsSemanas(getTabItemsSemanas(dataReferencia));
+
+        const valoresMatriculados = response_valores_periodos?.data.filter(
+          (valor) => valor.nome_campo === "matriculados",
+        );
+
+        tabAlunosEmebs(
+          solicitacao?.escola_eh_emebs === true,
+          { data: valoresMatriculados },
+          { data: valoresDietasAutorizadas },
+          setAlunosTabSelecionada,
+          setTabItemsAlunosEmebs,
+        );
+
+        if (
+          ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+          (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
+            ["INTEGRAL", "PARCIAL"].includes(
+              periodoGrupo.nome_periodo_grupo,
+            )) ||
+          ehRecreioCeiDaCemei()
+        ) {
+          formatarLinhasTabelasCEIHelper(
             periodoGrupo,
             solicitacao,
-            somaPorCategoria,
+            response_valores_periodos,
+            categoriasMedicao,
+            categoriasDeMedicao,
+            setTabelaAlimentacaoRows,
+            setTabelaDietaRows,
+            setCategoriasDeMedicao,
           );
-          setTabItemsSemanas(getTabItemsSemanas(dataReferencia));
-
-          const valoresMatriculados = response_valores_periodos?.data.filter(
-            (valor) => valor.nome_campo === "matriculados",
-          );
-
-          tabAlunosEmebs(
-            solicitacao?.escola_eh_emebs === true,
-            { data: valoresMatriculados },
-            { data: valoresDietasAutorizadas },
-            setAlunosTabSelecionada,
-            setTabItemsAlunosEmebs,
-          );
-
-          if (
-            ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-            (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-              ["INTEGRAL", "PARCIAL"].includes(
-                periodoGrupo.nome_periodo_grupo,
-              )) ||
-            ehRecreioCeiDaCemei()
+        } else {
+          if (periodoGrupo.nome_periodo_grupo === "ETEC") {
+            const linhasTabelaEtecAlimentacao =
+              formatarLinhasTabelaEtecAlimentacao();
+            setTabelaEtecAlimentacaoRows(linhasTabelaEtecAlimentacao);
+          } else if (
+            !periodoGrupo.nome_periodo_grupo.includes("Solicitações")
           ) {
-            formatarLinhasTabelasCEIHelper(
-              periodoGrupo,
-              solicitacao,
-              response_valores_periodos,
-              categoriasMedicao,
-              categoriasDeMedicao,
-              setTabelaAlimentacaoRows,
-              setTabelaDietaRows,
-              setCategoriasDeMedicao,
-            );
-          } else {
-            if (periodoGrupo.nome_periodo_grupo === "ETEC") {
-              const linhasTabelaEtecAlimentacao =
-                formatarLinhasTabelaEtecAlimentacao();
-              setTabelaEtecAlimentacaoRows(linhasTabelaEtecAlimentacao);
-            } else if (
-              !periodoGrupo.nome_periodo_grupo.includes("Solicitações")
-            ) {
-              if (periodoGrupo.nome_periodo_grupo === "Programas e Projetos") {
-                const response_get_tipos_alimentacao =
-                  await getTiposDeAlimentacao();
-                if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
-                  toastError(
-                    "Erro ao carregar tipos de alimentação. Tente novamente mais tarde.",
-                  );
-                }
-
-                const lanche4h =
-                  response_get_tipos_alimentacao.data.results.filter(
-                    (tipo_alimentacao) => tipo_alimentacao.nome === "Lanche 4h",
-                  );
-
-                await getPeriodosInclusaoContinuaAsyncHelper(
-                  mesSolicitacao,
-                  anoSolicitacao,
-                  solicitacao,
-                  periodosSimples,
-                  lanche4h,
-                  periodoGrupo,
-                  setTabelaAlimentacaoRows,
-                  setTabelaDietaRows,
-                  setTabelaDietaEnteralRows,
+            if (periodoGrupo.nome_periodo_grupo === "Programas e Projetos") {
+              const response_get_tipos_alimentacao =
+                await getTiposDeAlimentacao();
+              if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
+                toastError(
+                  "Erro ao carregar tipos de alimentação. Tente novamente mais tarde.",
                 );
-              } else if (ehRecreioNasFerias()) {
-                const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
-                const tiposAlimentacaoFormatadas =
-                  formatarLinhasTabelaAlimentacao(
-                    tiposAlimentacaoRecreio,
-                    periodoGrupo,
-                    solicitacao,
-                  );
-                const indexMatriculados = tiposAlimentacaoFormatadas.findIndex(
-                  (row) => row.name === "matriculados",
-                );
-                if (indexMatriculados !== -1) {
-                  tiposAlimentacaoFormatadas[indexMatriculados] = {
-                    nome: "Participantes",
-                    name: "participantes",
-                    uuid: null,
-                  };
-                }
-                const indexNumeroDeAlunos =
-                  tiposAlimentacaoFormatadas.findIndex(
-                    (row) => row.name === "numero_de_alunos",
-                  );
-                if (indexNumeroDeAlunos !== -1) {
-                  tiposAlimentacaoFormatadas[indexNumeroDeAlunos] = {
-                    nome: "Participantes",
-                    name: "participantes",
-                    uuid: null,
-                  };
-                }
-                setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
-                const linhasTabelasDietas = formatarLinhasTabelasDietas(
-                  tiposAlimentacaoRecreio,
-                );
-                setTabelaDietaRows(linhasTabelasDietas);
-                const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
-                const linhasTabelaDietaEnteral =
-                  formatarLinhasTabelaDietaEnteral(
-                    tiposAlimentacaoRecreio,
-                    cloneLinhasTabelasDietas,
-                  );
-                setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
-              } else {
-                let periodo;
-                if (periodoGrupo.nome_periodo_grupo.includes("Infantil")) {
-                  periodo = periodosSimples.find(
-                    (periodo) =>
-                      `Infantil ${periodo.periodo_escolar.nome}` ===
-                        periodoGrupo.nome_periodo_grupo &&
-                      periodo.tipo_unidade_escolar.iniciais === "EMEI",
-                  );
-                } else {
-                  periodo = periodosSimples.find(
-                    (periodo) =>
-                      periodo.periodo_escolar.nome === periodoEscolar,
-                  );
-                }
-                const tipos_alimentacao = periodo.tipos_alimentacao;
-                const ehPeriodoSimples = periodosSimples
-                  .map((periodo) => periodo.periodo_escolar.nome)
-                  .includes(periodoGrupo.nome_periodo_grupo);
-                let alimentacoesLancamentosEspeciais = null;
-                if (ehPeriodoSimples || ehEMEIdaCEMEI()) {
-                  const response_permissoes_lancamentos_especiais_mes_ano_por_periodo =
-                    await getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync(
-                      solicitacao.escola_uuid,
-                      mesSolicitacao,
-                      anoSolicitacao,
-                      periodoGrupo.nome_periodo_grupo.includes(" ")
-                        ? periodoGrupo.nome_periodo_grupo.split(" ")[1]
-                        : periodoGrupo.nome_periodo_grupo,
-                    );
-                  alimentacoesLancamentosEspeciais =
-                    response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais;
-                  setAlimentacoesLancamentosEspeciais(
-                    response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais?.map(
-                      (ali) => ali.name,
-                    ),
-                  );
-                  setDataInicioPermissoes(
-                    response_permissoes_lancamentos_especiais_mes_ano_por_periodo.data_inicio_permissoes,
-                  );
-                }
-                const tiposAlimentacaoFormatadas =
-                  formatarLinhasTabelaAlimentacao(
-                    tipos_alimentacao,
-                    periodoGrupo,
-                    solicitacao,
-                    periodo.periodo_escolar.eh_periodo_especifico,
-                    ehPeriodoSimples || ehEMEIdaCEMEI(),
-                    alimentacoesLancamentosEspeciais,
-                  );
-                setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
-                const linhasTabelasDietas =
-                  formatarLinhasTabelasDietas(tipos_alimentacao);
-                setTabelaDietaRows(linhasTabelasDietas);
-                const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
-                const linhasTabelaDietaEnteral =
-                  formatarLinhasTabelaDietaEnteral(
-                    tipos_alimentacao,
-                    cloneLinhasTabelasDietas,
-                  );
-                setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
               }
+
+              const lanche4h =
+                response_get_tipos_alimentacao.data.results.filter(
+                  (tipo_alimentacao) => tipo_alimentacao.nome === "Lanche 4h",
+                );
+
+              await getPeriodosInclusaoContinuaAsyncHelper(
+                mesSolicitacao,
+                anoSolicitacao,
+                solicitacao,
+                periodosSimples,
+                lanche4h,
+                periodoGrupo,
+                setTabelaAlimentacaoRows,
+                setTabelaDietaRows,
+                setTabelaDietaEnteralRows,
+              );
+            } else if (ehRecreioNasFerias()) {
+              const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
+              const tiposAlimentacaoFormatadas =
+                formatarLinhasTabelaAlimentacao(
+                  tiposAlimentacaoRecreio,
+                  periodoGrupo,
+                  solicitacao,
+                );
+              const indexMatriculados = tiposAlimentacaoFormatadas.findIndex(
+                (row) => row.name === "matriculados",
+              );
+              if (indexMatriculados !== -1) {
+                tiposAlimentacaoFormatadas[indexMatriculados] = {
+                  nome: "Participantes",
+                  name: "participantes",
+                  uuid: null,
+                };
+              }
+              const indexNumeroDeAlunos = tiposAlimentacaoFormatadas.findIndex(
+                (row) => row.name === "numero_de_alunos",
+              );
+              if (indexNumeroDeAlunos !== -1) {
+                tiposAlimentacaoFormatadas[indexNumeroDeAlunos] = {
+                  nome: "Participantes",
+                  name: "participantes",
+                  uuid: null,
+                };
+              }
+              setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+              const linhasTabelasDietas = formatarLinhasTabelasDietas(
+                tiposAlimentacaoRecreio,
+              );
+              setTabelaDietaRows(linhasTabelasDietas);
+              const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
+              const linhasTabelaDietaEnteral = formatarLinhasTabelaDietaEnteral(
+                tiposAlimentacaoRecreio,
+                cloneLinhasTabelasDietas,
+              );
+              setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
             } else {
-              const linhasTabelaSolicitacoesAlimentacao =
-                formatarLinhasTabelaSolicitacoesAlimentacao();
-              setTabelaSolicitacoesAlimentacaoRows(
-                linhasTabelaSolicitacoesAlimentacao,
+              let periodo;
+              if (periodoGrupo.nome_periodo_grupo.includes("Infantil")) {
+                periodo = periodosSimples.find(
+                  (periodo) =>
+                    `Infantil ${periodo.periodo_escolar.nome}` ===
+                      periodoGrupo.nome_periodo_grupo &&
+                    periodo.tipo_unidade_escolar.iniciais === "EMEI",
+                );
+              } else {
+                periodo = periodosSimples.find(
+                  (periodo) => periodo.periodo_escolar.nome === periodoEscolar,
+                );
+              }
+              const tipos_alimentacao = periodo.tipos_alimentacao;
+              const ehPeriodoSimples = periodosSimples
+                .map((periodo) => periodo.periodo_escolar.nome)
+                .includes(periodoGrupo.nome_periodo_grupo);
+              let alimentacoesLancamentosEspeciais = null;
+              if (ehPeriodoSimples || ehEMEIdaCEMEI()) {
+                const response_permissoes_lancamentos_especiais_mes_ano_por_periodo =
+                  await getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync(
+                    solicitacao.escola_uuid,
+                    mesSolicitacao,
+                    anoSolicitacao,
+                    periodoGrupo.nome_periodo_grupo.includes(" ")
+                      ? periodoGrupo.nome_periodo_grupo.split(" ")[1]
+                      : periodoGrupo.nome_periodo_grupo,
+                  );
+                alimentacoesLancamentosEspeciais =
+                  response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais;
+                setAlimentacoesLancamentosEspeciais(
+                  response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais?.map(
+                    (ali) => ali.name,
+                  ),
+                );
+                setDataInicioPermissoes(
+                  response_permissoes_lancamentos_especiais_mes_ano_por_periodo.data_inicio_permissoes,
+                );
+              }
+              const tiposAlimentacaoFormatadas =
+                formatarLinhasTabelaAlimentacao(
+                  tipos_alimentacao,
+                  periodoGrupo,
+                  solicitacao,
+                  periodo.periodo_escolar.eh_periodo_especifico,
+                  ehPeriodoSimples || ehEMEIdaCEMEI(),
+                  alimentacoesLancamentosEspeciais,
+                );
+              setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+              const linhasTabelasDietas =
+                formatarLinhasTabelasDietas(tipos_alimentacao);
+              setTabelaDietaRows(linhasTabelasDietas);
+              const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
+              const linhasTabelaDietaEnteral = formatarLinhasTabelaDietaEnteral(
+                tipos_alimentacao,
+                cloneLinhasTabelasDietas,
               );
+              setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
             }
-          }
-
-          if (
-            !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
-            periodosSimples.find(
-              (periodo) =>
-                periodo.periodo_escolar.nome ===
-                periodoGrupo.nome_periodo_grupo,
-            )
-          ) {
-            const response_inclusoes_autorizadas =
-              await getSolicitacoesInclusaoAutorizadasAsync(
-                solicitacao.escola_uuid,
-                mesSolicitacao,
-                anoSolicitacao,
-                [periodoGrupo.nome_periodo_grupo],
+          } else {
+            const linhasTabelaSolicitacoesAlimentacao =
+              formatarLinhasTabelaSolicitacoesAlimentacao(
+                !ehGrupoSolicitacoesExtraordinarias(),
               );
-            setInclusoesAutorizadas(response_inclusoes_autorizadas);
-
-            const response_alteracoes_alimentacao_autorizadas =
-              await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
-                solicitacao.escola_uuid,
-                mesSolicitacao,
-                anoSolicitacao,
-                periodoGrupo.nome_periodo_grupo,
-                false,
-                new URLSearchParams(window.location.search).get(
-                  "recreio_nas_ferias",
-                ),
-              );
-            setAlteracoesAlimentacaoAutorizadas(
-              response_alteracoes_alimentacao_autorizadas,
+            setTabelaSolicitacoesAlimentacaoRows(
+              linhasTabelaSolicitacoesAlimentacao,
             );
-
-            const response_suspensoes_autorizadas =
-              await getSolicitacoesSuspensoesAutorizadasAsync(
-                solicitacao.escola_uuid,
-                mesSolicitacao,
-                anoSolicitacao,
-                periodoGrupo.nome_periodo_grupo,
-              );
-            setSuspensoesAutorizadas(response_suspensoes_autorizadas);
           }
-          setPeriodoGrupoSelecionado(null);
-          setLoading(false);
-          setErroAPI("");
-        } catch (error) {
+        }
+
+        if (
+          !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
+          periodosSimples.find(
+            (periodo) =>
+              periodo.periodo_escolar.nome === periodoGrupo.nome_periodo_grupo,
+          )
+        ) {
+          const response_inclusoes_autorizadas =
+            await getSolicitacoesInclusaoAutorizadasAsync(
+              solicitacao.escola_uuid,
+              mesSolicitacao,
+              anoSolicitacao,
+              [periodoGrupo.nome_periodo_grupo],
+            );
+          setInclusoesAutorizadas(response_inclusoes_autorizadas);
+
+          const response_alteracoes_alimentacao_autorizadas =
+            await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
+              solicitacao.escola_uuid,
+              mesSolicitacao,
+              anoSolicitacao,
+              periodoGrupo.nome_periodo_grupo,
+              false,
+              new URLSearchParams(window.location.search).get(
+                "recreio_nas_ferias",
+              ),
+            );
+          setAlteracoesAlimentacaoAutorizadas(
+            response_alteracoes_alimentacao_autorizadas,
+          );
+
+          const response_suspensoes_autorizadas =
+            await getSolicitacoesSuspensoesAutorizadasAsync(
+              solicitacao.escola_uuid,
+              mesSolicitacao,
+              anoSolicitacao,
+              periodoGrupo.nome_periodo_grupo,
+            );
+          setSuspensoesAutorizadas(response_suspensoes_autorizadas);
+        }
+        setPeriodoGrupoSelecionado(null);
+        setLoading(false);
+        setErroAPI("");
+        /*} catch (error) {
           setLoading(false);
           setErroAPI(
             `Erro ao carregar período ${periodoGrupo.nome_periodo_grupo}. Tente novamente mais tarde. "${error}"`,
           );
-        }
+        }*/
       };
       formatarTabelasAsync();
     }
@@ -1228,6 +1229,43 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   };
 
   const salvarCorrecao = async (uuidMedicaoPeriodoGrupo) => {
+    const descricaoCorrecao =
+      values[
+        `descricao_correcao__periodo_grupo_${uuidMedicaoPeriodoGrupo.slice(
+          0,
+          5,
+        )}`
+      ];
+    let diasParaCorrigir;
+    if (solicitacao?.escola_eh_emebs === true) {
+      diasParaCorrigir = [
+        ...diasParaCorrecaoInfantilEmebs,
+        ...diasParaCorrecaoFundamentalEmebs,
+      ];
+    } else {
+      diasParaCorrigir = diasParaCorrecao;
+    }
+
+    if (semMedicao) {
+      const response = await codaeSolicitaCorrecaoAlimentacaoExtraordinaria(
+        solicitacao.uuid,
+        {
+          dias_para_corrigir: diasParaCorrigir,
+          justificativa: descricaoCorrecao,
+        },
+      );
+      if (response.status === HTTP_STATUS.OK) {
+        toastSuccess("Solicitação de correção salva com sucesso");
+      } else {
+        toastError("Houve um erro ao salvar solicitação de correção");
+      }
+      setValoresParaCorrecao({});
+      getPeriodosGruposMedicaoAsync();
+      setModoCorrecao(false);
+      resetValuesCorrecao(uuidMedicaoPeriodoGrupo);
+      return;
+    }
+
     let uuidsValoresMedicaoParaCorrecao = [];
     if (!usaEstruturaCeiComFaixaEtaria()) {
       Object.keys(valoresParaCorrecao).forEach((key) => {
@@ -2085,20 +2123,24 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                         className="col-6 me-3"
                         onClick={() => setModoCorrecao(true)}
                         disabled={
-                          statusPermitidosCorrecaoDRE ||
-                          statusPermitidosCorrecaoCODAE
+                          semMedicao
+                            ? false
+                            : statusPermitidosCorrecaoDRE ||
+                              statusPermitidosCorrecaoCODAE
                         }
                       />
-                      <Botao
-                        texto="Aprovar Período"
-                        style={BUTTON_STYLE.GREEN}
-                        className="col-5"
-                        onClick={() => setShowModalAprovarPeriodo(true)}
-                        disabled={
-                          statusPermitidosAprovacaoDRE ||
-                          statusPermitidosAprovacaoCODAE
-                        }
-                      />
+                      {!semMedicao && (
+                        <Botao
+                          texto="Aprovar Período"
+                          style={BUTTON_STYLE.GREEN}
+                          className="col-5"
+                          onClick={() => setShowModalAprovarPeriodo(true)}
+                          disabled={
+                            statusPermitidosAprovacaoDRE ||
+                            statusPermitidosAprovacaoCODAE
+                          }
+                        />
+                      )}
                     </div>
                   )
                 )}
