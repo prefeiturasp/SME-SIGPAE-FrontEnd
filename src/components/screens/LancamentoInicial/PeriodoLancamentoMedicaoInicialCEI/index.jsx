@@ -267,10 +267,17 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const ehEmeiDaCemeiLocation =
     location && location.state && location.state.ehEmeiDaCemei;
   const ehCEIDaCEMEI = escolaEhCEMEI() && !ehEmeiDaCemeiLocation;
-  const ehSolicitacoesAlimentacaoLocation =
+  const ehSolicitacoesAlimentacaoSomente =
     location &&
     location.state &&
     location.state.periodo === "Solicitações de Alimentação";
+  const ehSolicitacoesAlimentacaoExtraordinariasLocation =
+    location &&
+    location.state &&
+    location.state.periodo === "Solicitações de Alimentação Extraordinárias";
+  const ehGrupoSolicitacoesAlimentacao =
+    ehSolicitacoesAlimentacaoSomente ||
+    ehSolicitacoesAlimentacaoExtraordinariasLocation;
   const ehProgramasEProjetosLocation =
     location &&
     location.state &&
@@ -471,7 +478,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           escola.uuid,
           mes,
           ano,
-          ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
+          ehGrupoSolicitacoesAlimentacao ? undefined : periodo,
           false,
           recreioNasFeriasUuid,
         );
@@ -485,7 +492,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             escola.uuid,
             mes,
             ano,
-            ehSolicitacoesAlimentacaoLocation ? undefined : periodo,
+            ehGrupoSolicitacoesAlimentacao ? undefined : periodo,
             true,
             recreioNasFeriasUuid,
           );
@@ -505,7 +512,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       setSuspensoesAutorizadas(response_suspensoes_autorizadas);
 
       let response_kit_lanches_autorizadas = [];
-      if (ehSolicitacoesAlimentacaoLocation) {
+      if (ehSolicitacoesAlimentacaoSomente) {
         response_kit_lanches_autorizadas =
           await getSolicitacoesKitLanchesAutorizadasAsync(
             escola.uuid,
@@ -671,16 +678,17 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
       let linhasTabelaAlimentacaoCEI =
         ehEmeiDaCemeiLocation ||
-        ehSolicitacoesAlimentacaoLocation ||
+        ehGrupoSolicitacoesAlimentacao ||
         ehProgramasEProjetosLocation ||
         ehGrupoColaboradores()
           ? formatarLinhasTabelaAlimentacaoEmeiDaCemei(
               tiposAlimentacaoBase,
-              ehSolicitacoesAlimentacaoLocation,
+              ehGrupoSolicitacoesAlimentacao,
               response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais ||
                 [],
               ehProgramasEProjetosLocation,
               ehRecreioNasFerias(),
+              ehSolicitacoesAlimentacaoExtraordinariasLocation,
             )
           : formatarLinhasTabelaAlimentacaoCEI(
               response_log_matriculados_por_faixa_etaria_dia,
@@ -733,7 +741,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         ehProgramasEProjetosLocation,
         response_categorias_medicao,
         response_log_dietas_autorizadas_cei,
-        ehSolicitacoesAlimentacaoLocation,
+        ehGrupoSolicitacoesAlimentacao,
         response_log_dietas_autorizadas_emei_da_cemei.data,
       );
       setCategoriasDeMedicao(response_categorias_medicao);
@@ -742,7 +750,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         uuid_solicitacao_medicao: uuid,
         nome_grupo:
           ehEmeiDaCemeiLocation ||
-          ehSolicitacoesAlimentacaoLocation ||
+          ehGrupoSolicitacoesAlimentacao ||
           ehProgramasEProjetosLocation
             ? periodo
             : location.state.grupo,
@@ -750,7 +758,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       if (
         !(
           ehEmeiDaCemeiLocation ||
-          ehSolicitacoesAlimentacaoLocation ||
+          ehGrupoSolicitacoesAlimentacao ||
           ehProgramasEProjetosLocation ||
           ehRecreioNasFerias()
         )
@@ -951,7 +959,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
           });
 
         kitLanchesAutorizadas &&
-          ehSolicitacoesAlimentacaoLocation &&
+          ehSolicitacoesAlimentacaoSomente &&
           kitLanchesAutorizadas.forEach((kit) => {
             categoria.nome.includes("SOLICITAÇÕES") &&
               ((!ultimaAtualizacaoMedicao &&
@@ -1107,7 +1115,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                   let nameInputField = null;
                   if (
                     ehEmeiDaCemeiLocation ||
-                    ehSolicitacoesAlimentacaoLocation ||
+                    ehGrupoSolicitacoesAlimentacao ||
                     ehProgramasEProjetosLocation ||
                     ehGrupoColaboradores()
                   ) {
@@ -1132,7 +1140,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             if (
               valor_medicao.nome_campo === "observacoes" ||
               ehEmeiDaCemeiLocation ||
-              ehSolicitacoesAlimentacaoLocation ||
+              ehGrupoSolicitacoesAlimentacao ||
               ehProgramasEProjetosLocation ||
               ehGrupoColaboradores()
             ) {
@@ -1267,7 +1275,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     });
 
     const possuiValoresPreenchidosSolicitacoes =
-      ehSolicitacoesAlimentacaoLocation &&
+      ehGrupoSolicitacoesAlimentacao &&
       Object.keys(dadosValoresKitLanchesAutorizadas).length > 0;
 
     if (possuiValoresPreenchidosSolicitacoes) {
@@ -1512,7 +1520,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const dia = keySplitted[
         v[0].includes("observacoes") ||
         ehEmeiDaCemeiLocation ||
-        ehSolicitacoesAlimentacaoLocation ||
+        ehGrupoSolicitacoesAlimentacao ||
         ehProgramasEProjetosLocation ||
         ehGrupoColaboradores()
           ? 1
@@ -1524,7 +1532,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       const uuid_faixa_etaria =
         v[0].includes("observacoes") ||
         ehEmeiDaCemeiLocation ||
-        ehSolicitacoesAlimentacaoLocation ||
+        ehGrupoSolicitacoesAlimentacao ||
         ehProgramasEProjetosLocation ||
         ehRecreioNasFerias()
           ? ""
@@ -1559,7 +1567,11 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       ehRecreioNasFerias()
     ) {
       payload["grupo"] = values["periodo_escolar"];
-      if (payload["grupo"] && payload["grupo"].includes("Solicitações")) {
+      if (
+        payload["grupo"] &&
+        payload["grupo"].includes("Solicitações") &&
+        payload["grupo"] !== "Solicitações de Alimentação Extraordinárias"
+      ) {
         payload["grupo"] = "Solicitações de Alimentação";
       }
       delete values["periodo_escolar"];
@@ -1656,7 +1668,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       dadosIniciaisFiltered,
       diasDaSemanaSelecionada,
       ehEmeiDaCemeiLocation,
-      ehSolicitacoesAlimentacaoLocation,
+      ehGrupoSolicitacoesAlimentacao,
       ehProgramasEProjetosLocation,
       ehRecreioNasFerias(),
       ehGrupoColaboradores(),
@@ -2421,7 +2433,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       (inclusao) => Number(inclusao.dia) === Number(dia),
     );
 
-    if (ehSolicitacoesAlimentacaoLocation || ehProgramasEProjetosLocation) {
+    if (ehGrupoSolicitacoesAlimentacao || ehProgramasEProjetosLocation) {
       return !validacaoSemana(dia) && temInclusaoAutorizadaNoDia;
     }
 
@@ -2813,7 +2825,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const deveUsarFaixaNoNomeDoInput = () => {
     return !(
       ehEmeiDaCemeiLocation ||
-      ehSolicitacoesAlimentacaoLocation ||
+      ehGrupoSolicitacoesAlimentacao ||
       ehProgramasEProjetosLocation ||
       ehGrupoColaboradores()
     );
@@ -2854,7 +2866,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       uuidFaixa,
       diasParaCorrecao,
       ehEmeiDaCemeiLocation,
-      ehSolicitacoesAlimentacaoLocation,
+      ehGrupoSolicitacoesAlimentacao,
       permissoesLancamentosEspeciaisPorDia,
       alimentacoesLancamentosEspeciais,
       ehProgramasEProjetosLocation,
@@ -3161,7 +3173,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                 } ${
                                                   row.name !== "observacoes" &&
                                                   (ehEmeiDaCemeiLocation ||
-                                                    ehSolicitacoesAlimentacaoLocation ||
+                                                    ehGrupoSolicitacoesAlimentacao ||
                                                     ehProgramasEProjetosLocation) &&
                                                   "mt-3"
                                                 }`}
@@ -3171,7 +3183,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                               {row.name !== "observacoes" &&
                                                 !(
                                                   ehEmeiDaCemeiLocation ||
-                                                  ehSolicitacoesAlimentacaoLocation ||
+                                                  ehGrupoSolicitacoesAlimentacao ||
                                                   ehProgramasEProjetosLocation
                                                 ) && (
                                                   <b className="faixa-etaria ps-2">
@@ -3198,7 +3210,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                   null,
                                                   diasParaCorrecao,
                                                   ehEmeiDaCemeiLocation,
-                                                  ehSolicitacoesAlimentacaoLocation,
+                                                  ehGrupoSolicitacoesAlimentacao,
                                                   permissoesLancamentosEspeciaisPorDia,
                                                   alimentacoesLancamentosEspeciais,
                                                   ehProgramasEProjetosLocation,
@@ -3342,7 +3354,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               categoria,
                                                               categoriasDeMedicao,
                                                             )) ||
-                                                          (ehSolicitacoesAlimentacaoLocation &&
+                                                          (ehGrupoSolicitacoesAlimentacao &&
                                                             (campoLancheEmergencialComZeroOuSemObservacao(
                                                               formValuesAtualizados,
                                                               column,
@@ -3432,7 +3444,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                   ) : (
                                                     <div className="field-values-input">
                                                       {ehEmeiDaCemeiLocation ||
-                                                      ehSolicitacoesAlimentacaoLocation ||
+                                                      ehGrupoSolicitacoesAlimentacao ||
                                                       ehProgramasEProjetosLocation ||
                                                       ehGrupoColaboradores() ? (
                                                         <>
@@ -3681,7 +3693,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               row.uuid,
                                                               diasParaCorrecao,
                                                               ehEmeiDaCemeiLocation,
-                                                              ehSolicitacoesAlimentacaoLocation,
+                                                              ehGrupoSolicitacoesAlimentacao,
                                                               permissoesLancamentosEspeciaisPorDia,
                                                               alimentacoesLancamentosEspeciais,
                                                               ehProgramasEProjetosLocation,

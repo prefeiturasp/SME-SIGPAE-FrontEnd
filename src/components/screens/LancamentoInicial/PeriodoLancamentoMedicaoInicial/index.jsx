@@ -869,23 +869,23 @@ export default () => {
       }
       setTabelaDietaEnteralRows(cloneRowsDietas);
 
-      rowsSolicitacoesAlimentacao.push(
-        {
-          nome: "Lanche Emergencial",
-          name: "lanche_emergencial",
-          uuid: null,
-        },
-        {
+      rowsSolicitacoesAlimentacao.push({
+        nome: "Lanche Emergencial",
+        name: "lanche_emergencial",
+        uuid: null,
+      });
+      if (grupoLocation !== "Solicitações de Alimentação Extraordinárias") {
+        rowsSolicitacoesAlimentacao.push({
           nome: "Kit Lanche",
           name: "kit_lanche",
           uuid: null,
-        },
-        {
-          nome: "Observações",
-          name: "observacoes",
-          uuid: null,
-        },
-      );
+        });
+      }
+      rowsSolicitacoesAlimentacao.push({
+        nome: "Observações",
+        name: "observacoes",
+        uuid: null,
+      });
 
       setTabelaSolicitacoesAlimentacaoRows(rowsSolicitacoesAlimentacao);
 
