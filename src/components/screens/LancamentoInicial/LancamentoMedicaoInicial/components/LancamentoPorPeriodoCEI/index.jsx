@@ -261,6 +261,7 @@ export const LancamentoPorPeriodoCEI = ({
       mes: mes,
       ano: ano,
       recreio_nas_ferias: recreioNasFeriasUuid,
+      voltar_unico_registro: true,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
