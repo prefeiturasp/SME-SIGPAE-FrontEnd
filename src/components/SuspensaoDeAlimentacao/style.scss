@@ -11,3 +11,13 @@
     color: $gray;
   }
 }
+
+.btn-remover-dia {
+  margin-left: 8px;
+}
+
+.final-form-multi-select.multiselect-invalid {
+  .dropdown-heading {
+    border-color: #dc3545 !important;
+  }
+}
