@@ -7,6 +7,7 @@ import {
   MEDICAO_INICIAL,
   PARAMETRIZACAO_FINANCEIRA,
   RELATORIO_ADESAO,
+  RELATORIO_ALIMENTACOES_SERVIDAS,
   RELATORIO_FINANCEIRO,
   RELATORIOS,
 } from "src/configs/constants";
@@ -14,6 +15,7 @@ import {
   escolaEhCei,
   escolaEhCEMEI,
   exibirModuloMedicaoInicial,
+  exibirRelatorioAlimentacoesServidas,
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
@@ -42,6 +44,8 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
     usuarioEhAdministradorNutriSupervisao() ||
     usuarioEhCODAENutriManifestacao() ||
     usuarioEhCODAEGabinete();
+  const exibeRelatorioAlimentacoesServidas =
+    exibirRelatorioAlimentacoesServidas();
 
   return (
     exibirModuloMedicaoInicial() && (
@@ -91,7 +95,7 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
             </LeafItem>
           </SubMenu>
         )}
-        {exibeRelatorios && (
+        {(exibeRelatorios || exibeRelatorioAlimentacoesServidas) && (
           <SubMenu
             path="relatorios"
             icon="fa-chevron-down"
@@ -100,11 +104,20 @@ const MenuLancamentoInicial = ({ activeSubmenu, onSubmenuLancamentoClick }) => {
             activeMenu={activeSubmenu}
             dataTestId="relatorios-me"
           >
-            <LeafItem
-              to={`/${MEDICAO_INICIAL}/${RELATORIOS}/${RELATORIO_ADESAO}`}
-            >
-              Relatório de Adesão
-            </LeafItem>
+            {exibeRelatorios && (
+              <LeafItem
+                to={`/${MEDICAO_INICIAL}/${RELATORIOS}/${RELATORIO_ADESAO}`}
+              >
+                Relatório de Adesão
+              </LeafItem>
+            )}
+            {exibeRelatorioAlimentacoesServidas && (
+              <LeafItem
+                to={`/${MEDICAO_INICIAL}/${RELATORIOS}/${RELATORIO_ALIMENTACOES_SERVIDAS}`}
+              >
+                Relatório de Alimentações Servidas
+              </LeafItem>
+            )}
           </SubMenu>
         )}
       </Menu>
