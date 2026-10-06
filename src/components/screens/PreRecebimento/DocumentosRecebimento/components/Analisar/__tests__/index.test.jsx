@@ -28,6 +28,7 @@ jest.mock("src/components/Shareable/Toast/dialogs");
 import { mockGetDocumentoRecebimentoAnalisar as mockDadosDocumento } from "src/mocks/services/documentosRecebimento.service/mockGetDocumentoRecebimentoAnalisar";
 import { mockUnidadesMedidaLogistica as mockUnidadesMedida } from "src/mocks/services/logistica.service/mockUnidadesMedidaLogistica";
 import { mockLaboratoriosCredenciados as mockLaboratorios } from "src/mocks/services/laboratorio.service/mockLaboratoriosCredenciados";
+import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
 
 beforeEach(() => {
   // Mock das APIs usando axios-mock-adapter COM AS URLs EXATAS FORNECIDAS
@@ -45,6 +46,9 @@ beforeEach(() => {
     .reply(200);
   mock
     .onPatch(/\/documentos-de-recebimento\/.*\/analise-documentos-rascunho\/?/)
+    .reply(200);
+  mock
+    .onPatch(/\/documentos-de-recebimento\/.*\/reprovar-documentos\/?/)
     .reply(200);
 });
 
@@ -451,6 +455,111 @@ describe("AnaliseDocumentosRecebimento - Testes Completos", () => {
       await clicarBotao("Cancelar");
       await clicarBotao("Sim");
 
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/${PRE_RECEBIMENTO}/${PAINEL_DOCUMENTOS_RECEBIMENTO}`,
+      );
+    });
+  });
+
+  describe("Reprovação de Documento", () => {
+    it("exibe o botão Reprovar na barra de ações", async () => {
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.getByText("Reprovar")).toBeInTheDocument();
+      });
+    });
+
+    it("abre a modal Justificativa da Reprovação ao clicar em Reprovar", async () => {
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.getByText("Reprovar")).toBeInTheDocument();
+      });
+
+      await clicarBotao("Reprovar");
+
+      await waitFor(() => {
+        expect(
+          screen.getAllByText("Justificativa da Reprovação")[0],
+        ).toBeInTheDocument();
+        expect(
+          screen.getByPlaceholderText(
+            "Informe aqui a justificativa da reprovação",
+          ),
+        ).toBeInTheDocument();
+        expect(screen.getAllByText("Cancelar")[1]).toBeInTheDocument();
+        expect(screen.getAllByText("Reprovar")[1]).toBeInTheDocument();
+      });
+    });
+
+    it("mantém o botão Reprovar da modal desabilitado sem justificativa e habilita ao preencher", async () => {
+      await setup();
+
+      await clicarBotao("Reprovar");
+
+      await waitFor(() => {
+        const btnReprovar = screen
+          .getAllByText("Reprovar")[1]
+          .closest("button");
+        expect(btnReprovar).toBeDisabled();
+      });
+
+      preencheTextArea(
+        "Informe aqui a justificativa da reprovação",
+        "Documento fora do esperado.",
+      );
+
+      await waitFor(() => {
+        const btnReprovar = screen
+          .getAllByText("Reprovar")[1]
+          .closest("button");
+        expect(btnReprovar).not.toBeDisabled();
+      });
+    });
+
+    it("fecha a modal e não reprova ao clicar em Cancelar", async () => {
+      await setup();
+
+      await clicarBotao("Reprovar");
+
+      await waitFor(() => {
+        expect(
+          screen.getAllByText("Justificativa da Reprovação")[0],
+        ).toBeInTheDocument();
+      });
+
+      await clicarBotao("Cancelar", 1);
+
+      await waitFor(() => {
+        expect(
+          screen.queryAllByText("Justificativa da Reprovação"),
+        ).toHaveLength(0);
+      });
+      expect(mock.history.patch.length).toBe(0);
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it("reprova o documento com justificativa e volta para o painel", async () => {
+      await setup();
+
+      await clicarBotao("Reprovar");
+      preencheTextArea(
+        "Informe aqui a justificativa da reprovação",
+        "Documento fora do esperado.",
+      );
+      await clicarBotao("Reprovar", 1);
+
+      await waitFor(() => {
+        expect(mock.history.patch.length).toBe(1);
+        expect(mock.history.patch[0].url).toContain("/reprovar-documentos/");
+        expect(mock.history.patch[0].data).toContain(
+          "Documento fora do esperado.",
+        );
+      });
+      expect(toastSuccess).toHaveBeenCalledWith(
+        "Documento de Recebimento reprovado com sucesso.",
+      );
       expect(mockNavigate).toHaveBeenCalledWith(
         `/${PRE_RECEBIMENTO}/${PAINEL_DOCUMENTOS_RECEBIMENTO}`,
       );
