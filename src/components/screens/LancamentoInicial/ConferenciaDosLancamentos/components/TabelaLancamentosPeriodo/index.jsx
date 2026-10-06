@@ -2116,11 +2116,16 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                   </div>
                 ) : (
                   (exibirBotoesDRE || exibirBotoesCODAE) && (
-                    <div className="botoes col-4 px-0">
+                    <div
+                      className={`botoes col-4 px-0 ${
+                        semMedicao ? "d-flex" : ""
+                      }`}
+                    >
+                      {semMedicao && <div className="col-6 me-3" />}
                       <Botao
                         texto="Solicitar Correção"
                         style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                        className="col-6 me-3"
+                        className={semMedicao ? "col-5" : "col-6 me-3"}
                         onClick={() => setModoCorrecao(true)}
                         disabled={
                           semMedicao
