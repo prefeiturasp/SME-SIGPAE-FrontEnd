@@ -543,6 +543,7 @@ export const usuarioComAcessoAoRelatorioCronogramas = () => {
     PERFIL.USUARIO_RELATORIOS,
     PERFIL.USUARIO_GTIC_CODAE,
     PERFIL.DILOG_VISUALIZACAO,
+    PERFIL.DILOG_QUALIDADE,
   ].includes(localStorage.getItem("perfil"));
 };
 

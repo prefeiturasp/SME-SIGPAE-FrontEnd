@@ -454,6 +454,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CRONOGRAMA_SEMANAL_FLV}`,
     component: CronogramaSemanalFLVPage,
     tipoUsuario:
+      usuarioEhDilogQualidade() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog(),
@@ -467,6 +468,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.DETALHE_CRONOGRAMA_SEMANAL}`,
     component: DetalharCronogramaSemanalPage,
     tipoUsuario:
+      usuarioEhDilogQualidade() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog(),
