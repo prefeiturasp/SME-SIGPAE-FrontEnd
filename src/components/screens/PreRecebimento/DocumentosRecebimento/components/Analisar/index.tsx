@@ -18,6 +18,7 @@ import {
   analisaDocumentoRecebimento,
   analisaDocumentoRecebimentoRascunho,
   detalharDocumentoParaAnalise,
+  reprovarDocumentoRecebimento,
 } from "src/services/documentosRecebimento.service";
 import { getNomesEAbreviacoesUnidadesMedida } from "src/services/qualidade.service";
 import { getListaLaboratoriosCredenciados } from "src/services/laboratorio.service";
@@ -36,7 +37,11 @@ import { Field, Form } from "react-final-form";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import ModalGenerico from "../../../../../Shareable/ModalGenerico";
 import ModalCorrecao from "./components/ModalCorrecao";
-import { AnaliseDocumentoPayload } from "../../interfaces";
+import ModalJustificativaReprovacao from "./components/ModalJustificativaReprovacao";
+import {
+  AnaliseDocumentoPayload,
+  ReprovarDocumentoPayload,
+} from "../../interfaces";
 import createDecorator from "final-form-calculate";
 import { exibeError, formataMilharDecimal } from "src/helpers/utilities";
 import {
@@ -61,6 +66,7 @@ export default () => {
   const [showModalSalvar, setShowModalSalvar] = useState(false);
   const [showModalAprovar, setShowModalAprovar] = useState(false);
   const [showModalCorrecao, setShowModalCorrecao] = useState(false);
+  const [showModalReprovacao, setShowModalReprovacao] = useState(false);
   const [prazos, setPrazos] = useState([true]);
   const [unidades, setUnidades] = useState<OptionsGenerico[]>([]);
   const [laboratorios, setLaboratorios] = useState<OptionsGenerico[]>([]);
@@ -240,6 +246,31 @@ export default () => {
     }
   };
 
+  const reprovarDocumento = async (
+    values: ReprovarDocumentoPayload,
+  ): Promise<void> => {
+    try {
+      let response = await reprovarDocumentoRecebimento(
+        { justificativa_reprovacao: values.justificativa_reprovacao },
+        objeto.uuid,
+      );
+      if (response.status === 201 || response.status === 200) {
+        setCarregando(false);
+        toastSuccess("Documento de Recebimento reprovado com sucesso.");
+        setShowModalReprovacao(false);
+        voltarPagina();
+      } else {
+        toastError("Ocorreu um erro ao reprovar o Documento de Recebimento");
+        setCarregando(false);
+      }
+    } catch (error) {
+      exibeError(
+        error,
+        "Ocorreu um erro ao reprovar o Documento de Recebimento",
+      );
+    }
+  };
+
   const geraInitialValues = (doc: DocumentosRecebimentoParaAnalise): void => {
     let newPrazos = [];
     let iniciais = {
@@ -335,6 +366,18 @@ export default () => {
                   handleClose={() => {
                     delete values["correcao_solicitada"];
                     setShowModalCorrecao(false);
+                  }}
+                  loading={carregando}
+                  errors={errors}
+                />
+                <ModalJustificativaReprovacao
+                  show={showModalReprovacao}
+                  handleReprovar={() => {
+                    reprovarDocumento(values as ReprovarDocumentoPayload);
+                  }}
+                  handleClose={() => {
+                    delete values["justificativa_reprovacao"];
+                    setShowModalReprovacao(false);
                   }}
                   loading={carregando}
                   errors={errors}
@@ -645,6 +688,14 @@ export default () => {
                     icon="fas fa-pen"
                     className="float-end ms-3"
                     onClick={() => setShowModalCorrecao(true)}
+                  />
+                  <Botao
+                    texto="Reprovar"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.RED_OUTLINE}
+                    icon="fas fa-times"
+                    className="float-end ms-3"
+                    onClick={() => setShowModalReprovacao(true)}
                   />
                   <Botao
                     texto="Salvar Alterações"
