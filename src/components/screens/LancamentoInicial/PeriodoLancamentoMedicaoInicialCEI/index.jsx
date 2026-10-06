@@ -2288,7 +2288,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
         if (
           temAlunosNoDia &&
-          (value === "" || value === null || value === undefined)
+          (value === "" || value === null || value === undefined) &&
+          !ehSolicitacoesAlimentacaoSomente
         ) {
           return "Preenchimento obrigatório.";
         }

@@ -2722,7 +2722,8 @@ export default () => {
           );
         if (
           temCorrecaoParaTabAtual &&
-          (value === "" || value === null || value === undefined)
+          (value === "" || value === null || value === undefined) &&
+          grupoLocation !== "Solicitações de Alimentação"
         ) {
           return "Preenchimento obrigatório.";
         }
