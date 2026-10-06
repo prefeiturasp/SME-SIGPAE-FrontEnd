@@ -10,6 +10,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
+import { getError } from "src/helpers/utilities";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
 import {
@@ -132,9 +133,7 @@ export const RegistrarNovaOcorrencia = () => {
       toastSuccess("Registro de Ocorrência realizado com sucesso!");
       navigate(-1);
     } else {
-      toastError(
-        "Erro ao criar Registro de Ocorrência. Tente novamente mais tarde.",
-      );
+      toastError(getError(response.data));
     }
   };
 

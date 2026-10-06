@@ -614,7 +614,7 @@ describe("RegistrarNovaOcorrencia", () => {
   it("exibe mensagem de erro quando não consegue salvar", async () => {
     mockCreateFormularioDiretor.mockResolvedValue({
       status: 400,
-      data: {},
+      data: { detail: "Mensagem retornada pelo back" },
     });
 
     renderizarComponente();
@@ -635,7 +635,7 @@ describe("RegistrarNovaOcorrencia", () => {
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalledWith(
-        "Erro ao criar Registro de Ocorrência. Tente novamente mais tarde.",
+        "Mensagem retornada pelo back",
       );
     });
 
