@@ -4229,13 +4229,17 @@ export default () => {
                                                               alteracoesAlimentacaoAutorizadas,
                                                               diasLancheEmergencialDiarioAtivo,
                                                             )}
-                                                            exibeTooltipLancheEmergencialAutorizado={exibirTooltipLancheEmergencialAutorizado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                            )}
+                                                            exibeTooltipLancheEmergencialAutorizado={
+                                                              grupoLocation !==
+                                                                "Solicitações de Alimentação Extraordinárias" &&
+                                                              exibirTooltipLancheEmergencialAutorizado(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesAlimentacaoAutorizadas,
+                                                              )
+                                                            }
                                                             exibeTooltipLancheEmergencialZeroAutorizado={exibirTooltipLancheEmergencialZeroAutorizado(
                                                               formValuesAtualizados,
                                                               row,

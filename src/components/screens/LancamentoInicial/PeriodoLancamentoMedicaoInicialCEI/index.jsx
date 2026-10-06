@@ -2056,13 +2056,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                   categoria,
                   kitLanchesAutorizadas,
                 ) ||
-                exibirTooltipLancheEmergencialAutorizado(
-                  formValuesAtualizados,
-                  row,
-                  column,
-                  categoria,
-                  alteracoesAlimentacaoAutorizadas,
-                ) ||
+                (!ehSolicitacoesAlimentacaoExtraordinariasLocation &&
+                  exibirTooltipLancheEmergencialAutorizado(
+                    formValuesAtualizados,
+                    row,
+                    column,
+                    categoria,
+                    alteracoesAlimentacaoAutorizadas,
+                  )) ||
                 exibirTooltipLancheEmergencialNaoAutorizado(
                   formValuesAtualizados,
                   row,
@@ -3528,13 +3529,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                               categoria,
                                                               alteracoesAlimentacaoAutorizadas,
                                                             )}
-                                                            exibeTooltipLancheEmergencialAutorizado={exibirTooltipLancheEmergencialAutorizado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                            )}
+                                                            exibeTooltipLancheEmergencialAutorizado={
+                                                              !ehSolicitacoesAlimentacaoExtraordinariasLocation &&
+                                                              exibirTooltipLancheEmergencialAutorizado(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesAlimentacaoAutorizadas,
+                                                              )
+                                                            }
                                                             exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={
                                                               ehPeriodoInfantilEmeiDaCemei() &&
                                                               exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
