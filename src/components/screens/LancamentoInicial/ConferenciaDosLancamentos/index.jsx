@@ -582,9 +582,20 @@ export const ConferenciaDosLancamentos = () => {
       const todosPeriodosGruposAprovadosDRE = !periodosGruposMedicao.some(
         (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_DRE",
       );
-      const todosPeriodosGruposAprovadosCODAE = !periodosGruposMedicao.some(
-        (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE",
+      const medicaoExtraordinaria = periodosGruposMedicao.find(
+        (periodoGrupo) =>
+          periodoGrupo.nome_periodo_grupo ===
+          GRUPO_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
       );
+      const blocoExtraordinarioAprovadoCODAE =
+        !solicitacao.lanche_emergencial_extraordinario ||
+        medicaoExtraordinaria?.status === "MEDICAO_APROVADA_PELA_CODAE";
+      const todosPeriodosGruposAprovadosCODAE =
+        blocoExtraordinarioAprovadoCODAE &&
+        !periodosGruposMedicao.some(
+          (periodoGrupo) =>
+            periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE",
+        );
       if (
         ([
           "MEDICAO_APROVADA_PELA_DRE",

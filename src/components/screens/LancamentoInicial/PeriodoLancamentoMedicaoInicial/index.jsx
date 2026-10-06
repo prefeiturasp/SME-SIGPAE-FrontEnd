@@ -2109,8 +2109,14 @@ export default () => {
         payload,
         escolaEhEMEBS(),
       );
+      const medicaoParaCorrecaoUuid =
+        valoresPeriodosLancamentos[0]?.medicao_uuid ||
+        diasParaCorrecao?.[0]?.medicao;
+      if (!medicaoParaCorrecaoUuid) {
+        return toastError("Erro ao salvar correções.");
+      }
       const response = await escolaCorrigeMedicao(
-        valoresPeriodosLancamentos[0].medicao_uuid,
+        medicaoParaCorrecaoUuid,
         payloadParaCorrecao,
       );
       if (response.status === HTTP_STATUS.OK) {
@@ -2596,16 +2602,17 @@ export default () => {
             alteracoesAlimentacaoAutorizadas,
             validacaoDiaLetivo,
           ) ||
-          exibirTooltipLancheEmergencialNaoAutorizado(
-            formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            alteracoesAlimentacaoAutorizadas,
-            diasLancheEmergencialDiarioAtivo,
-            value,
-            ehChangeInput,
-          )) &&
+          (grupoLocation !== "Solicitações de Alimentação Extraordinárias" &&
+            exibirTooltipLancheEmergencialNaoAutorizado(
+              formValuesAtualizados,
+              row,
+              column,
+              categoria,
+              alteracoesAlimentacaoAutorizadas,
+              diasLancheEmergencialDiarioAtivo,
+              value,
+              ehChangeInput,
+            ))) &&
         !formValuesAtualizados[
           `observacoes__dia_${dia}__categoria_${categoria.id}`
         ]) ||
@@ -4221,14 +4228,18 @@ export default () => {
                                                               categoria,
                                                               kitLanchesAutorizadas,
                                                             )}
-                                                            exibeTooltipLancheEmergencialNaoAutorizado={exibirTooltipLancheEmergencialNaoAutorizado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                              diasLancheEmergencialDiarioAtivo,
-                                                            )}
+                                                            exibeTooltipLancheEmergencialNaoAutorizado={
+                                                              grupoLocation !==
+                                                                "Solicitações de Alimentação Extraordinárias" &&
+                                                              exibirTooltipLancheEmergencialNaoAutorizado(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesAlimentacaoAutorizadas,
+                                                                diasLancheEmergencialDiarioAtivo,
+                                                              )
+                                                            }
                                                             exibeTooltipLancheEmergencialAutorizado={
                                                               grupoLocation !==
                                                                 "Solicitações de Alimentação Extraordinárias" &&

@@ -1681,8 +1681,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
     if (ehCorrecao) {
       const payloadParaCorrecao = formatarPayloadParaCorrecao(payload);
+      const medicaoParaCorrecaoUuid =
+        valoresPeriodosLancamentos[0]?.medicao_uuid ||
+        diasParaCorrecao?.[0]?.medicao;
+      if (!medicaoParaCorrecaoUuid) {
+        return toastError("Erro ao salvar correções.");
+      }
       const response = await escolaCorrigeMedicao(
-        valoresPeriodosLancamentos[0].medicao_uuid,
+        medicaoParaCorrecaoUuid,
         payloadParaCorrecao,
       );
       if (response.status === HTTP_STATUS.OK) {
@@ -2064,13 +2070,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                     categoria,
                     alteracoesAlimentacaoAutorizadas,
                   )) ||
-                exibirTooltipLancheEmergencialNaoAutorizado(
-                  formValuesAtualizados,
-                  row,
-                  column,
-                  categoria,
-                  alteracoesAlimentacaoAutorizadas,
-                ))))) ||
+                (!ehSolicitacoesAlimentacaoExtraordinariasLocation &&
+                  exibirTooltipLancheEmergencialNaoAutorizado(
+                    formValuesAtualizados,
+                    row,
+                    column,
+                    categoria,
+                    alteracoesAlimentacaoAutorizadas,
+                  )))))) ||
         ((ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) &&
           campoFrequenciaValor0ESemObservacao(
             column.dia,
@@ -3550,13 +3557,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                                                                 permissoesLancamentosEspeciaisPorDia,
                                                               )
                                                             }
-                                                            exibeTooltipLancheEmergencialNaoAutorizado={exibirTooltipLancheEmergencialNaoAutorizado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                            )}
+                                                            exibeTooltipLancheEmergencialNaoAutorizado={
+                                                              !ehSolicitacoesAlimentacaoExtraordinariasLocation &&
+                                                              exibirTooltipLancheEmergencialNaoAutorizado(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesAlimentacaoAutorizadas,
+                                                              )
+                                                            }
                                                             exibeTooltipLancheEmergencialZeroAutorizadoJustificado={exibirTooltipLancheEmergencialZeroAutorizadoJustificado(
                                                               formValuesAtualizados,
                                                               row,
