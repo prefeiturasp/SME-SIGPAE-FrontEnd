@@ -12,7 +12,7 @@ export const mockRelatorioAdesaoPaginado10a20Dezenbro2023 = {
         nome: "EMEF PRESTES MAIA",
         codigo_eol: "015423",
       },
-      resultados: mockRelatorioAdesao10a20Dezenbro2023,
+      resultados: mockRelatorioAdesao10a20Dezenbro2023.resultados,
     },
     {
       escola: {
