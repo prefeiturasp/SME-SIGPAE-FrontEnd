@@ -1221,7 +1221,8 @@ export const exibirModuloMedicaoInicial = () => {
       usuarioEhDinutreDiretoria() ||
       usuarioEhEmpresaTerceirizada() ||
       usuarioEhCoordenadorNutriSupervisao() ||
-      usuarioEhAdministradorNutriSupervisao()
+      usuarioEhAdministradorNutriSupervisao() ||
+      ehUsuarioRelatorios()
     );
 
   switch (localStorage.getItem("tipo_perfil")) {
@@ -1262,6 +1263,22 @@ export const exibirModuloOcorrencias = () => {
       usuarioEhDilog() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhDilogDiretoria())
+  );
+};
+
+export const exibirRelatorioAlimentacoesServidas = () => {
+  return (
+    !["production"].includes(ENVIRONMENT) &&
+    (usuarioEhDRE() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
+      usuarioEhMedicao() ||
+      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhAdministradorNutriSupervisao() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhCODAEGabinete() ||
+      ehUsuarioRelatorios() ||
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhEmpresaTerceirizada())
   );
 };
 
