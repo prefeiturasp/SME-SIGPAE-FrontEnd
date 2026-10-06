@@ -21,7 +21,14 @@ import {
   usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 import { loadFoodSuspension } from "src/reducers/suspensaoDeAlimentacaoReducer";
-import { Field, FormSection, formValueSelector, reduxForm } from "redux-form";
+import {
+  Field,
+  FormSection,
+  formValueSelector,
+  reduxForm,
+  stopSubmit,
+  touch,
+} from "redux-form";
 import { getQuantidadeAlunosCEMEIporPeriodoCEIEMEI } from "src/services/aluno.service";
 import {
   createSuspensaoDeAlimentacao,
@@ -34,7 +41,11 @@ import { STATUS_DRE_A_VALIDAR } from "../../configs/constants";
 import { getVinculosTipoAlimentacaoPorEscola } from "../../services/cadastroTipoAlimentacao.service";
 import { getQuantidaDeAlunosPorPeriodoEEscola } from "../../services/escola.service";
 import Botao from "../Shareable/Botao";
-import { BUTTON_STYLE, BUTTON_TYPE } from "../Shareable/Botao/constants";
+import {
+  BUTTON_ICON,
+  BUTTON_STYLE,
+  BUTTON_TYPE,
+} from "../Shareable/Botao/constants";
 import CardMatriculados from "../Shareable/CardMatriculados";
 import { InputComData } from "../Shareable/DatePicker";
 import { InputText } from "../Shareable/Input/InputText";
@@ -43,6 +54,7 @@ import { toastError, toastSuccess } from "../Shareable/Toast/dialogs";
 import { Rascunhos } from "./Rascunhos";
 import "./style.scss";
 import { validateSubmit } from "./validacao";
+import { normalizarData } from "./helper";
 
 const ENTER = 13;
 class FoodSuspensionEditor extends Component {
@@ -81,30 +93,32 @@ class FoodSuspensionEditor extends Component {
     this.titleRef = React.createRef();
   }
 
-  handleField(field, value, key) {
+  handleField(field, value, id) {
     this.setState((prevState) => {
       const dias_razoes = [...prevState.dias_razoes];
       const acimaDoLimite = [...prevState.acimaDoLimite];
-      dias_razoes[key] = { ...dias_razoes[key], [field]: value };
-      if (field === `motivo${key}`) {
+      const indice = dias_razoes.findIndex((dia) => dia.id === id);
+      if (indice === -1) return {};
+
+      dias_razoes[indice] = { ...dias_razoes[indice], [field]: value };
+
+      if (field === `motivo_${id}`) {
         const indiceMotivo = this.props.motivos.findIndex(
           (motivo) => motivo.uuid === value,
         );
-        dias_razoes[key]["outroMotivo"] =
+        dias_razoes[indice]["outroMotivo"] =
           this.props.motivos[indiceMotivo].nome.includes("Outro");
       }
-      if (field === "outro_motivo" + key) {
+
+      if (field === `outro_motivo_${id}`) {
         if (value.length > 500) {
-          if (!acimaDoLimite.includes(key)) {
-            acimaDoLimite.push(key);
-          }
+          if (!acimaDoLimite.includes(id)) acimaDoLimite.push(id);
         } else {
-          const index = acimaDoLimite.indexOf(key);
-          if (index > -1) {
-            acimaDoLimite.splice(index, 1);
-          }
+          const index = acimaDoLimite.indexOf(id);
+          if (index > -1) acimaDoLimite.splice(index, 1);
         }
       }
+
       return { dias_razoes, acimaDoLimite };
     });
   }
@@ -199,19 +213,20 @@ class FoodSuspensionEditor extends Component {
   diasRazoesFromSuspensoesAlimentacao(suspensoesAlimentacao) {
     let novoDiasRazoes = [];
     suspensoesAlimentacao.forEach(function (suspensaoAlimentacao) {
-      const idx = suspensoesAlimentacao.findIndex(
-        (value2) => value2.data === suspensaoAlimentacao.data,
-      );
+      const novoId = geradorUUID();
       let novoDia = {
-        id: geradorUUID(),
+        id: novoId,
         data: suspensaoAlimentacao.data,
         motivo: suspensaoAlimentacao.motivo.uuid,
         outroMotivo:
           suspensaoAlimentacao.outro_motivo !== null &&
           suspensaoAlimentacao.outro_motivo !== "",
+        [`data_${novoId}`]: suspensaoAlimentacao.data,
+        [`motivo_${novoId}`]: suspensaoAlimentacao.motivo.uuid,
       };
-      novoDia[`data${idx}`] = suspensaoAlimentacao.data;
-      novoDia[`motivo${idx}`] = suspensaoAlimentacao.motivo.uuid;
+      if (suspensaoAlimentacao.outro_motivo) {
+        novoDia[`outro_motivo_${novoId}`] = suspensaoAlimentacao.outro_motivo;
+      }
       novoDiasRazoes.push(novoDia);
     });
     return novoDiasRazoes;
@@ -483,14 +498,13 @@ class FoodSuspensionEditor extends Component {
     // Refatorar aqui.
     values.dias_razoes = deepCopy(this.state.dias_razoes);
     values.dias_razoes.forEach((value) => {
-      const idx = values.dias_razoes.findIndex(
-        (value2) => value2.id === value.id,
-      );
-      values.dias_razoes[idx]["data"] = values.dias_razoes[idx][`data${idx}`];
+      const idx = values.dias_razoes.findIndex((v) => v.id === value.id);
+      values.dias_razoes[idx]["data"] =
+        values.dias_razoes[idx][`data_${value.id}`];
       values.dias_razoes[idx]["motivo"] =
-        values.dias_razoes[idx][`motivo${idx}`];
+        values.dias_razoes[idx][`motivo_${value.id}`];
       values.dias_razoes[idx]["outro_motivo"] =
-        values.dias_razoes[idx][`outro_motivo${idx}`];
+        values.dias_razoes[idx][`outro_motivo_${value.id}`];
     });
     values.escola = this.props.meusDados.vinculo_atual.instituicao.uuid;
     const error = validateSubmit(values, this.props.meusDados);
@@ -513,9 +527,27 @@ class FoodSuspensionEditor extends Component {
               } else {
                 toastSuccess("Suspensão de Alimentação salva com sucesso");
               }
+              // } else {
+              //   const data = res?.data ?? res;
+              //   const mensagem = Array.isArray(data?.message)
+              //     ? data.message.join("\n")
+              //     : data?.message;
+              //   toastError(
+              //     mensagem || getError(data ?? "Houve um erro ao salvar a suspensão de alimentação"),
+              //   );
+              // }
             } else {
+              const data = res?.data ?? res;
+              this.marcarCamposComConflito(data, values);
+              const mensagem = Array.isArray(data?.message)
+                ? data.message.join("\n")
+                : data?.message;
               toastError(
-                `Erro ao enviar suspensão de alimentação: ${getError(res.data)}`,
+                mensagem ||
+                  getError(
+                    data ??
+                      "Houve um erro ao salvar a suspensão de alimentação",
+                  ),
               );
             }
           },
@@ -535,10 +567,16 @@ class FoodSuspensionEditor extends Component {
                 toastSuccess("Suspensão de alimentação atualizada com sucesso");
               }
             } else {
+              const data = res?.data ?? res;
+              const mensagem = Array.isArray(data?.message)
+                ? data.message.join("\n")
+                : data?.message;
               toastError(
-                `Erro ao atualizar a suspensão de alimentação: ${getError(
-                  res.data,
-                )}`,
+                mensagem ||
+                  getError(
+                    data ??
+                      "Houve um erro ao atualizar a suspensão de alimentação",
+                  ),
               );
             }
           },
@@ -551,6 +589,34 @@ class FoodSuspensionEditor extends Component {
       toastError(error);
     }
   }
+
+  marcarCamposComConflito = (data, values) => {
+    const conflitos = data?.conflitos;
+    if (!Array.isArray(conflitos) || conflitos.length === 0) return;
+
+    const MSG = "Conflito com outra solicitação";
+    const erros = {};
+    const camposTocados = [];
+
+    conflitos.forEach((conflito) => {
+      values.dias_razoes.forEach((dia) => {
+        const campoData = `data_${dia.id}`;
+        if (normalizarData(dia[campoData]) === conflito.data) {
+          const secao = `dias_razoes_${dia.id}`;
+          erros[secao] = { ...erros[secao], [campoData]: MSG };
+          camposTocados.push(`${secao}.${campoData}`);
+        }
+      });
+
+      const secaoPeriodo = `suspensoes_${conflito.periodo}`;
+      erros[secaoPeriodo] = { ...erros[secaoPeriodo], tipo_de_refeicao: MSG };
+      camposTocados.push(`${secaoPeriodo}.tipo_de_refeicao`);
+    });
+
+    const { dispatch } = this.props;
+    dispatch(stopSubmit("foodSuspension", erros));
+    dispatch(touch("foodSuspension", ...camposTocados));
+  };
 
   onCheckInput = (indice) => {
     let periodos = this.props.periodos;
@@ -579,6 +645,22 @@ class FoodSuspensionEditor extends Component {
       event.preventDefault();
     }
   }
+
+  removerDiaAdicional = (id) => {
+    const { dias_razoes, acimaDoLimite } = this.state;
+
+    if (!dias_razoes.find((dia) => dia.id === id) || dias_razoes[0].id === id)
+      return;
+
+    this.props.change(`dias_razoes_${id}.data_${id}`, undefined);
+    this.props.change(`dias_razoes_${id}.motivo_${id}`, undefined);
+    this.props.change(`dias_razoes_${id}.outro_motivo_${id}`, undefined);
+
+    this.setState({
+      dias_razoes: dias_razoes.filter((dia) => dia.id !== id),
+      acimaDoLimite: acimaDoLimite.filter((itemId) => itemId !== id),
+    });
+  };
 
   render() {
     const {
@@ -647,76 +729,91 @@ class FoodSuspensionEditor extends Component {
             <div className="card solicitation mt-3">
               <div className="card-body">
                 <div className="card-title fw-bold">Descrição da Suspensão</div>
-                {dias_razoes.map((dia_motivo, key) => {
-                  return (
-                    <FormSection
-                      key={key}
-                      name={`dias_razoes_${dia_motivo.data}`}
-                    >
+                {dias_razoes.map((dia_motivo, key) => (
+                  <FormSection
+                    key={dia_motivo.id}
+                    name={`dias_razoes_${dia_motivo.id}`}
+                  >
+                    <div className="form-row">
+                      <div className="form-group col-sm-3">
+                        <Field
+                          component={InputComData}
+                          name={`data_${dia_motivo.id}`}
+                          minDate={proximos_dois_dias_uteis}
+                          maxDate={fimDoCalendario()}
+                          onChange={(value) =>
+                            this.handleField(
+                              `data_${dia_motivo.id}`,
+                              value,
+                              dia_motivo.id,
+                            )
+                          }
+                          label="Dia"
+                          required
+                          validate={required}
+                          showMonthDropdown={true}
+                          showYearDropdown={true}
+                        />
+                      </div>
+                      <div className="form-group col-sm-6">
+                        <Field
+                          component={Select}
+                          name={`motivo_${dia_motivo.id}`}
+                          label="Motivo"
+                          options={motivos}
+                          onChange={(event) =>
+                            this.handleField(
+                              `motivo_${dia_motivo.id}`,
+                              event.target.value,
+                              dia_motivo.id,
+                            )
+                          }
+                          required
+                          validate={required}
+                        />
+                      </div>
+                      {key > 0 && (
+                        <Botao
+                          texto="Remover dia"
+                          titulo="remover_dia"
+                          icon={BUTTON_ICON.TRASH}
+                          type={BUTTON_TYPE.BUTTON}
+                          style={BUTTON_STYLE.BLUE_OUTLINE}
+                          className="btn-remover btn-remover-dia"
+                          onClick={() =>
+                            this.removerDiaAdicional(dia_motivo.id)
+                          }
+                        />
+                      )}
+                    </div>
+                    {dia_motivo.outroMotivo && (
                       <div className="form-row">
-                        <div className="form-group col-sm-3">
+                        <div className="form-group col-sm-12">
                           <Field
-                            component={InputComData}
-                            name={`data${key}`}
-                            minDate={proximos_dois_dias_uteis}
-                            maxDate={fimDoCalendario()}
-                            onChange={(value) =>
-                              this.handleField(`data${key}`, value, key)
-                            }
-                            label="Dia"
-                            required
-                            validate={required}
-                            showMonthDropdown={true}
-                            showYearDropdown={true}
-                          />
-                        </div>
-                        <div className="form-group col-sm-8">
-                          <Field
-                            component={Select}
-                            name={`motivo${key}`}
-                            label="Motivo"
-                            options={motivos}
+                            component={TextArea}
+                            label="Qual o motivo?"
+                            name={`outro_motivo_${dia_motivo.id}`}
                             onChange={(event) =>
                               this.handleField(
-                                `motivo${key}`,
+                                `outro_motivo_${dia_motivo.id}`,
                                 event.target.value,
-                                key,
+                                dia_motivo.id,
                               )
                             }
                             required
+                            className="form-control"
                             validate={required}
                           />
+                          {this.state.acimaDoLimite.includes(dia_motivo.id) && (
+                            <div className="error-msg">
+                              Limite máximo de 500 caracteres
+                            </div>
+                          )}
                         </div>
                       </div>
-                      {dia_motivo.outroMotivo && (
-                        <div className="form-row">
-                          <div className="form-group col-sm-12">
-                            <Field
-                              component={TextArea}
-                              label="Qual o motivo?"
-                              onChange={(event) =>
-                                this.handleField(
-                                  `outro_motivo${key}`,
-                                  event.target.value,
-                                  key,
-                                )
-                              }
-                              required
-                              name={`outro_motivo${key}`}
-                              className="form-control"
-                              validate={required}
-                            />
-                            {this.state.acimaDoLimite.includes(key) && (
-                              <div className="error-msg">
-                                Limite máximo de 500 caracteres
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </FormSection>
-                  );
-                })}
+                    )}
+                  </FormSection>
+                ))}
                 <Botao
                   texto="Adicionar dia"
                   titulo="Adicionar dia"
@@ -936,6 +1033,7 @@ const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       loadFoodSuspension,
+      stopSubmit,
     },
     dispatch,
   );
