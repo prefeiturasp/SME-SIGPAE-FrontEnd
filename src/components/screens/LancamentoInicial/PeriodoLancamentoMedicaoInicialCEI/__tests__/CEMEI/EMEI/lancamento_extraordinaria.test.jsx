@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -149,5 +150,56 @@ describe("Lançamento UE - Solicitações de Alimentação Extraordinárias - EM
     expect(corrigeConfig.url).toContain(
       `${MEDICAO_UUID}/escola-corrige-medicao/`,
     );
+  });
+
+  it("botão de Observações fica GREEN_OUTLINE e abre o modal com a data do dia", async () => {
+    await renderPage(() => [200, { valores_medicao: [] }]);
+
+    const divObservacoes = screen.getByTestId(
+      "div-botao-add-obs-01-5-observacoes",
+    );
+    const botaoObservacoes = within(divObservacoes)
+      .getByText("Adicionar")
+      .closest("button");
+    expect(botaoObservacoes.className).toContain("green-button-outline");
+
+    fireEvent.click(botaoObservacoes);
+
+    await waitFor(() =>
+      expect(screen.getByText("Observação Diária")).toBeInTheDocument(),
+    );
+    expect(document.querySelector(".data_lancamento_modal")).toHaveValue(
+      "01/05/2025",
+    );
+  });
+
+  it("marca Lanche Emergencial como obrigatório até preencher", async () => {
+    await renderPage(() => [200, { valores_medicao: [] }]);
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId("lanche_emergencial__dia_01__categoria_5").className,
+      ).toContain("invalid-field"),
+    );
+
+    fireEvent.change(
+      screen.getByTestId("lanche_emergencial__dia_01__categoria_5"),
+      { target: { value: "5" } },
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId("lanche_emergencial__dia_01__categoria_5").className,
+      ).not.toContain("invalid-field"),
+    );
+  });
+
+  it("aceita digitar no Lanche Emergencial sem quebrar", async () => {
+    await renderPage(() => [200, { valores_medicao: [] }]);
+
+    const input = screen.getByTestId("lanche_emergencial__dia_01__categoria_5");
+    fireEvent.change(input, { target: { value: "7" } });
+
+    expect(input).toHaveValue("7");
   });
 });

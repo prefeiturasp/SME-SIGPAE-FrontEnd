@@ -174,4 +174,16 @@ describe("Lançamento UE - Solicitações de Alimentação Extraordinárias", ()
       `${MEDICAO_UUID}/escola-corrige-medicao/`,
     );
   });
+
+  it("botões de Observações ficam GREEN_OUTLINE no bloco extraordinário", async () => {
+    await renderPage(() => [200, { valores_medicao: [] }]);
+
+    const botoesAdicionar = screen.getAllByText("Adicionar");
+    expect(botoesAdicionar.length).toBeGreaterThan(0);
+    botoesAdicionar.forEach((botao) =>
+      expect(botao.closest("button").className).toContain(
+        "green-button-outline",
+      ),
+    );
+  });
 });
