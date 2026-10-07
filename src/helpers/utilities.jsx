@@ -629,6 +629,7 @@ export const usuarioComAcessoAoPainelFichasTecnicas = () => {
     PERFIL.DILOG_QUALIDADE,
     PERFIL.DILOG_ABASTECIMENTO,
     PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.DILOG_VISUALIZACAO,
   ].includes(localStorage.getItem("perfil"));
 };
 
