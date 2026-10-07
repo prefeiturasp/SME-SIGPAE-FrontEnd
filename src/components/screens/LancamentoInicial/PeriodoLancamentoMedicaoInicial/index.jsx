@@ -266,6 +266,8 @@ export default () => {
   const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
   const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
+  const ehGrupoSolicitacoesExtraordinarias =
+    grupoLocation === "Solicitações de Alimentação Extraordinárias";
   const ehFluxoCorrecao = [
     "MEDICAO_CORRECAO_SOLICITADA",
     "MEDICAO_CORRECAO_SOLICITADA_CODAE",
@@ -3753,6 +3755,7 @@ export default () => {
                                                           BUTTON_TYPE.BUTTON
                                                         }
                                                         style={
+                                                          !ehGrupoSolicitacoesExtraordinarias &&
                                                           botaoAdicionarObrigatorio(
                                                             formValuesAtualizados,
                                                             column,
@@ -4053,6 +4056,7 @@ export default () => {
                                                               BUTTON_TYPE.BUTTON
                                                             }
                                                             style={
+                                                              !ehGrupoSolicitacoesExtraordinarias &&
                                                               botaoAdicionarObrigatorioTabelaAlimentacao(
                                                                 formValuesAtualizados,
                                                                 column.dia,
