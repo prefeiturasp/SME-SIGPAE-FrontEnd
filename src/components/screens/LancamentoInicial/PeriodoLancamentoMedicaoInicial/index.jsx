@@ -266,6 +266,12 @@ export default () => {
   const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
   const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
+  const ehFluxoCorrecao = [
+    "MEDICAO_CORRECAO_SOLICITADA",
+    "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    "MEDICAO_CORRIGIDA_PELA_UE",
+    "MEDICAO_CORRIGIDA_PARA_CODAE",
+  ].includes(location?.state?.status_periodo);
 
   const getListaDiasSobremesaDoceAsync = async (escola_uuid) => {
     const params = {
@@ -1757,6 +1763,7 @@ export default () => {
     const intervalCall = setInterval(() => {
       formValuesAtualizados &&
         !disableBotaoSalvarLancamentos &&
+        !ehFluxoCorrecao &&
         onSubmit(
           formValuesAtualizados,
           dadosValoresInclusoesAutorizadasState,
@@ -2206,13 +2213,14 @@ export default () => {
       setShowModalErro(true);
     } else {
       setSemanaSelecionada(key);
-      onSubmit(
-        formValuesAtualizados,
-        dadosValoresInclusoesAutorizadasState,
-        true,
-        false,
-        false,
-      );
+      !ehFluxoCorrecao &&
+        onSubmit(
+          formValuesAtualizados,
+          dadosValoresInclusoesAutorizadasState,
+          true,
+          false,
+          false,
+        );
       return (values["week"] = Number(key));
     }
   };
@@ -2225,13 +2233,14 @@ export default () => {
       setShowModalErro(true);
     } else {
       setAlunosTabSelecionada(key);
-      onSubmit(
-        formValuesAtualizados,
-        dadosValoresInclusoesAutorizadasState,
-        true,
-        false,
-        false,
-      );
+      !ehFluxoCorrecao &&
+        onSubmit(
+          formValuesAtualizados,
+          dadosValoresInclusoesAutorizadasState,
+          true,
+          false,
+          false,
+        );
     }
   };
 
