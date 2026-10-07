@@ -278,6 +278,12 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const ehGrupoSolicitacoesAlimentacao =
     ehSolicitacoesAlimentacaoSomente ||
     ehSolicitacoesAlimentacaoExtraordinariasLocation;
+  const ehFluxoCorrecao = [
+    "MEDICAO_CORRECAO_SOLICITADA",
+    "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    "MEDICAO_CORRIGIDA_PELA_UE",
+    "MEDICAO_CORRIGIDA_PARA_CODAE",
+  ].includes(location.state?.status_periodo);
   const ehProgramasEProjetosLocation =
     location &&
     location.state &&
@@ -1324,6 +1330,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     const intervalCall = setInterval(() => {
       formValuesAtualizados &&
         !disableBotaoSalvarLancamentos &&
+        !ehFluxoCorrecao &&
         onSubmit(
           formValuesAtualizados,
           dadosValoresInclusoesAutorizadasState,
@@ -1771,13 +1778,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       setShowModalErro(true);
     } else {
       setSemanaSelecionada(key);
-      onSubmit(
-        formValuesAtualizados,
-        dadosValoresInclusoesAutorizadasState,
-        true,
-        false,
-        false,
-      );
+      !ehFluxoCorrecao &&
+        onSubmit(
+          formValuesAtualizados,
+          dadosValoresInclusoesAutorizadasState,
+          true,
+          false,
+          false,
+        );
       return (values["week"] = Number(key));
     }
   };
