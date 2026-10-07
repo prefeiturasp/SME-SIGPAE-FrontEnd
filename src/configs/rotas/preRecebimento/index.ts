@@ -306,7 +306,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.ANALISAR_FICHA_TECNICA}`,
     component: AnalisarFichaTecnicaPage,
     exact: true,
-    tipoUsuario: usuarioComAcessoAoPainelFichasTecnicas(),
+    tipoUsuario:
+      usuarioComAcessoAoPainelFichasTecnicas() && !usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.DETALHAR_FICHA_TECNICA}/`,

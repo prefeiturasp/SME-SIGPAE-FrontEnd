@@ -8,6 +8,7 @@ import {
 jest.mock("src/helpers/utilities", () => ({
   usuarioEhDilogAbastecimento: jest.fn(),
   usuarioEhCronograma: jest.fn(),
+  usuarioEhDilogVisualizacao: jest.fn(),
 }));
 
 const mockItem = (status: string) => ({

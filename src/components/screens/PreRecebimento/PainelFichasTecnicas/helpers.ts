@@ -13,6 +13,7 @@ import {
   truncarString,
   usuarioEhDilogAbastecimento,
   usuarioEhCronograma,
+  usuarioEhDilogVisualizacao,
 } from "src/helpers/utilities";
 
 export const formatarCards = (items: FichaTecnicaDashboard[]): CardItem[] => {
@@ -34,7 +35,11 @@ export const gerarLinkItemFichaTecnica = (
   const urlDetalhar = `/${PRE_RECEBIMENTO}/${DETALHAR_FICHA_TECNICA}`;
   const urlAnalisar = `/${PRE_RECEBIMENTO}/${ANALISAR_FICHA_TECNICA}`;
 
-  if (usuarioEhDilogAbastecimento() || usuarioEhCronograma()) {
+  if (
+    usuarioEhDilogAbastecimento() ||
+    usuarioEhCronograma() ||
+    usuarioEhDilogVisualizacao()
+  ) {
     return urlDetalhar;
   }
 
