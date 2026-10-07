@@ -81,11 +81,15 @@ export default () => {
         setPaginacao({ count: data.count, page_size: data.page_size });
         setPaginaAtual(page);
       } else {
-        setHaAlgumaAdesao(true);
+        const data = response.data as unknown as {
+          resultados: RelatorioAdesaoResponse;
+          possui_resultados: boolean;
+        };
+        setHaAlgumaAdesao(data.possui_resultados);
         setEscola(null);
         setResultadoIndividual(null);
         setPaginacao(null);
-        setResultado(response.data as unknown as RelatorioAdesaoResponse);
+        setResultado(data.resultados);
       }
     } else {
       toastError(

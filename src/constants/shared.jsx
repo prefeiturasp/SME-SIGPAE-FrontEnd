@@ -640,4 +640,5 @@ export const STATUS_IMR_FORMULARIO_SUPERVISAO = {
 
 export const STATUS_DOCUMENTOS_DE_RECEBIMENTO = {
   APROVADO: "Aprovado",
+  REPROVADO: "Reprovado",
 };
