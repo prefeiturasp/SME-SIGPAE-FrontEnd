@@ -200,6 +200,9 @@ export default ({
   };
 
   const setUpModal = () => {
+    if (dia && mesAnoConsiderado) {
+      form.change("data_lancamento", formatarDataLancamento());
+    }
     if (dia && categoria) {
       if (
         !values[`${rowName}__dia_${dia}__categoria_${categoria}`] &&
