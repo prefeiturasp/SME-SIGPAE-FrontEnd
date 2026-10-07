@@ -56,6 +56,28 @@ const periodosComExtraordinariaAprovada = {
   ],
 };
 
+const periodosComExtraordinariaCorrecao = {
+  results: [
+    medicaoAprovada("MANHA", "m1"),
+    medicaoAprovada("Solicitações de Alimentação", "s1"),
+    {
+      uuid_medicao_periodo_grupo: "e1",
+      nome_periodo_grupo: GRUPO_EXTRAORDINARIO,
+      periodo_escolar: null,
+      grupo: GRUPO_EXTRAORDINARIO,
+      status: "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      logs: [
+        {
+          status_evento_explicacao: "Correção solicitada pela CODAE",
+          criado_em: "01/10/2025 10:00:00",
+          justificativa: "<p>corrige os dias 2, 3 e 4</p>",
+          usuario: {},
+        },
+      ],
+    },
+  ],
+};
+
 const setup = async ({ solicitacao, periodos }) => {
   process.env.IS_TEST = true;
 
@@ -229,5 +251,35 @@ describe("Conferência de Lançamentos - bloco extraordinário: botões e aprova
     fireEvent.click(botaoSim.closest("button"));
 
     await waitFor(() => expect(chamouEndpoint).toBe(true));
+  });
+
+  it("não renderiza o bloco extraordinário quando a flag é false", async () => {
+    await setup({
+      solicitacao: {
+        ...solicitacaoAprovadaDRE,
+        lanche_emergencial_extraordinario: false,
+      },
+      periodos: periodosSemExtraordinaria,
+    });
+
+    expect(
+      screen.queryByText("Solicitação de Correção pela CODAE"),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText(GRUPO_EXTRAORDINARIO)).not.toBeInTheDocument();
+  });
+
+  it("renderiza o bloco vindo do backend (dados da medição) em vez do sintético", async () => {
+    await setup({
+      solicitacao: solicitacaoAprovadaDRE,
+      periodos: periodosComExtraordinariaCorrecao,
+    });
+
+    expect(screen.getByText(GRUPO_EXTRAORDINARIO)).toBeInTheDocument();
+    expect(
+      screen.getByText("Devolvido para ajustes pela CODAE"),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Solicitação de Correção"),
+    ).not.toBeInTheDocument();
   });
 });
