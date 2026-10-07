@@ -12,7 +12,7 @@ export const mockRelatorioAdesaoPaginado10a20Dezenbro2023 = {
         nome: "EMEF PRESTES MAIA",
         codigo_eol: "015423",
       },
-      resultados: mockRelatorioAdesao10a20Dezenbro2023,
+      resultados: mockRelatorioAdesao10a20Dezenbro2023.resultados,
     },
     {
       escola: {
@@ -36,7 +36,7 @@ export const mockRelatorioAdesaoPaginadoPorPagina = {
           nome: "EMEF PRESTES MAIA",
           codigo_eol: "015423",
         },
-        resultados: mockRelatorioAdesao10a20Dezenbro2023,
+        resultados: mockRelatorioAdesao10a20Dezenbro2023.resultados,
       },
     ],
   },
@@ -67,7 +67,7 @@ export const mockRelatorioAdesaoPaginadoPorData = {
       {
         data: "10/12/2023",
         tipo_unidade: "Grupo 3 - EMEI, CEU EMEI",
-        resultados: mockRelatorioAdesao10a20Dezenbro2023,
+        resultados: mockRelatorioAdesao10a20Dezenbro2023.resultados,
       },
     ],
   },
@@ -80,7 +80,7 @@ export const mockRelatorioAdesaoPaginadoPorData = {
       {
         data: "11/12/2023",
         tipo_unidade: "Grupo 3 - EMEI, CEU EMEI",
-        resultados: mockRelatorioAdesao10a20Dezenbro2023,
+        resultados: mockRelatorioAdesao10a20Dezenbro2023.resultados,
       },
     ],
   },
