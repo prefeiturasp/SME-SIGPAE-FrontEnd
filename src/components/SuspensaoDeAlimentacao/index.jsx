@@ -527,15 +527,6 @@ class FoodSuspensionEditor extends Component {
               } else {
                 toastSuccess("Suspensão de Alimentação salva com sucesso");
               }
-              // } else {
-              //   const data = res?.data ?? res;
-              //   const mensagem = Array.isArray(data?.message)
-              //     ? data.message.join("\n")
-              //     : data?.message;
-              //   toastError(
-              //     mensagem || getError(data ?? "Houve um erro ao salvar a suspensão de alimentação"),
-              //   );
-              // }
             } else {
               const data = res?.data ?? res;
               this.marcarCamposComConflito(data, values);
