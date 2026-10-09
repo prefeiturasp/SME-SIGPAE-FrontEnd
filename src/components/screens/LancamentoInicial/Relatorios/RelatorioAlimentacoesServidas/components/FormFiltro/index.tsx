@@ -1,16 +1,17 @@
 import { Skeleton, Spin, TreeSelect } from "antd";
 import { Field } from "react-final-form";
 
-import {
-  validateDataFinal,
-  validateDataInicial,
-} from "src/components/screens/LancamentoInicial/Relatorios/RelatorioAdesao/components/FormFiltro/helpers";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
-import Select from "src/components/Shareable/Select";
-import { required, requiredMultiselect } from "src/helpers/fieldValidators";
+import { requiredMultiselect } from "src/helpers/fieldValidators";
 
-import { validaPeriodoAte, validaPeriodoDe } from "./helpers";
+import {
+  diaPertenceAosMeses,
+  getLimitesPeriodoAte,
+  getLimitesPeriodoDe,
+  validaPeriodoAte,
+  validaPeriodoDe,
+} from "./helpers";
 import { Args, MultiSelectOption } from "./types";
 import useView from "./view";
 
@@ -18,6 +19,9 @@ const { SHOW_CHILD } = TreeSelect;
 
 export default ({ form, values }: Args) => {
   const view = useView({ form, values });
+  const possuiMes = !!values.meses?.length;
+  const filtraDiasDosMeses = (data: Date) =>
+    diaPertenceAosMeses(data, values.meses);
 
   const alteraMultiselect =
     (campo: string) => (selecionados: Array<MultiSelectOption>) =>
@@ -34,13 +38,16 @@ export default ({ form, values }: Args) => {
             <Skeleton paragraph={false} active />
           ) : (
             <Field
-              component={Select}
-              dataTestId="select-mes-referencia"
+              component={MultiselectRaw}
               label="Mês de Referência"
-              name="mes"
+              name="meses"
+              dataTestId="select-mes-referencia"
+              selected={values.meses || []}
               options={view.mesesAnosOpcoes}
+              onSelectedChanged={alteraMultiselect("meses")}
+              placeholder="Selecione o Mês de Referência"
               required
-              validate={required}
+              validate={requiredMultiselect}
             />
           )}
         </div>
@@ -59,7 +66,7 @@ export default ({ form, values }: Args) => {
               placeholder="Selecione a DRE"
               required
               validate={requiredMultiselect}
-              disabled={!values.mes}
+              disabled={!possuiMes}
             />
           )}
         </div>
@@ -181,10 +188,10 @@ export default ({ form, values }: Args) => {
                 name="periodo_lancamento_de"
                 label="Período"
                 placeholder="De"
-                minDate={validateDataInicial(values, "de")}
-                maxDate={validateDataFinal(values)}
+                {...getLimitesPeriodoDe(values)}
+                filterDate={filtraDiasDosMeses}
                 validate={validaPeriodoDe}
-                disabled={!values.mes}
+                disabled={!possuiMes}
                 showMonthDropdown={false}
                 showYearDropdown={false}
               />
@@ -196,10 +203,10 @@ export default ({ form, values }: Args) => {
                 name="periodo_lancamento_ate"
                 label="&nbsp;"
                 placeholder="Até"
-                minDate={validateDataInicial(values)}
-                maxDate={validateDataFinal(values, "ate")}
+                {...getLimitesPeriodoAte(values)}
+                filterDate={filtraDiasDosMeses}
                 validate={validaPeriodoAte}
-                disabled={!values.mes}
+                disabled={!possuiMes}
                 showMonthDropdown={false}
                 showYearDropdown={false}
               />
