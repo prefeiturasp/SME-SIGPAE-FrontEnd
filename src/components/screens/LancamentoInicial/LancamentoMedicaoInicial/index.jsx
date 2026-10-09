@@ -224,7 +224,10 @@ export default () => {
           c.mesInicio === Number(mesParam) &&
           c.uuid === recreioNasFeriasParam,
       );
-      return cadastro?.dataInicio?.toString() || periodos[0].dataBRT.toString();
+      return (
+        cadastro?.dataInicio?.toString() ||
+        new Date(Number(anoParam), Number(mesParam) - 1, 1).toString()
+      );
     }
 
     if (semMesAno) {
@@ -237,8 +240,16 @@ export default () => {
         getYear(periodo.dataBRT).toString() === String(anoParam) &&
         !periodo.recreio_nas_ferias,
     );
+    if (periodoMesAno) {
+      return periodoMesAno.dataBRT.toString();
+    }
 
-    return periodoMesAno?.dataBRT.toString() || periodos[0].dataBRT.toString();
+    const dataDaURL = new Date(Number(anoParam), Number(mesParam) - 1, 1);
+    const mesString = format(dataDaURL, "LLLL", { locale: ptBR });
+    const periodoFormatado =
+      mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + anoParam;
+    periodos.push({ dataBRT: dataDaURL, periodo: periodoFormatado });
+    return dataDaURL.toString();
   };
 
   const normalizarMesEAno = (mesParam, anoParam) => {
