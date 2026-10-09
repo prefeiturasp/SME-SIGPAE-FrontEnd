@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, stopSubmit, touch } from "redux-form";
 import { connect } from "react-redux";
 import { Rascunhos } from "./Rascunhos";
 import CKEditorField from "src/components/Shareable/CKEditorField";
@@ -36,6 +36,7 @@ class SuspensaoAlimentacaoDeCEI extends Component {
       periodos_escolares: [],
       periodos: [],
       suspensoesDeAlimentacaoList: null,
+      erroData: null,
     };
 
     this.OnEditButtonClicked = this.OnEditButtonClicked.bind(this);
@@ -99,6 +100,14 @@ class SuspensaoAlimentacaoDeCEI extends Component {
     });
   };
 
+  executaRequisicaoTratandoErro = async (requisicao) => {
+    try {
+      return await requisicao();
+    } catch (erro) {
+      return erro?.response ?? { status: erro?.status, data: undefined };
+    }
+  };
+
   OnDeleteButtonClicked = async (suspensao) => {
     if (window.confirm("Deseja remover este rascunho?")) {
       const resposta = await EscolaExcluiSuspensao(suspensao);
@@ -124,6 +133,27 @@ class SuspensaoAlimentacaoDeCEI extends Component {
       this.setState({
         suspensoesDeAlimentacaoList: resposta.data.results,
       });
+    }
+  };
+
+  extraiMensagemErro = (res) => {
+    const data = res?.data ?? res;
+    return Array.isArray(data?.message)
+      ? data.message.join("\n")
+      : data?.message || null;
+  };
+
+  trataErroSolicitacao = (res, mensagemPadrao) => {
+    const mensagem = this.extraiMensagemErro(res);
+    if (mensagem) {
+      const form = "suspensaoAlimentacaoFormCEI";
+      this.props.dispatch(
+        stopSubmit(form, { data: "Conflito com outra solicitação" }),
+      );
+      this.props.dispatch(touch(form, "data"));
+      toastError(mensagem);
+    } else {
+      toastError(mensagemPadrao);
     }
   };
 
@@ -173,6 +203,7 @@ class SuspensaoAlimentacaoDeCEI extends Component {
       salvarAtualizarLbl: "Salvar Rascunho",
       ehOutroMotivo: false,
       uuid: null,
+      erroData: null,
     });
 
     this.props.change("motivo", null);
@@ -181,49 +212,62 @@ class SuspensaoAlimentacaoDeCEI extends Component {
   };
 
   salvarRascunhoSolicitacao = async (payload) => {
-    const resposta = await EscolaSalvaRascunhoDeSuspensao(payload);
+    const resposta = await this.executaRequisicaoTratandoErro(() =>
+      EscolaSalvaRascunhoDeSuspensao(payload),
+    );
     if (resposta.status === HTTP_STATUS.CREATED) {
       this.buscaMeusRascunhos();
       this.resetForm();
       toastSuccess("Salvo com sucesso!");
     } else {
-      toastError("Erro ao salvar Rascunho");
+      this.trataErroSolicitacao(resposta, "Erro ao salvar Rascunho");
     }
   };
 
   atualizarRascunhoSolicitacao = async (payload) => {
     const { uuid } = this.state;
-    const resposta = await EscolaAtualizaSuspensao(uuid, payload);
+    const resposta = await this.executaRequisicaoTratandoErro(() =>
+      EscolaAtualizaSuspensao(uuid, payload),
+    );
     if (resposta.status === HTTP_STATUS.OK) {
       this.buscaMeusRascunhos();
       this.resetForm();
       toastSuccess("Atualizado com sucesso!");
     } else {
-      toastError("Erro ao atualizar Rascunho");
+      this.trataErroSolicitacao(resposta, "Erro ao atualizar Rascunho");
     }
   };
 
   enviaSuspensao = async (payload) => {
-    const rascunho = await EscolaSalvaRascunhoDeSuspensao(payload);
-    const uuid = rascunho.data.uuid;
-    const resposta = await escolaInformaSuspensao(uuid, payload);
+    const rascunho = await this.executaRequisicaoTratandoErro(() =>
+      EscolaSalvaRascunhoDeSuspensao(payload),
+    );
+    if (rascunho?.status !== HTTP_STATUS.CREATED) {
+      this.trataErroSolicitacao(rascunho, "Erro ao enviar Rascunho");
+      return;
+    }
+    const resposta = await this.executaRequisicaoTratandoErro(() =>
+      escolaInformaSuspensao(rascunho.data.uuid, payload),
+    );
     if (resposta.status === HTTP_STATUS.OK) {
       this.buscaMeusRascunhos();
       this.resetForm();
       toastSuccess("Enviado com sucesso!");
     } else {
-      toastError("Erro ao enviar Rascunho");
+      this.trataErroSolicitacao(resposta, "Erro ao enviar Rascunho");
     }
   };
 
   enviaRascunho = async (payload, uuid) => {
-    const resposta = await escolaInformaSuspensao(uuid, payload);
+    const resposta = await this.executaRequisicaoTratandoErro(() =>
+      escolaInformaSuspensao(uuid, payload),
+    );
     if (resposta.status === HTTP_STATUS.OK) {
       this.buscaMeusRascunhos();
       this.resetForm();
       toastSuccess("Enviado com sucesso!");
     } else {
-      toastError("Erro ao enviar Rascunho");
+      this.trataErroSolicitacao(resposta, "Erro ao enviar Rascunho");
     }
   };
 
@@ -324,7 +368,7 @@ class SuspensaoAlimentacaoDeCEI extends Component {
                   />
                   <Field
                     component={InputComData}
-                    name={`data`}
+                    name="data"
                     minDate={proximos_dois_dias_uteis}
                     maxDate={fimDoCalendario()}
                     required
@@ -388,7 +432,7 @@ class SuspensaoAlimentacaoDeCEI extends Component {
                       this.onSubmit({
                         ...values,
                         status: null,
-                      })
+                      }),
                     )}
                     className="ms-3"
                     type={BUTTON_TYPE.SUBMIT}
@@ -401,7 +445,7 @@ class SuspensaoAlimentacaoDeCEI extends Component {
                       this.onSubmit({
                         ...values,
                         status: STATUS_INFORMA_TERCEIRIZADA,
-                      })
+                      }),
                     )}
                     style={BUTTON_STYLE.GREEN}
                     className="ms-3"
