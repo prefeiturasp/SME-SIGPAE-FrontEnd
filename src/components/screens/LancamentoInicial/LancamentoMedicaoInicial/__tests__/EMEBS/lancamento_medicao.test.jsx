@@ -20,6 +20,7 @@ const escolaUuid = mockMeusDadosEscolaEMEBS.vinculo_atual.instituicao.uuid;
 const renderLancamentoMedicaoEMEBS = async ({
   systemTime,
   initialUrl = "?mes=03&ano=2025",
+  meusDados = mockMeusDadosEscolaEMEBS,
 } = {}) => {
   mock.reset();
 
@@ -28,7 +29,7 @@ const renderLancamentoMedicaoEMEBS = async ({
     jest.setSystemTime(systemTime);
   }
 
-  mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaEMEBS);
+  mock.onGet("/usuarios/meus-dados/").reply(200, meusDados);
   mock.onGet("/notificacoes/").reply(200, { results: [] });
   mock.onGet("/notificacoes/quantidade-nao-lidos/").reply(200, {
     quantidade_nao_lidos: 0,
@@ -115,7 +116,7 @@ const renderLancamentoMedicaoEMEBS = async ({
         {" "}
         <MeusDadosContext.Provider
           value={{
-            meusDados: mockMeusDadosEscolaEMEBS,
+            meusDados,
             setMeusDados: jest.fn(),
           }}
         >
@@ -245,5 +246,46 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS - Sem query string",
     );
 
     expect(requisicoesSolicitacao).toHaveLength(0);
+  });
+});
+
+describe("Teste <LancamentoMedicaoInicial> - Usuário EMEBS - período anterior ao acesso_desde", () => {
+  const meusDadosComAcessoDesde = {
+    ...mockMeusDadosEscolaEMEBS,
+    vinculo_atual: {
+      ...mockMeusDadosEscolaEMEBS.vinculo_atual,
+      instituicao: {
+        ...mockMeusDadosEscolaEMEBS.vinculo_atual.instituicao,
+        acesso_desde: "01/06/2024",
+      },
+    },
+  };
+
+  beforeEach(async () => {
+    await renderLancamentoMedicaoEMEBS({
+      systemTime: new Date("2026-04-10T10:00:00Z"),
+      initialUrl: "?mes=01&ano=2024",
+      meusDados: meusDadosComAcessoDesde,
+    });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("não reescreve a URL para o mês atual quando o período é anterior ao acesso_desde", async () => {
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(window.location.search).toBe("?mes=01&ano=2024");
+  });
+
+  it("exibe o rótulo formatado do período no Select `Período de Lançamento`", async () => {
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+
+    expect(screen.getByText("Janeiro / 2024")).toBeInTheDocument();
   });
 });
