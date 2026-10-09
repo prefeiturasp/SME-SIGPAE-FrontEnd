@@ -1,10 +1,17 @@
 import React from "react";
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import FoodSuspensionEditor from "../index";
 import { renderWithProvider } from "src/utils/test-utils";
 import { getSuspensoesDeAlimentacaoSalvas } from "src/services/suspensaoDeAlimentacao.service";
+import { createSuspensaoDeAlimentacao } from "src/services/suspensaoDeAlimentacao.service";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
+jest.mock("src/components/Shareable/Toast/dialogs");
+
+jest.mock("../validacao", () => ({
+  validateSubmit: jest.fn(() => null),
+}));
 jest.mock("src/services/suspensaoDeAlimentacao.service");
 
 const meusDadosMock = {
@@ -65,5 +72,43 @@ describe("Teste FoodSuspensionEditor - dias_razoes", () => {
 
     fireEvent.click(screen.getByText("Adicionar dia"));
     expect(container.querySelectorAll('[data-cy="Motivo"]')).toHaveLength(2);
+  });
+
+  it("deve disparar toastError com a mensagem de duplicidade e marcar o campo data", async () => {
+    const MENSAGEM =
+      "Já existe uma Solicitação de Suspensão de Alimentação para a data selecionada. Verifique os dados informados.";
+
+    createSuspensaoDeAlimentacao.mockResolvedValue({
+      status: 400,
+      data: {
+        message: [MENSAGEM],
+        conflitos: [{ data: "2026-10-15", periodo: "MANHA" }],
+      },
+    });
+
+    const { container } = setup();
+    await screen.findByText("Adicionar dia");
+
+    fireEvent.change(container.querySelector('[data-cy="Motivo"]'), {
+      target: { value: "m1" },
+    });
+    fireEvent.change(container.querySelector(".datepicker input"), {
+      target: { value: "15/10/2026" },
+    });
+
+    fireEvent.click(screen.getByText("Salvar Rascunho"));
+
+    await waitFor(() => {
+      expect(createSuspensaoDeAlimentacao).toHaveBeenCalledTimes(1);
+    });
+
+    await waitFor(() => {
+      expect(toastError).toHaveBeenCalledWith(MENSAGEM);
+    });
+
+    expect(
+      await screen.findAllByText("Conflito com outra solicitação"),
+    ).not.toHaveLength(0);
+    expect(container.querySelector(".invalid-field")).toBeInTheDocument();
   });
 });
