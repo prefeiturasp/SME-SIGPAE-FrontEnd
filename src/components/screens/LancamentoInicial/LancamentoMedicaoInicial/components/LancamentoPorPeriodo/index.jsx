@@ -43,6 +43,7 @@ import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancame
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";
 import { CardLancamento } from "./CardLancamento";
 import {
+  COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
   CORES,
   removeObjetosDuplicados,
   renderBotaoEnviarCorrecao,
@@ -351,6 +352,7 @@ export const LancamentoPorPeriodo = ({
       mes: mes,
       ano: ano,
       recreio_nas_ferias: recreioNasFeriasUuid,
+      voltar_unico_registro: true,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -618,6 +620,25 @@ export const LancamentoPorPeriodo = ({
                   errosAoSalvar={errosAoSalvar}
                 />
               )}
+              {quantidadeAlimentacoesLancadas.some(
+                (qtd) =>
+                  qtd.nome_periodo_grupo ===
+                  "Solicitações de Alimentação Extraordinárias",
+              ) && (
+                <CardLancamento
+                  grupo="Solicitações de Alimentação Extraordinárias"
+                  cor={COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS}
+                  tipos_alimentacao={["Lanche Emergencial"]}
+                  periodoSelecionado={periodoSelecionado}
+                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                  objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  ehGrupoSolicitacoesDeAlimentacao={true}
+                  quantidadeAlimentacoesLancadas={
+                    quantidadeAlimentacoesLancadas
+                  }
+                  errosAoSalvar={errosAoSalvar}
+                />
+              )}
             </>
           )}
           {recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial) && (
@@ -660,6 +681,25 @@ export const LancamentoPorPeriodo = ({
                   grupo="Solicitações de Alimentação"
                   cor={CORES[5]}
                   tipos_alimentacao={["Kit Lanche", "Lanche Emergencial"]}
+                  periodoSelecionado={periodoSelecionado}
+                  solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                  objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+                  ehGrupoSolicitacoesDeAlimentacao={true}
+                  quantidadeAlimentacoesLancadas={
+                    quantidadeAlimentacoesLancadas
+                  }
+                  errosAoSalvar={errosAoSalvar}
+                />
+              )}
+              {quantidadeAlimentacoesLancadas.some(
+                (qtd) =>
+                  qtd.nome_periodo_grupo ===
+                  "Solicitações de Alimentação Extraordinárias",
+              ) && (
+                <CardLancamento
+                  grupo="Solicitações de Alimentação Extraordinárias"
+                  cor={COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS}
+                  tipos_alimentacao={["Lanche Emergencial"]}
                   periodoSelecionado={periodoSelecionado}
                   solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
                   objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}

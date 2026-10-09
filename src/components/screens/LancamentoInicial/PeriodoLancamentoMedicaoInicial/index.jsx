@@ -266,6 +266,14 @@ export default () => {
   const ehGrupoETECUrlParam = urlParams.get("ehGrupoETEC") === "true";
   const grupoLocation = location?.state?.grupo;
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
+  const ehGrupoSolicitacoesExtraordinarias =
+    grupoLocation === "Solicitações de Alimentação Extraordinárias";
+  const ehFluxoCorrecao = [
+    "MEDICAO_CORRECAO_SOLICITADA",
+    "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    "MEDICAO_CORRIGIDA_PELA_UE",
+    "MEDICAO_CORRIGIDA_PARA_CODAE",
+  ].includes(location?.state?.status_periodo);
 
   const getListaDiasSobremesaDoceAsync = async (escola_uuid) => {
     const params = {
@@ -869,23 +877,23 @@ export default () => {
       }
       setTabelaDietaEnteralRows(cloneRowsDietas);
 
-      rowsSolicitacoesAlimentacao.push(
-        {
-          nome: "Lanche Emergencial",
-          name: "lanche_emergencial",
-          uuid: null,
-        },
-        {
+      rowsSolicitacoesAlimentacao.push({
+        nome: "Lanche Emergencial",
+        name: "lanche_emergencial",
+        uuid: null,
+      });
+      if (grupoLocation !== "Solicitações de Alimentação Extraordinárias") {
+        rowsSolicitacoesAlimentacao.push({
           nome: "Kit Lanche",
           name: "kit_lanche",
           uuid: null,
-        },
-        {
-          nome: "Observações",
-          name: "observacoes",
-          uuid: null,
-        },
-      );
+        });
+      }
+      rowsSolicitacoesAlimentacao.push({
+        nome: "Observações",
+        name: "observacoes",
+        uuid: null,
+      });
 
       setTabelaSolicitacoesAlimentacaoRows(rowsSolicitacoesAlimentacao);
 
@@ -1757,6 +1765,7 @@ export default () => {
     const intervalCall = setInterval(() => {
       formValuesAtualizados &&
         !disableBotaoSalvarLancamentos &&
+        !ehFluxoCorrecao &&
         onSubmit(
           formValuesAtualizados,
           dadosValoresInclusoesAutorizadasState,
@@ -2109,8 +2118,14 @@ export default () => {
         payload,
         escolaEhEMEBS(),
       );
+      const medicaoParaCorrecaoUuid =
+        valoresPeriodosLancamentos[0]?.medicao_uuid ||
+        diasParaCorrecao?.[0]?.medicao;
+      if (!medicaoParaCorrecaoUuid) {
+        return toastError("Erro ao salvar correções.");
+      }
       const response = await escolaCorrigeMedicao(
-        valoresPeriodosLancamentos[0].medicao_uuid,
+        medicaoParaCorrecaoUuid,
         payloadParaCorrecao,
       );
       if (response.status === HTTP_STATUS.OK) {
@@ -2200,13 +2215,14 @@ export default () => {
       setShowModalErro(true);
     } else {
       setSemanaSelecionada(key);
-      onSubmit(
-        formValuesAtualizados,
-        dadosValoresInclusoesAutorizadasState,
-        true,
-        false,
-        false,
-      );
+      !ehFluxoCorrecao &&
+        onSubmit(
+          formValuesAtualizados,
+          dadosValoresInclusoesAutorizadasState,
+          true,
+          false,
+          false,
+        );
       return (values["week"] = Number(key));
     }
   };
@@ -2219,13 +2235,14 @@ export default () => {
       setShowModalErro(true);
     } else {
       setAlunosTabSelecionada(key);
-      onSubmit(
-        formValuesAtualizados,
-        dadosValoresInclusoesAutorizadasState,
-        true,
-        false,
-        false,
-      );
+      !ehFluxoCorrecao &&
+        onSubmit(
+          formValuesAtualizados,
+          dadosValoresInclusoesAutorizadasState,
+          true,
+          false,
+          false,
+        );
     }
   };
 
@@ -2596,16 +2613,17 @@ export default () => {
             alteracoesAlimentacaoAutorizadas,
             validacaoDiaLetivo,
           ) ||
-          exibirTooltipLancheEmergencialNaoAutorizado(
-            formValuesAtualizados,
-            row,
-            column,
-            categoria,
-            alteracoesAlimentacaoAutorizadas,
-            diasLancheEmergencialDiarioAtivo,
-            value,
-            ehChangeInput,
-          )) &&
+          (grupoLocation !== "Solicitações de Alimentação Extraordinárias" &&
+            exibirTooltipLancheEmergencialNaoAutorizado(
+              formValuesAtualizados,
+              row,
+              column,
+              categoria,
+              alteracoesAlimentacaoAutorizadas,
+              diasLancheEmergencialDiarioAtivo,
+              value,
+              ehChangeInput,
+            ))) &&
         !formValuesAtualizados[
           `observacoes__dia_${dia}__categoria_${categoria.id}`
         ]) ||
@@ -2715,7 +2733,8 @@ export default () => {
           );
         if (
           temCorrecaoParaTabAtual &&
-          (value === "" || value === null || value === undefined)
+          (value === "" || value === null || value === undefined) &&
+          grupoLocation !== "Solicitações de Alimentação"
         ) {
           return "Preenchimento obrigatório.";
         }
@@ -3736,6 +3755,7 @@ export default () => {
                                                           BUTTON_TYPE.BUTTON
                                                         }
                                                         style={
+                                                          !ehGrupoSolicitacoesExtraordinarias &&
                                                           botaoAdicionarObrigatorio(
                                                             formValuesAtualizados,
                                                             column,
@@ -4036,6 +4056,7 @@ export default () => {
                                                               BUTTON_TYPE.BUTTON
                                                             }
                                                             style={
+                                                              !ehGrupoSolicitacoesExtraordinarias &&
                                                               botaoAdicionarObrigatorioTabelaAlimentacao(
                                                                 formValuesAtualizados,
                                                                 column.dia,
@@ -4221,21 +4242,29 @@ export default () => {
                                                               categoria,
                                                               kitLanchesAutorizadas,
                                                             )}
-                                                            exibeTooltipLancheEmergencialNaoAutorizado={exibirTooltipLancheEmergencialNaoAutorizado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                              diasLancheEmergencialDiarioAtivo,
-                                                            )}
-                                                            exibeTooltipLancheEmergencialAutorizado={exibirTooltipLancheEmergencialAutorizado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                            )}
+                                                            exibeTooltipLancheEmergencialNaoAutorizado={
+                                                              grupoLocation !==
+                                                                "Solicitações de Alimentação Extraordinárias" &&
+                                                              exibirTooltipLancheEmergencialNaoAutorizado(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesAlimentacaoAutorizadas,
+                                                                diasLancheEmergencialDiarioAtivo,
+                                                              )
+                                                            }
+                                                            exibeTooltipLancheEmergencialAutorizado={
+                                                              grupoLocation !==
+                                                                "Solicitações de Alimentação Extraordinárias" &&
+                                                              exibirTooltipLancheEmergencialAutorizado(
+                                                                formValuesAtualizados,
+                                                                row,
+                                                                column,
+                                                                categoria,
+                                                                alteracoesAlimentacaoAutorizadas,
+                                                              )
+                                                            }
                                                             exibeTooltipLancheEmergencialZeroAutorizado={exibirTooltipLancheEmergencialZeroAutorizado(
                                                               formValuesAtualizados,
                                                               row,

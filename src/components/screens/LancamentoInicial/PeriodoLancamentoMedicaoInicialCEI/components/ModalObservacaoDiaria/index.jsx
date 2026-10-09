@@ -284,6 +284,7 @@ export default ({
               component={InputText}
               name="data_lancamento"
               disabled
+              valorInicial={formatarDataLancamento()}
               placeholder={formatarDataLancamento()}
             />
           </div>

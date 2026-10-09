@@ -67,6 +67,7 @@ import {
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
   codaePedeCorrecaPeriodo,
+  codaeSolicitaCorrecaoAlimentacaoExtraordinaria,
   drePedeCorrecaMedicao,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import {
@@ -112,6 +113,7 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     periodosGruposMedicao,
     diasLetivosSIGPAE,
     diasSuspensaoAtividades,
+    semMedicao = false,
   } = props;
 
   const [weekColumns, setWeekColumns] = useState(initialStateWeekColumns);
@@ -241,6 +243,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
 
   const ehGrupoColaboradores = () =>
     periodoGrupo?.nome_periodo_grupo === "Colaboradores";
+
+  const ehGrupoSolicitacoesExtraordinarias = () =>
+    periodoGrupo?.nome_periodo_grupo ===
+    "Solicitações de Alimentação Extraordinárias";
 
   const ehRecreioCemei = () => {
     return (
@@ -701,9 +707,9 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           const params_get_valores_periodos = {
             uuid_medicao_periodo_grupo: periodoGrupo.uuid_medicao_periodo_grupo,
           };
-          const response_valores_periodos = await getValoresPeriodosLancamentos(
-            params_get_valores_periodos,
-          );
+          const response_valores_periodos = semMedicao
+            ? { data: [] }
+            : await getValoresPeriodosLancamentos(params_get_valores_periodos);
           setValoresLancamentos(response_valores_periodos.data);
           const valoresDietasAutorizadas =
             response_valores_periodos?.data.filter(
@@ -904,7 +910,9 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
               }
             } else {
               const linhasTabelaSolicitacoesAlimentacao =
-                formatarLinhasTabelaSolicitacoesAlimentacao();
+                formatarLinhasTabelaSolicitacoesAlimentacao(
+                  !ehGrupoSolicitacoesExtraordinarias(),
+                );
               setTabelaSolicitacoesAlimentacaoRows(
                 linhasTabelaSolicitacoesAlimentacao,
               );
@@ -1228,6 +1236,43 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   };
 
   const salvarCorrecao = async (uuidMedicaoPeriodoGrupo) => {
+    const descricaoCorrecao =
+      values[
+        `descricao_correcao__periodo_grupo_${uuidMedicaoPeriodoGrupo.slice(
+          0,
+          5,
+        )}`
+      ];
+    let diasParaCorrigir;
+    if (solicitacao?.escola_eh_emebs === true) {
+      diasParaCorrigir = [
+        ...diasParaCorrecaoInfantilEmebs,
+        ...diasParaCorrecaoFundamentalEmebs,
+      ];
+    } else {
+      diasParaCorrigir = diasParaCorrecao;
+    }
+
+    if (semMedicao) {
+      const response = await codaeSolicitaCorrecaoAlimentacaoExtraordinaria(
+        solicitacao.uuid,
+        {
+          dias_para_corrigir: diasParaCorrigir,
+          justificativa: descricaoCorrecao,
+        },
+      );
+      if (response.status === HTTP_STATUS.OK) {
+        toastSuccess("Solicitação de correção salva com sucesso");
+      } else {
+        toastError("Houve um erro ao salvar solicitação de correção");
+      }
+      setValoresParaCorrecao({});
+      getPeriodosGruposMedicaoAsync();
+      setModoCorrecao(false);
+      resetValuesCorrecao(uuidMedicaoPeriodoGrupo);
+      return;
+    }
+
     let uuidsValoresMedicaoParaCorrecao = [];
     if (!usaEstruturaCeiComFaixaEtaria()) {
       Object.keys(valoresParaCorrecao).forEach((key) => {
@@ -2078,27 +2123,36 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                   </div>
                 ) : (
                   (exibirBotoesDRE || exibirBotoesCODAE) && (
-                    <div className="botoes col-4 px-0">
+                    <div
+                      className={`botoes col-4 px-0 ${
+                        semMedicao ? "d-flex" : ""
+                      }`}
+                    >
+                      {semMedicao && <div className="col-6 me-3" />}
                       <Botao
                         texto="Solicitar Correção"
                         style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                        className="col-6 me-3"
+                        className={semMedicao ? "col-5" : "col-6 me-3"}
                         onClick={() => setModoCorrecao(true)}
                         disabled={
-                          statusPermitidosCorrecaoDRE ||
-                          statusPermitidosCorrecaoCODAE
+                          semMedicao
+                            ? false
+                            : statusPermitidosCorrecaoDRE ||
+                              statusPermitidosCorrecaoCODAE
                         }
                       />
-                      <Botao
-                        texto="Aprovar Período"
-                        style={BUTTON_STYLE.GREEN}
-                        className="col-5"
-                        onClick={() => setShowModalAprovarPeriodo(true)}
-                        disabled={
-                          statusPermitidosAprovacaoDRE ||
-                          statusPermitidosAprovacaoCODAE
-                        }
-                      />
+                      {!semMedicao && (
+                        <Botao
+                          texto="Aprovar Período"
+                          style={BUTTON_STYLE.GREEN}
+                          className="col-5"
+                          onClick={() => setShowModalAprovarPeriodo(true)}
+                          disabled={
+                            statusPermitidosAprovacaoDRE ||
+                            statusPermitidosAprovacaoCODAE
+                          }
+                        />
+                      )}
                     </div>
                   )
                 )}
