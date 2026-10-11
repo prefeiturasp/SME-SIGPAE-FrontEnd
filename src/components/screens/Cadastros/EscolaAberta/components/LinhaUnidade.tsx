@@ -4,18 +4,6 @@ import InputText from "src/components/Shareable/Input/InputText";
 import { required } from "src/helpers/fieldValidators";
 import { truncarString } from "src/helpers/utilities";
 
-const formatarNomeUnidadeEducacional = (nome, ceiOuEmei) => {
-  if (ceiOuEmei === "EMEI") {
-    return `${nome} - INFANTIL`;
-  }
-
-  if (ceiOuEmei === "CEI") {
-    return `${nome} - CEI`;
-  }
-
-  return nome;
-};
-
 export const LinhaUnidade = ({
   name,
   participante,
@@ -30,33 +18,12 @@ export const LinhaUnidade = ({
             {participante.lote.nome_exibicao || participante.lote.nome}
           </td>
           <td className="unidade-educacional text-left">
-            <Tooltip
-              title={formatarNomeUnidadeEducacional(
-                participante.unidade_educacional.nome,
-                participante.cei_ou_emei,
-              )}
-            >
-              {truncarString(
-                formatarNomeUnidadeEducacional(
-                  participante.unidade_educacional.nome,
-                  participante.cei_ou_emei,
-                ),
-                35,
-              )}
+            <Tooltip title={participante.unidade_educacional.nome}>
+              {truncarString(participante.unidade_educacional.nome, 35)}
             </Tooltip>
           </td>
-          <td className="num-inscritos text-center">
-            {participante.num_inscritos}
-          </td>
-          <td className="num-colaboradores text-center">
-            {participante.num_colaboradores}
-          </td>
-          <td
-            className={`liberar-medicao text-center ${
-              participante.liberar_medicao ? "verde" : ""
-            }`}
-          >
-            {participante.liberar_medicao ? "Sim" : "Não"}
+          <td className="num-participantes text-center">
+            {participante.num_participantes}
           </td>
         </tr>
       </>
@@ -77,8 +44,8 @@ export const LinhaUnidade = ({
         <td className="col-2">
           <Field
             component={InputText}
-            name={`${name}.num_inscritos`}
-            dataTestId="num_inscritos_input"
+            name={`${name}.num_participantes`}
+            dataTestId="num_participantes_input"
             type="number"
             required
             validate={required}
