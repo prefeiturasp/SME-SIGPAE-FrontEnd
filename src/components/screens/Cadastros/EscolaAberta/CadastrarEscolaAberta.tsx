@@ -11,27 +11,20 @@ import {
   CONFIGURACOES,
   ESCOLA_ABERTA_CADASTRADAS,
 } from "src/configs/constants";
+import { cadastrarEscolaAberta } from "./escolaAberta.service";
 
 export const CadastrarEscolaAberta = () => {
   const navigate = useNavigate();
 
   const initialValues = {
-    titulo_cadastro: "",
     periodo_realizacao_de: null,
     periodo_realizacao_ate: null,
-    unidades_participantes: [
-      {
-        id: "123",
-        dreLoteNome: "DRE/LOTE",
-        unidadeEducacional: "EMEF TESTE",
-        participantes_num: 5,
-        alimentacaoParticipantes: "Lanche 4h",
-      },
-    ],
+    recorrencias: { dias_semana: [] },
+    unidades_participantes: [],
   };
 
-  const onSubmitApi = async () => {
-    // await cadastrarRecreioNasFerias(payload);
+  const onSubmitApi = async (payload) => {
+    await cadastrarEscolaAberta(payload);
   };
 
   return (
