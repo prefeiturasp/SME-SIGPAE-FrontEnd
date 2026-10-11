@@ -60,7 +60,6 @@ export const TabelaUnidades = ({
             <th
               className={`${editable ? "col-1" : ""} action-column text-center`}
             ></th>
-            {/* {editable && <th className="action-column col-1 text-center"></th>} */}
           </tr>
         </thead>
 
