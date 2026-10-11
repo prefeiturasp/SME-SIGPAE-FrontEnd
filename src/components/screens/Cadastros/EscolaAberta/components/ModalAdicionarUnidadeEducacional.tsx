@@ -93,7 +93,11 @@ export const ModalAdicionarUnidadeEducacional = ({
   const { lotes, lotesOpts } = useLotes();
   const [dreLote, setDreLote] = useState("");
   const [tipoUnidade, setTipoUnidade] = useState("");
-  const { tipos, tiposOpts, tiposMap } = useTiposUnidade(dreLote, lotes);
+  const { tipos, tiposOpts, tiposMap } = useTiposUnidade(
+    dreLote,
+    lotes,
+    "Grupo 4",
+  );
   const alimentacao = useAlimentacao();
   const { unidadesFiltradas, fetchUnidades, resetUnidades } =
     useUnidadesEducacionais(form);

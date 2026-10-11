@@ -47,7 +47,11 @@ export const useLotes = () => {
   return { lotes, lotesOpts };
 };
 
-export const useTiposUnidade = (dreLoteValue: string, lotes: Option[]) => {
+export const useTiposUnidade = (
+  dreLoteValue: string,
+  lotes: Option[],
+  grupo?: string,
+) => {
   const [tipos, setTipos] = useState<Option[]>([]);
 
   useEffect(() => {
@@ -62,14 +66,17 @@ export const useTiposUnidade = (dreLoteValue: string, lotes: Option[]) => {
     if (!dreUuid) return;
 
     (async () => {
-      const response = await getTiposUnidadeEscolar({ dre: dreUuid });
+      const response = await getTiposUnidadeEscolar({
+        dre: dreUuid,
+        ...(grupo && { grupo }),
+      });
       const formatados = (response?.data?.results || []).map((t) => ({
         nome: t.iniciais,
         uuid: t.uuid,
       }));
       setTipos(formatados);
     })();
-  }, [dreLoteValue, lotes]);
+  }, [dreLoteValue, lotes, grupo]);
 
   const tiposOpts = useMemo(
     () => [{ uuid: "", nome: "Selecione o Tipo de Unidade" }, ...tipos],
