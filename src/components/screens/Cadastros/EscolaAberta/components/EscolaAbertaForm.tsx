@@ -12,25 +12,28 @@ import {
 } from "src/components/Shareable/Botao/constants";
 import { InputComData } from "src/components/Shareable/DatePicker";
 import Weekly from "src/components/Shareable/Weekly/Weekly";
-import { toastSuccess } from "src/components/Shareable/Toast/dialogs";
+import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
 import { required, requiredMultiselect } from "src/helpers/fieldValidators";
 import { TabelaUnidades } from "./TabelaUnidades";
 import { ModalAdicionarUnidadeEducacional } from "./ModalAdicionarUnidadeEducacional";
-// import { buildPayload, resetFormState, validateForm } from "../helper";
+import { buildPayload, resetFormState, validateForm } from "../helper";
 
 const PAGE_SIZE = 10;
 
-type RecreioFeriasFormProps = {
+type EscolaAbertaFormProps = {
   mode: "create" | "edit";
   initialValues: any;
   onSubmitApi: (_: any) => Promise<void>;
-  onAfterSuccess?: () => void;
 };
 
 export const EscolaAbertaForm = ({
   mode,
   initialValues,
-}: RecreioFeriasFormProps) => {
+  onSubmitApi,
+}: EscolaAbertaFormProps) => {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [showModalAdicionar, setShowModalAdicionar] = useState(false);
@@ -39,8 +42,54 @@ export const EscolaAbertaForm = ({
     null,
   );
 
-  const onSubmit = () => {};
-  const handleSubmitSave = () => {};
+  const handleSubmitSave = async (values: any, form: any) => {
+    try {
+      const payload = buildPayload(values);
+      await onSubmitApi(payload);
+      toastSuccess("Escola Aberta cadastrada com sucesso!");
+      resetFormState(form);
+      setPage(1);
+    } catch (e: any) {
+      const errorMsg =
+        e?.response?.data?.non_field_errors?.[0] ||
+        "Erro ao cadastrar Escola Aberta.";
+      toastError(errorMsg);
+    }
+  };
+
+  const attemptSave = (
+    event: any,
+    values: any,
+    form: any,
+    handleSubmit: any,
+  ) => {
+    event?.preventDefault();
+
+    const unidades = values?.unidades_participantes || [];
+
+    if (unidades.length === 0) {
+      toastError(
+        "Não é possível salvar a Escola Aberta sem Unidades Participantes. Adicione pelo menos uma unidade.",
+      );
+      return;
+    }
+
+    const errors = validateForm(values);
+
+    if (errors?.unidades_participantes) {
+      const firstInvalidIndex =
+        errors.unidades_participantes.findIndex(Boolean);
+
+      if (firstInvalidIndex > -1) {
+        setPage(Math.floor(firstInvalidIndex / PAGE_SIZE) + 1);
+      }
+
+      form.submit();
+      return;
+    }
+
+    handleSubmit(event);
+  };
 
   const openRemoverModal = (id: string) => {
     setSelectedUnidadeId(id);
@@ -52,11 +101,11 @@ export const EscolaAbertaForm = ({
     setShowModalRemover(false);
   };
 
-  const confirmRemoverUnidade = (fields) => {
+  const confirmRemoverUnidade = (fields: any) => {
     if (!selectedUnidadeId) return;
 
     const indexToRemove = fields.value.findIndex(
-      (u) => u.id === selectedUnidadeId,
+      (u: any) => u.id === selectedUnidadeId,
     );
 
     if (indexToRemove > -1) {
@@ -70,13 +119,13 @@ export const EscolaAbertaForm = ({
 
   return (
     <Form
-      // keepDirtyOnReinitialize
-      onSubmit={onSubmit}
-      // validate={validateForm}
+      keepDirtyOnReinitialize
+      onSubmit={handleSubmitSave}
+      validate={validateForm}
       mutators={{ ...arrayMutators }}
       initialValues={initialValues}
-      render={({ form, values }) => (
-        <form onSubmit={handleSubmitSave}>
+      render={({ handleSubmit, form, values }) => (
+        <form onSubmit={(e) => attemptSave(e, values, form, handleSubmit)}>
           <div className="row mt-2">
             <div className="row">
               <div className="calendario">
@@ -147,21 +196,18 @@ export const EscolaAbertaForm = ({
           <Spin tip="Carregando..." spinning={false}>
             <FieldArray name="unidades_participantes">
               {({ fields }) => (
-                <>
-                  <TabelaUnidades
-                    editable={true}
-                    fields={fields}
-                    form={form}
-                    page={page}
-                    setPage={setPage}
-                    pageSize={PAGE_SIZE}
-                    openRemoverModal={openRemoverModal}
-                    showModalRemover={showModalRemover}
-                    closeRemoverModal={closeRemoverModal}
-                    confirmRemover={() => confirmRemoverUnidade(fields)}
-                    // participantes={participantes}
-                  />
-                </>
+                <TabelaUnidades
+                  editable={true}
+                  fields={fields}
+                  form={form}
+                  page={page}
+                  setPage={setPage}
+                  pageSize={PAGE_SIZE}
+                  openRemoverModal={openRemoverModal}
+                  showModalRemover={showModalRemover}
+                  closeRemoverModal={closeRemoverModal}
+                  confirmRemover={() => confirmRemoverUnidade(fields)}
+                />
               )}
             </FieldArray>
           </Spin>
@@ -176,7 +222,7 @@ export const EscolaAbertaForm = ({
                   className="me-2"
                   onClick={() =>
                     navigate(
-                      "/configuracoes/cadastros/recreio-nas-ferias-cadastrados",
+                      "/configuracoes/cadastros/escola-aberta-cadastradas",
                     )
                   }
                 />
