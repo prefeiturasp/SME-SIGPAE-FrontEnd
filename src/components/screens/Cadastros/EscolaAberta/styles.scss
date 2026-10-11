@@ -1,0 +1,80 @@
+@use "src/styles/variables.scss" as *;
+
+.dias-semana {
+  width: auto;
+  margin-top: 8px;
+}
+
+.tabela-unidades-participantes {
+  width: 100%;
+  font-size: 14px;
+  color: $blackInput;
+
+  thead tr {
+    font-weight: 700;
+  }
+
+  th {
+    border: 1px solid $grayDisabled;
+    background-color: $grayLightHeader;
+    padding: 0.5em;
+  }
+
+  tbody tr td {
+    border: 1px solid $grayDisabled;
+    padding: 0.5em;
+  }
+}
+
+.verde {
+  color: $green !important;
+  font-weight: bold;
+}
+
+.recreio-nas-ferias-container {
+  .title {
+    color: $green;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .space-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .calendario {
+    width: 25%;
+    max-width: 240px;
+  }
+
+  .esconde-asterisco .required-asterisk {
+    display: none;
+  }
+
+  .required-asterisk {
+    color: #a50e05;
+  }
+
+  .preto {
+    color: black !important;
+  }
+
+  .tabela-unidades-participantes {
+    td {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .excluir-botao {
+        border: none;
+        background-color: transparent;
+      }
+
+      button i {
+        font-size: 18px;
+      }
+    }
+  }
+}
