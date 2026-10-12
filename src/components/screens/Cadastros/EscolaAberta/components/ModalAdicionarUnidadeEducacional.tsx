@@ -26,62 +26,9 @@ type ModalAdicionarUnidadeEducacionalInterface = {
   form: FormApi<any>;
 };
 
-const TIPOS_CEMEI = ["CEMEI", "CEU CEMEI"];
-const TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS = [
-  "CEI",
-  "CEU CEI",
-  "CCI/CIPS",
-  "CCI",
-  "CEI DIRET",
-  "CEMEI",
-  "CEU CEMEI",
-];
-
-const resetDependentFields = (formApi: FormApi<any>) => {
+const resetCamposDependentes = (formApi: FormApi<any>) => {
   formApi.change("unidades_educacionais", []);
-  formApi.change("tipos_alimentacao_inscritos", []);
-  formApi.change("tipos_alimentacao_colaboradores", []);
-  formApi.change("tipos_alimentacao_inscritos_infantil", []);
-};
-
-const SyncCamposDependentes = ({
-  dresLote,
-  tiposUnidades,
-  dreLote,
-  setDreLote,
-  tipoUnidade,
-  setTipoUnidade,
-  formApi,
-}: {
-  dresLote?: string;
-  tiposUnidades?: string;
-  dreLote: string;
-  setDreLote: (_: string) => void;
-  tipoUnidade: string;
-  setTipoUnidade: (_: string) => void;
-  formApi: FormApi<any>;
-}) => {
-  useEffect(() => {
-    const novoDreLote = dresLote || "";
-    if (dreLote !== novoDreLote) {
-      setDreLote(novoDreLote);
-      formApi.change("tipos_unidades", undefined);
-      if (formApi.getFieldState("tipos_unidades")) {
-        formApi.resetFieldState("tipos_unidades");
-      }
-      resetDependentFields(formApi);
-    }
-  }, [dresLote, dreLote, formApi, setDreLote]);
-
-  useEffect(() => {
-    const novoTipoUnidade = tiposUnidades || "";
-    if (tipoUnidade !== novoTipoUnidade) {
-      setTipoUnidade(novoTipoUnidade);
-      resetDependentFields(formApi);
-    }
-  }, [tiposUnidades, tipoUnidade, formApi, setTipoUnidade]);
-
-  return null;
+  formApi.change("tipos_alimentacao_participantes", []);
 };
 
 export const ModalAdicionarUnidadeEducacional = ({
@@ -93,74 +40,47 @@ export const ModalAdicionarUnidadeEducacional = ({
   const { lotes, lotesOpts } = useLotes();
   const [dreLote, setDreLote] = useState("");
   const [tipoUnidade, setTipoUnidade] = useState("");
-  const { tipos, tiposOpts, tiposMap } = useTiposUnidade(
-    dreLote,
-    lotes,
-    "Grupo 4",
-  );
+  const { tiposOpts } = useTiposUnidade(dreLote, lotes, "Grupo 4");
   const alimentacao = useAlimentacao();
   const { unidadesFiltradas, fetchUnidades, resetUnidades } =
     useUnidadesEducacionais(form);
-
   const formApiRef = useRef(null);
-  const [formValues, setFormValues] = useState<any>({});
 
-  const resetDependentFields = () => {
-    const formApi: any = formApiRef.current;
-    if (!formApi) return;
-    formApi.change("unidades_educacionais", []);
-    formApi.change("tipos_alimentacao_inscritos", []);
-    formApi.change("tipos_alimentacao_colaboradores", []);
-    formApi.change("tipos_alimentacao_inscritos_infantil", []);
-  };
+  const decorators = useMemo(
+    () => [
+      (formApi: FormApi<any>) => {
+        let dreAtual = "";
+        let tipoAtual = "";
 
-  useEffect(() => {
-    const unsubscribe = form.subscribe(
-      (state) => setFormValues({ ...state.values }),
-      { values: true },
-    );
-    return unsubscribe;
-  }, [form]);
+        return formApi.subscribe(
+          ({ values }) => {
+            const novoDre = values?.dres_lote || "";
+            const novoTipo = values?.tipos_unidades || "";
 
-  useEffect(() => {
-    const novoDreLote = formValues?.dres_lote || "";
-    if (dreLote !== novoDreLote) {
-      setDreLote(novoDreLote);
-      const formApi: any = formApiRef.current;
-      if (formApi) {
-        formApi.change("tipos_unidades", undefined);
-        if (formApi.getFieldState("tipos_unidades")) {
-          formApi.resetFieldState("tipos_unidades");
-        }
-      }
-      resetDependentFields();
-    }
-  }, [formValues?.dres_lote]);
+            if (novoDre !== dreAtual) {
+              dreAtual = novoDre;
+              tipoAtual = "";
+              setDreLote(novoDre);
+              setTipoUnidade("");
+              formApi.change("tipos_unidades", undefined);
+              if (formApi.getFieldState("tipos_unidades")) {
+                formApi.resetFieldState("tipos_unidades");
+              }
+              resetCamposDependentes(formApi);
+              return;
+            }
 
-  useEffect(() => {
-    const novoTipoUnidade = formValues?.tipos_unidades || "";
-    if (tipoUnidade !== novoTipoUnidade) {
-      setTipoUnidade(novoTipoUnidade);
-      resetDependentFields();
-    }
-  }, [formValues?.tipos_unidades]);
-
-  const tipoSelecionado = useMemo(
-    () => tipos.find((t) => t.uuid === tipoUnidade),
-    [tipos, tipoUnidade],
-  );
-
-  const isCemei = useMemo(
-    () => TIPOS_CEMEI.includes(tipoSelecionado?.nome || ""),
-    [tipoSelecionado],
-  );
-
-  const isTipoComAlimentacaoFixaParaInscritos = useMemo(
-    () =>
-      TIPOS_COM_ALIMENTACAO_FIXA_INSCRITOS.includes(
-        tipoSelecionado?.nome || "",
-      ),
-    [tipoSelecionado],
+            if (novoTipo !== tipoAtual) {
+              tipoAtual = novoTipo;
+              setTipoUnidade(novoTipo);
+              resetCamposDependentes(formApi);
+            }
+          },
+          { values: true },
+        );
+      },
+    ],
+    [],
   );
 
   useEffect(() => {
@@ -176,24 +96,8 @@ export const ModalAdicionarUnidadeEducacional = ({
     if (!dreUuid) return;
 
     fetchUnidades(dreUuid, tipoUnidade);
-    alimentacao.loadAlimentacao(tipoUnidade, tiposMap, isCemei);
-  }, [dreLote, tipoUnidade, lotes, tiposMap, isCemei]);
-
-  useEffect(() => {
-    if (
-      formApiRef?.current &&
-      isTipoComAlimentacaoFixaParaInscritos &&
-      alimentacao.inscritos?.length > 0
-    ) {
-      const opcoesFiltradas = filtrarLancheEmergencial(alimentacao.inscritos);
-      const todosValores = opcoesFiltradas.map((opt: any) => opt.value);
-      formApiRef?.current?.change("tipos_alimentacao_inscritos", todosValores);
-    }
-  }, [
-    formApiRef?.current,
-    isTipoComAlimentacaoFixaParaInscritos,
-    alimentacao.inscritos,
-  ]);
+    alimentacao.loadAlimentacao(tipoUnidade);
+  }, [dreLote, tipoUnidade, lotes]);
 
   const handleAdicionarUnidade = (values: any) => {
     const lote = lotes.find((l) => l.uuid === values.dres_lote);
@@ -201,81 +105,34 @@ export const ModalAdicionarUnidadeEducacional = ({
     const mapAlimentacoes = (opcoes: any[], selecionados: string[] = []) =>
       opcoes.filter((o) => selecionados.includes(o.value)).map((o) => o.label);
 
-    const novasUnidades = values.unidades_educacionais.flatMap(
-      (uuid: string) => {
-        const unidade = unidadesFiltradas.find((u: any) => u.value === uuid);
+    const novasUnidades = values.unidades_educacionais.map((uuid: string) => {
+      const unidade = unidadesFiltradas.find((u: any) => u.value === uuid);
 
-        const base = {
-          id: crypto.randomUUID(),
-          uuid: null,
+      return {
+        id: crypto.randomUUID(),
+        uuid: null,
 
-          loteUuid: lote?.uuid,
-          dreLoteNome: lote?.nome_exibicao || lote?.nome || "",
+        loteUuid: lote?.uuid,
+        dreLoteNome: lote?.nome_exibicao || lote?.nome || "",
 
-          unidadeEducacionalUuid: uuid,
-          unidadeEducacional: unidade?.label || "",
-          unidadeEducacionalCodigoEol: unidade?.codigo_eol || "",
+        unidadeEducacionalUuid: uuid,
+        unidadeEducacional: unidade?.label || "",
+        unidadeEducacionalCodigoEol: unidade?.codigo_eol || "",
 
-          num_inscritos: 0,
-          num_colaboradores: 0,
-          liberarMedicao: true,
+        num_participantes: 0,
+        liberarMedicao: true,
 
-          alimentacaoColaboradores: mapAlimentacoes(
-            alimentacao.colaboradores,
-            values.tipos_alimentacao_colaboradores,
-          ),
-          tiposAlimentacaoColaboradoresUuids:
-            values.tipos_alimentacao_colaboradores || [],
-        };
-
-        if (isCemei) {
-          return ["CEI", "EMEI"].map((tipo) => ({
-            ...base,
-            id: `${crypto.randomUUID()}-${tipo}`,
-            ceiOuEmei: tipo,
-
-            alimentacaoInscritos: mapAlimentacoes(
-              alimentacao.inscritos,
-              values.tipos_alimentacao_inscritos,
-            ),
-            tiposAlimentacaoInscritosUuids:
-              values.tipos_alimentacao_inscritos || [],
-
-            alimentacaoInscritosInfantil: mapAlimentacoes(
-              alimentacao.inscritosInfantil,
-              values.tipos_alimentacao_inscritos_infantil,
-            ),
-            tiposAlimentacaoInfantilUuids:
-              values.tipos_alimentacao_inscritos_infantil || [],
-          }));
-        }
-
-        return [
-          {
-            ...base,
-            alimentacaoInscritos: mapAlimentacoes(
-              alimentacao.inscritos,
-              values.tipos_alimentacao_inscritos,
-            ),
-            tiposAlimentacaoInscritosUuids:
-              values.tipos_alimentacao_inscritos || [],
-
-            alimentacaoInscritosInfantil: [],
-            tiposAlimentacaoInfantilUuids: [],
-          },
-        ];
-      },
-    );
+        tiposAlimentacaoParticipantesUuids:
+          values.tipos_alimentacao_participantes || [],
+        alimentacaoParticipantes: mapAlimentacoes(
+          alimentacao.participantes,
+          values.tipos_alimentacao_participantes,
+        ).join(", "),
+      };
+    });
 
     novasUnidades.forEach((unidade) => {
-      form.mutators.push("unidades_participantes", {
-        ...unidade,
-        participantes_num: unidade.num_inscritos ?? 0,
-        alimentacaoParticipantes: [
-          ...(unidade.alimentacaoInscritos || []),
-          ...(unidade.alimentacaoInscritosInfantil || []),
-        ].join(", "),
-      });
+      form.mutators.push("unidades_participantes", unidade);
     });
 
     closeModal();
@@ -300,6 +157,7 @@ export const ModalAdicionarUnidadeEducacional = ({
       <Modal.Body>
         <Form
           keepDirtyOnReinitialize
+          decorators={decorators}
           onSubmit={() => {}}
           render={({ values, form: formApi, submitting: formSubmitting }) => {
             const enableSelectors = Boolean(
@@ -312,9 +170,7 @@ export const ModalAdicionarUnidadeEducacional = ({
               !values?.dres_lote ||
               !values?.tipos_unidades ||
               !values?.unidades_educacionais?.length ||
-              !values?.tipos_alimentacao_inscritos?.length ||
-              (isCemei &&
-                !values?.tipos_alimentacao_inscritos_infantil?.length);
+              !values?.tipos_alimentacao_participantes?.length;
 
             return (
               <form
@@ -322,15 +178,6 @@ export const ModalAdicionarUnidadeEducacional = ({
                   formApiRef.current = formApi;
                 }}
               >
-                <SyncCamposDependentes
-                  dresLote={values?.dres_lote}
-                  tiposUnidades={values?.tipos_unidades}
-                  dreLote={dreLote}
-                  setDreLote={setDreLote}
-                  tipoUnidade={tipoUnidade}
-                  setTipoUnidade={setTipoUnidade}
-                  formApi={formApi}
-                />
                 <div className="row">
                   <div className="w-50">
                     <Field
@@ -383,23 +230,21 @@ export const ModalAdicionarUnidadeEducacional = ({
                   <div className="w-75">
                     <Field
                       component={MultiselectRaw}
-                      label={`Tipos de Alimentações para Inscritos Participantes`}
-                      name="tipos_alimentacao_inscritos"
-                      options={filtrarLancheEmergencial(alimentacao.inscritos)}
-                      selected={values?.tipos_alimentacao_inscritos || []}
+                      label="Tipos de Alimentações para Participantes"
+                      name="tipos_alimentacao_participantes"
+                      options={filtrarLancheEmergencial(
+                        alimentacao.participantes,
+                      )}
+                      selected={values?.tipos_alimentacao_participantes || []}
                       required
                       validate={required}
-                      disabled={
-                        !enableSelectors ||
-                        isTipoComAlimentacaoFixaParaInscritos
-                      }
-                      onSelectedChanged={(vals) => {
-                        if (isTipoComAlimentacaoFixaParaInscritos) return;
+                      disabled={!enableSelectors}
+                      onSelectedChanged={(vals) =>
                         formApi.change(
-                          "tipos_alimentacao_inscritos",
+                          "tipos_alimentacao_participantes",
                           vals.map((v) => v.value),
-                        );
-                      }}
+                        )
+                      }
                     />
                   </div>
                 </div>

@@ -7,14 +7,10 @@ import {
 import { getEscolasTercTotal } from "src/services/escola.service";
 import { getLotesAsync } from "src/services/lote.service";
 
-const PERIODO_INTEGRAL = "INTEGRAL";
-
 type Option = { uuid: string; nome: string };
 
 type AlimentacaoState = {
-  inscritos: any[];
-  inscritosInfantil: any[];
-  colaboradores: any[];
+  participantes: Option[];
 };
 
 const getUniqueItems = (items: any[]) => {
@@ -98,69 +94,28 @@ export const useTiposUnidade = (
 
 export const useAlimentacao = () => {
   const [state, setState] = useState<AlimentacaoState>({
-    inscritos: [],
-    inscritosInfantil: [],
-    colaboradores: [],
+    participantes: [],
   });
 
-  const fetchTiposAlimentacao = async (
-    tipoUnidadeUuid: string,
-    periodoFilter?: string,
-  ) => {
+  const fetchTiposAlimentacao = async (tipoUnidadeUuid: string) => {
     if (!tipoUnidadeUuid) return [];
 
     const response =
       await getVinculosTipoAlimentacaoPorTipoUnidadeEscolar(tipoUnidadeUuid);
 
-    let results = response?.results || [];
-
-    if (periodoFilter) {
-      const periodo = results.find(
-        (r) => r?.periodo_escolar?.nome === periodoFilter,
-      );
-      results = periodo ? [periodo] : [];
-    }
-
+    const results = response?.results || [];
     const allTipos = results.flatMap((r) => r?.tipos_alimentacao ?? []);
-    const uniqueTipos = getUniqueItems(allTipos);
 
-    return mapToOptions(uniqueTipos);
+    return mapToOptions(getUniqueItems(allTipos));
   };
 
-  const loadAlimentacao = async (
-    tipoUnidadeUuid: string,
-    tiposMap: Record<string, Option>,
-    isCemei: boolean,
-  ) => {
-    const [inscritosBase, colaboradores, inscritosInfantil] = await Promise.all(
-      [
-        fetchTiposAlimentacao(tipoUnidadeUuid),
-        fetchTiposAlimentacao(tiposMap["EMEF"]?.uuid, PERIODO_INTEGRAL),
-        isCemei
-          ? fetchTiposAlimentacao(tiposMap["EMEI"]?.uuid)
-          : Promise.resolve([]),
-      ],
-    );
-
-    let inscritos = [...inscritosBase];
-
-    if (isCemei && tiposMap["CEI DIRET"]?.uuid) {
-      const ceiTipos = await fetchTiposAlimentacao(tiposMap["CEI DIRET"]?.uuid);
-      inscritos.push(...ceiTipos);
-
-      const seen = new Set<string>();
-      inscritos = inscritos.filter((item) => {
-        if (seen.has(item.value)) return false;
-        seen.add(item.value);
-        return true;
-      });
-    }
-
-    setState({ inscritos, inscritosInfantil, colaboradores });
+  const loadAlimentacao = async (tipoUnidadeUuid: string) => {
+    const participantes = await fetchTiposAlimentacao(tipoUnidadeUuid);
+    setState({ participantes });
   };
 
   const reset = () => {
-    setState({ inscritos: [], inscritosInfantil: [], colaboradores: [] });
+    setState({ participantes: [] });
   };
 
   return { ...state, loadAlimentacao, reset };

@@ -15,7 +15,7 @@ export const buildPayload = (values: any) => {
     unidades_participantes: unidades.map((u: any) => ({
       lote: u.loteUuid,
       unidade_educacional: u.unidadeEducacionalUuid,
-      tipos_alimentacao: u.tiposAlimentacaoInscritosUuids || [],
+      tipos_alimentacao: u.tiposAlimentacaoParticipantesUuids || [],
     })),
   };
 };
