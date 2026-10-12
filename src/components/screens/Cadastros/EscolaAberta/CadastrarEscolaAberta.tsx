@@ -12,6 +12,7 @@ import {
   ESCOLA_ABERTA_CADASTRADAS,
 } from "src/configs/constants";
 import { cadastrarEscolaAberta } from "./escolaAberta.service";
+import "./styles.scss";
 
 export const CadastrarEscolaAberta = () => {
   const navigate = useNavigate();
@@ -28,14 +29,12 @@ export const CadastrarEscolaAberta = () => {
   };
 
   return (
-    <div className="card recreio-nas-ferias-container">
+    <div className="card escola-aberta-container">
       <div className="card-body">
-        <div className="row mt-3 mb-3 header-container">
-          <div className="col-4">
-            <div className="title"></div>
-          </div>
+        <div className="header-container row">
+          <div className="col-4" />
           <Botao
-            className="text-end recreio-cadastrados-botao"
+            className="text-end escola-aberta-botao"
             texto="Escola Aberta Cadastradas"
             type={BUTTON_TYPE.BUTTON}
             style={BUTTON_STYLE.GREEN_OUTLINE}
@@ -46,6 +45,8 @@ export const CadastrarEscolaAberta = () => {
             }
           />
         </div>
+
+        <hr />
 
         <EscolaAbertaForm
           mode="create"

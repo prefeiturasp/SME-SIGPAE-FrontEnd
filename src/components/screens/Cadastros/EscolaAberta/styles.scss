@@ -5,6 +5,17 @@
   margin-top: 8px;
 }
 
+.card-body .header-container {
+  margin-bottom: 32px !important;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+
+  .escola-aberta-botao {
+    width: auto !important;
+  }
+}
+
 .tabela-unidades-participantes {
   width: 100%;
   font-size: 14px;
@@ -31,7 +42,9 @@
   font-weight: bold;
 }
 
-.recreio-nas-ferias-container {
+.escola-aberta-container {
+  margin-top: 8px;
+
   .title {
     color: $green;
     font-size: 16px;
@@ -76,5 +89,9 @@
         font-size: 18px;
       }
     }
+  }
+
+  .weekly .week-circle-clicked {
+    background-color: $green;
   }
 }
