@@ -48,6 +48,15 @@ describe("Teste da página de Painel de Documentos de Recebimento", () => {
     expect(screen.getByText("Pendentes de Aprovação")).toBeInTheDocument();
     expect(screen.getByText("Aprovados")).toBeInTheDocument();
     expect(screen.getByText("Enviados para Correção")).toBeInTheDocument();
+    expect(screen.getByText("Reprovados")).toBeInTheDocument();
+  });
+
+  it("exibe o card Reprovados com os documentos reprovados", async () => {
+    await screen.findByText("Reprovados");
+
+    expect(
+      screen.getByText("200/2024 / ARROZ / JP Alimentos"),
+    ).toBeInTheDocument();
   });
 
   it("Deve renderizar ao menos um item do programa leve leite com a classe correta", async () => {
