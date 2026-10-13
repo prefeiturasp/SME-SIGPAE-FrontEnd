@@ -7,11 +7,6 @@ export type Args = {
   values: IFiltros;
 };
 
-export type SelectOption = {
-  uuid: string;
-  nome: string;
-};
-
 export type MultiSelectOption = {
   label: string;
   value: string;
@@ -51,6 +46,5 @@ export type TiposUnidadesTreeNode = {
   title: string;
   value: string;
   key: string;
-  disabled?: boolean;
   children?: Array<TiposUnidadesTreeNode>;
 };

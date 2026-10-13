@@ -10,13 +10,44 @@ export const GRUPOS_COM_FAIXA_ETARIA = ["Grupo 1", "Grupo 2"];
 
 export const PREFIXO_GRUPO_TREE = "grupo_";
 
+export const SEPARADOR_RECREIO = "|";
+
 const FORMATO_DATA = "DD/MM/YYYY";
 
 const MENSAGEM_DATA_FORA_DOS_MESES =
   "A data deve estar dentro de um mês de referência selecionado";
 
-const mesmoMesAno = (data: moment.Moment, mesAno: string): boolean => {
-  const { mes, ano } = getMesAno(mesAno);
+export const formataValorMesReferencia = (
+  mesAno: string,
+  recreioNasFeriasUuid?: string,
+): string =>
+  recreioNasFeriasUuid
+    ? `${mesAno}${SEPARADOR_RECREIO}${recreioNasFeriasUuid}`
+    : mesAno;
+
+export const getMesAnoDoValor = (valor: string): string =>
+  valor.split(SEPARADOR_RECREIO)[0];
+
+export const separaMesesERecreios = (
+  valores: Array<string> = [],
+): { meses: Array<string>; recreios_nas_ferias: Array<string> } => {
+  const meses: Array<string> = [];
+  const recreios_nas_ferias: Array<string> = [];
+  valores.forEach((valor) => {
+    const [mesAno, recreioNasFeriasUuid] = valor.split(SEPARADOR_RECREIO);
+    if (recreioNasFeriasUuid) {
+      if (!recreios_nas_ferias.includes(recreioNasFeriasUuid)) {
+        recreios_nas_ferias.push(recreioNasFeriasUuid);
+      }
+    } else if (!meses.includes(mesAno)) {
+      meses.push(mesAno);
+    }
+  });
+  return { meses, recreios_nas_ferias };
+};
+
+const mesmoMesAno = (data: moment.Moment, valor: string): boolean => {
+  const { mes, ano } = getMesAno(getMesAnoDoValor(valor));
   return data.month() + 1 === mes && data.year() === ano;
 };
 
@@ -38,8 +69,8 @@ export const getIntervaloMeses = (
   meses: Array<string> = [],
 ): { primeiroDia: Date; ultimoDia: Date } | null => {
   if (!meses.length) return null;
-  const datas = meses.map((mesAno) => {
-    const { mes, ano } = getMesAno(mesAno);
+  const datas = meses.map((valor) => {
+    const { mes, ano } = getMesAno(getMesAnoDoValor(valor));
     return {
       primeiroDia: new Date(ano, mes - 1, 1),
       ultimoDia: new Date(ano, mes, 0),
@@ -108,14 +139,29 @@ export const validaPeriodoAte = (value: string, values: IFiltros) => {
   return undefined;
 };
 
-export const getGrupoSelecionado = (
+export const getGruposSelecionados = (
   grupos: Array<GrupoUnidadeEscolar>,
   tiposUnidadesSelecionados: Array<string>,
-): GrupoUnidadeEscolar | undefined =>
-  grupos.find((grupo) =>
+): Array<GrupoUnidadeEscolar> =>
+  grupos.filter((grupo) =>
     grupo.tipos_unidades.some((tipo) =>
       tiposUnidadesSelecionados.includes(tipo.uuid),
     ),
+  );
+
+export const ehTipoAlimentacaoBloqueado = (
+  gruposSelecionados: Array<GrupoUnidadeEscolar>,
+): boolean =>
+  gruposSelecionados.length > 0 &&
+  gruposSelecionados.every(
+    (grupo) => grupo.nome === GRUPO_TIPO_ALIMENTACAO_BLOQUEADO,
+  );
+
+export const ehFaixaEtariaHabilitada = (
+  gruposSelecionados: Array<GrupoUnidadeEscolar>,
+): boolean =>
+  gruposSelecionados.some((grupo) =>
+    GRUPOS_COM_FAIXA_ETARIA.includes(grupo.nome),
   );
 
 export const filtraSelecionadosDisponiveis = (

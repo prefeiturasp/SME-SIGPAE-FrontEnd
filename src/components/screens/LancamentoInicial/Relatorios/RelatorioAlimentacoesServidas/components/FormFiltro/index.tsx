@@ -121,7 +121,7 @@ export default ({ form, values }: Args) => {
                     allowClear
                     showCheckedStrategy={SHOW_CHILD}
                     treeNodeFilterProp="title"
-                    placeholder="Selecione um grupo"
+                    placeholder="Selecione os grupos"
                     style={{ width: "100%" }}
                     disabled={!view.possuiDre}
                   />

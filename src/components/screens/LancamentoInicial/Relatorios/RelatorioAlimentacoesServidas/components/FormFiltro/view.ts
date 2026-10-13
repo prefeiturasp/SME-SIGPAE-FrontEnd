@@ -22,11 +22,12 @@ import { getMesesAnosSolicitacoesMedicaoinicial } from "src/services/medicaoInic
 
 import { IFiltros } from "../../types";
 import {
-  dataDentroDoMes,
+  dataDentroDosMeses,
+  ehFaixaEtariaHabilitada,
+  ehTipoAlimentacaoBloqueado,
   filtraSelecionadosDisponiveis,
-  getGrupoSelecionado,
-  GRUPO_TIPO_ALIMENTACAO_BLOQUEADO,
-  GRUPOS_COM_FAIXA_ETARIA,
+  formataValorMesReferencia,
+  getGruposSelecionados,
   PREFIXO_GRUPO_TREE,
 } from "./helpers";
 import {
@@ -36,7 +37,6 @@ import {
   GrupoUnidadeEscolar,
   Lote,
   MultiSelectOption,
-  SelectOption,
   TiposUnidadesTreeNode,
 } from "./types";
 
@@ -59,13 +59,25 @@ const ehRespostaOk = (response) => response?.status === HTTP_STATUS.OK;
 const getUuidInstituicao = () =>
   (localStorage.getItem("uuid_instituicao") || "").replace(/"/g, "");
 
-const formataMesesAnosOpcoes = (mesesAnos): Array<SelectOption> =>
-  [{ nome: "Selecione o Mês de Referência", uuid: "" }].concat(
-    mesesAnos.map((mesAno) => ({
-      nome: `${MESES[parseInt(mesAno.mes) - 1]} - ${mesAno.ano}`,
-      uuid: `${mesAno.mes}_${mesAno.ano}`,
-    })),
-  );
+const formataMesesAnosOpcoes = (mesesAnos): Array<MultiSelectOption> => {
+  const opcoes = new Map<string, MultiSelectOption>();
+  mesesAnos.forEach((mesAno) => {
+    const recreioNasFerias = mesAno.recreio_nas_ferias;
+    const value = formataValorMesReferencia(
+      `${mesAno.mes}_${mesAno.ano}`,
+      recreioNasFerias?.uuid,
+    );
+    if (!opcoes.has(value)) {
+      opcoes.set(value, {
+        label:
+          recreioNasFerias?.titulo ||
+          `${MESES[parseInt(mesAno.mes) - 1]} - ${mesAno.ano}`,
+        value,
+      });
+    }
+  });
+  return Array.from(opcoes.values());
+};
 
 const filtraDresAcessiveis = (
   dres: Array<DiretoriaRegional>,
@@ -103,9 +115,9 @@ const formataUnidadesEducacionaisOpcoes = (
   }));
 
 export default ({ form, values }: Args) => {
-  const [mesesAnosOpcoes, setMesesAnosOpcoes] = useState<Array<SelectOption>>(
-    [],
-  );
+  const [mesesAnosOpcoes, setMesesAnosOpcoes] = useState<
+    Array<MultiSelectOption>
+  >([]);
   const [dres, setDres] = useState<Array<DiretoriaRegional>>([]);
   const [lotes, setLotes] = useState<Array<Lote>>([]);
   const [grupos, setGrupos] = useState<Array<GrupoUnidadeEscolar>>([]);
@@ -136,6 +148,7 @@ export default ({ form, values }: Args) => {
   const possuiDre = dresSelecionadas.length > 0;
   const possuiLote = lotesSelecionados.length > 0;
   const chaveDres = dresSelecionadas.join(",");
+  const chaveMeses = (values.meses || []).join(",");
 
   const lotesDisponiveis = useMemo(
     () =>
@@ -145,21 +158,18 @@ export default ({ form, values }: Args) => {
     [lotes, chaveDres],
   );
 
-  const grupoSelecionado = getGrupoSelecionado(
+  const gruposSelecionados = getGruposSelecionados(
     grupos,
     tiposUnidadesSelecionados,
   );
   const tipoAlimentacaoBloqueado =
-    grupoSelecionado?.nome === GRUPO_TIPO_ALIMENTACAO_BLOQUEADO;
+    ehTipoAlimentacaoBloqueado(gruposSelecionados);
   const faixaEtariaHabilitada =
-    possuiDre && GRUPOS_COM_FAIXA_ETARIA.includes(grupoSelecionado?.nome);
+    possuiDre && ehFaixaEtariaHabilitada(gruposSelecionados);
 
   const tiposUnidadesTreeData = useMemo<Array<TiposUnidadesTreeNode>>(
     () =>
       grupos.map((grupo) => {
-        const bloqueado = Boolean(
-          grupoSelecionado && grupoSelecionado.uuid !== grupo.uuid,
-        );
         const iniciais = grupo.tipos_unidades
           .map((tipo) => tipo.iniciais)
           .join(", ");
@@ -167,16 +177,14 @@ export default ({ form, values }: Args) => {
           title: `${grupo.nome} (${iniciais})`,
           value: `${PREFIXO_GRUPO_TREE}${grupo.uuid}`,
           key: `${PREFIXO_GRUPO_TREE}${grupo.uuid}`,
-          disabled: bloqueado,
           children: grupo.tipos_unidades.map((tipo) => ({
             title: tipo.iniciais,
             value: tipo.uuid,
             key: tipo.uuid,
-            disabled: bloqueado,
           })),
         };
       }),
-    [grupos, grupoSelecionado?.uuid],
+    [grupos],
   );
 
   const limpaCampo = (campo: keyof IFiltros) => {
@@ -202,7 +210,9 @@ export default ({ form, values }: Args) => {
     let ativo = true;
 
     Promise.all([
-      getMesesAnosSolicitacoesMedicaoinicial(),
+      getMesesAnosSolicitacoesMedicaoinicial({
+        status: "MEDICAO_APROVADA_PELA_CODAE",
+      }),
       getDiretoriaregionalSimplissima(),
       getLotesSimples(getParamsLotes()),
       getGrupoUnidadeEscolar(),
@@ -269,11 +279,11 @@ export default ({ form, values }: Args) => {
   useEffect(() => {
     CAMPOS_PERIODO.forEach((campo) => {
       const data = form.getState().values[campo];
-      if (data && (!values.mes || !dataDentroDoMes(data, values.mes))) {
+      if (data && !dataDentroDosMeses(data, values.meses)) {
         limpaCampo(campo);
       }
     });
-  }, [values.mes]);
+  }, [chaveMeses]);
 
   useEffect(() => {
     if (possuiDre) return;
