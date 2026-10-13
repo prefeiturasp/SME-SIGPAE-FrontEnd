@@ -161,3 +161,13 @@ export const getTermosAssinados = async (params?: URLSearchParams) => {
     toastError(getMensagemDeErro(error.response?.status));
   }
 };
+
+export const fiscalAssinaTermo = async (uuid: string, password: string) => {
+  return await axios.patch(
+    `/pos-recebimento/termos/${uuid}/fiscal-assina-termo/`,
+    {
+      password: password,
+    },
+    { skipAuthRefresh: true },
+  );
+};

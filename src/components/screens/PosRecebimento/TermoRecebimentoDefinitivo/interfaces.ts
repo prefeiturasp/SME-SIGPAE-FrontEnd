@@ -79,6 +79,7 @@ export interface TermoRecebimentoDetalhe {
   uuid: string;
   status: string;
   status_display?: string;
+  pode_assinar?: boolean;
   empresa: EmpresaTermoDetalhe;
   contrato: ContratoTermoDetalhe;
   valor_contrato?: string;
