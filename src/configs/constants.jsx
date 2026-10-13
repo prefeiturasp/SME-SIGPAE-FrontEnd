@@ -282,6 +282,7 @@ export const PAINEL_LAYOUT_EMBALAGEM = "painel-layout-embalagem";
 export const PENDENTES_APROVACAO = "pendentes-aprovacao";
 export const APROVADOS = "aprovados";
 export const ENVIADOS_PARA_CORRECAO = "enviados-para-correcao";
+export const REPROVADOS = "reprovados";
 
 export const DOCUMENTOS_RECEBIMENTO = "documentos-recebimento";
 export const CADASTRO_DOCUMENTOS_RECEBIMENTO =
