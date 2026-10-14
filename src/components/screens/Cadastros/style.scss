@@ -728,3 +728,8 @@ table.cadastro-lote {
     color: #353535;
   }
 }
+
+div.select select:disabled {
+  background-color: hsl(0, 0%, 95%);
+  color: hsl(0, 0%, 50%);
+}
