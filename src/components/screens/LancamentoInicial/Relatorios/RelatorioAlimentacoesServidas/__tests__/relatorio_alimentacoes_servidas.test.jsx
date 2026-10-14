@@ -113,13 +113,6 @@ const renderizaTela = async () => {
 
 const getInput = (testId) => screen.getByTestId(testId).querySelector("input");
 
-const getSelectMes = () =>
-  screen.getByTestId("select-mes-referencia").querySelector("select");
-
-const selecionaMes = (valor = "12_2023") => {
-  fireEvent.change(getSelectMes(), { target: { value: valor } });
-};
-
 const getMenu = (testId) => document.querySelector(`.${testId}__menu`);
 
 const selecionaOpcao = (testId, texto) => {
@@ -141,6 +134,9 @@ const getOpcoesMenu = (testId) => {
     (label) => label.textContent,
   );
 };
+
+const selecionaMes = (texto = "Dezembro - 2023") =>
+  selecionaOpcao("select-mes-referencia", texto);
 
 const getUltimaRequisicao = (url) => {
   const requisicoes = mock.history.get.filter((r) => r.url.includes(url));
@@ -219,7 +215,7 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
     expect(screen.getByText("Selecione a DRE")).toBeInTheDocument();
     expect(screen.getByText("Selecione o Lote")).toBeInTheDocument();
     expect(screen.getByText("Selecione a Subprefeitura")).toBeInTheDocument();
-    expect(screen.getByText("Selecione um grupo")).toBeInTheDocument();
+    expect(screen.getByText("Selecione os grupos")).toBeInTheDocument();
     expect(screen.getByText("Selecione a Unidade")).toBeInTheDocument();
     expect(
       screen.getByText("Selecione o Tipo de Alimentação"),
@@ -232,7 +228,7 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
   });
 
   it("mantém os filtros desabilitados até selecionar Mês de Referência e DRE", async () => {
-    expect(getSelectMes()).toBeEnabled();
+    expect(getInput("select-mes-referencia")).toBeEnabled();
     [
       "select-dres",
       "select-lotes",
@@ -266,15 +262,35 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
     expect(screen.getByTestId("botao-exportar-excel")).toBeEnabled();
   });
 
+  it("busca somente os meses com medição aprovada pela CODAE", () => {
+    expect(
+      getUltimaRequisicao("solicitacao-medicao-inicial/meses-anos/").params,
+    ).toEqual({
+      status: "MEDICAO_APROVADA_PELA_CODAE",
+    });
+  });
+
   it("lista os meses de referência retornados pelo back-end", () => {
-    const opcoes = Array.from(getSelectMes().querySelectorAll("option")).map(
-      (option) => option.textContent,
-    );
-    expect(opcoes[0]).toBe("Selecione o Mês de Referência");
+    const opcoes = getOpcoesMenu("select-mes-referencia");
+    expect(opcoes[0]).toBe("Todos");
     expect(opcoes).toContain("Dezembro - 2023");
     expect(opcoes).toHaveLength(
       mockMesesAnosRelatorioAdesao.results.length + 1,
     );
+  });
+
+  it("permite selecionar mais de um Mês de Referência", () => {
+    selecionaMes("Dezembro - 2023");
+    selecionaMes("Novembro - 2023");
+    getOpcoesMenu("select-mes-referencia");
+
+    const marcados = Array.from(
+      getMenu("select-mes-referencia").querySelectorAll(
+        "input[type=checkbox]:checked",
+      ),
+    ).map((input) => input.nextElementSibling.textContent);
+    expect(marcados).toEqual(["Dezembro - 2023", "Novembro - 2023"]);
+    expect(getInput("select-dres")).toBeEnabled();
   });
 
   it("permite selecionar múltiplas DREs e lista somente os lotes das DREs selecionadas", async () => {
@@ -375,7 +391,7 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
     });
   });
 
-  it("seleciona automaticamente os tipos do grupo e bloqueia os demais grupos", async () => {
+  it("seleciona automaticamente os tipos do grupo sem bloquear os demais grupos", async () => {
     await preparaMesEDre();
     await selecionaGrupo(GRUPO_3);
 
@@ -385,14 +401,26 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
       ).toEqual([TIPO_UNIDADE_CEU_EMEI, TIPO_UNIDADE_EMEI]);
     });
 
-    [GRUPO_1, GRUPO_2, GRUPO_4].forEach((grupo) =>
-      expect(getCheckboxTree(grupo)).toHaveClass(
+    [GRUPO_1, GRUPO_2, GRUPO_3, GRUPO_4].forEach((grupo) =>
+      expect(getCheckboxTree(grupo)).not.toHaveClass(
         "ant-select-tree-checkbox-disabled",
       ),
     );
-    expect(getCheckboxTree(GRUPO_3)).not.toHaveClass(
-      "ant-select-tree-checkbox-disabled",
-    );
+  });
+
+  it("permite selecionar mais de um grupo e envia os tipos de todos eles", async () => {
+    await preparaMesEDre();
+    await selecionaGrupo(GRUPO_3);
+    fireEvent.click(getCheckboxTree(GRUPO_4));
+
+    await waitFor(() => {
+      const tipos = getUltimaRequisicao("/escolas-para-filtros/").params
+        .tipo_unidade__uuid;
+      expect(tipos).toHaveLength(6);
+      expect(tipos).toEqual(
+        expect.arrayContaining([TIPO_UNIDADE_CEU_EMEI, TIPO_UNIDADE_EMEI]),
+      );
+    });
   });
 
   it("permite desmarcar individualmente um tipo de unidade do grupo selecionado", async () => {
@@ -422,33 +450,50 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
         getUltimaRequisicao("/escolas-para-filtros/").params.tipo_unidade__uuid,
       ).toEqual([TIPO_UNIDADE_EMEI]);
     });
-    expect(getCheckboxTree(GRUPO_4)).toHaveClass(
-      "ant-select-tree-checkbox-disabled",
-    );
   });
 
-  it("desbloqueia todos os grupos ao limpar o grupo selecionado", async () => {
+  it("remove somente os tipos do grupo desmarcado", async () => {
     await preparaMesEDre();
     await selecionaGrupo(GRUPO_3);
-    expect(getCheckboxTree(GRUPO_4)).toHaveClass(
-      "ant-select-tree-checkbox-disabled",
-    );
+    fireEvent.click(getCheckboxTree(GRUPO_4));
+    await waitFor(() => {
+      expect(
+        getUltimaRequisicao("/escolas-para-filtros/").params.tipo_unidade__uuid,
+      ).toHaveLength(6);
+    });
 
     fireEvent.click(getCheckboxTree(GRUPO_3));
 
     await waitFor(() => {
-      expect(getCheckboxTree(GRUPO_4)).not.toHaveClass(
-        "ant-select-tree-checkbox-disabled",
-      );
+      const tipos = getUltimaRequisicao("/escolas-para-filtros/").params
+        .tipo_unidade__uuid;
+      expect(tipos).toHaveLength(4);
+      expect(tipos).not.toContain(TIPO_UNIDADE_EMEI);
+      expect(tipos).not.toContain(TIPO_UNIDADE_CEU_EMEI);
     });
-    expect(getCheckboxTree(GRUPO_1)).not.toHaveClass(
-      "ant-select-tree-checkbox-disabled",
-    );
+
+    fireEvent.click(getCheckboxTree(GRUPO_4));
+
     await waitFor(() => {
       expect(
         getUltimaRequisicao("/escolas-para-filtros/").params.tipo_unidade__uuid,
       ).toBeUndefined();
     });
+  });
+
+  it("mantém Tipo de Alimentação habilitado e habilita Faixa Etária com o Grupo 1 junto de outro grupo", async () => {
+    await preparaMesEDre();
+    await selecionaGrupo(GRUPO_1);
+    await waitFor(() => {
+      expect(getInput("select-tipos-alimentacao")).toBeDisabled();
+    });
+
+    fireEvent.click(getCheckboxTree(GRUPO_3));
+
+    await waitFor(() => {
+      expect(getInput("select-tipos-alimentacao")).toBeEnabled();
+    });
+    expect(getInput("select-faixas-etarias")).toBeEnabled();
   });
 
   it("bloqueia Tipo de Alimentação e habilita Faixa Etária ao selecionar o Grupo 1", async () => {
@@ -541,16 +586,22 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
     ]);
   });
 
-  it("limpa o período que ficar fora do novo Mês de Referência", () => {
-    selecionaMes("12_2023");
+  it("limpa somente o período que ficar fora dos meses de referência selecionados", () => {
+    selecionaMes("Novembro - 2023");
+    selecionaMes("Dezembro - 2023");
     fireEvent.change(getInput("div-periodo-lancamento-de"), {
+      target: { value: "10/11/2023" },
+    });
+    fireEvent.change(getInput("div-periodo-lancamento-ate"), {
       target: { value: "10/12/2023" },
     });
-    expect(getInput("div-periodo-lancamento-de")).toHaveValue("10/12/2023");
+    expect(getInput("div-periodo-lancamento-de")).toHaveValue("10/11/2023");
+    expect(getInput("div-periodo-lancamento-ate")).toHaveValue("10/12/2023");
 
-    selecionaMes("11_2023");
+    selecionaMes("Dezembro - 2023");
 
-    expect(getInput("div-periodo-lancamento-de")).toHaveValue("");
+    expect(getInput("div-periodo-lancamento-de")).toHaveValue("10/11/2023");
+    expect(getInput("div-periodo-lancamento-ate")).toHaveValue("");
   });
 
   it("limpa todas as seleções e restaura o estado inicial ao clicar em Limpar Filtros", async () => {
@@ -567,7 +618,9 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
     fireEvent.click(screen.getByTestId("botao-limpar-filtros"));
 
     await waitFor(() => {
-      expect(getSelectMes()).toHaveValue("");
+      expect(
+        screen.getByText("Selecione o Mês de Referência"),
+      ).toBeInTheDocument();
     });
     expect(getInput("div-periodo-lancamento-de")).toHaveValue("");
     [
@@ -580,7 +633,7 @@ describe("Relatório de Alimentações Servidas - Filtros (Visão CODAE)", () =>
     ].forEach((testId) => expect(getInput(testId)).toBeDisabled());
     expect(screen.getByText("Selecione a DRE")).toBeInTheDocument();
     expect(screen.getByText("Selecione o Lote")).toBeInTheDocument();
-    expect(screen.getByText("Selecione um grupo")).toBeInTheDocument();
+    expect(screen.getByText("Selecione os grupos")).toBeInTheDocument();
     expect(screen.getByTestId("botao-exportar-excel")).toBeDisabled();
   });
 });
@@ -652,6 +705,64 @@ describe("Relatório de Alimentações Servidas - Loading e erros", () => {
       perfil: PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
       instituicao: mockMeusDadosCODAEGA.vinculo_atual.instituicao.uuid,
     });
+  });
+
+  it("não repete o mesmo mês de referência quando o back-end o retorna mais de uma vez", async () => {
+    mock.onGet(URL_MESES_ANOS).reply(200, {
+      results: [
+        { mes: "07", ano: "2026", status: ["MEDICAO_APROVADA_PELA_CODAE"] },
+        { mes: "06", ano: "2026", status: ["MEDICAO_APROVADA_PELA_CODAE"] },
+        { mes: "06", ano: "2026", status: ["MEDICAO_ENVIADA_PELA_UE"] },
+        { mes: "05", ano: "2026", status: ["MEDICAO_APROVADA_PELA_CODAE"] },
+        {
+          mes: "05",
+          ano: "2026",
+          status: ["MEDICAO_EM_ABERTO_PARA_PREENCHIMENTO_UE"],
+        },
+      ],
+    });
+    await renderizaTela();
+
+    expect(getOpcoesMenu("select-mes-referencia")).toEqual([
+      "Todos",
+      "Julho - 2026",
+      "Junho - 2026",
+      "Maio - 2026",
+    ]);
+  });
+
+  it("lista o recreio nas férias como opção separada do mês regular", async () => {
+    mock.onGet(URL_MESES_ANOS).reply(200, {
+      results: [
+        { mes: "01", ano: "2026", status: ["MEDICAO_APROVADA_PELA_CODAE"] },
+        {
+          mes: "01",
+          ano: "2026",
+          status: ["MEDICAO_APROVADA_PELA_CODAE"],
+          recreio_nas_ferias: {
+            uuid: "uuid-recreio-jan-2026",
+            titulo: "Recreio nas Férias - JAN 2026",
+          },
+        },
+        { mes: "12", ano: "2025", status: ["MEDICAO_APROVADA_PELA_CODAE"] },
+      ],
+    });
+    await renderizaTela();
+
+    expect(getOpcoesMenu("select-mes-referencia")).toEqual([
+      "Todos",
+      "Janeiro - 2026",
+      "Recreio nas Férias - JAN 2026",
+      "Dezembro - 2025",
+    ]);
+
+    selecionaOpcao("select-mes-referencia", "Recreio nas Férias - JAN 2026");
+
+    expect(getInput("select-dres")).toBeEnabled();
+    fireEvent.change(getInput("div-periodo-lancamento-de"), {
+      target: { value: "10/01/2026" },
+    });
+    expect(getInput("div-periodo-lancamento-de")).toHaveValue("10/01/2026");
   });
 
   it("exibe loading enquanto carrega as opções iniciais", async () => {
