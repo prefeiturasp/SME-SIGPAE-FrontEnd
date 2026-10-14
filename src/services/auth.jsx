@@ -9,6 +9,7 @@ import { ErrorHandlerFunction } from "./service-helpers";
 
 export const TOKEN_ALIAS = "TOKEN_JWT";
 export const TOKEN_REFRESH_ALIAS = "TOKEN_REFRESH_JWT";
+const PRIMEIRO_ACESSO_ALIAS = "PRIMEIRO_ACESSO";
 
 const postLogin = async (login_, password) => {
   const url = JWT_AUTH;
@@ -125,6 +126,7 @@ const atualizaLocalStorage = (result_) => {
 const login = async (login, password) => {
   localStorage.removeItem(TOKEN_ALIAS);
   localStorage.removeItem(TOKEN_REFRESH_ALIAS);
+  localStorage.removeItem(PRIMEIRO_ACESSO_ALIAS);
 
   try {
     const response = await postLogin(login, password);
@@ -143,7 +145,9 @@ const login = async (login, password) => {
 
       if (!json.last_login) {
         localStorage.setItem("senhaAtual", password);
+        localStorage.setItem(PRIMEIRO_ACESSO_ALIAS, "true");
         window.location.href = "/login?componenteRenderizado=primeiroAcesso";
+        return isValid;
       }
 
       const url = `${API_URL}/usuarios/meus-dados/`;
@@ -170,6 +174,7 @@ const login = async (login, password) => {
 const logout = () => {
   localStorage.removeItem(TOKEN_ALIAS);
   localStorage.removeItem(TOKEN_REFRESH_ALIAS);
+  localStorage.removeItem(PRIMEIRO_ACESSO_ALIAS);
   localStorage.removeItem("tipo_perfil");
   localStorage.removeItem("perfil");
   localStorage.removeItem("tipo_gestao");
@@ -205,6 +210,9 @@ const getToken = () => {
 };
 
 const isLoggedIn = () => {
+  if (localStorage.getItem(PRIMEIRO_ACESSO_ALIAS)) {
+    return false;
+  }
   const token = localStorage.getItem(TOKEN_ALIAS);
   if (token) {
     return true;
