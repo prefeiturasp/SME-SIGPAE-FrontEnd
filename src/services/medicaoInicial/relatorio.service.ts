@@ -5,6 +5,7 @@ import {
   RelatorioAdesaoExportResponse,
   RelatorioAdesaoParams,
   RelatorioAdesaoResponse,
+  RelatorioAlimentacoesServidasParams,
 } from "./relatorio.interface";
 
 const BASE_URL = "medicao-inicial/relatorios";
@@ -27,6 +28,20 @@ export default class RelatorioService {
   ): Promise<RelatorioAdesaoExportResponse> {
     const response = await axios
       .get(`${BASE_URL}/relatorio-adesao/exportar-xlsx/`, {
+        params,
+      })
+      .catch(ErrorHandlerFunction);
+    if (response) {
+      const data = { data: response.data, status: response.status };
+      return data;
+    }
+  }
+
+  static async exportarRelatorioAlimentacoesServidasParaXLSX(
+    params: RelatorioAlimentacoesServidasParams,
+  ): Promise<RelatorioAdesaoExportResponse> {
+    const response = await axios
+      .get(`${BASE_URL}/relatorio-alimentacoes-servidas/exportar-xlsx/`, {
         params,
       })
       .catch(ErrorHandlerFunction);
