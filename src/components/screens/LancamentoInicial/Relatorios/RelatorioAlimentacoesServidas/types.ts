@@ -1,5 +1,5 @@
 export type IFiltros = {
-  mes?: string;
+  meses?: Array<string>;
   dres?: Array<string>;
   lotes?: Array<string>;
   subprefeituras?: Array<string>;
