@@ -41,6 +41,7 @@ export default () => {
                 escola={view.escola}
                 resultadoIndividual={view.resultadoIndividual}
                 exibirTitulo={view.exibirTitulo}
+                haAlgumaAdesao={view.haAlgumaAdesao}
               />
             </div>
             {view.paginacao && view.paginacao.count > 0 && (

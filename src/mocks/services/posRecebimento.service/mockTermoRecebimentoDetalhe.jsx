@@ -2,6 +2,7 @@ export const mockTermoRecebimentoDetalhe = {
   uuid: "termo-uuid-1",
   status: "ENVIADO_FISCAIS",
   status_display: "Enviado Fiscais",
+  pode_assinar: true,
   empresa: {
     uuid: "emp-1",
     cnpj: "22460700000100",

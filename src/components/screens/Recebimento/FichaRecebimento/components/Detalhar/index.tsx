@@ -91,6 +91,8 @@ export default () => {
     carregarFichaDeRecebimento();
   }, []);
 
+  const ehProdutoPerecivel = dadosCronograma?.categoria === "PERECIVEIS";
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <div className="card mt-3 detalhes-ficha">
@@ -392,25 +394,47 @@ export default () => {
                                 <strong>{veiculo.placa}</strong>
                               </p>
                             </div>
+                            {ehProdutoPerecivel && (
+                              <>
+                                <div className="linha-dupla">
+                                  <p>
+                                    T ºC (Área de Recebimento):{" "}
+                                    <strong>
+                                      + {veiculo.temperatura_recebimento}
+                                    </strong>
+                                  </p>
+                                  <p>
+                                    T ºC (Produto):{" "}
+                                    <strong>
+                                      - {veiculo.temperatura_produto}
+                                    </strong>
+                                  </p>
+                                </div>
+                                <div className="linha-dupla">
+                                  <p>
+                                    Lacre: <strong>{veiculo.lacre}</strong>
+                                  </p>
+                                  <p>
+                                    Nº SIF, SISBI ou SISP:{" "}
+                                    <strong>
+                                      {veiculo.numero_sif_sisbi_sisp}
+                                    </strong>
+                                  </p>
+                                </div>
+                              </>
+                            )}
                             <div className="linha-dupla">
                               <p>
-                                T ºC (Área de Recebimento):{" "}
+                                Nº Nota Fiscal:{" "}
+                                <strong>{veiculo.numero_nota_fiscal}</strong>
+                              </p>
+                              <p>
+                                Quantidade Recebida:{" "}
                                 <strong>
-                                  + {veiculo.temperatura_recebimento}
+                                  {formataMilharDecimal(
+                                    veiculo.quantidade_recebida,
+                                  )}
                                 </strong>
-                              </p>
-                              <p>
-                                T ºC (Produto):{" "}
-                                <strong>- {veiculo.temperatura_produto}</strong>
-                              </p>
-                            </div>
-                            <div className="linha-dupla">
-                              <p>
-                                Lacre: <strong>{veiculo.lacre}</strong>
-                              </p>
-                              <p>
-                                Nº SIF, SISBI ou SISP:{" "}
-                                <strong>{veiculo.numero_sif_sisbi_sisp}</strong>
                               </p>
                             </div>
                             <div className="linha-dupla">
@@ -447,12 +471,14 @@ export default () => {
                                 </strong>
                               </p>
                             </div>
-                            <p>
-                              Termógrafo:{" "}
-                              <strong>
-                                {veiculo.termografo ? "SIM" : "NÃO"}
-                              </strong>
-                            </p>
+                            {ehProdutoPerecivel && (
+                              <p>
+                                Termógrafo:{" "}
+                                <strong>
+                                  {veiculo.termografo ? "SIM" : "NÃO"}
+                                </strong>
+                              </p>
+                            )}
                             <hr />
                           </>
                         );

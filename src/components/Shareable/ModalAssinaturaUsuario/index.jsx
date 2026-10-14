@@ -7,7 +7,7 @@ import {
   BUTTON_ICON,
 } from "src/components/Shareable/Botao/constants";
 import { Spin } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputPassword from "../Input/InputPassword";
 import { Field, Form } from "react-final-form";
 import "./style.scss";
@@ -22,8 +22,15 @@ export const ModalAssinaturaUsuario = ({
   texto,
   textoBotao = "Sim, assinar cronograma",
   textoBotaoNao = "Não",
+  placeholderSenha = "Digite sua senha",
 }) => {
   const [concordaAssinar, setConcordaAssinar] = useState(false);
+
+  useEffect(() => {
+    if (!show) {
+      setConcordaAssinar(false);
+    }
+  }, [show]);
 
   return (
     <Modal
@@ -64,7 +71,7 @@ export const ModalAssinaturaUsuario = ({
                           esconderAsterisco
                           label="Senha"
                           name="password"
-                          placeholder={"Digite sua senha"}
+                          placeholder={placeholderSenha}
                           required
                         />
                       </div>

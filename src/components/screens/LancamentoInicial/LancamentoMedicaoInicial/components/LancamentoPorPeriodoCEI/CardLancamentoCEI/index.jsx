@@ -110,6 +110,7 @@ export const CardLancamentoCEI = ({
     [
       "Programas e Projetos",
       "Solicitações de Alimentação",
+      "Solicitações de Alimentação Extraordinárias",
       "Colaboradores",
       "Recreio nas Férias - 4 a 14 anos",
     ].includes(textoCabecalho)
@@ -124,7 +125,12 @@ export const CardLancamentoCEI = ({
         })),
       );
     }
-    if (textoCabecalho !== "Solicitações de Alimentação") {
+    if (
+      ![
+        "Solicitações de Alimentação",
+        "Solicitações de Alimentação Extraordinárias",
+      ].includes(textoCabecalho)
+    ) {
       copyTiposAlimentacao = copyTiposAlimentacao.filter((alimentacao) =>
         ALIMENTACOES_TOTAL.includes(alimentacao.nome),
       );
@@ -246,6 +252,7 @@ export const CardLancamentoCEI = ({
               [
                 "Programas e Projetos",
                 "Solicitações de Alimentação",
+                "Solicitações de Alimentação Extraordinárias",
                 "Colaboradores",
                 "Recreio nas Férias - 4 a 14 anos",
               ].includes(textoCabecalho) ? (

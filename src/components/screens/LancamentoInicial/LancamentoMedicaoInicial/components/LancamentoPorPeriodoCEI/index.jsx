@@ -38,6 +38,7 @@ import {
 import { relatorioMedicaoInicialPDF } from "src/services/relatorios";
 import { BlocoOcorrencias } from "../BlocoOcorrencias";
 import {
+  COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
   CORES,
   removeObjetosDuplicados,
   renderBotaoEnviarCorrecao,
@@ -260,6 +261,7 @@ export const LancamentoPorPeriodoCEI = ({
       mes: mes,
       ano: ano,
       recreio_nas_ferias: recreioNasFeriasUuid,
+      voltar_unico_registro: true,
     };
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
@@ -637,6 +639,31 @@ export const LancamentoPorPeriodoCEI = ({
                     errosAoSalvar={errosAoSalvar}
                   />
                 )}
+                {ehEscolaTipoCEMEI(escolaInstituicao) &&
+                  quantidadeAlimentacoesLancadas.some(
+                    (qtd) =>
+                      qtd.nome_periodo_grupo ===
+                      "Solicitações de Alimentação Extraordinárias",
+                  ) && (
+                    <CardLancamentoCEI
+                      key={periodosComAlunos.length + 2}
+                      textoCabecalho={
+                        "Solicitações de Alimentação Extraordinárias"
+                      }
+                      cor={COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS}
+                      solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+                      escolaInstituicao={escolaInstituicao}
+                      quantidadeAlimentacoesLancadas={
+                        quantidadeAlimentacoesLancadas
+                      }
+                      periodoSelecionado={periodoSelecionado}
+                      periodosEscolaCemeiComAlunosEmei={
+                        periodosEscolaCemeiComAlunosEmei
+                      }
+                      tiposAlimentacao={[{ nome: "Lanche Emergencial" }]}
+                      errosAoSalvar={errosAoSalvar}
+                    />
+                  )}
               </>
             )}
             {recreioNasFeriasDaMedicao(solicitacaoMedicaoInicial) && (

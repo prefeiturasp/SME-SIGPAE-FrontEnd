@@ -415,16 +415,37 @@ describe("desabilitarField CEI/CEMEI", () => {
     it("deve usar faixa_null quando ehRecreioNasFerias = true e permitir DIETA quando valorAlimentacao válido", () => {
       const a = baseArgs();
 
-      a.dia = 1;
-      a.nomeCategoria = "DIETA ESPECIAL";
+      a.dia = 2;
+      a.nomeCategoria = "DIETA ESPECIAL - TIPO B";
+      a.categoria = 4;
       a.ehRecreioNasFerias = true;
+      a.mesAnoConsiderado = new Date(2025, 9, 1);
+      a.mesAnoDefault = new Date(2026, 9, 2);
+      a.uuidFaixaEtaria = "1b77202d-fd0b-46b7-b4ec-04eb262efece";
 
-      delete a.values["matriculados__faixa_1__dia_01__categoria_1"];
+      delete a.values["matriculados__faixa_1__dia_1__categoria_1"];
 
-      a.values["participantes__faixa_null__dia_1__categoria_1"] = 10;
-      a.values["dietas_autorizadas__faixa_1__dia_1__categoria_1"] = 1;
+      a.values["participantes__faixa_null__dia_2__categoria_1"] = "100";
+      a.values[
+        "dietas_autorizadas__faixa_1b77202d-fd0b-46b7-b4ec-04eb262efece__dia_2__categoria_4"
+      ] = "2";
 
       expect(call(a)).toBe(false);
+    });
+
+    it("deve desabilitar dia futuro do recreio apenas no mês e ano correntes", () => {
+      const a = baseArgs();
+
+      a.dia = 2;
+      a.nomeCategoria = "DIETA ESPECIAL - TIPO B";
+      a.categoria = 4;
+      a.ehRecreioNasFerias = true;
+      a.mesAnoConsiderado = new Date(2026, 9, 1);
+      a.mesAnoDefault = new Date(2026, 9, 2);
+      a.values["participantes__faixa_null__dia_2__categoria_1"] = "100";
+      a.values["dietas_autorizadas__faixa_1__dia_2__categoria_4"] = "2";
+
+      expect(call(a)).toBe(true);
     });
   });
 

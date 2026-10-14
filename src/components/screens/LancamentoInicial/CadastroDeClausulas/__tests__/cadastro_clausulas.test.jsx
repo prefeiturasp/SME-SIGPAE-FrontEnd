@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ToastContainer } from "react-toastify";
 import { CadastroDeClausulas } from "../index";
 import { mockListaNumeros } from "src/mocks/LancamentoInicial/CadastroDeClausulas/listaDeNumeros";
@@ -79,7 +79,7 @@ describe("Testes de cadastro do formulário Cadastro de Cláusulas", () => {
     await setup();
 
     await act(async () => {
-      user.click(
+      fireEvent.mouseDown(
         screen
           .getByTestId("select-edital")
           .querySelector(".ant-select-selection-search-input"),
@@ -88,7 +88,7 @@ describe("Testes de cadastro do formulário Cadastro de Cláusulas", () => {
 
     await waitFor(() => screen.getByText("PARCEIRA"));
     await act(async () => {
-      user.click(screen.getByText("PARCEIRA"));
+      fireEvent.click(screen.getByText("PARCEIRA"));
     });
 
     await user.type(

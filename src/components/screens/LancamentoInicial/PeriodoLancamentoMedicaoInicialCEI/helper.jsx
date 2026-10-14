@@ -43,7 +43,11 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     ehRecreioNasFerias
   ) {
     values["grupo"] = ehRecreioNasFerias ? grupo : values["periodo_escolar"];
-    if (values["grupo"] && values["grupo"].includes("Solicitações")) {
+    if (
+      values["grupo"] &&
+      values["grupo"].includes("Solicitações") &&
+      values["grupo"] !== "Solicitações de Alimentação Extraordinárias"
+    ) {
       values["grupo"] = "Solicitações de Alimentação";
     }
     delete values["periodo_escolar"];
@@ -258,10 +262,14 @@ export const desabilitarField = (
   }
 
   if (ehRecreioNasFerias) {
+    const mesmoMesEAno =
+      mesAnoConsiderado.getFullYear() === mesAnoDefault.getFullYear() &&
+      mesAnoConsiderado.getMonth() === mesAnoDefault.getMonth();
+
     if (
-      mesConsiderado === mesAtual &&
-      Number(dia) >= format(mesAnoDefault, "dd") &&
-      !ehUltimoDiaLetivoDoAno(dia, mesConsiderado)
+      mesmoMesEAno &&
+      Number(dia) >= Number(format(mesAnoDefault, "dd")) &&
+      !ehUltimoDiaLetivoDoAno(dia, calendarioMesConsiderado, mesConsiderado)
     ) {
       return true;
     }
@@ -684,6 +692,18 @@ export const desabilitarField = (
       }
     }
   } else {
+    const idCategoriaAlimentacao = categoriasDeMedicao?.find(
+      (cat) => cat.nome === "ALIMENTAÇÃO",
+    )?.id;
+    const valorAlunosParaBloqueio =
+      ehRecreioNasFerias && nomeCategoria.includes("DIETA")
+        ? values[
+            `participantes__faixa_null__dia_${dia}__categoria_${idCategoriaAlimentacao}`
+          ]
+        : values[
+            `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+          ];
+
     if (
       ["Mês anterior", "Mês posterior"].includes(
         values[
@@ -719,15 +739,9 @@ export const desabilitarField = (
       ) === 0 ||
       // Bloquear se valor é nulo/vazio (sem alunos) ou zero em categoria não-DIETA
       // '0' (string) em DIETA significa que todos os alunos têm dieta especial → habilitar
-      (Number(
-        values[
-          `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ],
-      ) === 0 &&
-        (values[
-          `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ] !== "0" ||
-          !nomeCategoria.includes("DIETA")))
+      // No Recreio, o log de alunos fica em participantes__faixa_null da categoria ALIMENTAÇÃO
+      (Number(valorAlunosParaBloqueio) === 0 &&
+        (valorAlunosParaBloqueio !== "0" || !nomeCategoria.includes("DIETA")))
     ) {
       return true;
     } else if (rowName === "frequencia") {
@@ -1029,6 +1043,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
   ehRecreioNasFerias,
+  ehSolicitacoesAlimentacaoExtraordinarias = false,
 ) => {
   const tiposAlimentacaoFormatadas = tiposAlimentacao.map((alimentacao) => {
     return {
@@ -1042,24 +1057,25 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   });
 
   if (ehSolicitacoesAlimentacaoLocation) {
-    const rowsSolicitacoesAlimentacao = [];
-    rowsSolicitacoesAlimentacao.push(
+    const rowsSolicitacoesAlimentacao = [
       {
         nome: "Lanche Emergencial",
         name: "lanche_emergencial",
         uuid: null,
       },
-      {
+    ];
+    if (!ehSolicitacoesAlimentacaoExtraordinarias) {
+      rowsSolicitacoesAlimentacao.push({
         nome: "Kit Lanche",
         name: "kit_lanche",
         uuid: null,
-      },
-      {
-        nome: "Observações",
-        name: "observacoes",
-        uuid: null,
-      },
-    );
+      });
+    }
+    rowsSolicitacoesAlimentacao.push({
+      nome: "Observações",
+      name: "observacoes",
+      uuid: null,
+    });
 
     return rowsSolicitacoesAlimentacao;
   }

@@ -105,6 +105,8 @@ export const GESTAO_PRODUTO_CARDS = {
 export const SOLICITACOES_CODAE = "codae-solicitacoes";
 
 export const RELATORIO_ADESAO = "relatorio-adesao";
+export const RELATORIO_ALIMENTACOES_SERVIDAS =
+  "relatorio-alimentacoes-servidas";
 export const RELATORIO = "relatorio";
 export const RELATORIOS = "relatorios";
 export const HISTORICO = "historico";
@@ -161,6 +163,8 @@ export const SUSPENSAO_ATIVIDADES = "suspensao-atividades";
 export const RECREIO_NAS_FERIAS = "recreio-nas-ferias";
 export const RECREIO_NAS_FERIAS_CADASTRADOS = "recreio-nas-ferias-cadastrados";
 export const DIAS_LETIVOS = "dias-letivos";
+export const ESCOLA_ABERTA = "escola-aberta";
+export const ESCOLA_ABERTA_CADASTRADAS = "escola-aberta-cadastradas";
 export const CONSULTA_KITS = "consulta-kits";
 export const KITS = "kits";
 export const LOTE = "lote";
@@ -282,6 +286,7 @@ export const PAINEL_LAYOUT_EMBALAGEM = "painel-layout-embalagem";
 export const PENDENTES_APROVACAO = "pendentes-aprovacao";
 export const APROVADOS = "aprovados";
 export const ENVIADOS_PARA_CORRECAO = "enviados-para-correcao";
+export const REPROVADOS = "reprovados";
 
 export const DOCUMENTOS_RECEBIMENTO = "documentos-recebimento";
 export const CADASTRO_DOCUMENTOS_RECEBIMENTO =

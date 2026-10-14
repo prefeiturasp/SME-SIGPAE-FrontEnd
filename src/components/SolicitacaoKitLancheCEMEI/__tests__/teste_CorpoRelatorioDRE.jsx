@@ -67,7 +67,7 @@ describe("Teste <CorpoRelatorio> - Visão DRE", () => {
           }}
         >
           <CorpoRelatorio {...propsDRE} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -79,9 +79,12 @@ describe("Teste <CorpoRelatorio> - Visão DRE", () => {
     fireEvent.click(botaoValidar);
 
     await waitFor(() => expect(DREValidaKitLancheCEMEI).toHaveBeenCalled());
-    expect(DREValidaKitLancheCEMEI).toHaveReturnedWith(
-      Promise.resolve(mockDREValidaKitLanche)
-    );
+    await expect(
+      DREValidaKitLancheCEMEI.mock.results[0].value,
+    ).resolves.toEqual({
+      data: mockDREValidaKitLanche,
+      status: 200,
+    });
   });
 
   it("testa se o botão de 'Não Validar' está presente e funcionando", async () => {
@@ -91,7 +94,7 @@ describe("Teste <CorpoRelatorio> - Visão DRE", () => {
     fireEvent.click(botaoNaoValidar);
 
     expect(
-      screen.getByText("Deseja não validar solicitação?")
+      screen.getByText("Deseja não validar solicitação?"),
     ).toBeInTheDocument();
 
     const botaoNao = screen.getByText("Não").closest("button");

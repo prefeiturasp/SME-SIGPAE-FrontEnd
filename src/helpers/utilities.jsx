@@ -543,6 +543,7 @@ export const usuarioComAcessoAoRelatorioCronogramas = () => {
     PERFIL.USUARIO_RELATORIOS,
     PERFIL.USUARIO_GTIC_CODAE,
     PERFIL.DILOG_VISUALIZACAO,
+    PERFIL.DILOG_QUALIDADE,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -628,6 +629,7 @@ export const usuarioComAcessoAoPainelFichasTecnicas = () => {
     PERFIL.DILOG_QUALIDADE,
     PERFIL.DILOG_ABASTECIMENTO,
     PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.DILOG_VISUALIZACAO,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -1220,7 +1222,8 @@ export const exibirModuloMedicaoInicial = () => {
       usuarioEhDinutreDiretoria() ||
       usuarioEhEmpresaTerceirizada() ||
       usuarioEhCoordenadorNutriSupervisao() ||
-      usuarioEhAdministradorNutriSupervisao()
+      usuarioEhAdministradorNutriSupervisao() ||
+      ehUsuarioRelatorios()
     );
 
   switch (localStorage.getItem("tipo_perfil")) {
@@ -1261,6 +1264,22 @@ export const exibirModuloOcorrencias = () => {
       usuarioEhDilog() ||
       usuarioEhCODAEGabinete() ||
       usuarioEhDilogDiretoria())
+  );
+};
+
+export const exibirRelatorioAlimentacoesServidas = () => {
+  return (
+    !["production"].includes(ENVIRONMENT) &&
+    (usuarioEhDRE() ||
+      usuarioEhCODAEGestaoAlimentacao() ||
+      usuarioEhMedicao() ||
+      usuarioEhCoordenadorNutriSupervisao() ||
+      usuarioEhAdministradorNutriSupervisao() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhCODAEGabinete() ||
+      ehUsuarioRelatorios() ||
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhEmpresaTerceirizada())
   );
 };
 

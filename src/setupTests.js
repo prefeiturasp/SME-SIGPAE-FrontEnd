@@ -2,7 +2,6 @@
 
 import "@testing-library/jest-dom";
 import { Blob } from "buffer";
-import { jestPreviewConfigure } from "jest-preview";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
 import mock from "src/services/_mock";
@@ -27,11 +26,6 @@ class MockBroadcastChannel {
 if (typeof global.BroadcastChannel === "undefined") {
   global.BroadcastChannel = MockBroadcastChannel;
 }
-
-jestPreviewConfigure({
-  // Opt-in to automatic mode to preview failed test case automatically.
-  autoPreview: true,
-});
 
 jest.setTimeout(120000);
 

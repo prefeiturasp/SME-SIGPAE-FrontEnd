@@ -14,9 +14,10 @@ import { IFiltros } from "../../../../types";
 type Props = {
   params: IFiltros;
   className: string;
+  haAlgumaAdesao: boolean;
 };
 
-export default ({ params, className }: Props) => {
+export default ({ params, className, haAlgumaAdesao }: Props) => {
   const view = useView({ params });
 
   return (
@@ -26,7 +27,7 @@ export default ({ params, className }: Props) => {
         style={BUTTON_STYLE.GREEN_OUTLINE}
         icon={BUTTON_ICON.FILE_EXCEL}
         type={BUTTON_TYPE.BUTTON}
-        disabled={view.exportando}
+        disabled={view.exportando || !haAlgumaAdesao}
         onClick={view.exportarXLSX}
       />
       <Botao
@@ -35,7 +36,7 @@ export default ({ params, className }: Props) => {
         style={BUTTON_STYLE.GREEN_OUTLINE}
         icon={BUTTON_ICON.FILE_PDF}
         type={BUTTON_TYPE.BUTTON}
-        disabled={view.exportando}
+        disabled={view.exportando || !haAlgumaAdesao}
         onClick={view.exportarPDF}
       />
       {view.exibirModalCentralDownloads && (

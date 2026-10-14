@@ -101,9 +101,9 @@ export const getTiposGestao = async () => {
   }
 };
 
-export const getSubprefeituras = async () => {
+export const getSubprefeituras = async (params = null) => {
   const url = `${API_URL}/subprefeituras/`;
-  const response = await axios.get(url).catch(ErrorHandlerFunction);
+  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
