@@ -28,7 +28,7 @@ describe("Teste <ModalTerceirizadaRespondeQuestionamento>", () => {
       {
         data: mockTerceirizadaRespondeQuestionamento,
         status: 200,
-      }
+      },
     );
 
     await act(async () => {
@@ -52,14 +52,14 @@ describe("Teste <ModalTerceirizadaRespondeQuestionamento>", () => {
             }
             tipoSolicitacao="solicitacao-normal"
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Testa o comportamento após o clique do botão 'Enviar' ", async () => {
     const justificativaInput = screen.getByPlaceholderText(
-      "Qual a sua justificativa para a resposta acima?"
+      "Qual a sua justificativa para a resposta acima?",
     );
 
     fireEvent.change(justificativaInput, {
@@ -74,13 +74,15 @@ describe("Teste <ModalTerceirizadaRespondeQuestionamento>", () => {
 
     await waitFor(() =>
       expect(
-        terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao
-      ).toHaveBeenCalled()
+        terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao,
+      ).toHaveBeenCalled(),
     );
-    expect(
-      terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao
-    ).toHaveReturnedWith(
-      Promise.resolve(mockTerceirizadaRespondeQuestionamento)
-    );
+    await expect(
+      terceirizadaResponderQuestionamentoDeInclusaoDeAlimentacao.mock.results[0]
+        .value,
+    ).resolves.toEqual({
+      data: mockTerceirizadaRespondeQuestionamento,
+      status: 200,
+    });
   });
 });

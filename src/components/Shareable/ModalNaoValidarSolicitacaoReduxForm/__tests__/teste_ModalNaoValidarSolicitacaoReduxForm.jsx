@@ -49,20 +49,20 @@ describe("Teste <ModalNaoValidarSolicitacao>", () => {
             loadSolicitacao={() => {}}
             tipoSolicitacao="solicitacao-normal"
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Testa o comportamento após o clique do botão 'Confirmar' ", async () => {
     expect(
-      screen.getByText("Deseja não validar solicitação?")
+      screen.getByText("Deseja não validar solicitação?"),
     ).toBeInTheDocument();
 
     const motivoLabel = screen.getByText("Motivo");
     const select = motivoLabel.closest("div").querySelector("select");
     const uuidMotivo = mockMotivosDRENaoValida.results.find(
-      (motivo) => motivo.nome === "Preenchimento incorreto"
+      (motivo) => motivo.nome === "Preenchimento incorreto",
     ).uuid;
     fireEvent.change(select, {
       target: { value: uuidMotivo },
@@ -82,10 +82,13 @@ describe("Teste <ModalNaoValidarSolicitacao>", () => {
     expect(botaoConfirmar).toBeDisabled();
 
     await waitFor(() =>
-      expect(dreReprovarSolicitacaoDeInclusaoDeAlimentacao).toHaveBeenCalled()
+      expect(dreReprovarSolicitacaoDeInclusaoDeAlimentacao).toHaveBeenCalled(),
     );
-    expect(dreReprovarSolicitacaoDeInclusaoDeAlimentacao).toHaveReturnedWith(
-      Promise.resolve(mockDRENaoValida)
-    );
+    await expect(
+      dreReprovarSolicitacaoDeInclusaoDeAlimentacao.mock.results[0].value,
+    ).resolves.toEqual({
+      data: mockDRENaoValida,
+      status: 200,
+    });
   });
 });
