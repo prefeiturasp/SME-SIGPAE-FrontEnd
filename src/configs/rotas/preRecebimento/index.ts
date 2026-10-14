@@ -47,6 +47,7 @@ import CalendarioCronogramaPontoPontoPage from "src/pages/PreRecebimento/Calenda
 import StatusDocumentoAprovados from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoAprovados";
 import StatusDocumentoEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoEnviadosParaCorrecao";
 import StatusDocumentoPendenteAprovacao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoPendenteAprovacao";
+import StatusDocumentoReprovados from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoReprovados";
 import StatusFichasTecnicasAprovadas from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasAprovadas";
 import StatusFichasTecnicasEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasEnviadosParaCorrecao";
 import StatusFichasTecnicasPendenteAprovacao from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasPendenteAprovacao";
@@ -256,6 +257,11 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.PAINEL_DOCUMENTOS_RECEBIMENTO}/${constants.ENVIADOS_PARA_CORRECAO}/`,
     component: StatusDocumentoEnviadosParaCorrecao,
+    tipoUsuario: usuarioComAcessoAoPainelDocumentos(),
+  },
+  {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.PAINEL_DOCUMENTOS_RECEBIMENTO}/${constants.REPROVADOS}/`,
+    component: StatusDocumentoReprovados,
     tipoUsuario: usuarioComAcessoAoPainelDocumentos(),
   },
   {

@@ -7,6 +7,7 @@ import {
   PENDENTES_APROVACAO,
   APROVADOS,
   ENVIADOS_PARA_CORRECAO,
+  REPROVADOS,
 } from "../../../../configs/constants";
 
 export const CARD_PENDENTES_APROVACAO: CardConfig<DocumentosRecebimentoDashboard> =
@@ -38,8 +39,18 @@ export const CARD_ENVIADOS_PARA_CORRECAO: CardConfig<DocumentosRecebimentoDashbo
     href: `${ENVIADOS_PARA_CORRECAO}`,
   };
 
+export const CARD_REPROVADOS: CardConfig<DocumentosRecebimentoDashboard> = {
+  id: "Reprovados",
+  titulo: "Reprovados",
+  icon: "fa-times-circle",
+  style: "card-solicitacoes-reprovadas",
+  incluir_status: ["REPROVADO"],
+  href: `${REPROVADOS}`,
+};
+
 export const cardsPainel = [
   CARD_PENDENTES_APROVACAO,
   CARD_APROVADOS,
   CARD_ENVIADOS_PARA_CORRECAO,
+  CARD_REPROVADOS,
 ];
