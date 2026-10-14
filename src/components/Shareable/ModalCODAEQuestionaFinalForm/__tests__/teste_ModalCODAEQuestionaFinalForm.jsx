@@ -48,7 +48,7 @@ describe("Teste <ModalCODAEQuestionaFinalForm>", () => {
             solicitacao={mockInclusaoCEMEI}
             tipoSolicitacao="solicitacao-normal"
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -56,8 +56,8 @@ describe("Teste <ModalCODAEQuestionaFinalForm>", () => {
   it("Testa o comportamento após o clique do botão 'Enviar' ", async () => {
     expect(
       screen.getByText(
-        "É possível atender a solicitação com todos os itens previstos no contrato?"
-      )
+        "É possível atender a solicitação com todos os itens previstos no contrato?",
+      ),
     ).toBeInTheDocument();
 
     const botaoEnviar = screen.getByText("Enviar").closest("button");
@@ -67,13 +67,14 @@ describe("Teste <ModalCODAEQuestionaFinalForm>", () => {
 
     await waitFor(() =>
       expect(
-        codaeQuestionarSolicitacaoDeInclusaoDeAlimentacao
-      ).toHaveBeenCalled()
+        codaeQuestionarSolicitacaoDeInclusaoDeAlimentacao,
+      ).toHaveBeenCalled(),
     );
-    expect(
-      codaeQuestionarSolicitacaoDeInclusaoDeAlimentacao
-    ).toHaveReturnedWith(
-      Promise.resolve(mockCODAEQuestionaSolicitacaoInclusaoAlimentacao)
-    );
+    await expect(
+      codaeQuestionarSolicitacaoDeInclusaoDeAlimentacao.mock.results[0].value,
+    ).resolves.toEqual({
+      data: mockCODAEQuestionaSolicitacaoInclusaoAlimentacao,
+      status: 200,
+    });
   });
 });

@@ -75,7 +75,7 @@ describe("Teste <CorpoRelatorio> - Visão CODAE", () => {
 
     window.localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -87,7 +87,7 @@ describe("Teste <CorpoRelatorio> - Visão CODAE", () => {
           }}
         >
           <CorpoRelatorio {...propsCODAE} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -105,11 +105,14 @@ describe("Teste <CorpoRelatorio> - Visão CODAE", () => {
     fireEvent.submit(formulario);
 
     await waitFor(() =>
-      expect(CODAEquestionaKitLancheCEMEI).toHaveBeenCalled()
+      expect(CODAEquestionaKitLancheCEMEI).toHaveBeenCalled(),
     );
-    expect(CODAEquestionaKitLancheCEMEI).toHaveReturnedWith(
-      Promise.resolve(mockCODAEQuestionaSolicitacao)
-    );
+    await expect(
+      CODAEquestionaKitLancheCEMEI.mock.results[0].value,
+    ).resolves.toEqual({
+      data: mockCODAEQuestionaSolicitacao,
+      status: 200,
+    });
   });
 });
 
@@ -122,7 +125,7 @@ describe("Teste <CorpoRelatorio> Solicitação Regular - Visão CODAE", () => {
 
     window.localStorage.setItem(
       "tipo_perfil",
-      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+      TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
     );
 
     await act(async () => {
@@ -134,7 +137,7 @@ describe("Teste <CorpoRelatorio> Solicitação Regular - Visão CODAE", () => {
           }}
         >
           <CorpoRelatorio {...propsCODAERegular} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -146,7 +149,7 @@ describe("Teste <CorpoRelatorio> Solicitação Regular - Visão CODAE", () => {
     fireEvent.click(botaoAutorizar);
 
     expect(
-      screen.getByText("Deseja autorizar a solicitação?")
+      screen.getByText("Deseja autorizar a solicitação?"),
     ).toBeInTheDocument();
 
     const botaoNao = screen.getByText("Não").closest("button");

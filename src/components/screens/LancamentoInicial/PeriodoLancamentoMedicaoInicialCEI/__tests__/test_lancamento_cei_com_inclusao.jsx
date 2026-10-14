@@ -132,7 +132,9 @@ describe("Teste <PeriodoLancamentoMedicaoInicialCEI> com inclusão em dia não l
 
   it("teste mock getDiasSobremesaDoce", async () => {
     await waitFor(() => expect(getListaDiasSobremesaDoce).toHaveBeenCalled());
-    expect(getListaDiasSobremesaDoce).toHaveReturnedWith(Promise.resolve([]));
+    await expect(
+      getListaDiasSobremesaDoce.mock.results[0].value,
+    ).resolves.toEqual({ data: [], status: 200 });
   });
 
   it("renderiza label `Mês do Lançamento`", () => {

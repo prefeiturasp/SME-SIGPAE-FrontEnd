@@ -48,14 +48,14 @@ describe("Teste <ModalCODAEAutoriza>", () => {
             ehInclusao={true}
             tipoSolicitacao="solicitacao-normal"
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Testa o comportamento após o clique do botão 'Sim' ", async () => {
     expect(
-      screen.getByText("Deseja autorizar a solicitação?")
+      screen.getByText("Deseja autorizar a solicitação?"),
     ).toBeInTheDocument();
 
     const botaoConfirmar = screen.getByText("Sim").closest("button");
@@ -65,11 +65,14 @@ describe("Teste <ModalCODAEAutoriza>", () => {
 
     await waitFor(() =>
       expect(
-        codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao
-      ).toHaveBeenCalled()
+        codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao,
+      ).toHaveBeenCalled(),
     );
-    expect(codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao).toHaveReturnedWith(
-      Promise.resolve(mockCODAEAutoriza)
-    );
+    await expect(
+      codaeAutorizarSolicitacaoDeInclusaoDeAlimentacao.mock.results[0].value,
+    ).resolves.toEqual({
+      data: mockCODAEAutoriza,
+      status: 200,
+    });
   });
 });

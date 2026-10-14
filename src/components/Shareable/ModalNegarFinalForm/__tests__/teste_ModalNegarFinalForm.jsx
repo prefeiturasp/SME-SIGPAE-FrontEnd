@@ -64,7 +64,7 @@ describe("Teste <ModalNegarFinalForm>", () => {
             solicitacao={mockInclusaoCEMEI}
             tipoSolicitacao="solicitacao-normal"
           />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -85,11 +85,14 @@ describe("Teste <ModalNegarFinalForm>", () => {
     expect(botaoConfirmar).toBeDisabled();
 
     await waitFor(() =>
-      expect(codaeNegarSolicitacaoDeInclusaoDeAlimentacao).toHaveBeenCalled()
+      expect(codaeNegarSolicitacaoDeInclusaoDeAlimentacao).toHaveBeenCalled(),
     );
-    expect(codaeNegarSolicitacaoDeInclusaoDeAlimentacao).toHaveReturnedWith(
-      Promise.resolve(mockCODAENegarSolicitacao)
-    );
+    await expect(
+      codaeNegarSolicitacaoDeInclusaoDeAlimentacao.mock.results[0].value,
+    ).resolves.toEqual({
+      data: mockCODAENegarSolicitacao,
+      status: 200,
+    });
   });
 
   it("Testa o fechamento do modal", async () => {

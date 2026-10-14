@@ -50,20 +50,20 @@ describe("Teste <ModalCancelaSuspensao> - Cancelamento Parcial", () => {
           }}
         >
           <ModalCancelaSuspensao {...props} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
 
   it("Deve validar que o modal está sendo inicializado com os textos corretamente", async () => {
     const tituloModal = screen.getByText(
-      "Cancelamento de Suspensão de Alimentação"
+      "Cancelamento de Suspensão de Alimentação",
     );
     expect(tituloModal).toBeInTheDocument();
 
     await waitFor(() => {
       const motivoSuspensao = screen.getByText((content) =>
-        content.includes("Parada Pedagógica")
+        content.includes("Parada Pedagógica"),
       );
       expect(motivoSuspensao).toBeInTheDocument();
     });
@@ -108,11 +108,14 @@ describe("Teste <ModalCancelaSuspensao> - Cancelamento Parcial", () => {
     const formulario = screen.getByTestId("form-cancelamento");
     fireEvent.submit(formulario);
 
-    await waitFor(() => {
+    await waitFor(async () => {
       expect(escolaCancelaSuspensao).toHaveBeenCalled();
-      expect(escolaCancelaSuspensao).toHaveReturnedWith(
-        Promise.resolve(mockCancelaParcialSuspensao)
-      );
+      await expect(
+        escolaCancelaSuspensao.mock.results.at(-1).value,
+      ).resolves.toEqual({
+        data: mockCancelaParcialSuspensao,
+        status: 200,
+      });
     });
   });
 });
@@ -145,7 +148,7 @@ describe("Teste <ModalCancelaSuspensao> - Cancelamento Total", () => {
           }}
         >
           <ModalCancelaSuspensao {...props} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -173,11 +176,14 @@ describe("Teste <ModalCancelaSuspensao> - Cancelamento Total", () => {
     const formulario = screen.getByTestId("form-cancelamento");
     fireEvent.submit(formulario);
 
-    await waitFor(() => {
+    await waitFor(async () => {
       expect(escolaCancelaSuspensao).toHaveBeenCalled();
-      expect(escolaCancelaSuspensao).toHaveReturnedWith(
-        Promise.resolve(mockCancelaTotalSuspensao)
-      );
+      await expect(
+        escolaCancelaSuspensao.mock.results.at(-1).value,
+      ).resolves.toEqual({
+        data: mockCancelaTotalSuspensao,
+        status: 200,
+      });
     });
   });
 });
@@ -210,7 +216,7 @@ describe("Teste <ModalCancelaSuspensao> - Bad Request", () => {
           }}
         >
           <ModalCancelaSuspensao {...props} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
