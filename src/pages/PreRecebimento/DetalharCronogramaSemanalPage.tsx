@@ -17,7 +17,7 @@ const anteriores = [
   },
   {
     href: `/${PRE_RECEBIMENTO}/${CRONOGRAMA_SEMANAL_FLV}`,
-    titulo: "Cronograma Semanal - FLV",
+    titulo: "Cronograma Semanal",
   },
 ];
 

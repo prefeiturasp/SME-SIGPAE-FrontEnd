@@ -5,6 +5,7 @@ import {
   EDITAIS_CONTRATOS,
   EMPRESA,
   EMPRESAS_CADASTRADAS,
+  ESCOLA_ABERTA,
   FABRICANTES,
   FAIXAS_ETARIAS,
   HORARIO_COMBOS_ALIMENTACAO,
@@ -19,6 +20,7 @@ import {
   TIPOS_EMBALAGENS,
   UNIDADES_MEDIDA,
 } from "src/configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
 import {
   usuarioEhAdministradorCONTRATOS,
   usuarioEhCodaeDilog,
@@ -116,6 +118,11 @@ const MenuCadastros = () => {
           <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${DIAS_LETIVOS}`}>
             Dias Letivos
           </LeafItem>
+          {!ENVIRONMENT.includes("production") && (
+            <LeafItem to={`/${CONFIGURACOES}/${CADASTROS}/${ESCOLA_ABERTA}`}>
+              Escola Aberta
+            </LeafItem>
+          )}
         </>
       )}
       {usuarioEhMedicao() && (

@@ -543,6 +543,7 @@ export const usuarioComAcessoAoRelatorioCronogramas = () => {
     PERFIL.USUARIO_RELATORIOS,
     PERFIL.USUARIO_GTIC_CODAE,
     PERFIL.DILOG_VISUALIZACAO,
+    PERFIL.DILOG_QUALIDADE,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -628,6 +629,7 @@ export const usuarioComAcessoAoPainelFichasTecnicas = () => {
     PERFIL.DILOG_QUALIDADE,
     PERFIL.DILOG_ABASTECIMENTO,
     PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.DILOG_VISUALIZACAO,
   ].includes(localStorage.getItem("perfil"));
 };
 

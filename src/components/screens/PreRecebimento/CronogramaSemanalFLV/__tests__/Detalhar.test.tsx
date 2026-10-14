@@ -78,6 +78,20 @@ describe("Testa componente DetalharCronogramaSemanal", () => {
     expect(screen.getByText("Produto:")).toBeInTheDocument();
   });
 
+  it("exibe Local de Entrega e Horário com o período fixo", async () => {
+    await setup();
+    await waitFor(() => {
+      expect(screen.getByText("Status do Cronograma")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Local de Entrega:")).toBeInTheDocument();
+    expect(
+      screen.getByText("UNIDADE EDUCACIONAL DA RME - PONTO A PONTO"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Horário:")).toBeInTheDocument();
+    expect(screen.getByText("08:00 as 16:00")).toBeInTheDocument();
+  });
+
   it("exibe tabela de programações", async () => {
     await setup();
     await waitFor(() => {

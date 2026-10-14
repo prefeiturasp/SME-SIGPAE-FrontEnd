@@ -41,7 +41,7 @@ export const ListaOcorrencias = () => {
                     options={[
                       {
                         nome: `${formataMesNome(
-                          searchParams.get("mes")
+                          searchParams.get("mes"),
                         )} / ${searchParams.get("ano")}`,
                         uuid: "",
                       },
@@ -61,10 +61,12 @@ export const ListaOcorrencias = () => {
                           state: {
                             editalUuid: searchParams.get("editalUuid"),
                             solicitacaoMedicaoInicialUuid: searchParams.get(
-                              "solicitacaoMedicaoInicialUuid"
+                              "solicitacaoMedicaoInicialUuid",
                             ),
+                            mes: searchParams.get("mes"),
+                            ano: searchParams.get("ano"),
                           },
-                        }
+                        },
                       )
                     }
                   />

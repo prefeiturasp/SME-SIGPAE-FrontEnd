@@ -26,6 +26,9 @@ export default ({
     pluralFeminino ? "Todas as" : "Todos os"
   } ${nomeDoItemNoPlural}`;
 
+  const erro = meta && (meta.error || meta.submitError || meta.warning);
+  const invalido = Boolean(meta && (meta.touched || meta.submitFailed) && erro);
+
   const disabledInputValue = () => {
     if (
       Array.isArray(input.value) &&
@@ -43,7 +46,11 @@ export default ({
   };
 
   return (
-    <div className="select final-form-multi-select">
+    <div
+      className={`select final-form-multi-select ${
+        invalido ? "multiselect-invalid" : ""
+      }`}
+    >
       {label && [
         required && (
           <span key={0} className="required-asterisk">
@@ -97,12 +104,7 @@ export default ({
       )}
       {props.disabled && (
         <input
-          className={`form-control ${
-            meta &&
-            meta.touched &&
-            (meta.error || meta.warning) &&
-            "invalid-field"
-          }`}
+          className={`form-control ${invalido ? "invalid-field" : ""}`}
           disabled={props.disabled}
           placeholder={placeholder ? placeholder : "Selecione"}
           data-cy={input.name}

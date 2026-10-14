@@ -12,6 +12,7 @@ export default (props: Props) => {
     escola,
     resultadoIndividual,
     exibirTitulo,
+    haAlgumaAdesao,
   } = props;
   const temFiltros = filtros && Object.keys(filtros).length > 0;
   const resultadoVazio = resultado && Object.keys(resultado).length === 0;
@@ -111,6 +112,7 @@ export default (props: Props) => {
           <ExportarResultado
             className="d-flex justify-content-end mt-5"
             params={params}
+            haAlgumaAdesao={haAlgumaAdesao}
           />
         </>
       )}

@@ -201,10 +201,18 @@ const DetalharCronogramaSemanal: React.FC = () => {
                 <hr />
 
                 <div className="row my-3">
-                  <p>Local de Entrega:</p>
-                  <p>
-                    <b>UNIDADE EDUCACIONAL DA RME - PONTO A PONTO</b>
-                  </p>
+                  <div className="col-6">
+                    <p>Local de Entrega:</p>
+                    <p>
+                      <b>UNIDADE EDUCACIONAL DA RME - PONTO A PONTO</b>
+                    </p>
+                  </div>
+                  <div className="col-6">
+                    <p>Horário:</p>
+                    <p>
+                      <b>08:00 as 16:00</b>
+                    </p>
+                  </div>
                 </div>
 
                 <hr />

@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import {
   acionaComEnterOuEspaco,
   usuarioEhEmpresaFornecedor,
+  usuarioEhDilogQualidade,
   formataMilharDecimal,
   usuarioComAcessoAoCalendarioCronograma,
 } from "src/helpers/utilities";
@@ -21,6 +22,7 @@ import { imprimirCronogramaSemanal } from "src/services/cronogramaSemanal.servic
 
 const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
   const ehFornecedor = usuarioEhEmpresaFornecedor();
+  const somenteVisualizacao = usuarioEhDilogQualidade();
   const visualizaNumeroSemanal = usuarioComAcessoAoCalendarioCronograma();
 
   const classesGridTable = `grid-table ${ehFornecedor ? "sem-fornecedor" : ""} ${
@@ -104,14 +106,16 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
 
                 <div className={bordas}>
                   {cronograma.status === "Rascunho" ? (
-                    <NavLink
-                      className="float-start"
-                      to={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
-                    >
-                      <span className="link-acoes green">
-                        <i className="fas fa-edit" title="Editar" />
-                      </span>
-                    </NavLink>
+                    !somenteVisualizacao && (
+                      <NavLink
+                        className="float-start"
+                        to={`/${PRE_RECEBIMENTO}/${CADASTRO_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}
+                      >
+                        <span className="link-acoes green">
+                          <i className="fas fa-edit" title="Editar" />
+                        </span>
+                      </NavLink>
+                    )
                   ) : (
                     <>
                       <NavLink
@@ -148,7 +152,7 @@ const ListagemCronogramas = ({ cronogramas, ativos, setCarregando }) => {
                           >
                             <i className="fas fa-print" title="Imprimir" />
                           </span>
-                          {!ehFornecedor && (
+                          {!ehFornecedor && !somenteVisualizacao && (
                             <NavLink
                               className="float-start ms-1"
                               to={`/${PRE_RECEBIMENTO}/${ALTERAR_CRONOGRAMA_SEMANAL}?uuid=${cronograma.uuid}`}

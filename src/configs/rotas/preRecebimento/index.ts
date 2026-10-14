@@ -47,6 +47,7 @@ import CalendarioCronogramaPontoPontoPage from "src/pages/PreRecebimento/Calenda
 import StatusDocumentoAprovados from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoAprovados";
 import StatusDocumentoEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoEnviadosParaCorrecao";
 import StatusDocumentoPendenteAprovacao from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoPendenteAprovacao";
+import StatusDocumentoReprovados from "src/pages/PreRecebimento/CardsDocumentosRecebimento/StatusDocumentoReprovados";
 import StatusFichasTecnicasAprovadas from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasAprovadas";
 import StatusFichasTecnicasEnviadosParaCorrecao from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasEnviadosParaCorrecao";
 import StatusFichasTecnicasPendenteAprovacao from "src/pages/PreRecebimento/CardsFichasTecnicas/StatusFichasTecnicasPendenteAprovacao";
@@ -259,6 +260,11 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     tipoUsuario: usuarioComAcessoAoPainelDocumentos(),
   },
   {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.PAINEL_DOCUMENTOS_RECEBIMENTO}/${constants.REPROVADOS}/`,
+    component: StatusDocumentoReprovados,
+    tipoUsuario: usuarioComAcessoAoPainelDocumentos(),
+  },
+  {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.ANALISAR_DOCUMENTO_RECEBIMENTO}`,
     component: AnalisarDocumentosRecebimentoPage,
     tipoUsuario: usuarioEhDilogQualidade(),
@@ -306,7 +312,8 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.ANALISAR_FICHA_TECNICA}`,
     component: AnalisarFichaTecnicaPage,
     exact: true,
-    tipoUsuario: usuarioComAcessoAoPainelFichasTecnicas(),
+    tipoUsuario:
+      usuarioComAcessoAoPainelFichasTecnicas() && !usuarioEhDilogVisualizacao(),
   },
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.DETALHAR_FICHA_TECNICA}/`,
@@ -454,6 +461,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CRONOGRAMA_SEMANAL_FLV}`,
     component: CronogramaSemanalFLVPage,
     tipoUsuario:
+      usuarioEhDilogQualidade() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog(),
@@ -467,6 +475,7 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
     path: `/${constants.PRE_RECEBIMENTO}/${constants.DETALHE_CRONOGRAMA_SEMANAL}`,
     component: DetalharCronogramaSemanalPage,
     tipoUsuario:
+      usuarioEhDilogQualidade() ||
       usuarioEhEmpresaFornecedor() ||
       usuarioEhCronograma() ||
       usuarioEhCodaeDilog(),
