@@ -105,6 +105,8 @@ export const GESTAO_PRODUTO_CARDS = {
 export const SOLICITACOES_CODAE = "codae-solicitacoes";
 
 export const RELATORIO_ADESAO = "relatorio-adesao";
+export const RELATORIO_ALIMENTACOES_SERVIDAS =
+  "relatorio-alimentacoes-servidas";
 export const RELATORIO = "relatorio";
 export const RELATORIOS = "relatorios";
 export const HISTORICO = "historico";
