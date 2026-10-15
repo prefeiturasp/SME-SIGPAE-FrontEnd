@@ -193,6 +193,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                   </div>
                   <div className="w-50">
                     <Field
+                      className="tipo-unidade-select"
                       component={Select}
                       dataTestId="select-tipos-unidades"
                       label="Tipos de Unidades"
@@ -201,6 +202,7 @@ export const ModalAdicionarUnidadeEducacional = ({
                       required
                       validate={required}
                       naoDesabilitarPrimeiraOpcao
+                      disabled={!values?.dres_lote}
                     />
                   </div>
                 </div>
