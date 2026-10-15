@@ -43,7 +43,7 @@ export const CARD_REPROVADOS: CardConfig<DocumentosRecebimentoDashboard> = {
   id: "Reprovados",
   titulo: "Reprovados",
   icon: "fa-times-circle",
-  style: "card-solicitacoes-reprovadas",
+  style: "card-documento-reprovado",
   incluir_status: ["REPROVADO"],
   href: `${REPROVADOS}`,
 };
