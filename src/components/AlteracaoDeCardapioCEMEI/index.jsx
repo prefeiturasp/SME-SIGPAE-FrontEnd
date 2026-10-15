@@ -282,6 +282,21 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     setSubstitutosEMEI(_substitutosEMEI);
   };
 
+  const montarFaixasEtariasCEI = (subsCEI, periodo, faixasEtarias) => {
+    periodo.CEI.forEach((faixa, faixaIndice) => {
+      faixasEtarias[faixaIndice] = {};
+      const faixaRascunho = subsCEI.faixas_etarias.find(
+        (f) => f.faixa_etaria.__str__ === faixa.faixa,
+      );
+      if (faixaRascunho) {
+        faixasEtarias[faixaIndice] = {
+          faixa_uuid: faixaRascunho.faixa_etaria.uuid,
+          quantidade_alunos: faixaRascunho.quantidade,
+        };
+      }
+    });
+  };
+
   const buildSubstituicoes = async (periodos_, alteracao_) => {
     let substituicoes = [];
     periodos_.forEach((periodo, periodoIndice) => {
@@ -305,20 +320,11 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           ),
           faixas_etarias: [],
         };
-        periodo.CEI.forEach((faixa, faixaIndice) => {
-          substituicoes[periodoIndice]["cei"]["faixas_etarias"][faixaIndice] =
-            {};
-          const faixaRascunho = subsCEI.faixas_etarias.find(
-            (f) => f.faixa_etaria.__str__ === faixa.faixa,
-          );
-          if (faixaRascunho) {
-            substituicoes[periodoIndice]["cei"]["faixas_etarias"][faixaIndice] =
-              {
-                faixa_uuid: faixaRascunho.faixa_etaria.uuid,
-                quantidade_alunos: faixaRascunho.quantidade,
-              };
-          }
-        });
+        montarFaixasEtariasCEI(
+          subsCEI,
+          periodo,
+          substituicoes[periodoIndice]["cei"]["faixas_etarias"],
+        );
       }
       if (subsEMEI) {
         substituicoes[periodoIndice]["checked"] = true;

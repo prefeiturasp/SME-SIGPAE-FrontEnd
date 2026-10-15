@@ -525,6 +525,59 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
     }
   };
 
+  const obterOpcoesMotivo = (
+    values: ValuesFormInclusaoDeAlimentacaoInterface,
+  ) => {
+    if (values.inclusoes.length <= 1) {
+      return agregarDefault(motivosSimples).concat(motivosContinuos);
+    }
+    if (motivoEspecifico) {
+      return agregarDefault(motivosSimples).filter(
+        (motivo: MotivoSimplesInterface) =>
+          motivo.nome.includes("Selecione") ||
+          motivo.nome.includes("Específico"),
+      );
+    }
+    return agregarDefault(motivosSimples).filter(
+      (motivo: MotivoSimplesInterface) => !motivo.nome.includes("Específico"),
+    );
+  };
+
+  const criarOnChangeMotivo = (form: FormApi<any, Partial<any>>) => {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const values_ = form.getState().values;
+      if (value) {
+        const motivoSimples = motivosSimples.find(
+          (motivo: MotivoSimplesInterface) => motivo.uuid === value,
+        );
+        const motivoContinuo = motivosContinuos.find(
+          (motivo: MotivoContinuoInterface) => motivo.uuid === value,
+        );
+        if (motivoSimples) {
+          form.change("quantidades_periodo", undefined);
+          form.change("reload", !values_.reload);
+          checaMotivoInclusaoEspecifico(values_, form);
+        } else if (motivoContinuo?.nome === "ETEC") {
+          form.change("quantidades_periodo", undefined);
+          form.change("quantidades_periodo", periodoNoite);
+          form.change("reload", !values_.reload);
+        } else {
+          form.change("dias_semana", undefined);
+          form.change("tipos_alimentacao_selecionados", []);
+          form.change("periodo_escolar", undefined);
+          form.change("numero_alunos", undefined);
+          form.change("observacao", undefined);
+          form.change("quantidades_periodo", undefined);
+        }
+      }
+      if (uuid && idExterno) {
+        form.change("uuid", uuid);
+        form.change("id_externo", idExterno);
+      }
+    };
+  };
+
   return (
     <div>
       <div className="mt-3">
@@ -595,81 +648,11 @@ export const InclusaoDeAlimentacao = ({ ...props }) => {
                               dataTestId={`select-motivo-${index}`}
                               name={`${name}.motivo`}
                               label="Motivo"
-                              options={
-                                values.inclusoes.length > 1
-                                  ? motivoEspecifico
-                                    ? agregarDefault(motivosSimples).filter(
-                                        (motivo: MotivoSimplesInterface) =>
-                                          motivo.nome.includes("Selecione") ||
-                                          motivo.nome.includes("Específico"),
-                                      )
-                                    : agregarDefault(motivosSimples).filter(
-                                        (motivo: MotivoSimplesInterface) =>
-                                          !motivo.nome.includes("Específico"),
-                                      )
-                                  : agregarDefault(motivosSimples).concat(
-                                      motivosContinuos,
-                                    )
-                              }
+                              options={obterOpcoesMotivo(values)}
                               required
                               validate={required}
                               naoDesabilitarPrimeiraOpcao
-                              onChangeEffect={async (
-                                e: ChangeEvent<HTMLInputElement>,
-                              ) => {
-                                const value = e.target.value;
-                                const values_ = form.getState().values;
-                                if (value) {
-                                  if (
-                                    motivosSimples.find(
-                                      (motivo: MotivoSimplesInterface) =>
-                                        motivo.uuid === value,
-                                    )
-                                  ) {
-                                    form.change(
-                                      "quantidades_periodo",
-                                      undefined,
-                                    );
-                                    form.change("reload", !values_.reload);
-                                    await checaMotivoInclusaoEspecifico(
-                                      values_,
-                                      form,
-                                    );
-                                  } else if (
-                                    motivosContinuos.find(
-                                      (motivo: MotivoContinuoInterface) =>
-                                        motivo.uuid === value,
-                                    ).nome === "ETEC"
-                                  ) {
-                                    form.change(
-                                      "quantidades_periodo",
-                                      undefined,
-                                    );
-                                    form.change(
-                                      "quantidades_periodo",
-                                      periodoNoite,
-                                    );
-                                    form.change("reload", !values_.reload);
-                                  } else {
-                                    form.change("dias_semana", undefined);
-                                    form.change(
-                                      "tipos_alimentacao_selecionados",
-                                      [],
-                                    );
-                                    form.change("periodo_escolar", undefined);
-                                    form.change("numero_alunos", undefined);
-                                    form.change("observacao", undefined);
-                                    form.change(
-                                      "quantidades_periodo",
-                                      undefined,
-                                    );
-                                  }
-                                }
-                                if (uuid && idExterno) {
-                                  form.change("uuid", uuid);
-                                  form.change("id_externo", idExterno);
-                                }
-                              }}
+                              onChangeEffect={criarOnChangeMotivo(form)}
                             />
                           </div>
                           {motivoSimplesSelecionado(values) && (

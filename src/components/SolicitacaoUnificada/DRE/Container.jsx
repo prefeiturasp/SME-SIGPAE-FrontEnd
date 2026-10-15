@@ -59,9 +59,9 @@ export const Container = () => {
 
   const requisicoesPreRenderComMeusDados = async () => {
     const dre_uuid = meusDados.vinculo_atual.instituicao.uuid;
+    setLotes(meusDados.vinculo_atual.instituicao.lotes);
     await Promise.all([
       getDiasUteisAsync(),
-      setLotes(meusDados.vinculo_atual.instituicao.lotes),
       getEscolasTrecTotalAsync(dre_uuid),
     ]);
   };

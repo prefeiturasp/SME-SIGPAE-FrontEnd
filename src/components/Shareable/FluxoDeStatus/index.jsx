@@ -9,6 +9,31 @@ import { deepCopy } from "../../../helpers/utilities";
 import { TIPO_PERFIL } from "../../../constants/shared";
 import { useEffect, useState, useRef } from "react";
 
+const getTituloPorStatusEvento = (log, ehGestaoAlimentacao) => {
+  if (log.status_evento_explicacao === "Escola solicitou cancelamento") {
+    return "Escola solicitou cancelamento";
+  }
+  if (
+    log.status_evento_explicacao === "Escola cancelou" &&
+    log.usuario.tipo_usuario === "escola"
+  ) {
+    return "Escola cancelou";
+  }
+  if (
+    log.status_evento_explicacao === "Escola cancelou" &&
+    !ehGestaoAlimentacao
+  ) {
+    return "CODAE autorizou cancelamento";
+  }
+  if (log.status_evento_explicacao === "Correção solicitada") {
+    return "Devolvido para ajustes pela DRE";
+  }
+  if (log.status_evento_explicacao === "Correção solicitada pela CODAE") {
+    return "Devolvido para ajustes pela CODAE";
+  }
+  return log.status_evento_explicacao;
+};
+
 export const FluxoDeStatus = (props) => {
   const {
     listaDeStatus,
@@ -79,37 +104,16 @@ export const FluxoDeStatus = (props) => {
   }, []);
 
   const getTitulo = (log) => {
-    if (log) {
-      if (
-        log.justificativa &&
-        log.justificativa === "A solicitação não foi validada em tempo hábil"
-      ) {
-        return log.justificativa;
-      } else {
-        if (log.status_evento_explicacao === "Escola solicitou cancelamento") {
-          return "Escola solicitou cancelamento";
-        }
-        if (
-          log.status_evento_explicacao === "Escola cancelou" &&
-          log.usuario.tipo_usuario === "escola"
-        ) {
-          return "Escola cancelou";
-        }
-        if (
-          log.status_evento_explicacao === "Escola cancelou" &&
-          !eh_gestao_alimentacao
-        ) {
-          return "CODAE autorizou cancelamento";
-        }
-        if (log.status_evento_explicacao === "Correção solicitada") {
-          return "Devolvido para ajustes pela DRE";
-        }
-        if (log.status_evento_explicacao === "Correção solicitada pela CODAE") {
-          return "Devolvido para ajustes pela CODAE";
-        }
-        return log.status_evento_explicacao;
-      }
+    if (!log) {
+      return;
     }
+    if (
+      log.justificativa &&
+      log.justificativa === "A solicitação não foi validada em tempo hábil"
+    ) {
+      return log.justificativa;
+    }
+    return getTituloPorStatusEvento(log, eh_gestao_alimentacao);
   };
 
   const RFouCPF = (key, novoStatus) => {

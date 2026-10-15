@@ -42,6 +42,27 @@ import { formataPayload, getIntervaloMes } from "./helpers";
 import { RegistrarNovaOcorrenciaFormInterface } from "./interfaces";
 import "./style.scss";
 
+const renderizaParametrizacoes = (
+  parametrizacoes,
+  name,
+  indexFieldArray,
+  tipoOcorrencia,
+  form,
+  escolaSelecionada,
+) =>
+  parametrizacoes.map((parametrizacao) => (
+    <div key={indexFieldArray} className="row">
+      <RenderComponentByParametrizacao
+        parametrizacao={parametrizacao}
+        name_grupos={name}
+        tipoOcorrencia={tipoOcorrencia}
+        form={form}
+        escolaSelecionada={escolaSelecionada}
+        somenteLeitura={false}
+      />
+    </div>
+  ));
+
 export const RegistrarNovaOcorrencia = () => {
   const [tiposOcorrencia, setTiposOcorrencia] =
     useState<Array<TipoOcorrenciaInterface>>();
@@ -150,6 +171,10 @@ export const RegistrarNovaOcorrencia = () => {
     form.change("grupos", grupos);
   };
 
+  const criarHandlerExcluirGrupoDeResposta = (form, indexFieldArray) => () => {
+    excluiGrupoDeResposta(form, indexFieldArray);
+  };
+
   return (
     <div className="card registrar-nova-ocorrencia mt-3">
       <div className="card-body">
@@ -251,12 +276,10 @@ export const RegistrarNovaOcorrencia = () => {
                                       <Botao
                                         className="no-border"
                                         titulo="Excluir"
-                                        onClick={() =>
-                                          excluiGrupoDeResposta(
-                                            form,
-                                            indexFieldArray,
-                                          )
-                                        }
+                                        onClick={criarHandlerExcluirGrupoDeResposta(
+                                          form,
+                                          indexFieldArray,
+                                        )}
                                         type={BUTTON_TYPE.BUTTON}
                                         style={BUTTON_STYLE.GREEN_OUTLINE}
                                         icon={BUTTON_ICON.TRASH}
@@ -265,26 +288,13 @@ export const RegistrarNovaOcorrencia = () => {
                                   </div>
                                 )}
                                 {tipoOcorrencia.parametrizacoes.length ? (
-                                  tipoOcorrencia.parametrizacoes.map(
-                                    (parametrizacao) => {
-                                      return (
-                                        <div
-                                          key={indexFieldArray}
-                                          className="row"
-                                        >
-                                          <RenderComponentByParametrizacao
-                                            parametrizacao={parametrizacao}
-                                            name_grupos={name}
-                                            tipoOcorrencia={tipoOcorrencia}
-                                            form={form}
-                                            escolaSelecionada={
-                                              escolaSelecionada
-                                            }
-                                            somenteLeitura={false}
-                                          />
-                                        </div>
-                                      );
-                                    },
+                                  renderizaParametrizacoes(
+                                    tipoOcorrencia.parametrizacoes,
+                                    name,
+                                    indexFieldArray,
+                                    tipoOcorrencia,
+                                    form,
+                                    escolaSelecionada,
                                   )
                                 ) : (
                                   <div

@@ -215,6 +215,954 @@ export const ehUltimoDiaLetivoDoAno = (
   return Number(ultimoDia) === Number(dia);
 };
 
+const statusDeBloqueio = (location) => {
+  return (
+    location.state &&
+    (location.state.status_periodo === "MEDICAO_APROVADA_PELA_DRE" ||
+      location.state.status_periodo === "MEDICAO_APROVADA_PELA_CODAE" ||
+      location.state.status_periodo === "MEDICAO_ENVIADA_PELA_UE")
+  );
+};
+
+const statusDeCorrecao = (location) => {
+  return (
+    location.state &&
+    [
+      "MEDICAO_CORRECAO_SOLICITADA",
+      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      "MEDICAO_CORRIGIDA_PELA_UE",
+      "MEDICAO_CORRIGIDA_PARA_CODAE",
+    ].includes(location.state.status_periodo)
+  );
+};
+
+const definirPrefixoAlunosCei = (
+  ehRecreioNasFerias,
+  ehProgramasEProjetosLocation,
+) => {
+  if (ehRecreioNasFerias) {
+    return "participantes";
+  }
+  if (ehProgramasEProjetosLocation) {
+    return "numero_de_alunos";
+  }
+  return "matriculados";
+};
+
+const possuiLogAlimentacaoNoDia = (
+  ehEmeiDaCemeiLocation,
+  ehProgramasEProjetosLocation,
+  prefixo,
+  dia,
+  categoriaAlimentacao,
+  values,
+) => {
+  if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
+    return (
+      `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}` in values
+    );
+  }
+  return Object.keys(values).some(
+    (key) =>
+      key.startsWith(`${prefixo}__faixa_`) &&
+      key.includes(`__dia_${dia}__categoria_${categoriaAlimentacao?.id}`),
+  );
+};
+
+const desabilitarRecreioNoMesAtual = (
+  ehRecreioNasFerias,
+  mesAnoConsiderado,
+  mesAnoDefault,
+  dia,
+  ehUltimoDiaLetivoDoAno,
+  calendarioMesConsiderado,
+  mesConsiderado,
+) => {
+  if (!ehRecreioNasFerias) {
+    return null;
+  }
+  const mesmoMesEAno =
+    mesAnoConsiderado.getFullYear() === mesAnoDefault.getFullYear() &&
+    mesAnoConsiderado.getMonth() === mesAnoDefault.getMonth();
+
+  if (
+    mesmoMesEAno &&
+    Number(dia) >= Number(format(mesAnoDefault, "dd")) &&
+    !ehUltimoDiaLetivoDoAno(dia, calendarioMesConsiderado, mesConsiderado)
+  ) {
+    return true;
+  }
+  return null;
+};
+
+const desabilitarDietaSemLogAlimentacao = (
+  nomeCategoria,
+  rowName,
+  dia,
+  categoria,
+  values,
+  categoriasDeMedicao,
+  ehRecreioNasFerias,
+  ehProgramasEProjetosLocation,
+  ehEmeiDaCemeiLocation,
+) => {
+  if (!(nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas")) {
+    return null;
+  }
+  const categoriaAlimentacao = categoriasDeMedicao.find(
+    (cat) => cat.nome === "ALIMENTAÇÃO",
+  );
+  const prefixo = definirPrefixoAlunosCei(
+    ehRecreioNasFerias,
+    ehProgramasEProjetosLocation,
+  );
+
+  // Bloquear DIETA apenas se NÃO existe nenhum log de ALIMENTAÇÃO para esse dia
+  // (independente da faixa etária). Logs de dieta chegam antes de alimentação.
+  const temLogAlimentacaoNoDia = possuiLogAlimentacaoNoDia(
+    ehEmeiDaCemeiLocation,
+    ehProgramasEProjetosLocation,
+    prefixo,
+    dia,
+    categoriaAlimentacao,
+    values,
+  );
+  if (!temLogAlimentacaoNoDia) {
+    return true;
+  }
+  return null;
+};
+
+const montarAlimentacoesDoDia = (permissoesLancamentosEspeciaisPorDia, dia) => {
+  if (permissoesLancamentosEspeciaisPorDia) {
+    return [
+      ...new Set(
+        permissoesLancamentosEspeciaisPorDia
+          .filter((permissao) => permissao.dia === dia)
+          .flatMap((permissao) => permissao.alimentacoes),
+      ),
+    ];
+  }
+  return [];
+};
+
+const desabilitarAlimentacaoRecreio = (
+  dia,
+  mesAnoConsiderado,
+  inclusoesAutorizadas,
+  feriadosNoMes,
+  uuidFaixaEtaria,
+  categoria,
+  values,
+  rowName,
+  location,
+  diasParaCorrecao,
+  calendarioMesConsiderado,
+) => {
+  const dataAtual = new Date(
+    mesAnoConsiderado.getFullYear(),
+    mesAnoConsiderado.getMonth(),
+    dia,
+  );
+
+  const temInclusaoAutorizada = inclusoesAutorizadas.some(
+    (inclusao) => Number(inclusao.dia) === Number(dia),
+  );
+
+  const ehFeriado = feriadosNoMes.some(
+    (feriado) => Number(feriado) === Number(dia),
+  );
+
+  const ehFinalDeSemanaOuFeriado = ehFimDeSemanaUTC(dataAtual) || ehFeriado;
+
+  if (ehFinalDeSemanaOuFeriado) {
+    return !temInclusaoAutorizada;
+  }
+
+  if (
+    ["Mês anterior", "Mês posterior"].includes(
+      values[
+        `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ] || values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+    ) ||
+    ["matriculados", "participantes"].includes(rowName)
+  ) {
+    return true;
+  }
+
+  const diaEncontrado = calendarioMesConsiderado.find(
+    (item) => item.dia === dia,
+  );
+  if (!diaEncontrado) {
+    return true;
+  }
+
+  if (statusDeCorrecao(location)) {
+    return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
+  }
+
+  return false;
+};
+
+const desabilitarAlimentacaoComInclusao = (
+  rowName,
+  values,
+  uuidFaixaEtaria,
+  dia,
+  categoria,
+  inclusoesAutorizadas,
+  location,
+  diasParaCorrecao,
+  ehRecreioNasFerias,
+  mesAnoConsiderado,
+  feriadosNoMes,
+  calendarioMesConsiderado,
+) => {
+  const resultado = inclusoesAutorizadas.some(
+    (inclusao) =>
+      parseInt(dia) === parseInt(inclusao.dia) &&
+      rowName === "frequencia" &&
+      !["Mês anterior", "Mês posterior"].includes(
+        values[
+          `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+        ],
+      ) &&
+      parseInt(
+        values[
+          `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+        ],
+      ) > 0,
+  );
+  if (
+    resultado &&
+    values[
+      `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+    ]
+  ) {
+    if (statusDeCorrecao(location)) {
+      return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
+    }
+    return false;
+  }
+
+  if (ehRecreioNasFerias) {
+    return desabilitarAlimentacaoRecreio(
+      dia,
+      mesAnoConsiderado,
+      inclusoesAutorizadas,
+      feriadosNoMes,
+      uuidFaixaEtaria,
+      categoria,
+      values,
+      rowName,
+      location,
+      diasParaCorrecao,
+      calendarioMesConsiderado,
+    );
+  }
+  return null;
+};
+
+const desabilitarDietaComInclusao = (
+  validacaoDiaLetivo,
+  dia,
+  inclusoesAutorizadas,
+  rowName,
+  values,
+  uuidFaixaEtaria,
+  categoria,
+) => {
+  const resultado =
+    !validacaoDiaLetivo(dia) &&
+    inclusoesAutorizadas.some(
+      (inclusao) =>
+        parseInt(dia) === parseInt(inclusao.dia) &&
+        rowName === "frequencia" &&
+        !["Mês anterior", "Mês posterior"].includes(
+          values[
+            `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+          ],
+        ),
+    );
+  if (resultado) {
+    return (
+      !values[
+        `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ] ||
+      Number(
+        values[
+          `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+        ],
+      ) === 0
+    );
+  }
+  return null;
+};
+
+const desabilitarComInclusao = (
+  ehEmeiDaCemeiLocation,
+  ehProgramasEProjetosLocation,
+  nomeCategoria,
+  rowName,
+  values,
+  uuidFaixaEtaria,
+  dia,
+  categoria,
+  inclusoesAutorizadas,
+  location,
+  diasParaCorrecao,
+  ehRecreioNasFerias,
+  mesAnoConsiderado,
+  feriadosNoMes,
+  calendarioMesConsiderado,
+  validacaoDiaLetivo,
+) => {
+  if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
+    return null;
+  }
+  if (nomeCategoria === "ALIMENTAÇÃO") {
+    return desabilitarAlimentacaoComInclusao(
+      rowName,
+      values,
+      uuidFaixaEtaria,
+      dia,
+      categoria,
+      inclusoesAutorizadas,
+      location,
+      diasParaCorrecao,
+      ehRecreioNasFerias,
+      mesAnoConsiderado,
+      feriadosNoMes,
+      calendarioMesConsiderado,
+    );
+  }
+  return desabilitarDietaComInclusao(
+    validacaoDiaLetivo,
+    dia,
+    inclusoesAutorizadas,
+    rowName,
+    values,
+    uuidFaixaEtaria,
+    categoria,
+  );
+};
+
+const valorDietasAutorizadasEhZero = (values, dia, categoria) => {
+  return (
+    Number(values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]) ===
+    0
+  );
+};
+
+const desabilitarEspecialDietas = (
+  resultado,
+  location,
+  dia,
+  categoria,
+  diasParaCorrecao,
+  values,
+) => {
+  if (resultado) {
+    if (statusDeCorrecao(location)) {
+      return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
+    }
+    return valorDietasAutorizadasEhZero(values, dia, categoria);
+  }
+  return null;
+};
+
+const desabilitarEspecialAlimentacao = (
+  resultado,
+  location,
+  dia,
+  categoria,
+  diasParaCorrecao,
+  rowName,
+  inclusoesAutorizadas,
+  mesAnoConsiderado,
+  feriadosNoMes,
+  alimentacoesLancamentosEspeciais,
+) => {
+  if (resultado) {
+    if (statusDeCorrecao(location)) {
+      return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
+    }
+    return false;
+  }
+  if (
+    inclusaoDeFimDeSemanaRestringeAlimentacoes(
+      dia,
+      mesAnoConsiderado,
+      feriadosNoMes,
+      inclusoesAutorizadas,
+    ) &&
+    !alimentacoesLancamentosEspeciais?.includes(rowName)
+  ) {
+    return true;
+  }
+  return null;
+};
+
+const desabilitarEspecialEhProgramas = (
+  values,
+  rowName,
+  dia,
+  categoria,
+  inclusoesAutorizadas,
+  ehProgramasEProjetosLocation,
+  nomeCategoria,
+  location,
+  diasParaCorrecao,
+  mesAnoConsiderado,
+  feriadosNoMes,
+  alimentacoesLancamentosEspeciais,
+) => {
+  if (
+    ["Mês anterior", "Mês posterior"].includes(
+      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+    )
+  )
+    return true;
+  const resultado = inclusoesAutorizadas.some(
+    (inclusao) =>
+      dia === String(inclusao.dia) &&
+      (inclusao.alimentacoes
+        .split(", ")
+        .includes(
+          rowName.includes("repeticao") ? rowName.split("_")[1] : rowName,
+        ) ||
+        rowName === "frequencia"),
+  );
+
+  if (!resultado && ehProgramasEProjetosLocation) return true;
+  if (nomeCategoria !== "ALIMENTAÇÃO") {
+    return desabilitarEspecialDietas(
+      resultado,
+      location,
+      dia,
+      categoria,
+      diasParaCorrecao,
+      values,
+    );
+  }
+  return desabilitarEspecialAlimentacao(
+    resultado,
+    location,
+    dia,
+    categoria,
+    diasParaCorrecao,
+    rowName,
+    inclusoesAutorizadas,
+    mesAnoConsiderado,
+    feriadosNoMes,
+    alimentacoesLancamentosEspeciais,
+  );
+};
+
+const ehCampoDeCorrecao = (
+  dia,
+  categoria,
+  diasParaCorrecao,
+  values,
+  rowName,
+  location,
+) =>
+  ehDiaParaCorrigir(dia, categoria, diasParaCorrecao) &&
+  !["Mês anterior", "Mês posterior"].includes(
+    values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+  ) &&
+  location.state &&
+  [
+    "MEDICAO_CORRECAO_SOLICITADA",
+    "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+    "MEDICAO_CORRIGIDA_PELA_UE",
+    "MEDICAO_CORRIGIDA_PARA_CODAE",
+  ].includes(location.state.status_periodo) &&
+  ![
+    "matriculados",
+    "numero_de_alunos",
+    "dietas_autorizadas",
+    "participantes",
+  ].includes(rowName);
+
+const desabilitarCorrecaoCemei = (
+  location,
+  nomeCategoria,
+  rowName,
+  uuidFaixaEtaria,
+  values,
+  dia,
+  categoria,
+) => {
+  if (location.state && ehEscolaTipoCEMEI({ nome: location.state.escola })) {
+    if (
+      ["INTEGRAL", "PARCIAL"].includes(location.state.periodo) &&
+      rowName === "frequencia" &&
+      ((nomeCategoria === "ALIMENTAÇÃO" &&
+        !values[
+          `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+        ]) ||
+        (nomeCategoria.includes("DIETA") &&
+          !values[
+            `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+          ]))
+    ) {
+      return true;
+    }
+  }
+  return null;
+};
+
+const desabilitarCampoDeCorrecao = (
+  dia,
+  categoria,
+  diasParaCorrecao,
+  values,
+  rowName,
+  location,
+  nomeCategoria,
+  uuidFaixaEtaria,
+  alimentacoesLancamentosEspeciais,
+  alimentacoesLancamentosEspeciaisDia,
+) => {
+  if (
+    !ehCampoDeCorrecao(
+      dia,
+      categoria,
+      diasParaCorrecao,
+      values,
+      rowName,
+      location,
+    )
+  ) {
+    return null;
+  }
+  const desabilitadoCemei = desabilitarCorrecaoCemei(
+    location,
+    nomeCategoria,
+    rowName,
+    uuidFaixaEtaria,
+    values,
+    dia,
+    categoria,
+  );
+  if (desabilitadoCemei !== null) {
+    return desabilitadoCemei;
+  }
+  if (
+    alimentacoesLancamentosEspeciais?.includes(rowName) &&
+    !alimentacoesLancamentosEspeciaisDia?.includes(rowName)
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const desabilitarPorStatus = (
+  location,
+  dia,
+  categoria,
+  diasParaCorrecao,
+  rowName,
+) => {
+  if (
+    statusDeBloqueio(location) ||
+    ([
+      "MEDICAO_CORRECAO_SOLICITADA",
+      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      "MEDICAO_CORRIGIDA_PELA_UE",
+      "MEDICAO_CORRIGIDA_PARA_CODAE",
+    ].includes(location.state.status_periodo) &&
+      !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao)) ||
+    [
+      "matriculados",
+      "numero_de_alunos",
+      "dietas_autorizadas",
+      "participantes",
+    ].includes(rowName)
+  ) {
+    return true;
+  }
+  return null;
+};
+
+const desabilitarLancamentoEspecialCei = (
+  nomeCategoria,
+  permissoesLancamentosEspeciaisPorDia,
+  alimentacoesLancamentosEspeciais,
+  rowName,
+  inclusoesAutorizadas,
+  dia,
+  mesAnoConsiderado,
+  feriadosNoMes,
+  validacaoDiaLetivo,
+  alimentacoesLancamentosEspeciaisDia,
+  values,
+  categoria,
+) => {
+  if (
+    !(
+      nomeCategoria === "ALIMENTAÇÃO" &&
+      permissoesLancamentosEspeciaisPorDia &&
+      alimentacoesLancamentosEspeciais.includes(rowName)
+    )
+  ) {
+    return null;
+  }
+  const temInclusaoNoDia = (inclusoesAutorizadas || []).some(
+    (inc) => Number(inc.dia) === Number(dia),
+  );
+  const restringePorInclusaoDeFimDeSemana =
+    inclusaoDeFimDeSemanaRestringeAlimentacoes(
+      dia,
+      mesAnoConsiderado,
+      feriadosNoMes,
+      inclusoesAutorizadas,
+    );
+  const especialCompativelComInclusao = lancamentoEspecialCompativelComInclusao(
+    rowName,
+    inclusoesAutorizadas,
+    dia,
+  );
+  const diaLetivoLiberaEspecial =
+    validacaoDiaLetivo(dia) &&
+    (!restringePorInclusaoDeFimDeSemana || especialCompativelComInclusao);
+  const inclusaoLiberaEspecial =
+    !validacaoDiaLetivo(dia) &&
+    temInclusaoNoDia &&
+    especialCompativelComInclusao;
+
+  if (
+    alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
+    (diaLetivoLiberaEspecial || inclusaoLiberaEspecial) &&
+    !["Mês anterior", "Mês posterior"].includes(
+      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+    )
+  ) {
+    return false;
+  }
+  return true;
+};
+
+const desabilitarSolicitacoesCei = (
+  nomeCategoria,
+  kitLanchesAutorizadas,
+  dia,
+  rowName,
+  alteracoesAlimentacaoAutorizadas,
+  mesConsiderado,
+  mesAtual,
+  mesAnoDefault,
+  values,
+  categoria,
+) => {
+  if (!nomeCategoria.includes("SOLICITAÇÕES")) {
+    return null;
+  }
+  if (
+    (!kitLanchesAutorizadas?.some((kitLanche) => kitLanche.dia === dia) &&
+      rowName === "kit_lanche") ||
+    (!alteracoesAlimentacaoAutorizadas?.some(
+      (lancheEmergencial) => lancheEmergencial.dia === dia,
+    ) &&
+      rowName === "lanche_emergencial") ||
+    (mesConsiderado === mesAtual &&
+      Number(dia) >= format(mesAnoDefault, "dd")) ||
+    ["Mês anterior", "Mês posterior"].includes(
+      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+    )
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const desabilitarEmeiOuSolicitacoes = (
+  nomeCategoria,
+  rowName,
+  prefixo,
+  values,
+  dia,
+  categoria,
+  mesConsiderado,
+  mesAtual,
+  mesAnoDefault,
+  ehUltimoDiaLetivoDoAno,
+  calendarioMesConsiderado,
+  validacaoDiaLetivo,
+) => {
+  if (
+    ["Mês anterior", "Mês posterior"].includes(
+      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
+    ) ||
+    (mesConsiderado === mesAtual &&
+      Number(dia) >= format(mesAnoDefault, "dd") &&
+      !ehUltimoDiaLetivoDoAno(dia, calendarioMesConsiderado, mesConsiderado)) ||
+    !validacaoDiaLetivo(dia)
+  ) {
+    return true;
+  }
+  if (
+    (nomeCategoria === "ALIMENTAÇÃO" &&
+      (rowName === prefixo ||
+        !values[`${prefixo}__dia_${dia}__categoria_${categoria}`])) ||
+    (nomeCategoria.includes("DIETA") &&
+      (rowName === "dietas_autorizadas" ||
+        !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`])) ||
+    Number(values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]) ===
+      0 ||
+    // Bloquear se valor é nulo/vazio (sem alunos) ou zero em categoria não-DIETA
+    // '0' (string) em DIETA significa que todos os alunos têm dieta especial → habilitar
+    (Number(values[`${prefixo}__dia_${dia}__categoria_${categoria}`]) === 0 &&
+      (values[`${prefixo}__dia_${dia}__categoria_${categoria}`] !== "0" ||
+        !nomeCategoria.includes("DIETA")))
+  ) {
+    return true;
+  }
+  if (rowName === "frequencia") {
+    return false;
+  }
+};
+
+const desabilitarProgramasAlimentacaoCei = (
+  rowName,
+  validacaoSemana,
+  dia,
+  dadosValoresInclusoesAutorizadasState,
+) => {
+  if (rowName === "numero_de_alunos") {
+    return true;
+  }
+  if (validacaoSemana(dia)) {
+    return true;
+  }
+  if (
+    !Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
+      key.includes(`__dia_${dia}`),
+    )
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const desabilitarProgramasDietasCei = (
+  rowName,
+  validacaoSemana,
+  dia,
+  dadosValoresInclusoesAutorizadasState,
+  values,
+  categoria,
+) => {
+  if (rowName === "dietas_autorizadas") {
+    return true;
+  }
+  if (validacaoSemana(dia)) {
+    return true;
+  }
+  if (
+    !Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
+      key.includes(`__dia_${dia}`),
+    )
+  ) {
+    return true;
+  }
+  if (
+    values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`] === null ||
+    !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const desabilitarProgramasPadrao = (
+  nomeCategoria,
+  rowName,
+  validacaoSemana,
+  dia,
+  dadosValoresInclusoesAutorizadasState,
+  values,
+  categoria,
+) => {
+  if (nomeCategoria === "ALIMENTAÇÃO") {
+    return desabilitarProgramasAlimentacaoCei(
+      rowName,
+      validacaoSemana,
+      dia,
+      dadosValoresInclusoesAutorizadasState,
+    );
+  }
+  return desabilitarProgramasDietasCei(
+    rowName,
+    validacaoSemana,
+    dia,
+    dadosValoresInclusoesAutorizadasState,
+    values,
+    categoria,
+  );
+};
+
+const ehCampoParaBloqueioPadrao = (
+  nomeCategoria,
+  rowName,
+  values,
+  uuidFaixaEtaria,
+  dia,
+  categoria,
+  valorAlunosParaBloqueio,
+) =>
+  (nomeCategoria === "ALIMENTAÇÃO" &&
+    (rowName === "matriculados" ||
+      !values[
+        `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ])) ||
+  (nomeCategoria.includes("DIETA") &&
+    (rowName === "dietas_autorizadas" ||
+      !values[
+        `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ])) ||
+  Number(
+    values[
+      `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+    ],
+  ) === 0 ||
+  // Bloquear se valor é nulo/vazio (sem alunos) ou zero em categoria não-DIETA
+  // '0' (string) em DIETA significa que todos os alunos têm dieta especial → habilitar
+  // No Recreio, o log de alunos fica em participantes__faixa_null da categoria ALIMENTAÇÃO
+  (Number(valorAlunosParaBloqueio) === 0 &&
+    (valorAlunosParaBloqueio !== "0" || !nomeCategoria.includes("DIETA")));
+
+const desabilitarPadraoCei = (
+  ehRecreioNasFerias,
+  nomeCategoria,
+  categoriasDeMedicao,
+  values,
+  uuidFaixaEtaria,
+  dia,
+  categoria,
+  mesConsiderado,
+  mesAtual,
+  mesAnoDefault,
+  ehUltimoDiaLetivoDoAno,
+  calendarioMesConsiderado,
+  validacaoDiaLetivo,
+  rowName,
+) => {
+  const idCategoriaAlimentacao = categoriasDeMedicao?.find(
+    (cat) => cat.nome === "ALIMENTAÇÃO",
+  )?.id;
+  const valorAlunosParaBloqueio =
+    ehRecreioNasFerias && nomeCategoria.includes("DIETA")
+      ? values[
+          `participantes__faixa_null__dia_${dia}__categoria_${idCategoriaAlimentacao}`
+        ]
+      : values[
+          `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+        ];
+
+  if (
+    ["Mês anterior", "Mês posterior"].includes(
+      values[
+        `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ],
+    ) ||
+    (!ehRecreioNasFerias &&
+      mesConsiderado === mesAtual &&
+      Number(dia) >= format(mesAnoDefault, "dd") &&
+      !ehUltimoDiaLetivoDoAno(dia, calendarioMesConsiderado, mesConsiderado)) ||
+    !validacaoDiaLetivo(dia)
+  ) {
+    return true;
+  }
+  if (
+    ehCampoParaBloqueioPadrao(
+      nomeCategoria,
+      rowName,
+      values,
+      uuidFaixaEtaria,
+      dia,
+      categoria,
+      valorAlunosParaBloqueio,
+    )
+  ) {
+    return true;
+  }
+  if (rowName === "frequencia") {
+    return false;
+  }
+};
+
+const desabilitarCampoPadrao = (
+  ehRecreioNasFerias,
+  location,
+  ehSolicitacoesAlimentacaoLocation,
+  values,
+  rowName,
+  dia,
+  categoria,
+  mesConsiderado,
+  mesAtual,
+  mesAnoDefault,
+  ehUltimoDiaLetivoDoAno,
+  calendarioMesConsiderado,
+  validacaoDiaLetivo,
+  nomeCategoria,
+  ehProgramasEProjetosLocation,
+  validacaoSemana,
+  dadosValoresInclusoesAutorizadasState,
+  categoriasDeMedicao,
+  uuidFaixaEtaria,
+) => {
+  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
+  if (
+    (location && location.state && location.state.ehEmeiDaCemei) ||
+    ehSolicitacoesAlimentacaoLocation
+  ) {
+    return desabilitarEmeiOuSolicitacoes(
+      nomeCategoria,
+      rowName,
+      prefixo,
+      values,
+      dia,
+      categoria,
+      mesConsiderado,
+      mesAtual,
+      mesAnoDefault,
+      ehUltimoDiaLetivoDoAno,
+      calendarioMesConsiderado,
+      validacaoDiaLetivo,
+    );
+  }
+  if (ehProgramasEProjetosLocation) {
+    return desabilitarProgramasPadrao(
+      nomeCategoria,
+      rowName,
+      validacaoSemana,
+      dia,
+      dadosValoresInclusoesAutorizadasState,
+      values,
+      categoria,
+    );
+  }
+  return desabilitarPadraoCei(
+    ehRecreioNasFerias,
+    nomeCategoria,
+    categoriasDeMedicao,
+    values,
+    uuidFaixaEtaria,
+    dia,
+    categoria,
+    mesConsiderado,
+    mesAtual,
+    mesAnoDefault,
+    ehUltimoDiaLetivoDoAno,
+    calendarioMesConsiderado,
+    validacaoDiaLetivo,
+    rowName,
+  );
+};
+
 export const desabilitarField = (
   dia,
   rowName,
@@ -250,7 +1198,6 @@ export const desabilitarField = (
   const mesAtual = format(mesAnoDefault, "LLLL", {
     locale: ptBR,
   }).toString();
-  let alimentacoesLancamentosEspeciaisDia = [];
   const valorAtual =
     values[`${rowName}__dia_${dia}__categoria_${categoria}`] ??
     values[
@@ -261,493 +1208,164 @@ export const desabilitarField = (
     return true;
   }
 
-  if (ehRecreioNasFerias) {
-    const mesmoMesEAno =
-      mesAnoConsiderado.getFullYear() === mesAnoDefault.getFullYear() &&
-      mesAnoConsiderado.getMonth() === mesAnoDefault.getMonth();
-
-    if (
-      mesmoMesEAno &&
-      Number(dia) >= Number(format(mesAnoDefault, "dd")) &&
-      !ehUltimoDiaLetivoDoAno(dia, calendarioMesConsiderado, mesConsiderado)
-    ) {
-      return true;
-    }
+  const desabilitadoRecreioMes = desabilitarRecreioNoMesAtual(
+    ehRecreioNasFerias,
+    mesAnoConsiderado,
+    mesAnoDefault,
+    dia,
+    ehUltimoDiaLetivoDoAno,
+    calendarioMesConsiderado,
+    mesConsiderado,
+  );
+  if (desabilitadoRecreioMes !== null) {
+    return desabilitadoRecreioMes;
   }
 
-  if (nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas") {
-    const categoriaAlimentacao = categoriasDeMedicao.find(
-      (cat) => cat.nome === "ALIMENTAÇÃO",
-    );
-    const prefixo = ehRecreioNasFerias
-      ? "participantes"
-      : ehProgramasEProjetosLocation
-        ? "numero_de_alunos"
-        : "matriculados";
-
-    // Bloquear DIETA apenas se NÃO existe nenhum log de ALIMENTAÇÃO para esse dia
-    // (independente da faixa etária). Logs de dieta chegam antes de alimentação.
-    const temLogAlimentacaoNoDia =
-      ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation
-        ? `${prefixo}__dia_${dia}__categoria_${categoriaAlimentacao?.id}` in
-          values
-        : Object.keys(values).some(
-            (key) =>
-              key.startsWith(`${prefixo}__faixa_`) &&
-              key.includes(
-                `__dia_${dia}__categoria_${categoriaAlimentacao?.id}`,
-              ),
-          );
-    if (!temLogAlimentacaoNoDia) {
-      return true;
-    }
+  const desabilitadoDietaSemLog = desabilitarDietaSemLogAlimentacao(
+    nomeCategoria,
+    rowName,
+    dia,
+    categoria,
+    values,
+    categoriasDeMedicao,
+    ehRecreioNasFerias,
+    ehProgramasEProjetosLocation,
+    ehEmeiDaCemeiLocation,
+  );
+  if (desabilitadoDietaSemLog !== null) {
+    return desabilitadoDietaSemLog;
   }
 
-  const statusDeBloqueio = () => {
-    return (
-      location.state &&
-      (location.state.status_periodo === "MEDICAO_APROVADA_PELA_DRE" ||
-        location.state.status_periodo === "MEDICAO_APROVADA_PELA_CODAE" ||
-        location.state.status_periodo === "MEDICAO_ENVIADA_PELA_UE")
-    );
-  };
-
-  if (statusDeBloqueio()) {
+  if (statusDeBloqueio(location)) {
     return true;
   }
 
-  const statusDeCorrecao = () => {
-    return (
-      location.state &&
-      [
-        "MEDICAO_CORRECAO_SOLICITADA",
-        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-        "MEDICAO_CORRIGIDA_PELA_UE",
-        "MEDICAO_CORRIGIDA_PARA_CODAE",
-      ].includes(location.state.status_periodo)
-    );
-  };
-
+  let alimentacoesLancamentosEspeciaisDia = [];
+  let desabilitadoInclusao = null;
   if (!ehEmeiDaCemeiLocation && !ehProgramasEProjetosLocation) {
-    if (nomeCategoria === "ALIMENTAÇÃO") {
-      const resultado = inclusoesAutorizadas.some(
-        (inclusao) =>
-          parseInt(dia) === parseInt(inclusao.dia) &&
-          rowName === "frequencia" &&
-          !["Mês anterior", "Mês posterior"].includes(
-            values[
-              `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ],
-          ) &&
-          parseInt(
-            values[
-              `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ],
-          ) > 0,
-      );
-      if (
-        resultado &&
-        values[
-          `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ]
-      ) {
-        if (statusDeCorrecao()) {
-          return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
-        }
-        return false;
-      }
-
-      if (ehRecreioNasFerias) {
-        const dataAtual = new Date(
-          mesAnoConsiderado.getFullYear(),
-          mesAnoConsiderado.getMonth(),
-          dia,
-        );
-
-        const temInclusaoAutorizada = inclusoesAutorizadas.some(
-          (inclusao) => Number(inclusao.dia) === Number(dia),
-        );
-
-        const ehFeriado = feriadosNoMes.some(
-          (feriado) => Number(feriado) === Number(dia),
-        );
-
-        const ehFinalDeSemanaOuFeriado =
-          ehFimDeSemanaUTC(dataAtual) || ehFeriado;
-
-        if (ehFinalDeSemanaOuFeriado) {
-          return !temInclusaoAutorizada;
-        }
-
-        if (
-          ["Mês anterior", "Mês posterior"].includes(
-            values[
-              `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ] || values[`${rowName}__dia_${dia}__categoria_${categoria}`],
-          ) ||
-          ["matriculados", "participantes"].includes(rowName)
-        ) {
-          return true;
-        }
-
-        const diaEncontrado = calendarioMesConsiderado.find(
-          (item) => item.dia === dia,
-        );
-        if (!diaEncontrado) {
-          return true;
-        }
-
-        if (statusDeCorrecao()) {
-          return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
-        }
-
-        return false;
-      }
-    } else {
-      const resultado =
-        !validacaoDiaLetivo(dia) &&
-        inclusoesAutorizadas.some(
-          (inclusao) =>
-            parseInt(dia) === parseInt(inclusao.dia) &&
-            rowName === "frequencia" &&
-            !["Mês anterior", "Mês posterior"].includes(
-              values[
-                `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-              ],
-            ),
-        );
-      if (resultado) {
-        return (
-          !values[
-            `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-          ] ||
-          Number(
-            values[
-              `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ],
-          ) === 0
-        );
-      }
-    }
-  } else {
-    if (permissoesLancamentosEspeciaisPorDia) {
-      alimentacoesLancamentosEspeciaisDia = [
-        ...new Set(
-          permissoesLancamentosEspeciaisPorDia
-            .filter((permissao) => permissao.dia === dia)
-            .flatMap((permissao) => permissao.alimentacoes),
-        ),
-      ];
-    }
-    if (
-      ["Mês anterior", "Mês posterior"].includes(
-        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
-      )
-    )
-      return true;
-    const resultado = inclusoesAutorizadas.some(
-      (inclusao) =>
-        dia === String(inclusao.dia) &&
-        (inclusao.alimentacoes
-          .split(", ")
-          .includes(
-            rowName.includes("repeticao") ? rowName.split("_")[1] : rowName,
-          ) ||
-          rowName === "frequencia"),
+    desabilitadoInclusao = desabilitarComInclusao(
+      ehEmeiDaCemeiLocation,
+      ehProgramasEProjetosLocation,
+      nomeCategoria,
+      rowName,
+      values,
+      uuidFaixaEtaria,
+      dia,
+      categoria,
+      inclusoesAutorizadas,
+      location,
+      diasParaCorrecao,
+      ehRecreioNasFerias,
+      mesAnoConsiderado,
+      feriadosNoMes,
+      calendarioMesConsiderado,
+      validacaoDiaLetivo,
     );
-
-    if (!resultado && ehProgramasEProjetosLocation) return true;
-    if (nomeCategoria !== "ALIMENTAÇÃO") {
-      if (resultado) {
-        const valueDietasAutorizadasEhZero = () => {
-          return (
-            Number(
-              values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
-            ) === 0
-          );
-        };
-        if (statusDeCorrecao()) {
-          return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
-        }
-        return valueDietasAutorizadasEhZero();
-      }
-    } else {
-      if (resultado) {
-        if (statusDeCorrecao()) {
-          return !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao);
-        } else {
-          return false;
-        }
-      }
-      if (
-        inclusaoDeFimDeSemanaRestringeAlimentacoes(
-          dia,
-          mesAnoConsiderado,
-          feriadosNoMes,
-          inclusoesAutorizadas,
-        ) &&
-        !alimentacoesLancamentosEspeciais?.includes(rowName)
-      ) {
-        return true;
-      }
-    }
-  }
-
-  if (
-    ehDiaParaCorrigir(dia, categoria, diasParaCorrecao) &&
-    !["Mês anterior", "Mês posterior"].includes(
-      values[`${rowName}__dia_${dia}__categoria_${categoria}`],
-    ) &&
-    location.state &&
-    [
-      "MEDICAO_CORRECAO_SOLICITADA",
-      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-      "MEDICAO_CORRIGIDA_PELA_UE",
-      "MEDICAO_CORRIGIDA_PARA_CODAE",
-    ].includes(location.state.status_periodo) &&
-    ![
-      "matriculados",
-      "numero_de_alunos",
-      "dietas_autorizadas",
-      "participantes",
-    ].includes(rowName)
-  ) {
-    if (location.state && ehEscolaTipoCEMEI({ nome: location.state.escola })) {
-      if (
-        ["INTEGRAL", "PARCIAL"].includes(location.state.periodo) &&
-        rowName === "frequencia" &&
-        ((nomeCategoria === "ALIMENTAÇÃO" &&
-          !values[
-            `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-          ]) ||
-          (nomeCategoria.includes("DIETA") &&
-            !values[
-              `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-            ]))
-      ) {
-        return true;
-      }
-    }
-    if (
-      alimentacoesLancamentosEspeciais?.includes(rowName) &&
-      !alimentacoesLancamentosEspeciaisDia?.includes(rowName)
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  if (
-    statusDeBloqueio() ||
-    ([
-      "MEDICAO_CORRECAO_SOLICITADA",
-      "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-      "MEDICAO_CORRIGIDA_PELA_UE",
-      "MEDICAO_CORRIGIDA_PARA_CODAE",
-    ].includes(location.state.status_periodo) &&
-      !ehDiaParaCorrigir(dia, categoria, diasParaCorrecao)) ||
-    [
-      "matriculados",
-      "numero_de_alunos",
-      "dietas_autorizadas",
-      "participantes",
-    ].includes(rowName)
-  ) {
-    return true;
-  }
-
-  if (
-    nomeCategoria === "ALIMENTAÇÃO" &&
-    permissoesLancamentosEspeciaisPorDia &&
-    alimentacoesLancamentosEspeciais.includes(rowName)
-  ) {
-    const temInclusaoNoDia = (inclusoesAutorizadas || []).some(
-      (inc) => Number(inc.dia) === Number(dia),
-    );
-    const restringePorInclusaoDeFimDeSemana =
-      inclusaoDeFimDeSemanaRestringeAlimentacoes(
-        dia,
-        mesAnoConsiderado,
-        feriadosNoMes,
-        inclusoesAutorizadas,
-      );
-    const especialCompativelComInclusao =
-      lancamentoEspecialCompativelComInclusao(
-        rowName,
-        inclusoesAutorizadas,
-        dia,
-      );
-    const diaLetivoLiberaEspecial =
-      validacaoDiaLetivo(dia) &&
-      (!restringePorInclusaoDeFimDeSemana || especialCompativelComInclusao);
-    const inclusaoLiberaEspecial =
-      !validacaoDiaLetivo(dia) &&
-      temInclusaoNoDia &&
-      especialCompativelComInclusao;
-
-    if (
-      alimentacoesLancamentosEspeciaisDia.includes(rowName) &&
-      (diaLetivoLiberaEspecial || inclusaoLiberaEspecial) &&
-      !["Mês anterior", "Mês posterior"].includes(
-        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
-      )
-    ) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  if (nomeCategoria.includes("SOLICITAÇÕES")) {
-    if (
-      (!kitLanchesAutorizadas?.some((kitLanche) => kitLanche.dia === dia) &&
-        rowName === "kit_lanche") ||
-      (!alteracoesAlimentacaoAutorizadas?.some(
-        (lancheEmergencial) => lancheEmergencial.dia === dia,
-      ) &&
-        rowName === "lanche_emergencial") ||
-      (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd")) ||
-      ["Mês anterior", "Mês posterior"].includes(
-        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
-      )
-    ) {
-      return true;
-    }
-    return false;
-  }
-  const prefixo = ehRecreioNasFerias ? "participantes" : "matriculados";
-  if (
-    (location && location.state && location.state.ehEmeiDaCemei) ||
-    ehSolicitacoesAlimentacaoLocation
-  ) {
-    if (
-      ["Mês anterior", "Mês posterior"].includes(
-        values[`${rowName}__dia_${dia}__categoria_${categoria}`],
-      ) ||
-      (mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd") &&
-        !ehUltimoDiaLetivoDoAno(
-          dia,
-          calendarioMesConsiderado,
-          mesConsiderado,
-        )) ||
-      !validacaoDiaLetivo(dia)
-    ) {
-      return true;
-    } else if (
-      (nomeCategoria === "ALIMENTAÇÃO" &&
-        (rowName === prefixo ||
-          !values[`${prefixo}__dia_${dia}__categoria_${categoria}`])) ||
-      (nomeCategoria.includes("DIETA") &&
-        (rowName === "dietas_autorizadas" ||
-          !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`])) ||
-      Number(
-        values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`],
-      ) === 0 ||
-      // Bloquear se valor é nulo/vazio (sem alunos) ou zero em categoria não-DIETA
-      // '0' (string) em DIETA significa que todos os alunos têm dieta especial → habilitar
-      (Number(values[`${prefixo}__dia_${dia}__categoria_${categoria}`]) === 0 &&
-        (values[`${prefixo}__dia_${dia}__categoria_${categoria}`] !== "0" ||
-          !nomeCategoria.includes("DIETA")))
-    ) {
-      return true;
-    } else if (rowName === "frequencia") {
-      return false;
-    }
-  } else if (ehProgramasEProjetosLocation) {
-    if (nomeCategoria === "ALIMENTAÇÃO") {
-      if (rowName === "numero_de_alunos") {
-        return true;
-      } else if (validacaoSemana(dia)) {
-        return true;
-      } else if (
-        !Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
-          key.includes(`__dia_${dia}`),
-        )
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      if (rowName === "dietas_autorizadas") {
-        return true;
-      } else if (validacaoSemana(dia)) {
-        return true;
-      } else if (
-        !Object.keys(dadosValoresInclusoesAutorizadasState).some((key) =>
-          key.includes(`__dia_${dia}`),
-        )
-      ) {
-        return true;
-      } else if (
-        values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`] ===
-          null ||
-        !values[`dietas_autorizadas__dia_${dia}__categoria_${categoria}`]
-      ) {
-        return true;
-      } else {
-        return false;
-      }
-    }
   } else {
-    const idCategoriaAlimentacao = categoriasDeMedicao?.find(
-      (cat) => cat.nome === "ALIMENTAÇÃO",
-    )?.id;
-    const valorAlunosParaBloqueio =
-      ehRecreioNasFerias && nomeCategoria.includes("DIETA")
-        ? values[
-            `participantes__faixa_null__dia_${dia}__categoria_${idCategoriaAlimentacao}`
-          ]
-        : values[
-            `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-          ];
-
-    if (
-      ["Mês anterior", "Mês posterior"].includes(
-        values[
-          `${rowName}__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ],
-      ) ||
-      (!ehRecreioNasFerias &&
-        mesConsiderado === mesAtual &&
-        Number(dia) >= format(mesAnoDefault, "dd") &&
-        !ehUltimoDiaLetivoDoAno(
-          dia,
-          calendarioMesConsiderado,
-          mesConsiderado,
-        )) ||
-      !validacaoDiaLetivo(dia)
-    ) {
-      return true;
-    } else if (
-      (nomeCategoria === "ALIMENTAÇÃO" &&
-        (rowName === "matriculados" ||
-          !values[
-            `matriculados__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-          ])) ||
-      (nomeCategoria.includes("DIETA") &&
-        (rowName === "dietas_autorizadas" ||
-          !values[
-            `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-          ])) ||
-      Number(
-        values[
-          `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-        ],
-      ) === 0 ||
-      // Bloquear se valor é nulo/vazio (sem alunos) ou zero em categoria não-DIETA
-      // '0' (string) em DIETA significa que todos os alunos têm dieta especial → habilitar
-      // No Recreio, o log de alunos fica em participantes__faixa_null da categoria ALIMENTAÇÃO
-      (Number(valorAlunosParaBloqueio) === 0 &&
-        (valorAlunosParaBloqueio !== "0" || !nomeCategoria.includes("DIETA")))
-    ) {
-      return true;
-    } else if (rowName === "frequencia") {
-      return false;
-    }
+    alimentacoesLancamentosEspeciaisDia = montarAlimentacoesDoDia(
+      permissoesLancamentosEspeciaisPorDia,
+      dia,
+    );
+    desabilitadoInclusao = desabilitarEspecialEhProgramas(
+      values,
+      rowName,
+      dia,
+      categoria,
+      inclusoesAutorizadas,
+      ehProgramasEProjetosLocation,
+      nomeCategoria,
+      location,
+      diasParaCorrecao,
+      mesAnoConsiderado,
+      feriadosNoMes,
+      alimentacoesLancamentosEspeciais,
+    );
   }
+  if (desabilitadoInclusao !== null) {
+    return desabilitadoInclusao;
+  }
+
+  const desabilitadoCorrecao = desabilitarCampoDeCorrecao(
+    dia,
+    categoria,
+    diasParaCorrecao,
+    values,
+    rowName,
+    location,
+    nomeCategoria,
+    uuidFaixaEtaria,
+    alimentacoesLancamentosEspeciais,
+    alimentacoesLancamentosEspeciaisDia,
+  );
+  if (desabilitadoCorrecao !== null) {
+    return desabilitadoCorrecao;
+  }
+
+  const desabilitadoStatus = desabilitarPorStatus(
+    location,
+    dia,
+    categoria,
+    diasParaCorrecao,
+    rowName,
+  );
+  if (desabilitadoStatus !== null) {
+    return desabilitadoStatus;
+  }
+
+  const desabilitadoEspecial = desabilitarLancamentoEspecialCei(
+    nomeCategoria,
+    permissoesLancamentosEspeciaisPorDia,
+    alimentacoesLancamentosEspeciais,
+    rowName,
+    inclusoesAutorizadas,
+    dia,
+    mesAnoConsiderado,
+    feriadosNoMes,
+    validacaoDiaLetivo,
+    alimentacoesLancamentosEspeciaisDia,
+    values,
+    categoria,
+  );
+  if (desabilitadoEspecial !== null) {
+    return desabilitadoEspecial;
+  }
+
+  const desabilitadoSolicitacoes = desabilitarSolicitacoesCei(
+    nomeCategoria,
+    kitLanchesAutorizadas,
+    dia,
+    rowName,
+    alteracoesAlimentacaoAutorizadas,
+    mesConsiderado,
+    mesAtual,
+    mesAnoDefault,
+    values,
+    categoria,
+  );
+  if (desabilitadoSolicitacoes !== null) {
+    return desabilitadoSolicitacoes;
+  }
+  return desabilitarCampoPadrao(
+    ehRecreioNasFerias,
+    location,
+    ehSolicitacoesAlimentacaoLocation,
+    values,
+    rowName,
+    dia,
+    categoria,
+    mesConsiderado,
+    mesAtual,
+    mesAnoDefault,
+    ehUltimoDiaLetivoDoAno,
+    calendarioMesConsiderado,
+    validacaoDiaLetivo,
+    nomeCategoria,
+    ehProgramasEProjetosLocation,
+    validacaoSemana,
+    dadosValoresInclusoesAutorizadasState,
+    categoriasDeMedicao,
+    uuidFaixaEtaria,
+  );
 };
 
 export const getSolicitacoesInclusaoAutorizadasAsync = async (
@@ -1507,6 +2125,94 @@ const existeDietaTipoAEnteralOuAminoacidos = (
   );
 };
 
+const filtrarCategoriasEmeiOuProgramas = (
+  response_categorias_medicao,
+  logQtdDietasAutorizadasEmeiDaCemei,
+) => {
+  response_categorias_medicao = response_categorias_medicao.data.filter(
+    (categoria) => {
+      return !categoria.nome.includes("SOLICITAÇÕES");
+    },
+  );
+
+  if (!existeDietaTipoA(logQtdDietasAutorizadasEmeiDaCemei)) {
+    response_categorias_medicao = response_categorias_medicao.filter(
+      (categoria) => {
+        return categoria.nome !== "DIETA ESPECIAL - TIPO A";
+      },
+    );
+  }
+
+  if (!existeDietaTipoB(logQtdDietasAutorizadasEmeiDaCemei)) {
+    response_categorias_medicao = response_categorias_medicao.filter(
+      (categoria) => {
+        return categoria.nome !== "DIETA ESPECIAL - TIPO B";
+      },
+    );
+  }
+
+  if (
+    !existeDietaTipoAEnteralOuAminoacidos(logQtdDietasAutorizadasEmeiDaCemei)
+  ) {
+    response_categorias_medicao = response_categorias_medicao.filter(
+      (categoria) => {
+        return !categoria.nome.includes("ENTERAL");
+      },
+    );
+  }
+  return response_categorias_medicao;
+};
+
+const filtrarCategoriasCei = (
+  response_categorias_medicao,
+  response_log_dietas_autorizadas_cei,
+) => {
+  response_categorias_medicao = response_categorias_medicao.data.filter(
+    (categoria) => {
+      return (
+        !categoria.nome.includes("SOLICITAÇÕES") &&
+        !categoria.nome.includes("ENTERAL")
+      );
+    },
+  );
+  let categoriasDietasParaDeletar = [];
+  if (!response_log_dietas_autorizadas_cei.data?.length) {
+    categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO A");
+    categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO B");
+  } else if (response_log_dietas_autorizadas_cei.data?.length) {
+    for (const categoria of response_categorias_medicao) {
+      if (
+        categoria.nome === "DIETA ESPECIAL - TIPO A" &&
+        (!response_log_dietas_autorizadas_cei.data.filter((dieta) =>
+          dieta.classificacao.toUpperCase().includes("TIPO A"),
+        ).length ||
+          !response_log_dietas_autorizadas_cei.data.filter(
+            (dieta) =>
+              dieta.classificacao.toUpperCase().includes("TIPO A") &&
+              Number(dieta.quantidade) !== 0,
+          ).length)
+      ) {
+        categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO A");
+      } else if (
+        categoria.nome === "DIETA ESPECIAL - TIPO B" &&
+        (!response_log_dietas_autorizadas_cei.data.filter((dieta) =>
+          dieta.classificacao.toUpperCase().includes("TIPO B"),
+        ).length ||
+          !response_log_dietas_autorizadas_cei.data.filter(
+            (dieta) =>
+              dieta.classificacao.toUpperCase().includes("TIPO B") &&
+              Number(dieta.quantidade) !== 0,
+          ).length)
+      ) {
+        categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO B");
+      }
+    }
+  }
+  return response_categorias_medicao.filter((categoria) => {
+    return !categoriasDietasParaDeletar.includes(categoria.nome);
+  });
+};
+
 export const categoriasParaExibir = (
   ehEmeiDaCemeiLocation,
   ehProgramasEProjetosLocation,
@@ -1516,91 +2222,20 @@ export const categoriasParaExibir = (
   logQtdDietasAutorizadasEmeiDaCemei,
 ) => {
   if (ehEmeiDaCemeiLocation || ehProgramasEProjetosLocation) {
-    response_categorias_medicao = response_categorias_medicao.data.filter(
-      (categoria) => {
-        return !categoria.nome.includes("SOLICITAÇÕES");
-      },
+    return filtrarCategoriasEmeiOuProgramas(
+      response_categorias_medicao,
+      logQtdDietasAutorizadasEmeiDaCemei,
     );
-
-    if (!existeDietaTipoA(logQtdDietasAutorizadasEmeiDaCemei)) {
-      response_categorias_medicao = response_categorias_medicao.filter(
-        (categoria) => {
-          return categoria.nome !== "DIETA ESPECIAL - TIPO A";
-        },
-      );
-    }
-
-    if (!existeDietaTipoB(logQtdDietasAutorizadasEmeiDaCemei)) {
-      response_categorias_medicao = response_categorias_medicao.filter(
-        (categoria) => {
-          return categoria.nome !== "DIETA ESPECIAL - TIPO B";
-        },
-      );
-    }
-
-    if (
-      !existeDietaTipoAEnteralOuAminoacidos(logQtdDietasAutorizadasEmeiDaCemei)
-    ) {
-      response_categorias_medicao = response_categorias_medicao.filter(
-        (categoria) => {
-          return !categoria.nome.includes("ENTERAL");
-        },
-      );
-    }
-    return response_categorias_medicao;
-  } else if (ehSolicitacoesAlimentacaoLocation) {
-    response_categorias_medicao = response_categorias_medicao.data.filter(
-      (categoria) => {
-        return categoria.nome.includes("SOLICITAÇÕES");
-      },
-    );
-    return response_categorias_medicao;
-  } else {
-    response_categorias_medicao = response_categorias_medicao.data.filter(
-      (categoria) => {
-        return (
-          !categoria.nome.includes("SOLICITAÇÕES") &&
-          !categoria.nome.includes("ENTERAL")
-        );
-      },
-    );
-    let categoriasDietasParaDeletar = [];
-    if (!response_log_dietas_autorizadas_cei.data?.length) {
-      categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO A");
-      categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO B");
-    } else if (response_log_dietas_autorizadas_cei.data?.length) {
-      for (const categoria of response_categorias_medicao) {
-        if (
-          categoria.nome === "DIETA ESPECIAL - TIPO A" &&
-          (!response_log_dietas_autorizadas_cei.data.filter((dieta) =>
-            dieta.classificacao.toUpperCase().includes("TIPO A"),
-          ).length ||
-            !response_log_dietas_autorizadas_cei.data.filter(
-              (dieta) =>
-                dieta.classificacao.toUpperCase().includes("TIPO A") &&
-                Number(dieta.quantidade) !== 0,
-            ).length)
-        ) {
-          categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO A");
-        } else if (
-          categoria.nome === "DIETA ESPECIAL - TIPO B" &&
-          (!response_log_dietas_autorizadas_cei.data.filter((dieta) =>
-            dieta.classificacao.toUpperCase().includes("TIPO B"),
-          ).length ||
-            !response_log_dietas_autorizadas_cei.data.filter(
-              (dieta) =>
-                dieta.classificacao.toUpperCase().includes("TIPO B") &&
-                Number(dieta.quantidade) !== 0,
-            ).length)
-        ) {
-          categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO B");
-        }
-      }
-    }
-    return response_categorias_medicao.filter((categoria) => {
-      return !categoriasDietasParaDeletar.includes(categoria.nome);
+  }
+  if (ehSolicitacoesAlimentacaoLocation) {
+    return response_categorias_medicao.data.filter((categoria) => {
+      return categoria.nome.includes("SOLICITAÇÕES");
     });
   }
+  return filtrarCategoriasCei(
+    response_categorias_medicao,
+    response_log_dietas_autorizadas_cei,
+  );
 };
 
 export const formataNomeCategoriaSolAlimentacoesInfantil = (nomeCategoria) => {

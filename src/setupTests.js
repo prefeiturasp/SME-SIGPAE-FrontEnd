@@ -16,11 +16,10 @@ jest.mock("src/components/Shareable/CKEditorField", () => ({
   ),
 }));
 class MockBroadcastChannel {
-  constructor() {}
-  postMessage() {}
-  close() {}
-  addEventListener() {}
-  removeEventListener() {}
+  postMessage = jest.fn();
+  close = jest.fn();
+  addEventListener = jest.fn();
+  removeEventListener = jest.fn();
 }
 
 if (typeof global.BroadcastChannel === "undefined") {

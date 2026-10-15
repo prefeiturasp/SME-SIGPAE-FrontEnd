@@ -84,6 +84,110 @@ export const formatarPayload = (
     return payload;
   });
 
+const normalizarNomeTabela = (nome: string | null | undefined): string =>
+  nome
+    ?.normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase() ?? "";
+
+const buscarCampoPorFaixaEtaria = ({
+  faixasEtarias,
+  tabelas,
+  faixaSelecionada,
+  lancamento,
+}: Pick<GetValorUnitarioParams, "faixasEtarias" | "tabelas"> & {
+  faixaSelecionada: string;
+  lancamento: string;
+}) => {
+  const [periodo, faixaUuid] = faixaSelecionada.split("|");
+
+  const faixa = faixasEtarias.find((f) => f.uuid === faixaUuid);
+
+  if (!faixa) return null;
+
+  const nomeFaixa = normalizar(faixa.__str__);
+
+  const tabela = tabelas?.find((tabela) => {
+    const nomeTabela = normalizarNomeTabela(tabela.nome);
+
+    return (
+      nomeTabela.includes(lancamento.replaceAll("_", " ").toUpperCase()) &&
+      tabela.periodo_escolar === periodo
+    );
+  });
+
+  if (!tabela) return null;
+
+  return tabela.valores?.find(
+    (item) =>
+      normalizar(item.nome_campo).replaceAll("_", " ") === nomeFaixa &&
+      item.tipo_valor === "UNITARIO",
+  );
+};
+
+const buscarCampoPorAlimentacao = ({
+  tabelas,
+  tiposAlimentacao,
+  alimentacaoSelecionada,
+  lancamento,
+  tipo,
+  grupo,
+}: Pick<GetValorUnitarioParams, "tabelas" | "tiposAlimentacao" | "grupo"> & {
+  alimentacaoSelecionada: string;
+  lancamento: string;
+  tipo: string | null;
+}) => {
+  const { ehCemei, ehEmebs, ehEmef } = grupo;
+
+  const ehRefeicaoEja = alimentacaoSelecionada.includes("NOITE");
+
+  let nomeTipo = "";
+
+  if (alimentacaoSelecionada === "kit_lanche") {
+    nomeTipo = "kit lanche";
+  } else {
+    const uuidTipoAlimentacao = ehRefeicaoEja
+      ? alimentacaoSelecionada.replace("NOITE|", "")
+      : alimentacaoSelecionada;
+
+    const tipoAlimentacao = tiposAlimentacao.find(
+      (tipo) => tipo.uuid === uuidTipoAlimentacao,
+    );
+
+    nomeTipo = normalizar(tipoAlimentacao?.nome);
+  }
+
+  const tabela = tabelas?.find((tabela) => {
+    const nomeTabela = normalizarNomeTabela(tabela.nome);
+
+    const corresponde =
+      nomeTabela.includes(lancamento.replaceAll("_", " ").toUpperCase()) &&
+      ((!ehEmebs && !ehCemei) || nomeTabela.includes(tipo?.toUpperCase()));
+
+    return (
+      corresponde && tabela.periodo_escolar === (ehRefeicaoEja ? "NOITE" : null)
+    );
+  });
+
+  if (!tabela) return null;
+
+  if (!ehEmef || !nomeTipo.includes("refeicao")) {
+    return tabela.valores?.find(
+      (item) =>
+        normalizar(item.nome_campo).replaceAll("_", " ") === nomeTipo &&
+        item.tipo_valor === "UNITARIO",
+    );
+  }
+
+  const tipoRefeicao = ehRefeicaoEja ? "eja" : "emef";
+
+  return tabela.valores?.find(
+    (item) =>
+      normalizar(item.nome_campo).replaceAll("_", " ").includes(tipoRefeicao) &&
+      item.tipo_valor === "UNITARIO",
+  );
+};
+
 export const getValorUnitario = ({
   desconto,
   grupo,
@@ -97,8 +201,6 @@ export const getValorUnitario = ({
     tipo_alimentacao: alimentacaoSelecionada,
   } = desconto;
 
-  const { ehCei, ehCemei, ehEmebs, ehEmef } = grupo;
-
   if (!tipoLancamento) return 0;
 
   const [tipo, lancamento] = tipoLancamento.includes("|")
@@ -108,93 +210,28 @@ export const getValorUnitario = ({
   let campo = null;
 
   if (
-    (ehCei || ehCemei) &&
+    (grupo.ehCei || grupo.ehCemei) &&
     faixaSelecionada &&
     typeof faixaSelecionada === "string"
   ) {
-    const [periodo, faixaUuid] = faixaSelecionada.split("|");
-
-    const faixa = faixasEtarias.find((f) => f.uuid === faixaUuid);
-
-    if (!faixa) return 0;
-
-    const nomeFaixa = normalizar(faixa.__str__);
-
-    const tabela = tabelas?.find((tabela) => {
-      const nomeTabela = tabela.nome
-        ?.normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toUpperCase();
-
-      return (
-        nomeTabela?.includes(lancamento.replaceAll("_", " ").toUpperCase()) &&
-        tabela.periodo_escolar === periodo
-      );
+    campo = buscarCampoPorFaixaEtaria({
+      faixasEtarias,
+      tabelas,
+      faixaSelecionada,
+      lancamento,
     });
-
-    if (!tabela) return 0;
-
-    campo = tabela.valores?.find(
-      (item) =>
-        normalizar(item.nome_campo).replaceAll("_", " ") === nomeFaixa &&
-        item.tipo_valor === "UNITARIO",
-    );
   } else if (
     alimentacaoSelecionada &&
     typeof alimentacaoSelecionada === "string"
   ) {
-    const ehRefeicaoEja = alimentacaoSelecionada.includes("NOITE");
-
-    let nomeTipo = "";
-
-    if (alimentacaoSelecionada === "kit_lanche") {
-      nomeTipo = "kit lanche";
-    } else {
-      const uuidTipoAlimentacao = ehRefeicaoEja
-        ? alimentacaoSelecionada.replace("NOITE|", "")
-        : alimentacaoSelecionada;
-
-      const tipoAlimentacao = tiposAlimentacao.find(
-        (tipo) => tipo.uuid === uuidTipoAlimentacao,
-      );
-
-      nomeTipo = normalizar(tipoAlimentacao?.nome);
-    }
-
-    const tabela = tabelas?.find((tabela) => {
-      const nomeTabela = tabela.nome
-        ?.normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toUpperCase();
-
-      const corresponde =
-        nomeTabela?.includes(lancamento.replaceAll("_", " ").toUpperCase()) &&
-        ((!ehEmebs && !ehCemei) || nomeTabela?.includes(tipo?.toUpperCase()));
-
-      return (
-        corresponde &&
-        tabela.periodo_escolar === (ehRefeicaoEja ? "NOITE" : null)
-      );
+    campo = buscarCampoPorAlimentacao({
+      tabelas,
+      tiposAlimentacao,
+      alimentacaoSelecionada,
+      lancamento,
+      tipo,
+      grupo,
     });
-
-    if (!tabela) return 0;
-
-    if (!ehEmef || !nomeTipo.includes("refeicao")) {
-      campo = tabela.valores?.find(
-        (item) =>
-          normalizar(item.nome_campo).replaceAll("_", " ") === nomeTipo &&
-          item.tipo_valor === "UNITARIO",
-      );
-    } else {
-      const tipoRefeicao = ehRefeicaoEja ? "eja" : "emef";
-
-      campo = tabela.valores?.find(
-        (item) =>
-          normalizar(item.nome_campo)
-            .replaceAll("_", " ")
-            .includes(tipoRefeicao) && item.tipo_valor === "UNITARIO",
-      );
-    }
   }
 
   return stringDecimalToNumber(campo?.valor) ?? 0;

@@ -84,6 +84,10 @@ export default class BuscaProduto extends Component {
     this.setState({ resultadosProduto });
   };
 
+  acionaDropDownComEnterOuEspaco = (e, indice) => {
+    acionaComEnterOuEspaco(e, () => this.dropDownProduto(indice));
+  };
+
   cancelaPesquisa = () => {
     this.setState({
       resultadosProduto: [],
@@ -199,8 +203,9 @@ export default class BuscaProduto extends Component {
                                       this.dropDownProduto(indice);
                                     }}
                                     onKeyDown={(e) =>
-                                      acionaComEnterOuEspaco(e, () =>
-                                        this.dropDownProduto(indice),
+                                      this.acionaDropDownComEnterOuEspaco(
+                                        e,
+                                        indice,
                                       )
                                     }
                                   />
@@ -216,9 +221,7 @@ export default class BuscaProduto extends Component {
                                   this.dropDownProduto(indice);
                                 }}
                                 onKeyDown={(e) =>
-                                  acionaComEnterOuEspaco(e, () =>
-                                    this.dropDownProduto(indice),
-                                  )
+                                  this.acionaDropDownComEnterOuEspaco(e, indice)
                                 }
                               />
                             )}
