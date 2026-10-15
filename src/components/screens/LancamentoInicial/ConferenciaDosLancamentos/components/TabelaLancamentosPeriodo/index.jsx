@@ -93,6 +93,31 @@ import { ModalAprovarPeriodo } from "../ModalAprovarPeriodo";
 import { ModalCancelarCorrecao } from "../ModalCancelarCorrecao";
 import { ModalSalvarCorrecao } from "../ModalSalvarCorrecao";
 
+const obterPeriodoDoGrupo = (periodosSimples, periodoGrupo) =>
+  periodosSimples.find(
+    (periodo) =>
+      periodo.periodo_escolar.nome === periodoGrupo.nome_periodo_grupo,
+  );
+
+const montarSomaPorCategoria = (valoresDietasAutorizadas) => {
+  const somaPorCategoria = {};
+
+  valoresDietasAutorizadas.forEach((valor) => {
+    const catId = valor.categoria_medicao;
+    somaPorCategoria[catId] =
+      (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
+  });
+
+  return somaPorCategoria;
+};
+
+const filtrarValoresDietasSemSoma = (valores, somaPorCategoria) =>
+  valores.filter(
+    (valor) =>
+      valor.nome_campo !== "dietas_autorizadas" ||
+      (somaPorCategoria[valor.categoria_medicao] || 0) > 0,
+  );
+
 export const TabelaLancamentosPeriodo = ({ ...props }) => {
   const {
     key,
@@ -693,6 +718,209 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     );
   };
 
+  const ehEscolaComEstruturaCei = () =>
+    ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+    ehRecreioCeiDaCemei() ||
+    (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
+      ["INTEGRAL", "PARCIAL"].includes(periodoGrupo.nome_periodo_grupo));
+
+  const formatarTabelasProgramasEProjetos = async () => {
+    const response_get_tipos_alimentacao = await getTiposDeAlimentacao();
+    if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
+      toastError(
+        "Erro ao carregar tipos de alimentação. Tente novamente mais tarde.",
+      );
+    }
+
+    const lanche4h = response_get_tipos_alimentacao.data.results.filter(
+      (tipo_alimentacao) => tipo_alimentacao.nome === "Lanche 4h",
+    );
+
+    await getPeriodosInclusaoContinuaAsyncHelper(
+      mesSolicitacao,
+      anoSolicitacao,
+      solicitacao,
+      periodosSimples,
+      lanche4h,
+      periodoGrupo,
+      setTabelaAlimentacaoRows,
+      setTabelaDietaRows,
+      setTabelaDietaEnteralRows,
+    );
+  };
+
+  const formatarTabelasRecreioNasFerias = () => {
+    const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
+    const tiposAlimentacaoFormatadas = formatarLinhasTabelaAlimentacao(
+      tiposAlimentacaoRecreio,
+      periodoGrupo,
+      solicitacao,
+    );
+    const indexMatriculados = tiposAlimentacaoFormatadas.findIndex(
+      (row) => row.name === "matriculados",
+    );
+    if (indexMatriculados !== -1) {
+      tiposAlimentacaoFormatadas[indexMatriculados] = {
+        nome: "Participantes",
+        name: "participantes",
+        uuid: null,
+      };
+    }
+    const indexNumeroDeAlunos = tiposAlimentacaoFormatadas.findIndex(
+      (row) => row.name === "numero_de_alunos",
+    );
+    if (indexNumeroDeAlunos !== -1) {
+      tiposAlimentacaoFormatadas[indexNumeroDeAlunos] = {
+        nome: "Participantes",
+        name: "participantes",
+        uuid: null,
+      };
+    }
+    setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+    const linhasTabelasDietas = formatarLinhasTabelasDietas(
+      tiposAlimentacaoRecreio,
+    );
+    setTabelaDietaRows(linhasTabelasDietas);
+    const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
+    const linhasTabelaDietaEnteral = formatarLinhasTabelaDietaEnteral(
+      tiposAlimentacaoRecreio,
+      cloneLinhasTabelasDietas,
+    );
+    setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
+  };
+
+  const formatarTabelasPeriodoEscolar = async () => {
+    let periodo;
+    if (periodoGrupo.nome_periodo_grupo.includes("Infantil")) {
+      periodo = periodosSimples.find(
+        (periodo) =>
+          `Infantil ${periodo.periodo_escolar.nome}` ===
+            periodoGrupo.nome_periodo_grupo &&
+          periodo.tipo_unidade_escolar.iniciais === "EMEI",
+      );
+    } else {
+      periodo = periodosSimples.find(
+        (periodo) => periodo.periodo_escolar.nome === periodoEscolar,
+      );
+    }
+    const tipos_alimentacao = periodo.tipos_alimentacao;
+    const ehPeriodoSimples = periodosSimples
+      .map((periodo) => periodo.periodo_escolar.nome)
+      .includes(periodoGrupo.nome_periodo_grupo);
+    let alimentacoesLancamentosEspeciais = null;
+    if (ehPeriodoSimples || ehEMEIdaCEMEI()) {
+      const response_permissoes_lancamentos_especiais_mes_ano_por_periodo =
+        await getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync(
+          solicitacao.escola_uuid,
+          mesSolicitacao,
+          anoSolicitacao,
+          periodoGrupo.nome_periodo_grupo.includes(" ")
+            ? periodoGrupo.nome_periodo_grupo.split(" ")[1]
+            : periodoGrupo.nome_periodo_grupo,
+        );
+      alimentacoesLancamentosEspeciais =
+        response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais;
+      setAlimentacoesLancamentosEspeciais(
+        response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais?.map(
+          (ali) => ali.name,
+        ),
+      );
+      setDataInicioPermissoes(
+        response_permissoes_lancamentos_especiais_mes_ano_por_periodo.data_inicio_permissoes,
+      );
+    }
+    const tiposAlimentacaoFormatadas = formatarLinhasTabelaAlimentacao(
+      tipos_alimentacao,
+      periodoGrupo,
+      solicitacao,
+      periodo.periodo_escolar.eh_periodo_especifico,
+      ehPeriodoSimples || ehEMEIdaCEMEI(),
+      alimentacoesLancamentosEspeciais,
+    );
+    setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+    const linhasTabelasDietas = formatarLinhasTabelasDietas(tipos_alimentacao);
+    setTabelaDietaRows(linhasTabelasDietas);
+    const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
+    const linhasTabelaDietaEnteral = formatarLinhasTabelaDietaEnteral(
+      tipos_alimentacao,
+      cloneLinhasTabelasDietas,
+    );
+    setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
+  };
+
+  const formatarTabelasPorCategoria = async (
+    response_valores_periodos,
+    categoriasMedicao,
+  ) => {
+    if (ehEscolaComEstruturaCei()) {
+      formatarLinhasTabelasCEIHelper(
+        periodoGrupo,
+        solicitacao,
+        response_valores_periodos,
+        categoriasMedicao,
+        categoriasDeMedicao,
+        setTabelaAlimentacaoRows,
+        setTabelaDietaRows,
+        setCategoriasDeMedicao,
+      );
+    } else if (periodoGrupo.nome_periodo_grupo === "ETEC") {
+      setTabelaEtecAlimentacaoRows(formatarLinhasTabelaEtecAlimentacao());
+    } else if (periodoGrupo.nome_periodo_grupo.includes("Solicitações")) {
+      setTabelaSolicitacoesAlimentacaoRows(
+        formatarLinhasTabelaSolicitacoesAlimentacao(
+          !ehGrupoSolicitacoesExtraordinarias(),
+        ),
+      );
+    } else if (periodoGrupo.nome_periodo_grupo === "Programas e Projetos") {
+      await formatarTabelasProgramasEProjetos();
+    } else if (ehRecreioNasFerias()) {
+      formatarTabelasRecreioNasFerias();
+    } else {
+      await formatarTabelasPeriodoEscolar();
+    }
+  };
+
+  const carregarSolicitacoesAutorizadas = async () => {
+    if (
+      !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
+      periodosSimples.find(
+        (periodo) =>
+          periodo.periodo_escolar.nome === periodoGrupo.nome_periodo_grupo,
+      )
+    ) {
+      const response_inclusoes_autorizadas =
+        await getSolicitacoesInclusaoAutorizadasAsync(
+          solicitacao.escola_uuid,
+          mesSolicitacao,
+          anoSolicitacao,
+          [periodoGrupo.nome_periodo_grupo],
+        );
+      setInclusoesAutorizadas(response_inclusoes_autorizadas);
+
+      const response_alteracoes_alimentacao_autorizadas =
+        await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
+          solicitacao.escola_uuid,
+          mesSolicitacao,
+          anoSolicitacao,
+          periodoGrupo.nome_periodo_grupo,
+          false,
+          new URLSearchParams(window.location.search).get("recreio_nas_ferias"),
+        );
+      setAlteracoesAlimentacaoAutorizadas(
+        response_alteracoes_alimentacao_autorizadas,
+      );
+
+      const response_suspensoes_autorizadas =
+        await getSolicitacoesSuspensoesAutorizadasAsync(
+          solicitacao.escola_uuid,
+          mesSolicitacao,
+          anoSolicitacao,
+          periodoGrupo.nome_periodo_grupo,
+        );
+      setSuspensoesAutorizadas(response_suspensoes_autorizadas);
+    }
+  };
+
   useEffect(() => {
     if (
       ehEscolaTipoCEMEI({ nome: solicitacao.escola })
@@ -716,20 +944,14 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
               (valor) => valor.nome_campo === "dietas_autorizadas",
             );
 
-          const somaPorCategoria = {};
+          const somaPorCategoria = montarSomaPorCategoria(
+            valoresDietasAutorizadas,
+          );
 
-          valoresDietasAutorizadas.forEach((valor) => {
-            const catId = valor.categoria_medicao;
-            somaPorCategoria[catId] =
-              (somaPorCategoria[catId] || 0) + parseInt(valor.valor || 0);
-          });
-
-          response_valores_periodos.data =
-            response_valores_periodos.data.filter(
-              (valor) =>
-                valor.nome_campo !== "dietas_autorizadas" ||
-                (somaPorCategoria[valor.categoria_medicao] || 0) > 0,
-            );
+          response_valores_periodos.data = filtrarValoresDietasSemSoma(
+            response_valores_periodos.data,
+            somaPorCategoria,
+          );
 
           setValoresLancamentos(response_valores_periodos.data);
 
@@ -754,212 +976,12 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             setTabItemsAlunosEmebs,
           );
 
-          if (
-            ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-            (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-              ["INTEGRAL", "PARCIAL"].includes(
-                periodoGrupo.nome_periodo_grupo,
-              )) ||
-            ehRecreioCeiDaCemei()
-          ) {
-            formatarLinhasTabelasCEIHelper(
-              periodoGrupo,
-              solicitacao,
-              response_valores_periodos,
-              categoriasMedicao,
-              categoriasDeMedicao,
-              setTabelaAlimentacaoRows,
-              setTabelaDietaRows,
-              setCategoriasDeMedicao,
-            );
-          } else {
-            if (periodoGrupo.nome_periodo_grupo === "ETEC") {
-              const linhasTabelaEtecAlimentacao =
-                formatarLinhasTabelaEtecAlimentacao();
-              setTabelaEtecAlimentacaoRows(linhasTabelaEtecAlimentacao);
-            } else if (
-              !periodoGrupo.nome_periodo_grupo.includes("Solicitações")
-            ) {
-              if (periodoGrupo.nome_periodo_grupo === "Programas e Projetos") {
-                const response_get_tipos_alimentacao =
-                  await getTiposDeAlimentacao();
-                if (response_get_tipos_alimentacao.status !== HTTP_STATUS.OK) {
-                  toastError(
-                    "Erro ao carregar tipos de alimentação. Tente novamente mais tarde.",
-                  );
-                }
+          await formatarTabelasPorCategoria(
+            response_valores_periodos,
+            categoriasMedicao,
+          );
 
-                const lanche4h =
-                  response_get_tipos_alimentacao.data.results.filter(
-                    (tipo_alimentacao) => tipo_alimentacao.nome === "Lanche 4h",
-                  );
-
-                await getPeriodosInclusaoContinuaAsyncHelper(
-                  mesSolicitacao,
-                  anoSolicitacao,
-                  solicitacao,
-                  periodosSimples,
-                  lanche4h,
-                  periodoGrupo,
-                  setTabelaAlimentacaoRows,
-                  setTabelaDietaRows,
-                  setTabelaDietaEnteralRows,
-                );
-              } else if (ehRecreioNasFerias()) {
-                const tiposAlimentacaoRecreio = getTiposAlimentacaoRecreio();
-                const tiposAlimentacaoFormatadas =
-                  formatarLinhasTabelaAlimentacao(
-                    tiposAlimentacaoRecreio,
-                    periodoGrupo,
-                    solicitacao,
-                  );
-                const indexMatriculados = tiposAlimentacaoFormatadas.findIndex(
-                  (row) => row.name === "matriculados",
-                );
-                if (indexMatriculados !== -1) {
-                  tiposAlimentacaoFormatadas[indexMatriculados] = {
-                    nome: "Participantes",
-                    name: "participantes",
-                    uuid: null,
-                  };
-                }
-                const indexNumeroDeAlunos =
-                  tiposAlimentacaoFormatadas.findIndex(
-                    (row) => row.name === "numero_de_alunos",
-                  );
-                if (indexNumeroDeAlunos !== -1) {
-                  tiposAlimentacaoFormatadas[indexNumeroDeAlunos] = {
-                    nome: "Participantes",
-                    name: "participantes",
-                    uuid: null,
-                  };
-                }
-                setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
-                const linhasTabelasDietas = formatarLinhasTabelasDietas(
-                  tiposAlimentacaoRecreio,
-                );
-                setTabelaDietaRows(linhasTabelasDietas);
-                const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
-                const linhasTabelaDietaEnteral =
-                  formatarLinhasTabelaDietaEnteral(
-                    tiposAlimentacaoRecreio,
-                    cloneLinhasTabelasDietas,
-                  );
-                setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
-              } else {
-                let periodo;
-                if (periodoGrupo.nome_periodo_grupo.includes("Infantil")) {
-                  periodo = periodosSimples.find(
-                    (periodo) =>
-                      `Infantil ${periodo.periodo_escolar.nome}` ===
-                        periodoGrupo.nome_periodo_grupo &&
-                      periodo.tipo_unidade_escolar.iniciais === "EMEI",
-                  );
-                } else {
-                  periodo = periodosSimples.find(
-                    (periodo) =>
-                      periodo.periodo_escolar.nome === periodoEscolar,
-                  );
-                }
-                const tipos_alimentacao = periodo.tipos_alimentacao;
-                const ehPeriodoSimples = periodosSimples
-                  .map((periodo) => periodo.periodo_escolar.nome)
-                  .includes(periodoGrupo.nome_periodo_grupo);
-                let alimentacoesLancamentosEspeciais = null;
-                if (ehPeriodoSimples || ehEMEIdaCEMEI()) {
-                  const response_permissoes_lancamentos_especiais_mes_ano_por_periodo =
-                    await getPermissoesLancamentosEspeciaisMesAnoPorPeriodoAsync(
-                      solicitacao.escola_uuid,
-                      mesSolicitacao,
-                      anoSolicitacao,
-                      periodoGrupo.nome_periodo_grupo.includes(" ")
-                        ? periodoGrupo.nome_periodo_grupo.split(" ")[1]
-                        : periodoGrupo.nome_periodo_grupo,
-                    );
-                  alimentacoesLancamentosEspeciais =
-                    response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais;
-                  setAlimentacoesLancamentosEspeciais(
-                    response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais?.map(
-                      (ali) => ali.name,
-                    ),
-                  );
-                  setDataInicioPermissoes(
-                    response_permissoes_lancamentos_especiais_mes_ano_por_periodo.data_inicio_permissoes,
-                  );
-                }
-                const tiposAlimentacaoFormatadas =
-                  formatarLinhasTabelaAlimentacao(
-                    tipos_alimentacao,
-                    periodoGrupo,
-                    solicitacao,
-                    periodo.periodo_escolar.eh_periodo_especifico,
-                    ehPeriodoSimples || ehEMEIdaCEMEI(),
-                    alimentacoesLancamentosEspeciais,
-                  );
-                setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
-                const linhasTabelasDietas =
-                  formatarLinhasTabelasDietas(tipos_alimentacao);
-                setTabelaDietaRows(linhasTabelasDietas);
-                const cloneLinhasTabelasDietas = deepCopy(linhasTabelasDietas);
-                const linhasTabelaDietaEnteral =
-                  formatarLinhasTabelaDietaEnteral(
-                    tipos_alimentacao,
-                    cloneLinhasTabelasDietas,
-                  );
-                setTabelaDietaEnteralRows(linhasTabelaDietaEnteral);
-              }
-            } else {
-              const linhasTabelaSolicitacoesAlimentacao =
-                formatarLinhasTabelaSolicitacoesAlimentacao(
-                  !ehGrupoSolicitacoesExtraordinarias(),
-                );
-              setTabelaSolicitacoesAlimentacaoRows(
-                linhasTabelaSolicitacoesAlimentacao,
-              );
-            }
-          }
-
-          if (
-            !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
-            periodosSimples.find(
-              (periodo) =>
-                periodo.periodo_escolar.nome ===
-                periodoGrupo.nome_periodo_grupo,
-            )
-          ) {
-            const response_inclusoes_autorizadas =
-              await getSolicitacoesInclusaoAutorizadasAsync(
-                solicitacao.escola_uuid,
-                mesSolicitacao,
-                anoSolicitacao,
-                [periodoGrupo.nome_periodo_grupo],
-              );
-            setInclusoesAutorizadas(response_inclusoes_autorizadas);
-
-            const response_alteracoes_alimentacao_autorizadas =
-              await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
-                solicitacao.escola_uuid,
-                mesSolicitacao,
-                anoSolicitacao,
-                periodoGrupo.nome_periodo_grupo,
-                false,
-                new URLSearchParams(window.location.search).get(
-                  "recreio_nas_ferias",
-                ),
-              );
-            setAlteracoesAlimentacaoAutorizadas(
-              response_alteracoes_alimentacao_autorizadas,
-            );
-
-            const response_suspensoes_autorizadas =
-              await getSolicitacoesSuspensoesAutorizadasAsync(
-                solicitacao.escola_uuid,
-                mesSolicitacao,
-                anoSolicitacao,
-                periodoGrupo.nome_periodo_grupo,
-              );
-            setSuspensoesAutorizadas(response_suspensoes_autorizadas);
-          }
+          await carregarSolicitacoesAutorizadas();
           setPeriodoGrupoSelecionado(null);
           setLoading(false);
           setErroAPI("");
@@ -974,94 +996,95 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     }
   }, [showTabelaLancamentosPeriodo]);
 
-  useEffect(() => {
-    let diasSemana = [];
-    let week = [];
+  const atualizarWeekColumnsRecreio = () => {
+    const dataInicioRecreio = parse(
+      solicitacao.recreio_nas_ferias.data_inicio,
+      "dd/MM/yyyy",
+      new Date(),
+    );
+    const diaSemanaInicio = getDay(dataInicioRecreio);
+    const deslocamentoInicio = diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
+    const inicioPrimeiraSemana = subDays(dataInicioRecreio, deslocamentoInicio);
+    const inicioSemanaSelecionada = addDays(
+      inicioPrimeiraSemana,
+      7 * (Number(semanaSelecionada) - 1),
+    );
 
-    if (!data) {
-      return;
+    const diasSemana = Array.from({ length: 7 }, (_, index) => {
+      const data = addDays(inicioSemanaSelecionada, index);
+      return {
+        dia: format(data, "dd"),
+        mes: format(data, "MM"),
+        ano: format(data, "yyyy"),
+      };
+    });
+    const week = weekColumns.map((column) => {
+      return {
+        ...column,
+        dia: diasSemana[column.position].dia,
+        mes: diasSemana[column.position].mes,
+        ano: diasSemana[column.position].ano,
+      };
+    });
+    setWeekColumns(week);
+  };
+
+  const montarDiasDaSemana = (dataBase, diaDaSemanaNumerico) => {
+    const diasSemana = [];
+    diasSemana.unshift(format(dataBase, "dd"));
+    for (let i = 1; i < diaDaSemanaNumerico; i++) {
+      diasSemana.unshift(format(subDays(dataBase, i), "dd"));
     }
-
-    if (ehRecreioNasFerias()) {
-      const dataInicioRecreio = parse(
-        solicitacao.recreio_nas_ferias.data_inicio,
-        "dd/MM/yyyy",
-        new Date(),
+    for (let i = diaDaSemanaNumerico; i < 7; i++) {
+      diasSemana.push(
+        format(addDays(dataBase, i + 1 - diaDaSemanaNumerico), "dd"),
       );
-      const diaSemanaInicio = getDay(dataInicioRecreio);
-      const deslocamentoInicio =
-        diaSemanaInicio === 0 ? 6 : diaSemanaInicio - 1;
-      const inicioPrimeiraSemana = subDays(
-        dataInicioRecreio,
-        deslocamentoInicio,
-      );
-      const inicioSemanaSelecionada = addDays(
-        inicioPrimeiraSemana,
-        7 * (Number(semanaSelecionada) - 1),
-      );
-
-      diasSemana = Array.from({ length: 7 }, (_, index) => {
-        const data = addDays(inicioSemanaSelecionada, index);
-        return {
-          dia: format(data, "dd"),
-          mes: format(data, "MM"),
-          ano: format(data, "yyyy"),
-        };
-      });
-      week = weekColumns.map((column) => {
-        return {
-          ...column,
-          dia: diasSemana[column.position].dia,
-          mes: diasSemana[column.position].mes,
-          ano: diasSemana[column.position].ano,
-        };
-      });
-      setWeekColumns(week);
-      return;
     }
+    return diasSemana;
+  };
 
+  const atualizarWeekColumnsSemanas = () => {
     let diaDaSemanaNumerico = getDay(startOfMonth(data)); // 0 representa Domingo
 
     if (diaDaSemanaNumerico === 0) {
       diaDaSemanaNumerico = 7;
     }
     if (data && Number(semanaSelecionada) === 1) {
-      diasSemana.unshift(format(startOfMonth(data), "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(format(subDays(startOfMonth(data), i), "dd"));
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(
-            addDays(startOfMonth(data), i + 1 - diaDaSemanaNumerico),
-            "dd",
-          ),
-        );
-      }
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
-      });
-      setWeekColumns(week);
+      const diasSemana = montarDiasDaSemana(
+        startOfMonth(data),
+        diaDaSemanaNumerico,
+      );
+      setWeekColumns(
+        weekColumns.map((column) => {
+          return { ...column, dia: diasSemana[column["position"]] };
+        }),
+      );
     }
     if (data && Number(semanaSelecionada) !== 1) {
-      let dia = addDays(
+      const dia = addDays(
         startOfMonth(data),
         7 * (Number(semanaSelecionada) - 1),
       );
-      diasSemana.unshift(format(dia, "dd"));
-      for (let i = 1; i < diaDaSemanaNumerico; i++) {
-        diasSemana.unshift(format(subDays(dia, i), "dd"));
-      }
-      for (let i = diaDaSemanaNumerico; i < 7; i++) {
-        diasSemana.push(
-          format(addDays(dia, i + 1 - diaDaSemanaNumerico), "dd"),
-        );
-      }
-      week = weekColumns.map((column) => {
-        return { ...column, dia: diasSemana[column["position"]] };
-      });
-      setWeekColumns(week);
+      const diasSemana = montarDiasDaSemana(dia, diaDaSemanaNumerico);
+      setWeekColumns(
+        weekColumns.map((column) => {
+          return { ...column, dia: diasSemana[column["position"]] };
+        }),
+      );
     }
+  };
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    if (ehRecreioNasFerias()) {
+      atualizarWeekColumnsRecreio();
+      return;
+    }
+
+    atualizarWeekColumnsSemanas();
   }, [data, semanaSelecionada]);
 
   useEffect(() => {
@@ -1490,47 +1513,251 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     return `${ehCEIMatriculados ? "linha-cei-matriculado" : ""}`;
   };
 
-  return (
-    <div key={key}>
-      <Spin spinning={exibirSpin}>
-        <div className="content-section-acompanhamento-lancamento mb-3">
-          <p className="mb-0">
-            <b>{periodoGrupo.nome_periodo_grupo}</b>
+  const criarAcaoAlternarDia = (e, column, categoria, periodoGrupo) => () => {
+    const input = e.currentTarget.querySelector("input");
+    onChangeCheckBox(column, categoria, periodoGrupo, input && input.checked);
+  };
+
+  const criarOnClickObservacao = (dia, categoriaId) => () =>
+    onClickBotaoObservacao(dia, categoriaId);
+
+  const exibirTabelaDeLancamentos = () =>
+    !loading &&
+    showTabelaLancamentosPeriodo &&
+    ((tabelaAlimentacaoRows && tabelaDietaRows && tabelaDietaEnteralRows) ||
+      tabelaSolicitacoesAlimentacaoRows ||
+      tabelaEtecAlimentacaoRows ||
+      (ehEscolaComEstruturaCei() && tabelaAlimentacaoRows)) &&
+    valoresLancamentos;
+
+  const definirTamanhoColunaTitulo = () => {
+    if (modoCorrecao) {
+      return 7;
+    }
+    if (
+      [
+        "MEDICAO_APROVADA_PELA_CODAE",
+        "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+      ].includes(solicitacao.status)
+    ) {
+      return 12;
+    }
+    return 8;
+  };
+
+  const renderCabecalhoDoPeriodo = () => (
+    <div className="content-section-acompanhamento-lancamento mb-3">
+      <p className="mb-0">
+        <b>{periodoGrupo.nome_periodo_grupo}</b>
+      </p>
+      <div className="content-section-acompanhamento-lancamento-right">
+        <div
+          className={`acompanhamento-status-lancamento me-3 ${
+            [
+              "MEDICAO_CORRECAO_SOLICITADA",
+              "MEDICAO_CORRECAO_SOLICITADA_CODAE",
+            ].includes(periodoGrupo.status)
+              ? "red"
+              : ""
+          }`}
+        >
+          {PERIODO_STATUS_DE_PROGRESSO[periodoGrupo.status] &&
+            PERIODO_STATUS_DE_PROGRESSO[periodoGrupo.status].nome}
+        </div>
+        {periodoGrupo.status !== "MEDICAO_SEM_LANCAMENTOS" && (
+          <p
+            className="visualizar-lancamento mb-0"
+            data-testid={`visualizar-lancamento-${periodoGrupo.nome_periodo_grupo}`}
+            role="button"
+            tabIndex={0}
+            aria-expanded={showTabelaLancamentosPeriodo}
+            onClick={() => onClickVisualizarFechar(periodoGrupo)}
+            onKeyDown={(e) =>
+              acionaComEnterOuEspaco(e, () =>
+                onClickVisualizarFechar(periodoGrupo),
+              )
+            }
+          >
+            <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
           </p>
-          <div className="content-section-acompanhamento-lancamento-right">
-            <div
-              className={`acompanhamento-status-lancamento me-3 ${
-                [
-                  "MEDICAO_CORRECAO_SOLICITADA",
-                  "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-                ].includes(periodoGrupo.status)
-                  ? "red"
-                  : ""
-              }`}
-            >
-              {PERIODO_STATUS_DE_PROGRESSO[periodoGrupo.status] &&
-                PERIODO_STATUS_DE_PROGRESSO[periodoGrupo.status].nome}
-            </div>
-            {periodoGrupo.status !== "MEDICAO_SEM_LANCAMENTOS" && (
-              <p
-                className="visualizar-lancamento mb-0"
-                data-testid={`visualizar-lancamento-${periodoGrupo.nome_periodo_grupo}`}
-                role="button"
-                tabIndex={0}
-                aria-expanded={showTabelaLancamentosPeriodo}
-                onClick={() => onClickVisualizarFechar(periodoGrupo)}
-                onKeyDown={(e) =>
-                  acionaComEnterOuEspaco(e, () =>
-                    onClickVisualizarFechar(periodoGrupo),
-                  )
-                }
-              >
-                <b>{showTabelaLancamentosPeriodo ? "FECHAR" : "VISUALIZAR"}</b>
-              </p>
-            )}
+        )}
+      </div>
+    </div>
+  );
+
+  const renderTabsDeSemanasEAlunos = () => (
+    <>
+      <div className="weeks-tabs mb-2">
+        <Tabs
+          activeKey={semanaSelecionada}
+          onChange={(key) => onChangeSemana(key)}
+          type="card"
+          className={`${
+            semanaSelecionada === 1 ? "default-color-first-semana" : ""
+          }`}
+          items={tabItemsSemanas}
+        />
+      </div>
+      {solicitacao?.escola_eh_emebs === true ? (
+        <div className="alunos-tabs mb-2">
+          <Tabs
+            activeKey={alunosTabSelecionada}
+            onChange={(key) => onChangeTabAlunos(key)}
+            type="card"
+            className={`${
+              alunosTabSelecionada === 1 ? "default-color-first-aluno" : ""
+            }`}
+            items={tabItemsAlunosEmebs}
+          />
+        </div>
+      ) : null}
+    </>
+  );
+
+  const renderLogsDoPeriodo = () => (
+    <>
+      {usuarioEhDRE() && logPeriodoAprovado && (
+        <div className="row">
+          <div className="col-12">
+            <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
+              periodoGrupo.nome_periodo_grupo,
+            )}  aprovado em ${logPeriodoAprovado.criado_em}`}</p>
           </div>
         </div>
-      </Spin>
+      )}
+
+      {usuarioEhMedicao() && logPeriodoAprovadoCODAE && (
+        <div className="row">
+          <div className="col-12">
+            <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
+              periodoGrupo.nome_periodo_grupo,
+            )}  aprovado em ${logPeriodoAprovadoCODAE.criado_em}`}</p>
+          </div>
+        </div>
+      )}
+      {usuarioEhMedicao() && logPeriodoReprovadoCODAE && (
+        <div className="row">
+          <div className="col-12">
+            <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
+              periodoGrupo.nome_periodo_grupo,
+            )}  devolvido para ajustes pela CODAE em ${
+              logPeriodoReprovadoCODAE.criado_em
+            }`}</p>
+          </div>
+        </div>
+      )}
+      {usuarioEhDRE() && logPeriodoReprovado && (
+        <div className="row">
+          <div className="col-12">
+            <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
+              periodoGrupo.nome_periodo_grupo,
+            )}  devolvido para ajustes pela DRE em ${
+              logPeriodoReprovado.criado_em
+            }`}</p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  const renderCorrecaoEBotoes = () => (
+    <>
+      {modoCorrecao && (
+        <>
+          <div className="red">
+            Selecione
+            <b>
+              {" "}
+              nas tabelas acima os dias em que a unidade deve realizar as
+              correções{" "}
+            </b>
+            e informe no campo abaixo todas as correções a serem realizadas.
+          </div>
+          <div className="mt-3">
+            <p className="mb-0">
+              Descrição da Correção <span className="red">*</span>
+            </p>
+            <Field
+              component={CKEditorField}
+              name={`descricao_correcao__periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
+                0,
+                5,
+              )}`}
+              placeholder="Informe quais os pontos necessários de correção da Medição Inicial"
+              required
+            />
+          </div>
+        </>
+      )}
+      <div className="periodo-final-tabela-lancamento mb-4">
+        <div className={`col-${definirTamanhoColunaTitulo()} ps-0 pe-4`}>
+          <p className="section-title-conf-lancamentos periodo mb-0">
+            {periodoGrupo.nome_periodo_grupo}
+          </p>
+        </div>
+        {modoCorrecao ? (
+          <div className="col-5 px-0">
+            <Botao
+              texto="Salvar Solicitação de Correção para UE"
+              style={BUTTON_STYLE.GREEN}
+              className="float-end"
+              disabled={
+                !process.env.IS_TEST &&
+                (!values[
+                  `descricao_correcao__periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
+                    0,
+                    5,
+                  )}`
+                ] ||
+                  !algumCheckboxMarcado())
+              }
+              onClick={() => setShowModalSalvarSolicitacao(true)} //
+            />
+            <Botao
+              texto="Cancelar"
+              style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+              className="me-3 float-end"
+              onClick={() => setShowModalCancelarSolicitacao(true)}
+            />
+          </div>
+        ) : (
+          (exibirBotoesDRE || exibirBotoesCODAE) && (
+            <div className={`botoes col-4 px-0 ${semMedicao ? "d-flex" : ""}`}>
+              {semMedicao && <div className="col-6 me-3" />}
+              <Botao
+                texto="Solicitar Correção"
+                style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                className={semMedicao ? "col-5" : "col-6 me-3"}
+                onClick={() => setModoCorrecao(true)}
+                disabled={
+                  semMedicao
+                    ? false
+                    : statusPermitidosCorrecaoDRE ||
+                      statusPermitidosCorrecaoCODAE
+                }
+              />
+              {!semMedicao && (
+                <Botao
+                  texto="Aprovar Período"
+                  style={BUTTON_STYLE.GREEN}
+                  className="col-5"
+                  onClick={() => setShowModalAprovarPeriodo(true)}
+                  disabled={
+                    statusPermitidosAprovacaoDRE ||
+                    statusPermitidosAprovacaoCODAE
+                  }
+                />
+              )}
+            </div>
+          )
+        )}
+      </div>
+    </>
+  );
+
+  return (
+    <div key={key}>
+      <Spin spinning={exibirSpin}>{renderCabecalhoDoPeriodo()}</Spin>
       {loading && (
         <div className="carregando-conteudo">
           <div className="text-logo-sigpae-loader text-center">
@@ -1542,202 +1769,160 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
       {!!erroAPI && showTabelaLancamentosPeriodo && (
         <div className="text-center mb-3">{erroAPI}</div>
       )}
-      {!loading &&
-        showTabelaLancamentosPeriodo &&
-        ((tabelaAlimentacaoRows && tabelaDietaRows && tabelaDietaEnteralRows) ||
-          tabelaSolicitacoesAlimentacaoRows ||
-          tabelaEtecAlimentacaoRows ||
-          ((ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-            ehRecreioCeiDaCemei() ||
-            (ehEscolaTipoCEMEI({ nome: solicitacao.escola }) &&
-              ["INTEGRAL", "PARCIAL"].includes(
-                periodoGrupo.nome_periodo_grupo,
-              ))) &&
-            tabelaAlimentacaoRows)) &&
-        valoresLancamentos && (
-          <>
-            <p className="section-title-conf-lancamentos">Lançamentos da UE</p>
-            <div>
-              <div className="weeks-tabs mb-2">
-                <Tabs
-                  activeKey={semanaSelecionada}
-                  onChange={(key) => onChangeSemana(key)}
-                  type="card"
-                  className={`${
-                    semanaSelecionada === 1 ? "default-color-first-semana" : ""
-                  }`}
-                  items={tabItemsSemanas}
-                />
-              </div>
-              {solicitacao?.escola_eh_emebs === true ? (
-                <div className="alunos-tabs mb-2">
-                  <Tabs
-                    activeKey={alunosTabSelecionada}
-                    onChange={(key) => onChangeTabAlunos(key)}
-                    type="card"
-                    className={`${
-                      alunosTabSelecionada === 1
-                        ? "default-color-first-aluno"
-                        : ""
-                    }`}
-                    items={tabItemsAlunosEmebs}
-                  />
-                </div>
-              ) : null}
-              {categoriasDeMedicao &&
-                categoriasDeMedicao.length > 0 &&
-                categoriasDeMedicao.map((categoria, idx) => [
-                  <div key={categoria.id}>
-                    <b
-                      className={`pb-2 section-title ${ehEscolaTipoCEI({ nome: solicitacao.escola }) || ehRecreioCeiDaCemei() ? "com-linha" : ""}`}
-                      data-testid={`categoria-${categoria.nome}`}
-                    >
-                      {categoria.nome}
-                    </b>
-                    <section className="tabela-tipos-alimentacao">
-                      <article>
-                        <div
-                          className={
-                            "grid-table-tipos-alimentacao header-table"
-                          }
-                        >
-                          <div />
-                          {weekColumns.map((column) => {
-                            const idBase = `ckbox_dias_semana__dia_${column.dia}__categoria_${categoria.id}__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(0, 5)}`;
-                            return modoCorrecao &&
-                              exibirCheckBox(column, semanaSelecionada, {
-                                inicio:
-                                  solicitacao?.recreio_nas_ferias?.data_inicio,
-                                fim: solicitacao?.recreio_nas_ferias?.data_fim,
-                              }) ? (
-                              <div
-                                className="dias-semana-tabela"
-                                key={column.dia}
-                              >
-                                <span
-                                  className="input-dias-semana-tabela"
-                                  onClick={(e) => {
-                                    const value = e.target.checked;
-                                    onChangeCheckBox(
+      {exibirTabelaDeLancamentos() && (
+        <>
+          <p className="section-title-conf-lancamentos">Lançamentos da UE</p>
+          <div>
+            {renderTabsDeSemanasEAlunos()}
+            {categoriasDeMedicao &&
+              categoriasDeMedicao.length > 0 &&
+              categoriasDeMedicao.map((categoria, idx) => [
+                <div key={categoria.id}>
+                  <b
+                    className={`pb-2 section-title ${ehEscolaTipoCEI({ nome: solicitacao.escola }) || ehRecreioCeiDaCemei() ? "com-linha" : ""}`}
+                    data-testid={`categoria-${categoria.nome}`}
+                  >
+                    {categoria.nome}
+                  </b>
+                  <section className="tabela-tipos-alimentacao">
+                    <article>
+                      <div
+                        className={"grid-table-tipos-alimentacao header-table"}
+                      >
+                        <div />
+                        {weekColumns.map((column) => {
+                          const idBase = `ckbox_dias_semana__dia_${column.dia}__categoria_${categoria.id}__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(0, 5)}`;
+                          return modoCorrecao &&
+                            exibirCheckBox(column, semanaSelecionada, {
+                              inicio:
+                                solicitacao?.recreio_nas_ferias?.data_inicio,
+                              fim: solicitacao?.recreio_nas_ferias?.data_fim,
+                            }) ? (
+                            <div
+                              className="dias-semana-tabela"
+                              key={column.dia}
+                            >
+                              <span
+                                className="input-dias-semana-tabela"
+                                onClick={(e) => {
+                                  const value = e.target.checked;
+                                  onChangeCheckBox(
+                                    column,
+                                    categoria,
+                                    periodoGrupo,
+                                    value,
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.target !== e.currentTarget) {
+                                    return;
+                                  }
+                                  acionaComEnterOuEspaco(
+                                    e,
+                                    criarAcaoAlternarDia(
+                                      e,
                                       column,
                                       categoria,
                                       periodoGrupo,
-                                      value,
-                                    );
-                                  }}
-                                  onKeyDown={(e) => {
-                                    if (e.target !== e.currentTarget) {
-                                      return;
-                                    }
-                                    acionaComEnterOuEspaco(e, () => {
-                                      const input =
-                                        e.currentTarget.querySelector("input");
-                                      onChangeCheckBox(
-                                        column,
-                                        categoria,
-                                        periodoGrupo,
-                                        input && input.checked,
-                                      );
-                                    });
-                                  }}
-                                >
-                                  <Field
-                                    component={"input"}
-                                    type="checkbox"
-                                    data-testid={idBase}
-                                    name={idBase}
-                                  />
-                                </span>
-                                <div
-                                  key={column.dia}
-                                  className={`label-dias-semana-tabela ${
-                                    ehDiaNaoLetivoOuFeriado(column, categoria)
-                                      ? "dia-nao-letivo-header"
-                                      : ""
-                                  }`}
-                                >
-                                  {column.dia}
-                                  {ehDiaNaoLetivoOuFeriado(column, categoria)
-                                    ? " *"
-                                    : ""}
-                                </div>
-                              </div>
-                            ) : (
+                                    ),
+                                  );
+                                }}
+                              >
+                                <Field
+                                  component={"input"}
+                                  type="checkbox"
+                                  data-testid={idBase}
+                                  name={idBase}
+                                />
+                              </span>
                               <div
-                                className={`${
+                                key={column.dia}
+                                className={`label-dias-semana-tabela ${
                                   ehDiaNaoLetivoOuFeriado(column, categoria)
                                     ? "dia-nao-letivo-header"
                                     : ""
                                 }`}
-                                key={column.dia}
                               >
                                 {column.dia}
                                 {ehDiaNaoLetivoOuFeriado(column, categoria)
                                   ? " *"
                                   : ""}
                               </div>
-                            );
-                          })}
-                        </div>
-                        <div
-                          className={
-                            "grid-table-tipos-alimentacao header-table"
-                          }
-                        >
-                          <div />
-                          {diasSemana.map((dia, index) => (
+                            </div>
+                          ) : (
                             <div
                               className={`${
-                                ehDiaNaoLetivoOuFeriadoByIndex(index, categoria)
+                                ehDiaNaoLetivoOuFeriado(column, categoria)
                                   ? "dia-nao-letivo-header"
                                   : ""
                               }`}
-                              key={index}
+                              key={column.dia}
                             >
-                              {dia}
+                              {column.dia}
+                              {ehDiaNaoLetivoOuFeriado(column, categoria)
+                                ? " *"
+                                : ""}
                             </div>
-                          ))}
-                        </div>
-                        {escolherTabela(categoria).map((row, index) => {
-                          return (
-                            <Fragment key={index}>
-                              <div
-                                className={`grid-table-tipos-alimentacao body-table-alimentacao`}
-                              >
-                                {usaEstruturaCeiComFaixaEtaria() ? (
-                                  <div
-                                    className={`linha-cei ${linhaCeiFrequencia(row.name)} ${linhaCeiMatriculados(row.name)}`}
-                                  >
-                                    <b
-                                      className={`nome-linha-cei ps-2 ${
-                                        row.name === "observacoes" && "mt-2"
-                                      }`}
-                                    >
-                                      {row.nome}
-                                    </b>
-                                    {row.name !== "observacoes" && (
-                                      <b className="faixa-etaria ps-2">
-                                        {row.faixa_etaria}
-                                      </b>
-                                    )}
-                                  </div>
-                                ) : (
-                                  <div
-                                    className={`nome-linha${
-                                      alimentacoesLancamentosEspeciais?.includes(
-                                        row.name,
-                                      )
-                                        ? " input-alimentacao-permissao-lancamento-especial"
-                                        : ""
+                          );
+                        })}
+                      </div>
+                      <div
+                        className={"grid-table-tipos-alimentacao header-table"}
+                      >
+                        <div />
+                        {diasSemana.map((dia, index) => (
+                          <div
+                            className={`${
+                              ehDiaNaoLetivoOuFeriadoByIndex(index, categoria)
+                                ? "dia-nao-letivo-header"
+                                : ""
+                            }`}
+                            key={index}
+                          >
+                            {dia}
+                          </div>
+                        ))}
+                      </div>
+                      {escolherTabela(categoria).map((row, index) => {
+                        return (
+                          <Fragment key={index}>
+                            <div
+                              className={`grid-table-tipos-alimentacao body-table-alimentacao`}
+                            >
+                              {usaEstruturaCeiComFaixaEtaria() ? (
+                                <div
+                                  className={`linha-cei ${linhaCeiFrequencia(row.name)} ${linhaCeiMatriculados(row.name)}`}
+                                >
+                                  <b
+                                    className={`nome-linha-cei ps-2 ${
+                                      row.name === "observacoes" && "mt-2"
                                     }`}
                                   >
-                                    <b className="ps-2">{row.nome}</b>
-                                  </div>
-                                )}
-                                {weekColumns.map((column) => (
-                                  <div
-                                    key={column.dia}
-                                    className={`
+                                    {row.nome}
+                                  </b>
+                                  {row.name !== "observacoes" && (
+                                    <b className="faixa-etaria ps-2">
+                                      {row.faixa_etaria}
+                                    </b>
+                                  )}
+                                </div>
+                              ) : (
+                                <div
+                                  className={`nome-linha${
+                                    alimentacoesLancamentosEspeciais?.includes(
+                                      row.name,
+                                    )
+                                      ? " input-alimentacao-permissao-lancamento-especial"
+                                      : ""
+                                  }`}
+                                >
+                                  <b className="ps-2">{row.nome}</b>
+                                </div>
+                              )}
+                              {weekColumns.map((column) => (
+                                <div
+                                  key={column.dia}
+                                  className={`
                                       ${linhaCeiFrequencia(row.name)}
                                       ${
                                         validacaoSemana(
@@ -1755,475 +1940,318 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                           ? " input-alimentacao-permissao-lancamento-especial"
                                           : ""
                                       }`}
-                                  >
-                                    {row.name === "observacoes" ? (
-                                      !validacaoSemana(
-                                        column.dia,
-                                        semanaSelecionada,
-                                      ) && (
-                                        <Botao
-                                          texto={"Visualizar"}
-                                          type={BUTTON_TYPE.BUTTON}
-                                          style={
-                                            BUTTON_STYLE.GREEN_OUTLINE_WHITE
-                                          }
-                                          onClick={() =>
-                                            onClickBotaoObservacao(
-                                              column.dia,
-                                              categoria.id,
-                                            )
-                                          }
-                                          disabled={desabilitarBotaoObservacoesConferenciaLancamentos(
-                                            valoresLancamentos,
-                                            column,
-                                            categoria,
-                                            solicitacao,
-                                            alunosTabSelecionada,
-                                          )}
-                                        />
-                                      )
-                                    ) : (
-                                      <div
-                                        className={`field-values-input${
-                                          ehInputParaCorrecao(
-                                            `dia_${column.dia}__categoria_${
+                                >
+                                  {row.name === "observacoes" ? (
+                                    !validacaoSemana(
+                                      column.dia,
+                                      semanaSelecionada,
+                                    ) && (
+                                      <Botao
+                                        texto={"Visualizar"}
+                                        type={BUTTON_TYPE.BUTTON}
+                                        style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
+                                        onClick={criarOnClickObservacao(
+                                          column.dia,
+                                          categoria.id,
+                                        )}
+                                        disabled={desabilitarBotaoObservacoesConferenciaLancamentos(
+                                          valoresLancamentos,
+                                          column,
+                                          categoria,
+                                          solicitacao,
+                                          alunosTabSelecionada,
+                                        )}
+                                      />
+                                    )
+                                  ) : (
+                                    <div
+                                      className={`field-values-input${
+                                        ehInputParaCorrecao(
+                                          `dia_${column.dia}__categoria_${
+                                            categoria.id
+                                          }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
+                                            0,
+                                            5,
+                                          )}`,
+                                        ) &&
+                                        modoCorrecao &&
+                                        ![
+                                          "Mês anterior",
+                                          "Mês posterior",
+                                        ].includes(
+                                          values[
+                                            `${row.name}__dia_${
+                                              column.dia
+                                            }__categoria_${
                                               categoria.id
                                             }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
                                               0,
                                               5,
-                                            )}`,
-                                          ) &&
-                                          modoCorrecao &&
-                                          ![
-                                            "Mês anterior",
-                                            "Mês posterior",
-                                          ].includes(
-                                            values[
-                                              `${row.name}__dia_${
-                                                column.dia
-                                              }__categoria_${
-                                                categoria.id
-                                              }__uuid_medicao_periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
-                                                0,
-                                                5,
-                                              )}`
-                                            ],
-                                          )
-                                            ? " input-para-correcao"
-                                            : ""
-                                        }${
-                                          ehDiaNaoLetivoOuFeriado(
-                                            column,
-                                            categoria,
-                                          )
-                                            ? " dia-nao-letivo"
-                                            : ""
-                                        }`}
-                                      >
-                                        <Field
-                                          className={`m-2`}
-                                          component={InputValueMedicao}
-                                          classNameToNextInput={getClassNameToNextInput(
-                                            row,
-                                            column,
-                                            categoria,
-                                            index,
-                                          )}
-                                          classNameToPrevInput={getClassNameToPrevInput(
-                                            row,
-                                            column,
-                                            categoria,
-                                            index,
-                                          )}
-                                          apenasNumeros
-                                          name={getNameFieldInputValueMedicao(
-                                            row,
-                                            column,
-                                            categoria,
-                                          )}
-                                          disabled={true}
-                                          defaultValue={defaultValue(
-                                            column,
-                                            row,
+                                            )}`
+                                          ],
+                                        )
+                                          ? " input-para-correcao"
+                                          : ""
+                                      }${
+                                        ehDiaNaoLetivoOuFeriado(
+                                          column,
+                                          categoria,
+                                        )
+                                          ? " dia-nao-letivo"
+                                          : ""
+                                      }`}
+                                    >
+                                      <Field
+                                        className={`m-2`}
+                                        component={InputValueMedicao}
+                                        classNameToNextInput={getClassNameToNextInput(
+                                          row,
+                                          column,
+                                          categoria,
+                                          index,
+                                        )}
+                                        classNameToPrevInput={getClassNameToPrevInput(
+                                          row,
+                                          column,
+                                          categoria,
+                                          index,
+                                        )}
+                                        apenasNumeros
+                                        name={getNameFieldInputValueMedicao(
+                                          row,
+                                          column,
+                                          categoria,
+                                        )}
+                                        disabled={true}
+                                        defaultValue={defaultValue(
+                                          column,
+                                          row,
+                                          semanaSelecionada,
+                                          valoresLancamentos,
+                                          categoria,
+                                          form,
+                                          periodoGrupo,
+                                          solicitacao,
+                                          alunosTabSelecionada,
+                                          usaEstruturaCeiComFaixaEtaria(),
+                                        )}
+                                        exibeTooltipPadraoRepeticaoDiasSobremesaDoce={
+                                          !ehEscolaTipoCEI({
+                                            nome: solicitacao.escola,
+                                          }) &&
+                                          exibirTooltipRepeticaoDiasSobremesaDoceDreCodae(
                                             semanaSelecionada,
-                                            valoresLancamentos,
+                                            mesSolicitacao,
+                                            anoSolicitacao,
+                                            diasSobremesaDoce,
+                                            column,
+                                            row,
                                             categoria,
-                                            form,
+                                          )
+                                        }
+                                        exibeTooltipSobremesaAFDreCodae={
+                                          !ehEscolaTipoCEI({
+                                            nome: solicitacao.escola,
+                                          }) &&
+                                          (row.name === "sobremesa" ||
+                                            row.name ===
+                                              "repeticao_sobremesa") &&
+                                          diasSobremesaAF?.includes(
+                                            `${anoSolicitacao}-${mesSolicitacao}-${column.dia}`,
+                                          )
+                                        }
+                                        exibeTooltipInclusaoAlimentacaoAutorizadaDreCodae={
+                                          !ehEscolaTipoCEI({
+                                            nome: solicitacao.escola,
+                                          }) &&
+                                          obterPeriodoDoGrupo(
+                                            periodosSimples,
                                             periodoGrupo,
-                                            solicitacao,
-                                            alunosTabSelecionada,
-                                            usaEstruturaCeiComFaixaEtaria(),
-                                          )}
-                                          exibeTooltipPadraoRepeticaoDiasSobremesaDoce={
-                                            !ehEscolaTipoCEI({
-                                              nome: solicitacao.escola,
-                                            }) &&
-                                            exibirTooltipRepeticaoDiasSobremesaDoceDreCodae(
-                                              semanaSelecionada,
-                                              mesSolicitacao,
-                                              anoSolicitacao,
-                                              diasSobremesaDoce,
-                                              column,
-                                              row,
-                                              categoria,
-                                            )
-                                          }
-                                          exibeTooltipSobremesaAFDreCodae={
-                                            !ehEscolaTipoCEI({
-                                              nome: solicitacao.escola,
-                                            }) &&
-                                            (row.name === "sobremesa" ||
-                                              row.name ===
-                                                "repeticao_sobremesa") &&
-                                            diasSobremesaAF?.includes(
-                                              `${anoSolicitacao}-${mesSolicitacao}-${column.dia}`,
-                                            )
-                                          }
-                                          exibeTooltipInclusaoAlimentacaoAutorizadaDreCodae={
-                                            !ehEscolaTipoCEI({
-                                              nome: solicitacao.escola,
-                                            }) &&
-                                            periodosSimples.find(
-                                              (periodo) =>
-                                                periodo.periodo_escolar.nome ===
-                                                periodoGrupo.nome_periodo_grupo,
-                                            ) &&
-                                            exibirTooltipInclusaoAlimentacaoAutorizadaDreCodae(
-                                              semanaSelecionada,
-                                              inclusoesAutorizadas,
-                                              column,
-                                              row,
-                                              categoria,
-                                            )
-                                          }
-                                          exibeTooltipAlteracaoAlimentacaoAutorizadaDreCodae={
-                                            !ehEscolaTipoCEI({
-                                              nome: solicitacao.escola,
-                                            }) &&
-                                            periodosSimples.find(
-                                              (periodo) =>
-                                                periodo.periodo_escolar.nome ===
-                                                periodoGrupo.nome_periodo_grupo,
-                                            ) &&
-                                            exibirTooltipAlteracaoAlimentacaoAutorizadaDreCodae(
-                                              semanaSelecionada,
-                                              alteracoesAlimentacaoAutorizadas,
-                                              column,
-                                              row,
-                                              categoria,
-                                            )
-                                          }
-                                          exibeTooltipSuspensaoAutorizadaFrequenciaDreCodae={
-                                            !ehEscolaTipoCEI({
-                                              nome: solicitacao.escola,
-                                            }) &&
-                                            periodosSimples.find(
-                                              (periodo) =>
-                                                periodo.periodo_escolar.nome ===
-                                                periodoGrupo.nome_periodo_grupo,
-                                            ) &&
-                                            exibirTooltipSuspensaoAutorizadaFrequenciaDreCodae(
-                                              semanaSelecionada,
-                                              suspensoesAutorizadas,
-                                              column,
-                                              row,
-                                              categoria,
-                                              periodosSimples.find(
-                                                (periodo) =>
-                                                  periodo.periodo_escolar
-                                                    .nome ===
-                                                  periodoGrupo.nome_periodo_grupo,
-                                              ),
-                                            )
-                                          }
-                                          exibeTooltipSuspensaoAutorizadaAlimentacaoDreCodae={
-                                            !ehEscolaTipoCEI({
-                                              nome: solicitacao.escola,
-                                            }) &&
-                                            periodosSimples.find(
-                                              (periodo) =>
-                                                periodo.periodo_escolar.nome ===
-                                                periodoGrupo.nome_periodo_grupo,
-                                            ) &&
-                                            exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae(
-                                              semanaSelecionada,
-                                              suspensoesAutorizadas,
-                                              column,
-                                              row,
-                                              categoria,
-                                              periodosSimples.find(
-                                                (periodo) =>
-                                                  periodo.periodo_escolar
-                                                    .nome ===
-                                                  periodoGrupo.nome_periodo_grupo,
-                                              ),
-                                            )
-                                          }
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </Fragment>
-                          );
-                        })}
-                      </article>
-                      {categoria.nome === "ALIMENTAÇÃO" &&
-                        dataInicioPermissoes && (
-                          <div className="legenda-lancamentos-especiais">
-                            <div className="legenda-cor" />
-                            <div>
-                              Lançamento especial de alimentações liberado para
-                              unidade em {dataInicioPermissoes} por CODAE
+                                          ) &&
+                                          exibirTooltipInclusaoAlimentacaoAutorizadaDreCodae(
+                                            semanaSelecionada,
+                                            inclusoesAutorizadas,
+                                            column,
+                                            row,
+                                            categoria,
+                                          )
+                                        }
+                                        exibeTooltipAlteracaoAlimentacaoAutorizadaDreCodae={
+                                          !ehEscolaTipoCEI({
+                                            nome: solicitacao.escola,
+                                          }) &&
+                                          obterPeriodoDoGrupo(
+                                            periodosSimples,
+                                            periodoGrupo,
+                                          ) &&
+                                          exibirTooltipAlteracaoAlimentacaoAutorizadaDreCodae(
+                                            semanaSelecionada,
+                                            alteracoesAlimentacaoAutorizadas,
+                                            column,
+                                            row,
+                                            categoria,
+                                          )
+                                        }
+                                        exibeTooltipSuspensaoAutorizadaFrequenciaDreCodae={
+                                          !ehEscolaTipoCEI({
+                                            nome: solicitacao.escola,
+                                          }) &&
+                                          obterPeriodoDoGrupo(
+                                            periodosSimples,
+                                            periodoGrupo,
+                                          ) &&
+                                          exibirTooltipSuspensaoAutorizadaFrequenciaDreCodae(
+                                            semanaSelecionada,
+                                            suspensoesAutorizadas,
+                                            column,
+                                            row,
+                                            categoria,
+                                            obterPeriodoDoGrupo(
+                                              periodosSimples,
+                                              periodoGrupo,
+                                            ),
+                                          )
+                                        }
+                                        exibeTooltipSuspensaoAutorizadaAlimentacaoDreCodae={
+                                          !ehEscolaTipoCEI({
+                                            nome: solicitacao.escola,
+                                          }) &&
+                                          obterPeriodoDoGrupo(
+                                            periodosSimples,
+                                            periodoGrupo,
+                                          ) &&
+                                          exibirTooltipSuspensaoAutorizadaAlimentacaoDreCodae(
+                                            semanaSelecionada,
+                                            suspensoesAutorizadas,
+                                            column,
+                                            row,
+                                            categoria,
+                                            obterPeriodoDoGrupo(
+                                              periodosSimples,
+                                              periodoGrupo,
+                                            ),
+                                          )
+                                        }
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
                             </div>
+                          </Fragment>
+                        );
+                      })}
+                    </article>
+                    {categoria.nome === "ALIMENTAÇÃO" &&
+                      dataInicioPermissoes && (
+                        <div className="legenda-lancamentos-especiais">
+                          <div className="legenda-cor" />
+                          <div>
+                            Lançamento especial de alimentações liberado para
+                            unidade em {dataInicioPermissoes} por CODAE
                           </div>
-                        )}
-                    </section>
-                  </div>,
-                  idx === 0 && categoriasDeMedicao.length > 1 && (
-                    <LegendaDiasNaoLetivos
-                      diasCalendario={diasCalendario}
-                      feriadosNoMes={feriadosNoMes}
-                      anoSolicitacao={anoSolicitacao}
-                      mesSolicitacao={mesSolicitacao}
-                      weekColumns={weekColumns}
-                      values={values}
-                      categoria={categoria}
-                      periodoGrupo={periodoGrupo}
-                      semanaSelecionada={semanaSelecionada}
-                      diasLetivosSIGPAE={diasLetivosSIGPAE}
-                      diasSuspensaoAtividades={diasSuspensaoAtividades}
-                    />
-                  ),
-                ])}
-              <LegendaDiasNaoLetivos
-                diasCalendario={diasCalendario}
-                feriadosNoMes={feriadosNoMes}
-                anoSolicitacao={anoSolicitacao}
-                mesSolicitacao={mesSolicitacao}
-                weekColumns={weekColumns}
-                values={values}
-                categoria={categoriasDeMedicao[0]}
-                periodoGrupo={periodoGrupo}
-                semanaSelecionada={semanaSelecionada}
-                diasLetivosSIGPAE={diasLetivosSIGPAE}
-                diasSuspensaoAtividades={diasSuspensaoAtividades}
-              />
-              {usuarioEhDRE() && logPeriodoAprovado && (
-                <div className="row">
-                  <div className="col-12">
-                    <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
-                      periodoGrupo.nome_periodo_grupo,
-                    )}  aprovado em ${logPeriodoAprovado.criado_em}`}</p>
-                  </div>
-                </div>
-              )}
-
-              {usuarioEhMedicao() && logPeriodoAprovadoCODAE && (
-                <div className="row">
-                  <div className="col-12">
-                    <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
-                      periodoGrupo.nome_periodo_grupo,
-                    )}  aprovado em ${logPeriodoAprovadoCODAE.criado_em}`}</p>
-                  </div>
-                </div>
-              )}
-              {usuarioEhMedicao() && logPeriodoReprovadoCODAE && (
-                <div className="row">
-                  <div className="col-12">
-                    <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
-                      periodoGrupo.nome_periodo_grupo,
-                    )}  devolvido para ajustes pela CODAE em ${
-                      logPeriodoReprovadoCODAE.criado_em
-                    }`}</p>
-                  </div>
-                </div>
-              )}
-              {usuarioEhDRE() && logPeriodoReprovado && (
-                <div className="row">
-                  <div className="col-12">
-                    <p className="periodo-aprovado text-rigth">{`Período ${formatarNomePeriodo(
-                      periodoGrupo.nome_periodo_grupo,
-                    )}  devolvido para ajustes pela DRE em ${
-                      logPeriodoReprovado.criado_em
-                    }`}</p>
-                  </div>
-                </div>
-              )}
-              {modoCorrecao && (
-                <>
-                  <div className="red">
-                    Selecione
-                    <b>
-                      {" "}
-                      nas tabelas acima os dias em que a unidade deve realizar
-                      as correções{" "}
-                    </b>
-                    e informe no campo abaixo todas as correções a serem
-                    realizadas.
-                  </div>
-                  <div className="mt-3">
-                    <p className="mb-0">
-                      Descrição da Correção <span className="red">*</span>
-                    </p>
-                    <Field
-                      component={CKEditorField}
-                      name={`descricao_correcao__periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
-                        0,
-                        5,
-                      )}`}
-                      placeholder="Informe quais os pontos necessários de correção da Medição Inicial"
-                      required
-                    />
-                  </div>
-                </>
-              )}
-              <div className="periodo-final-tabela-lancamento mb-4">
-                <div
-                  className={`col-${
-                    modoCorrecao
-                      ? 7
-                      : [
-                            "MEDICAO_APROVADA_PELA_CODAE",
-                            "MEDICAO_CORRECAO_SOLICITADA_CODAE",
-                          ].includes(solicitacao.status)
-                        ? 12
-                        : 8
-                  } ps-0 pe-4`}
-                >
-                  <p className="section-title-conf-lancamentos periodo mb-0">
-                    {periodoGrupo.nome_periodo_grupo}
-                  </p>
-                </div>
-                {modoCorrecao ? (
-                  <div className="col-5 px-0">
-                    <Botao
-                      texto="Salvar Solicitação de Correção para UE"
-                      style={BUTTON_STYLE.GREEN}
-                      className="float-end"
-                      disabled={
-                        !process.env.IS_TEST &&
-                        (!values[
-                          `descricao_correcao__periodo_grupo_${periodoGrupo.uuid_medicao_periodo_grupo.slice(
-                            0,
-                            5,
-                          )}`
-                        ] ||
-                          !algumCheckboxMarcado())
-                      }
-                      onClick={() => setShowModalSalvarSolicitacao(true)} //
-                    />
-                    <Botao
-                      texto="Cancelar"
-                      style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                      className="me-3 float-end"
-                      onClick={() => setShowModalCancelarSolicitacao(true)}
-                    />
-                  </div>
-                ) : (
-                  (exibirBotoesDRE || exibirBotoesCODAE) && (
-                    <div
-                      className={`botoes col-4 px-0 ${
-                        semMedicao ? "d-flex" : ""
-                      }`}
-                    >
-                      {semMedicao && <div className="col-6 me-3" />}
-                      <Botao
-                        texto="Solicitar Correção"
-                        style={BUTTON_STYLE.GREEN_OUTLINE_WHITE}
-                        className={semMedicao ? "col-5" : "col-6 me-3"}
-                        onClick={() => setModoCorrecao(true)}
-                        disabled={
-                          semMedicao
-                            ? false
-                            : statusPermitidosCorrecaoDRE ||
-                              statusPermitidosCorrecaoCODAE
-                        }
-                      />
-                      {!semMedicao && (
-                        <Botao
-                          texto="Aprovar Período"
-                          style={BUTTON_STYLE.GREEN}
-                          className="col-5"
-                          onClick={() => setShowModalAprovarPeriodo(true)}
-                          disabled={
-                            statusPermitidosAprovacaoDRE ||
-                            statusPermitidosAprovacaoCODAE
-                          }
-                        />
+                        </div>
                       )}
-                    </div>
-                  )
-                )}
+                  </section>
+                </div>,
+                idx === 0 && categoriasDeMedicao.length > 1 && (
+                  <LegendaDiasNaoLetivos
+                    diasCalendario={diasCalendario}
+                    feriadosNoMes={feriadosNoMes}
+                    anoSolicitacao={anoSolicitacao}
+                    mesSolicitacao={mesSolicitacao}
+                    weekColumns={weekColumns}
+                    values={values}
+                    categoria={categoria}
+                    periodoGrupo={periodoGrupo}
+                    semanaSelecionada={semanaSelecionada}
+                    diasLetivosSIGPAE={diasLetivosSIGPAE}
+                    diasSuspensaoAtividades={diasSuspensaoAtividades}
+                  />
+                ),
+              ])}
+            <LegendaDiasNaoLetivos
+              diasCalendario={diasCalendario}
+              feriadosNoMes={feriadosNoMes}
+              anoSolicitacao={anoSolicitacao}
+              mesSolicitacao={mesSolicitacao}
+              weekColumns={weekColumns}
+              values={values}
+              categoria={categoriasDeMedicao[0]}
+              periodoGrupo={periodoGrupo}
+              semanaSelecionada={semanaSelecionada}
+              diasLetivosSIGPAE={diasLetivosSIGPAE}
+              diasSuspensaoAtividades={diasSuspensaoAtividades}
+            />
+            {renderLogsDoPeriodo()}
+            {renderCorrecaoEBotoes()}
+            <hr />
+          </div>
+          <ModalAprovarPeriodo
+            showModal={showModalAprovarPeriodo}
+            setShowModal={(value) => setShowModalAprovarPeriodo(value)}
+            periodoGrupo={periodoGrupo}
+            aprovarPeriodo={(nomePeridoFormatado) => {
+              setShowTabelaLancamentosPeriodo(!showTabelaLancamentosPeriodo);
+              aprovarPeriodo(periodoGrupo, nomePeridoFormatado);
+            }}
+          />
+          <ModalCancelarCorrecao
+            showModal={showModalCancelarSolicitacao}
+            setShowModal={(value) => setShowModalCancelarSolicitacao(value)}
+            cancelarCorrecao={() =>
+              cancelarCorrecao(periodoGrupo.uuid_medicao_periodo_grupo)
+            }
+          />
+          <ModalSalvarCorrecao
+            showModal={showModalSalvarSolicitacao}
+            setShowModal={(value) => setShowModalSalvarSolicitacao(value)}
+            periodoGrupo={periodoGrupo}
+            salvarCorrecao={
+              () => salvarCorrecao(periodoGrupo.uuid_medicao_periodo_grupo) //
+            }
+          />
+          <Modal
+            dialogClassName="modal-50w"
+            show={showModalObservacaoDiaria}
+            onHide={() => setShowModalObservacaoDiaria(false)}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Observação Diária</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="col-4 mt-0">
+                <label className="fw-bold">Data do Lançamento</label>
+                <Field
+                  className="data_lancamento_modal"
+                  component={InputText}
+                  name="data_lancamento"
+                  disabled
+                />
               </div>
-              <hr />
-            </div>
-            <ModalAprovarPeriodo
-              showModal={showModalAprovarPeriodo}
-              setShowModal={(value) => setShowModalAprovarPeriodo(value)}
-              periodoGrupo={periodoGrupo}
-              aprovarPeriodo={(nomePeridoFormatado) => {
-                setShowTabelaLancamentosPeriodo(!showTabelaLancamentosPeriodo);
-                aprovarPeriodo(periodoGrupo, nomePeridoFormatado);
-              }}
-            />
-            <ModalCancelarCorrecao
-              showModal={showModalCancelarSolicitacao}
-              setShowModal={(value) => setShowModalCancelarSolicitacao(value)}
-              cancelarCorrecao={() =>
-                cancelarCorrecao(periodoGrupo.uuid_medicao_periodo_grupo)
-              }
-            />
-            <ModalSalvarCorrecao
-              showModal={showModalSalvarSolicitacao}
-              setShowModal={(value) => setShowModalSalvarSolicitacao(value)}
-              periodoGrupo={periodoGrupo}
-              salvarCorrecao={
-                () => salvarCorrecao(periodoGrupo.uuid_medicao_periodo_grupo) //
-              }
-            />
-            <Modal
-              dialogClassName="modal-50w"
-              show={showModalObservacaoDiaria}
-              onHide={() => setShowModalObservacaoDiaria(false)}
-            >
-              <Modal.Header closeButton>
-                <Modal.Title>Observação Diária</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <div className="col-4 mt-0">
-                  <label className="fw-bold">Data do Lançamento</label>
-                  <Field
-                    className="data_lancamento_modal"
-                    component={InputText}
-                    name="data_lancamento"
-                    disabled
-                  />
-                </div>
-                <div className="col-12 mt-3">
-                  <label className="fw-bold">Observação</label>
-                  <Field
-                    component={CKEditorField}
-                    name="observacao_modal"
-                    disabled
-                  />
-                </div>
-              </Modal.Body>
-              <Modal.Footer>
-                <div className="col-12">
-                  <Botao
-                    className="float-end"
-                    texto="Voltar"
-                    type={BUTTON_TYPE.BUTTON}
-                    onClick={() => setShowModalObservacaoDiaria(false)}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                  />
-                </div>
-              </Modal.Footer>
-            </Modal>
-          </>
-        )}
+              <div className="col-12 mt-3">
+                <label className="fw-bold">Observação</label>
+                <Field
+                  component={CKEditorField}
+                  name="observacao_modal"
+                  disabled
+                />
+              </div>
+            </Modal.Body>
+            <Modal.Footer>
+              <div className="col-12">
+                <Botao
+                  className="float-end"
+                  texto="Voltar"
+                  type={BUTTON_TYPE.BUTTON}
+                  onClick={() => setShowModalObservacaoDiaria(false)}
+                  style={BUTTON_STYLE.GREEN_OUTLINE}
+                />
+              </div>
+            </Modal.Footer>
+          </Modal>
+        </>
+      )}
     </div>
   );
 };

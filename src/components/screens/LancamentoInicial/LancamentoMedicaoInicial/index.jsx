@@ -408,6 +408,11 @@ export default () => {
     };
   };
 
+  const existeSolicitacaoRecreioLancada = (solicitacoes, cadastroRecreio) =>
+    solicitacoes.some((solicitacao) =>
+      ehSolicitacaoLancadaDoRecreio(solicitacao, cadastroRecreio),
+    );
+
   const ehSolicitacaoLancadaDoMesAno = (solicitacao, mes, ano) => {
     return (
       Number(solicitacao.mes) === mes &&
@@ -444,6 +449,128 @@ export default () => {
           recreioLancado.titulo === periodo.periodo,
       )
     );
+  };
+
+  const ehPeriodoAnteriorAoAcessoDesde = (ano, mes, acessoDesdeDate) =>
+    acessoDesdeDate &&
+    (ano < getYear(acessoDesdeDate) ||
+      (ano === getYear(acessoDesdeDate) &&
+        mes < getMonth(acessoDesdeDate) + 1));
+
+  const montarPeriodosDoCalendario = (
+    periodos,
+    acessoDesdeDate,
+    solicitacoesLancadasResultados,
+    cadastrosRecreioPreparados,
+  ) => {
+    for (let mes_ = 0; mes_ <= PROXIMOS_DOZE_MESES; mes_++) {
+      const dataBRT = addMonths(new Date(), -mes_);
+      const mes = getMonth(dataBRT) + 1;
+      const ano = getYear(dataBRT);
+      const mesString = format(dataBRT, "LLLL", { locale: ptBR });
+
+      const periodoFormatado =
+        mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + ano;
+
+      if (!ehPeriodoAnteriorAoAcessoDesde(ano, mes, acessoDesdeDate)) {
+        if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
+          const temSolicitacaoLancada = solicitacoesLancadasResultados.some(
+            (solicitacao) =>
+              ehSolicitacaoLancadaDoMesAno(solicitacao, mes, ano),
+          );
+
+          if (!temSolicitacaoLancada) {
+            periodos.push({
+              dataBRT,
+              periodo: periodoFormatado,
+            });
+          }
+        } else {
+          periodos.push({
+            dataBRT,
+            periodo: periodoFormatado,
+          });
+        }
+      }
+
+      cadastrosRecreioPreparados?.forEach((cad) => {
+        const temSolicitacaoRecreioLancada = existeSolicitacaoRecreioLancada(
+          solicitacoesLancadasResultados,
+          cad,
+        );
+
+        if (
+          cad.mesInicio === mes &&
+          cad.anoInicio === ano &&
+          !temSolicitacaoRecreioLancada
+        ) {
+          periodos.push({
+            dataBRT: cad.dataInicio,
+            periodo: cad.titulo,
+            recreio_nas_ferias: cad.uuid,
+          });
+        }
+      });
+    }
+  };
+
+  const carregarDadosDoPeriodoSelecionado = async (
+    escola,
+    dadosPeriodoInicial,
+    periodoInicialSelecionado,
+    periodos,
+  ) => {
+    setMes(dadosPeriodoInicial.mes);
+    setAno(dadosPeriodoInicial.ano);
+
+    const searchParams = `?mes=${dadosPeriodoInicial.mes}&ano=${dadosPeriodoInicial.ano}${dadosPeriodoInicial.recreio_nas_ferias ? `&recreio_nas_ferias=${dadosPeriodoInicial.recreio_nas_ferias}` : ""}`;
+
+    if (location.search !== searchParams) {
+      navigate(
+        {
+          pathname: location.pathname,
+          search: searchParams,
+        },
+        { replace: true },
+      );
+    }
+
+    const responseHistoricoEscola = await getHistoricoEscolaAsync(
+      escola.uuid,
+      { mes: dadosPeriodoInicial.mes },
+      { ano: dadosPeriodoInicial.ano },
+    );
+
+    const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
+      escola.uuid,
+      { ano: dadosPeriodoInicial.ano, mes: dadosPeriodoInicial.mes },
+    );
+    setPeriodosEscolaSimples(response_vinculos.data.results);
+
+    await getPeriodosEscolaCemeiComAlunosEmeiAsync(
+      responseHistoricoEscola,
+      dadosPeriodoInicial.mes,
+      dadosPeriodoInicial.ano,
+    );
+    await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
+      escola.uuid,
+      dadosPeriodoInicial.mes,
+      dadosPeriodoInicial.ano,
+    );
+    await getLanchesEmergenciaisDiariosAsync(
+      escola.uuid,
+      dadosPeriodoInicial.mes,
+      dadosPeriodoInicial.ano,
+    );
+
+    setObjectoPeriodos(periodos);
+    setPeriodoSelecionado(periodoInicialSelecionado);
+    await getSolicitacaoMedInicial(
+      periodoInicialSelecionado,
+      escola.uuid,
+      dadosPeriodoInicial.recreio_nas_ferias,
+    );
+    setLoadingSolicitacaoMedicaoInicial(false);
   };
 
   useEffect(() => {
@@ -520,61 +647,12 @@ export default () => {
           )
         : null;
 
-      for (let mes_ = 0; mes_ <= PROXIMOS_DOZE_MESES; mes_++) {
-        const dataBRT = addMonths(new Date(), -mes_);
-        const mes = getMonth(dataBRT) + 1;
-        const ano = getYear(dataBRT);
-        const mesString = format(dataBRT, "LLLL", { locale: ptBR });
-
-        const periodoFormatado =
-          mesString.charAt(0).toUpperCase() + mesString.slice(1) + " / " + ano;
-
-        const periodoAnteriorAoAcessoDesde =
-          acessoDesdeDate &&
-          (ano < getYear(acessoDesdeDate) ||
-            (ano === getYear(acessoDesdeDate) &&
-              mes < getMonth(acessoDesdeDate) + 1));
-
-        if (!periodoAnteriorAoAcessoDesde) {
-          if (location.pathname.includes(LANCAMENTO_MEDICAO_INICIAL)) {
-            const temSolicitacaoLancada = solicitacoesLancadasResultados.some(
-              (solicitacao) =>
-                ehSolicitacaoLancadaDoMesAno(solicitacao, mes, ano),
-            );
-
-            if (!temSolicitacaoLancada) {
-              periodos.push({
-                dataBRT,
-                periodo: periodoFormatado,
-              });
-            }
-          } else {
-            periodos.push({
-              dataBRT,
-              periodo: periodoFormatado,
-            });
-          }
-        }
-
-        cadastrosRecreioPreparados?.forEach((cad) => {
-          const temSolicitacaoRecreioLancada =
-            solicitacoesLancadasResultados.some((solicitacao) =>
-              ehSolicitacaoLancadaDoRecreio(solicitacao, cad),
-            );
-
-          if (
-            cad.mesInicio === mes &&
-            cad.anoInicio === ano &&
-            !temSolicitacaoRecreioLancada
-          ) {
-            periodos.push({
-              dataBRT: cad.dataInicio,
-              periodo: cad.titulo,
-              recreio_nas_ferias: cad.uuid,
-            });
-          }
-        });
-      }
+      montarPeriodosDoCalendario(
+        periodos,
+        acessoDesdeDate,
+        solicitacoesLancadasResultados,
+        cadastrosRecreioPreparados,
+      );
 
       const params = new URLSearchParams(location.search);
       const mesParamOriginal = params.get("mes");
@@ -628,57 +706,12 @@ export default () => {
         return;
       }
 
-      setMes(dadosPeriodoInicial.mes);
-      setAno(dadosPeriodoInicial.ano);
-
-      const searchParams = `?mes=${dadosPeriodoInicial.mes}&ano=${dadosPeriodoInicial.ano}${dadosPeriodoInicial.recreio_nas_ferias ? `&recreio_nas_ferias=${dadosPeriodoInicial.recreio_nas_ferias}` : ""}`;
-
-      if (location.search !== searchParams) {
-        navigate(
-          {
-            pathname: location.pathname,
-            search: searchParams,
-          },
-          { replace: true },
-        );
-      }
-
-      const responseHistoricoEscola = await getHistoricoEscolaAsync(
-        escola.uuid,
-        { mes: dadosPeriodoInicial.mes },
-        { ano: dadosPeriodoInicial.ano },
-      );
-
-      const response_vinculos = await getVinculosTipoAlimentacaoPorEscola(
-        escola.uuid,
-        { ano: dadosPeriodoInicial.ano, mes: dadosPeriodoInicial.mes },
-      );
-      setPeriodosEscolaSimples(response_vinculos.data.results);
-
-      await getPeriodosEscolaCemeiComAlunosEmeiAsync(
-        responseHistoricoEscola,
-        dadosPeriodoInicial.mes,
-        dadosPeriodoInicial.ano,
-      );
-      await getPeriodosPermissoesLancamentosEspeciaisMesAnoAsync(
-        escola.uuid,
-        dadosPeriodoInicial.mes,
-        dadosPeriodoInicial.ano,
-      );
-      await getLanchesEmergenciaisDiariosAsync(
-        escola.uuid,
-        dadosPeriodoInicial.mes,
-        dadosPeriodoInicial.ano,
-      );
-
-      setObjectoPeriodos(periodos);
-      setPeriodoSelecionado(periodoInicialSelecionado);
-      await getSolicitacaoMedInicial(
+      await carregarDadosDoPeriodoSelecionado(
+        escola,
+        dadosPeriodoInicial,
         periodoInicialSelecionado,
-        escola.uuid,
-        dadosPeriodoInicial.recreio_nas_ferias,
+        periodos,
       );
-      setLoadingSolicitacaoMedicaoInicial(false);
     }
     if (meusDados) fetch();
   }, [meusDados]);
@@ -698,7 +731,7 @@ export default () => {
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
     await getDiasCalendarioAsync(payload, solicitacao.data[0]);
-    await setSolicitacaoMedicaoInicial(solicitacao.data[0]);
+    setSolicitacaoMedicaoInicial(solicitacao.data[0]);
   };
 
   const { Option } = Select;

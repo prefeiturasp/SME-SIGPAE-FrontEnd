@@ -12,6 +12,9 @@ import React, { Fragment } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 
+const paraValoresSelecionados = (values_) =>
+  values_.map((value_) => value_.value);
+
 export const PeriodosFields = ({ ...props }) => {
   const { ehMotivoPorNome, periodos, form, values } = props;
 
@@ -143,10 +146,10 @@ export const PeriodosFields = ({ ...props }) => {
                     ),
                     values,
                   )}
-                  onSelectedChanged={async (values_) => {
-                    await form.change(
+                  onSelectedChanged={(values_) => {
+                    form.change(
                       `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
-                      values_.map((value_) => value_.value),
+                      paraValoresSelecionados(values_),
                     );
                   }}
                   placeholder="Selecione tipos de alimentação"
@@ -180,10 +183,10 @@ export const PeriodosFields = ({ ...props }) => {
                     ),
                     values,
                   )}
-                  onSelectedChanged={async (values_) => {
-                    await form.change(
+                  onSelectedChanged={(values_) => {
+                    form.change(
                       `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
-                      values_.map((value_) => value_.value),
+                      paraValoresSelecionados(values_),
                     );
                   }}
                   placeholder="Selecione tipos de alimentação"

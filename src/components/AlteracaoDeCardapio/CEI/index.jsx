@@ -370,6 +370,17 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const criarOnClickPeriodo = (form, name, indice, values) => () => {
+    handlePeriodoOnClick(form, name, indice, values);
+  };
+
+  const criarOnKeyDownPeriodo = (form, name, indice, values) => (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handlePeriodoOnClick(form, name, indice, values);
+    }
+  };
+
   const handlePeriodoOnClick = async (form, name, indice, values) => {
     await form.change(
       `${name}.checked`,
@@ -534,34 +545,24 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                         <span
                                           role="checkbox"
                                           tabIndex={0}
-                                          onKeyDown={(e) => {
-                                            if (
-                                              e.key === "Enter" ||
-                                              e.key === " "
-                                            ) {
-                                              e.preventDefault();
-                                              handlePeriodoOnClick(
-                                                form,
-                                                name,
-                                                indice,
-                                                values,
-                                              );
-                                            }
-                                          }}
+                                          onKeyDown={criarOnKeyDownPeriodo(
+                                            form,
+                                            name,
+                                            indice,
+                                            values,
+                                          )}
                                           aria-checked={
                                             values.substituicoes[indice].checked
                                           }
                                           aria-disabled={
                                             !getPeriodo(values, indice).checked
                                           }
-                                          onClick={async () => {
-                                            handlePeriodoOnClick(
-                                              form,
-                                              name,
-                                              indice,
-                                              values,
-                                            );
-                                          }}
+                                          onClick={criarOnClickPeriodo(
+                                            form,
+                                            name,
+                                            indice,
+                                            values,
+                                          )}
                                           className="checkbox-custom"
                                           data-cy={`checkbox-${
                                             getPeriodo(values, indice).nome

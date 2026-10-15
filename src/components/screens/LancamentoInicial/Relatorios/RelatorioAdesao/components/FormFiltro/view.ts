@@ -31,6 +31,12 @@ import {
   TiposUnidadesTreeNode,
 } from "./types";
 
+const extrairUuidsTiposUnidades = (tiposUnidades) =>
+  tiposUnidades.map((tipo) => tipo.uuid);
+
+const filtrarLotesDaEscola = (lotes) =>
+  lotes?.filter((lote) => localStorage.getItem("escolaLoteUuid") === lote.uuid);
+
 export default ({ form, onChange }: Args) => {
   const { meusDados } = useContext(MeusDadosContext);
   const [mesesAnosOpcoes, setMesesAnosOpcoes] = useState<Array<SelectOption>>(
@@ -119,7 +125,7 @@ export default ({ form, onChange }: Args) => {
           (grupo) => grupo.nome === "Grupo 1" || grupo.nome === "Grupo 2",
         );
         const excluirTipoUnidadeUuids = gruposExcluidos.flatMap((grupo) =>
-          grupo.tipos_unidades.map((tipo) => tipo.uuid),
+          extrairUuidsTiposUnidades(grupo.tipos_unidades),
         );
         excluirTipoUnidadeUuidsRef.current = excluirTipoUnidadeUuids;
 
@@ -153,10 +159,7 @@ export default ({ form, onChange }: Args) => {
             if (!values.dirty) {
               let lotes_ = lotes;
               if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-                lotes_ = lotes?.filter(
-                  (lote) =>
-                    localStorage.getItem("escolaLoteUuid") === lote.uuid,
-                );
+                lotes_ = filtrarLotesDaEscola(lotes);
               }
               setLotesOpcoes(formatarOpcoesLote(lotes_));
               buscaEscolas([], []);

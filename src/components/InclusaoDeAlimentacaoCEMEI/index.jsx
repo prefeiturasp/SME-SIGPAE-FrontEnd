@@ -419,6 +419,36 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     );
   };
 
+  const obterOpcoesMotivo = (values) => {
+    if (values.inclusoes.length <= 1) {
+      return agregarDefault(motivosSimples).concat(motivosContinuos);
+    }
+    if (motivoEspecifico) {
+      return agregarDefault(motivosSimples).filter(
+        (motivo) =>
+          motivo.nome.includes("Selecione") ||
+          motivo.nome.includes("Específico"),
+      );
+    }
+    return agregarDefault(motivosSimples).filter(
+      (motivo) => !motivo.nome.includes("Específico"),
+    );
+  };
+
+  const criarOnChangeMotivo = (form) => (e) => {
+    const value = e.target.value;
+    const values_ = form.getState().values;
+    if (value && motivosSimples.find((motivo) => motivo.uuid === value)) {
+      form.change("quantidades_periodo", undefined);
+      checaMotivoInclusaoEspecifico(values_, form);
+      form.change("reload", !values_.reload);
+    }
+    if (value && motivosContinuos.find((motivo) => motivo.uuid === value)) {
+      form.change("quantidades_periodo", undefined);
+      form.change("reload", !values_.reload);
+    }
+  };
+
   const checaMotivoInclusaoEspecifico = (values, form) => {
     if (ehMotivoInclusaoEspecifico(values)) {
       setMotivoEspecifico(true);
@@ -512,48 +542,11 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                               dataTestId={`select-motivo-${index}`}
                               name={`${name}.motivo`}
                               label="Motivo"
-                              options={
-                                values.inclusoes.length > 1
-                                  ? motivoEspecifico
-                                    ? agregarDefault(motivosSimples).filter(
-                                        (motivo) =>
-                                          motivo.nome.includes("Selecione") ||
-                                          motivo.nome.includes("Específico"),
-                                      )
-                                    : agregarDefault(motivosSimples).filter(
-                                        (motivo) =>
-                                          !motivo.nome.includes("Específico"),
-                                      )
-                                  : agregarDefault(motivosSimples).concat(
-                                      motivosContinuos,
-                                    )
-                              }
+                              options={obterOpcoesMotivo(values)}
                               required
                               validate={required}
                               naoDesabilitarPrimeiraOpcao
-                              onChangeEffect={async (e) => {
-                                const value = e.target.value;
-                                const values_ = form.getState().values;
-                                if (
-                                  value &&
-                                  motivosSimples.find(
-                                    (motivo) => motivo.uuid === value,
-                                  )
-                                ) {
-                                  form.change("quantidades_periodo", undefined);
-                                  checaMotivoInclusaoEspecifico(values_, form);
-                                  form.change("reload", !values_.reload);
-                                }
-                                if (
-                                  value &&
-                                  motivosContinuos.find(
-                                    (motivo) => motivo.uuid === value,
-                                  )
-                                ) {
-                                  form.change("quantidades_periodo", undefined);
-                                  form.change("reload", !values_.reload);
-                                }
-                              }}
+                              onChangeEffect={criarOnChangeMotivo(form)}
                             />
                           </div>
                           {motivoSimplesSelecionado(values) && (

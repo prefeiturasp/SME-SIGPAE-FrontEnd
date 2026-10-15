@@ -47,6 +47,56 @@ import { Rascunhos } from "./Rascunhos";
 import { formataPayload, validarForm } from "./helper";
 import "./style.scss";
 
+const definirCoresDoPeriodo = (periodos, periodo) => {
+  const periodoEncontrado = periodos.find((p) => p.uuid === periodo.uuid);
+  return {
+    background: periodoEncontrado.background,
+    borderColor: periodoEncontrado.borderColor,
+  };
+};
+
+const aoTeclarEnterOuEspaco = (e) => {
+  if (e.key === "Enter" || e.key === " ") {
+    e.currentTarget.click();
+  }
+};
+
+const removerQuantidadeAlunosDasFaixas = (periodos, nomePeriodo) =>
+  periodos.map((_periodo) => {
+    if (_periodo.nome === nomePeriodo) {
+      _periodo.faixas_etarias = _periodo.faixas_etarias.map((_fx) => {
+        if (_fx["quantidade_alunos"]) {
+          delete _fx["quantidade_alunos"];
+        }
+        return _fx;
+      });
+    }
+    return _periodo;
+  });
+
+const desmarcarPeriodoIntegral = (periodosEfaixas, nomePeriodo) =>
+  periodosEfaixas.map((_periodo_faixa) => {
+    if (_periodo_faixa.nome === "INTEGRAL") {
+      _periodo_faixa.periodos = removerQuantidadeAlunosDasFaixas(
+        _periodo_faixa.periodos,
+        nomePeriodo,
+      );
+    }
+    return _periodo_faixa;
+  });
+
+const criarOnClickPeriodoIntegral = (form, values, periodo) => (e) => {
+  const value = e.target.checked;
+  let _periodos_e_faixas = deepCopy(values.periodos_e_faixas);
+  if (!value) {
+    _periodos_e_faixas = desmarcarPeriodoIntegral(
+      _periodos_e_faixas,
+      periodo.nome,
+    );
+  }
+  form.change("periodos_e_faixas", _periodos_e_faixas);
+};
+
 export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
   const {
     meusDados,
@@ -176,6 +226,48 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
     }
   };
 
+  const aplicarQuantidadeAlunosNasFaixas = (
+    faixas,
+    periodoFaixa,
+    inclusao,
+    periodoUuid,
+  ) =>
+    faixas.map((fx) => {
+      const faixaInclusao = inclusao.quantidade_alunos_por_faixas_etarias.find(
+        (faixa_etaria) =>
+          faixa_etaria.periodo.uuid === periodoUuid &&
+          faixa_etaria.periodo_externo.uuid === periodoFaixa.uuid &&
+          faixa_etaria.faixa_etaria.uuid === fx.faixa_etaria.uuid,
+      );
+      if (faixaInclusao) {
+        fx["quantidade_alunos"] = faixaInclusao.quantidade_alunos;
+      }
+      return fx;
+    });
+
+  const marcarPeriodosInternos = (periodoFaixa, inclusao) => {
+    const faixasPeriodoIntegral =
+      inclusao.quantidade_alunos_por_faixas_etarias.filter(
+        (faixa_etaria) => faixa_etaria.periodo_externo.nome === "INTEGRAL",
+      );
+    let periodosInternosNomes = faixasPeriodoIntegral.map(
+      (faixa_etaria) => faixa_etaria.periodo.nome,
+    );
+    periodosInternosNomes = [...new Set(periodosInternosNomes)];
+    periodoFaixa.periodos = periodoFaixa.periodos.map((periodo) => {
+      if (periodosInternosNomes.includes(periodo.nome)) {
+        periodo.checked = true;
+        periodo.faixas_etarias = aplicarQuantidadeAlunosNasFaixas(
+          periodo.faixas_etarias,
+          periodoFaixa,
+          inclusao,
+          periodo.uuid,
+        );
+      }
+      return periodo;
+    });
+  };
+
   const carregarRascunho = (form, inclusao, values) => {
     let _periodos_e_faixas = deepCopy(values.periodos_e_faixas);
     let periodos_externos_inclusao =
@@ -188,52 +280,14 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
         if (periodo_faixa.nome === periodo_nome) {
           periodo_faixa.checked = true;
           if (periodo_faixa.nome !== "INTEGRAL") {
-            periodo_faixa.faixas_etarias = periodo_faixa.faixas_etarias.map(
-              (fx) => {
-                const faixa_inclusao =
-                  inclusao.quantidade_alunos_por_faixas_etarias.find(
-                    (faixa_etaria) =>
-                      faixa_etaria.periodo.uuid === periodo_faixa.uuid &&
-                      faixa_etaria.periodo_externo.uuid ===
-                        periodo_faixa.uuid &&
-                      faixa_etaria.faixa_etaria.uuid === fx.faixa_etaria.uuid,
-                  );
-                if (faixa_inclusao) {
-                  fx["quantidade_alunos"] = faixa_inclusao.quantidade_alunos;
-                }
-                return fx;
-              },
+            periodo_faixa.faixas_etarias = aplicarQuantidadeAlunosNasFaixas(
+              periodo_faixa.faixas_etarias,
+              periodo_faixa,
+              inclusao,
+              periodo_faixa.uuid,
             );
           } else {
-            let faixas_periodo_integral =
-              inclusao.quantidade_alunos_por_faixas_etarias.filter(
-                (faixa_etaria) =>
-                  faixa_etaria.periodo_externo.nome === "INTEGRAL",
-              );
-            let periodos_internos_nomes = faixas_periodo_integral.map(
-              (faixa_etaria) => faixa_etaria.periodo.nome,
-            );
-            periodos_internos_nomes = [...new Set(periodos_internos_nomes)];
-            periodo_faixa.periodos = periodo_faixa.periodos.map((periodo) => {
-              if (periodos_internos_nomes.includes(periodo.nome)) {
-                periodo.checked = true;
-                periodo.faixas_etarias = periodo.faixas_etarias.map((fx) => {
-                  const faixa_inclusao =
-                    inclusao.quantidade_alunos_por_faixas_etarias.find(
-                      (faixa_etaria) =>
-                        faixa_etaria.periodo.uuid === periodo.uuid &&
-                        faixa_etaria.periodo_externo.uuid ===
-                          periodo_faixa.uuid &&
-                        faixa_etaria.faixa_etaria.uuid === fx.faixa_etaria.uuid,
-                    );
-                  if (faixa_inclusao) {
-                    fx["quantidade_alunos"] = faixa_inclusao.quantidade_alunos;
-                  }
-                  return fx;
-                });
-              }
-              return periodo;
-            });
+            marcarPeriodosInternos(periodo_faixa, inclusao);
           }
         }
         return periodo_faixa;
@@ -630,12 +684,8 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                               valoresIniciais.periodos_e_faixas[
                                 periodo_faixa_idx
                               ].periodos.map((periodo, periodo_idx) => {
-                                const background = periodos.find(
-                                  (p) => p.uuid === periodo.uuid,
-                                ).background;
-                                const borderColor = periodos.find(
-                                  (p) => p.uuid === periodo.uuid,
-                                ).borderColor;
+                                const { background, borderColor } =
+                                  definirCoresDoPeriodo(periodos, periodo);
                                 return (
                                   <div
                                     className="container-fluid"
@@ -655,63 +705,12 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
                                       >
                                         <span
                                           data-testid={`span-dentro-${periodo.nome}`}
-                                          onClick={async (e) => {
-                                            const value = e.target.checked;
-                                            let _periodos_e_faixas = deepCopy(
-                                              values.periodos_e_faixas,
-                                            );
-                                            if (!value) {
-                                              _periodos_e_faixas =
-                                                _periodos_e_faixas.map(
-                                                  (_periodo_faixa) => {
-                                                    if (
-                                                      _periodo_faixa.nome ===
-                                                      "INTEGRAL"
-                                                    ) {
-                                                      _periodo_faixa.periodos =
-                                                        _periodo_faixa.periodos.map(
-                                                          (_periodo) => {
-                                                            if (
-                                                              _periodo.nome ===
-                                                              periodo.nome
-                                                            ) {
-                                                              _periodo.faixas_etarias =
-                                                                _periodo.faixas_etarias.map(
-                                                                  (_fx) => {
-                                                                    if (
-                                                                      _fx[
-                                                                        "quantidade_alunos"
-                                                                      ]
-                                                                    ) {
-                                                                      delete _fx[
-                                                                        "quantidade_alunos"
-                                                                      ];
-                                                                    }
-                                                                    return _fx;
-                                                                  },
-                                                                );
-                                                            }
-                                                            return _periodo;
-                                                          },
-                                                        );
-                                                    }
-                                                    return _periodo_faixa;
-                                                  },
-                                                );
-                                            }
-                                            form.change(
-                                              "periodos_e_faixas",
-                                              _periodos_e_faixas,
-                                            );
-                                          }}
-                                          onKeyDown={(e) => {
-                                            if (
-                                              e.key === "Enter" ||
-                                              e.key === " "
-                                            ) {
-                                              e.currentTarget.click();
-                                            }
-                                          }}
+                                          onClick={criarOnClickPeriodoIntegral(
+                                            form,
+                                            values,
+                                            periodo,
+                                          )}
+                                          onKeyDown={aoTeclarEnterOuEspaco}
                                         >
                                           <Field
                                             component={"input"}

@@ -17,6 +17,9 @@ import {
 } from "src/helpers/utilities";
 import "./style.scss";
 
+const paraValoresSelecionados = (values_) =>
+  values_.map((value_) => value_.value);
+
 export const PeriodosCEIeouEMEI = ({
   form,
   values,
@@ -107,7 +110,7 @@ export const PeriodosCEIeouEMEI = ({
                           form.change(
                             `quantidades_periodo[
           ${indice}].tipos_alimentacao_selecionados`,
-                            values_.map((value_) => value_.value),
+                            paraValoresSelecionados(values_),
                           );
                         }}
                         placeholder="Selecione tipos de alimentação"
@@ -282,7 +285,7 @@ export const PeriodosCEIeouEMEI = ({
                                   form.change(
                                     `quantidades_periodo[
           ${indice}].tipos_alimentacao_selecionados`,
-                                    values_.map((value_) => value_.value),
+                                    paraValoresSelecionados(values_),
                                   );
                                 }}
                                 placeholder="Selecione tipos de alimentação"
