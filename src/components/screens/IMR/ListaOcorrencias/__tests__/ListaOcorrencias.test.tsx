@@ -133,6 +133,8 @@ describe("ListaOcorrencias", () => {
         state: {
           editalUuid: EDITAL_UUID,
           solicitacaoMedicaoInicialUuid: SOLICITACAO_UUID,
+          mes: "1",
+          ano: "2026",
         },
       },
     );

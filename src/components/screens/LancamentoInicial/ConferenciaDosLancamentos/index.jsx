@@ -67,6 +67,9 @@ import { carregarDiasCalendario } from "src/components/screens/LancamentoInicial
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 
+const GRUPO_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS =
+  "Solicitações de Alimentação Extraordinárias";
+
 export const ConferenciaDosLancamentos = () => {
   const location = useLocation();
 
@@ -579,9 +582,20 @@ export const ConferenciaDosLancamentos = () => {
       const todosPeriodosGruposAprovadosDRE = !periodosGruposMedicao.some(
         (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_DRE",
       );
-      const todosPeriodosGruposAprovadosCODAE = !periodosGruposMedicao.some(
-        (periodoGrupo) => periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE",
+      const medicaoExtraordinaria = periodosGruposMedicao.find(
+        (periodoGrupo) =>
+          periodoGrupo.nome_periodo_grupo ===
+          GRUPO_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
       );
+      const blocoExtraordinarioAprovadoCODAE =
+        !solicitacao.lanche_emergencial_extraordinario ||
+        medicaoExtraordinaria?.status === "MEDICAO_APROVADA_PELA_CODAE";
+      const todosPeriodosGruposAprovadosCODAE =
+        blocoExtraordinarioAprovadoCODAE &&
+        !periodosGruposMedicao.some(
+          (periodoGrupo) =>
+            periodoGrupo.status !== "MEDICAO_APROVADA_PELA_CODAE",
+        );
       if (
         ([
           "MEDICAO_APROVADA_PELA_DRE",
@@ -820,6 +834,22 @@ export const ConferenciaDosLancamentos = () => {
       toastError("Erro ao exportar pdf. Tente novamente mais tarde.");
     }
   };
+
+  const periodoGrupoExtraordinario = periodosGruposMedicao?.find(
+    (periodoGrupo) =>
+      periodoGrupo.nome_periodo_grupo ===
+      GRUPO_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
+  );
+
+  const periodoGrupoExtraordinarioParaRenderizar =
+    periodoGrupoExtraordinario || {
+      uuid_medicao_periodo_grupo: "extraordinario",
+      nome_periodo_grupo: GRUPO_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
+      periodo_escolar: null,
+      grupo: GRUPO_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
+      status: "SOLICITACAO_CORRECAO",
+      logs: [],
+    };
 
   return (
     <div className="conferencia-dos-lancamentos">
@@ -1127,15 +1157,78 @@ export const ConferenciaDosLancamentos = () => {
                           )}
                       </div>
                       <div className="col-12 mt-3">
-                        {periodosGruposMedicao.map((periodoGrupo, index) => {
-                          const periodo =
-                            periodoGrupo?.periodo_escolar ?? "DEFAULT";
-                          const chaveCalendario =
-                            periodo === "NOITE" ? "NOITE" : "DEFAULT";
-                          return [
+                        {periodosGruposMedicao
+                          .filter(
+                            (periodoGrupo) =>
+                              periodoGrupo.nome_periodo_grupo !==
+                              GRUPO_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
+                          )
+                          .map((periodoGrupo, index) => {
+                            const periodo =
+                              periodoGrupo?.periodo_escolar ?? "DEFAULT";
+                            const chaveCalendario =
+                              periodo === "NOITE" ? "NOITE" : "DEFAULT";
+                            return [
+                              <TabelaLancamentosPeriodo
+                                key={index}
+                                periodoGrupo={periodoGrupo}
+                                periodosSimples={periodosSimples}
+                                mesSolicitacao={mesSolicitacao}
+                                anoSolicitacao={anoSolicitacao}
+                                form={form}
+                                aprovarPeriodo={(
+                                  periodoGrupo,
+                                  nomePeridoFormatado,
+                                ) =>
+                                  aprovarPeriodo(
+                                    periodoGrupo,
+                                    nomePeridoFormatado,
+                                  )
+                                }
+                                values={values}
+                                getPeriodosGruposMedicaoAsync={() =>
+                                  getPeriodosGruposMedicaoAsync()
+                                }
+                                periodosGruposMedicao={periodosGruposMedicao}
+                                setOcorrenciaExpandida={() => {
+                                  if (
+                                    !solicitacao.com_ocorrencias &&
+                                    !solicitacao.ocorrencia
+                                  ) {
+                                    setOcorrenciaExpandida(true);
+                                  } else {
+                                    setOcorrenciaExpandida(false);
+                                  }
+                                }}
+                                solicitacao={solicitacao}
+                                feriadosNoMes={feriadosNoMes}
+                                diasCalendario={diasCalendario[chaveCalendario]}
+                                diasSobremesaDoce={diasSobremesaDoce}
+                                diasSobremesaAF={diasSobremesaAF}
+                                diasLetivosSIGPAE={diasLetivosSIGPAE}
+                                diasSuspensaoAtividades={
+                                  diasSuspensaoAtividades
+                                }
+                              />,
+                            ];
+                          })}
+                      </div>
+                    </div>
+                    {solicitacao.lanche_emergencial_extraordinario &&
+                      (periodoGrupoExtraordinario || !usuarioEhDRE()) && (
+                        <div className="row">
+                          <div className="col-12 mt-4">
+                            <p className="section-title-conf-lancamentos">
+                              Solicitação de Correção pela CODAE
+                            </p>
+                          </div>
+                          <div className="col-12 mt-3">
                             <TabelaLancamentosPeriodo
-                              key={index}
-                              periodoGrupo={periodoGrupo}
+                              key="solicitacoes-alimentacao-extraordinarias"
+                              periodoGrupo={
+                                periodoGrupoExtraordinarioParaRenderizar
+                              }
+                              semMedicao={!periodoGrupoExtraordinario}
                               periodosSimples={periodosSimples}
                               mesSolicitacao={mesSolicitacao}
                               anoSolicitacao={anoSolicitacao}
@@ -1166,16 +1259,15 @@ export const ConferenciaDosLancamentos = () => {
                               }}
                               solicitacao={solicitacao}
                               feriadosNoMes={feriadosNoMes}
-                              diasCalendario={diasCalendario[chaveCalendario]}
+                              diasCalendario={diasCalendario?.DEFAULT}
                               diasSobremesaDoce={diasSobremesaDoce}
                               diasSobremesaAF={diasSobremesaAF}
                               diasLetivosSIGPAE={diasLetivosSIGPAE}
                               diasSuspensaoAtividades={diasSuspensaoAtividades}
-                            />,
-                          ];
-                        })}
-                      </div>
-                    </div>
+                            />
+                          </div>
+                        </div>
+                      )}
                     {!solicitacao.sem_lancamentos && (
                       <div className="float-end">
                         <Botao

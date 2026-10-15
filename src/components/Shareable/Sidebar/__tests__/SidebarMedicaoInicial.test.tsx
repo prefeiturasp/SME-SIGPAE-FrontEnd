@@ -43,7 +43,7 @@ const renderSidebarComponent = async (nome = "Usuario") => {
     render(
       <MemoryRouter initialEntries={[{ pathname: "/" }]}>
         <TestSidebarComponent />
-      </MemoryRouter>
+      </MemoryRouter>,
     );
   });
 };
@@ -92,7 +92,7 @@ describe("Test <Sidebar> - Diferentes perfis", () => {
     "renderiza link `Medição Inicial` com seus submenus - Perfil $nome",
     async ({ localStorage: ls, nomeUsuario }) => {
       Object.entries(ls).forEach(([key, value]) =>
-        localStorage.setItem(key, value)
+        localStorage.setItem(key, value),
       );
 
       await renderSidebarComponent(nomeUsuario);
@@ -104,7 +104,7 @@ describe("Test <Sidebar> - Diferentes perfis", () => {
       fireEvent.click(linkMedicaoInicial);
 
       expect(linkMedicaoInicial).toHaveTextContent(
-        "Acompanhamento de Lançamentos"
+        "Acompanhamento de Lançamentos",
       );
       expect(linkMedicaoInicial).toHaveTextContent("Relatórios");
 
@@ -112,8 +112,33 @@ describe("Test <Sidebar> - Diferentes perfis", () => {
       fireEvent.click(linkRelatoriosMe);
 
       expect(linkMedicaoInicial).toHaveTextContent("Relatório de Adesão");
-    }
+      expect(linkMedicaoInicial).toHaveTextContent(
+        "Relatório de Alimentações Servidas",
+      );
+    },
   );
+
+  it("renderiza somente `Relatório de Alimentações Servidas` em Medição Inicial para o perfil Relatórios", async () => {
+    cleanup();
+    localStorage.setItem("tipo_perfil", `"usuario_relatorios"`);
+    localStorage.setItem("perfil", PERFIL.USUARIO_RELATORIOS);
+    localStorage.setItem("tipo_servico", "");
+    await renderSidebarComponent("USUÁRIO RELATÓRIOS");
+
+    await awaitServices();
+
+    const linkMedicaoInicial = screen.getByTestId("medicao-inicial");
+    fireEvent.click(linkMedicaoInicial);
+    fireEvent.click(screen.getByTestId("relatorios-me"));
+
+    expect(linkMedicaoInicial).toHaveTextContent(
+      "Relatório de Alimentações Servidas",
+    );
+    expect(linkMedicaoInicial).not.toHaveTextContent("Relatório de Adesão");
+    expect(linkMedicaoInicial).not.toHaveTextContent(
+      "Acompanhamento de Lançamentos",
+    );
+  });
 
   it("não deve renderizar o link `Medição Inicial` caso use um Perfil não permitido", async () => {
     cleanup();

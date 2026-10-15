@@ -51,3 +51,7 @@ export interface AnaliseDocumentoPayload {
 export interface CorrecaoDocumentoPayload {
   tipos_de_documentos: Array<TiposDocumentosPayload>;
 }
+
+export interface ReprovarDocumentoPayload {
+  justificativa_reprovacao: string;
+}

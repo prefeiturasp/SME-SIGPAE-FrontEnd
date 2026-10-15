@@ -48,6 +48,7 @@ export interface RelatorioAdesaoPaginadoResponse {
   previous: string | null;
   count: number;
   page_size: number;
+  possui_resultados: boolean;
   results: Array<
     RelatorioAdesaoEscolaResultado | RelatorioAdesaoResultadoIndividual
   >;
@@ -57,4 +58,18 @@ export interface RelatorioAdesaoResponse extends RelatorioAdesaoPeriodo {}
 export interface RelatorioAdesaoExportResponse {
   data: Object;
   status: number;
+}
+
+export interface RelatorioAlimentacoesServidasParams {
+  meses?: Array<string>;
+  recreios_nas_ferias?: Array<string>;
+  dres: Array<string>;
+  lotes?: Array<string>;
+  subprefeituras?: Array<string>;
+  tipos_unidades?: Array<string>;
+  unidades_educacionais?: Array<string>;
+  tipos_alimentacao?: Array<string>;
+  faixas_etarias?: Array<string>;
+  periodo_lancamento_de?: string;
+  periodo_lancamento_ate?: string;
 }

@@ -161,13 +161,14 @@ describe("Teste Relatório de Adesão - Visão Escola", () => {
       previous: null,
       count: 1,
       page_size: 1,
+      possui_resultados: true,
       results: [
         {
           escola: {
             nome: "EMEF PERICLES EUGENIO DA SILVA RAMOS",
             codigo_eol: "017981",
           },
-          resultados: mockRelatorioAdesao10a20Dezenbro2023,
+          resultados: mockRelatorioAdesao10a20Dezenbro2023.resultados,
         },
       ],
     });

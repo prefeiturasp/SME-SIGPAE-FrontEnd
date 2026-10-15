@@ -23,6 +23,11 @@ type Props = {
   initialValues?: Object;
   keepDirtyOnReinitialize?: boolean;
   destroyOnUnregister?: boolean;
+  renderBotoes?: (_args: {
+    form: FormApi;
+    values: Record<string, any>;
+    limparFiltros: () => void;
+  }) => ReactNode;
 };
 
 export const CollapseFiltros: React.FC<Props> = ({
@@ -35,6 +40,7 @@ export const CollapseFiltros: React.FC<Props> = ({
   initialValues = {},
   keepDirtyOnReinitialize = false,
   destroyOnUnregister = false,
+  renderBotoes,
 }) => {
   const id = "collapseFiltros";
   const [collapse, setCollapse] = useState(true);
@@ -113,23 +119,33 @@ export const CollapseFiltros: React.FC<Props> = ({
                   <div>{children(values, form)}</div>
 
                   <div className="pt-4 pb-4 mb-2">
-                    <Botao
-                      dataTestId="botao-filtrar"
-                      texto="Filtrar"
-                      type={BUTTON_TYPE.SUBMIT}
-                      style={BUTTON_STYLE.GREEN}
-                      className="float-end ms-3"
-                      disabled={desabilitarBotoes}
-                    />
+                    {renderBotoes ? (
+                      renderBotoes({
+                        form,
+                        values,
+                        limparFiltros: () => limparFiltros(form, values),
+                      })
+                    ) : (
+                      <>
+                        <Botao
+                          dataTestId="botao-filtrar"
+                          texto="Filtrar"
+                          type={BUTTON_TYPE.SUBMIT}
+                          style={BUTTON_STYLE.GREEN}
+                          className="float-end ms-3"
+                          disabled={desabilitarBotoes}
+                        />
 
-                    <Botao
-                      texto="Limpar Filtros"
-                      type={BUTTON_TYPE.BUTTON}
-                      style={BUTTON_STYLE.GREEN_OUTLINE}
-                      className="float-end ms-3"
-                      onClick={() => limparFiltros(form, values)}
-                      disabled={desabilitarBotoes}
-                    />
+                        <Botao
+                          texto="Limpar Filtros"
+                          type={BUTTON_TYPE.BUTTON}
+                          style={BUTTON_STYLE.GREEN_OUTLINE}
+                          className="float-end ms-3"
+                          onClick={() => limparFiltros(form, values)}
+                          disabled={desabilitarBotoes}
+                        />
+                      </>
+                    )}
                   </div>
                 </form>
               )}

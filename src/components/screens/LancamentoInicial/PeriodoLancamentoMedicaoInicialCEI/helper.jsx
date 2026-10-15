@@ -43,7 +43,11 @@ export const formatarPayloadPeriodoLancamentoCeiCemei = (
     ehRecreioNasFerias
   ) {
     values["grupo"] = ehRecreioNasFerias ? grupo : values["periodo_escolar"];
-    if (values["grupo"] && values["grupo"].includes("Solicitações")) {
+    if (
+      values["grupo"] &&
+      values["grupo"].includes("Solicitações") &&
+      values["grupo"] !== "Solicitações de Alimentação Extraordinárias"
+    ) {
       values["grupo"] = "Solicitações de Alimentação";
     }
     delete values["periodo_escolar"];
@@ -1039,6 +1043,7 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   alimentacoesLancamentosEspeciais,
   ehProgramasEProjetosLocation,
   ehRecreioNasFerias,
+  ehSolicitacoesAlimentacaoExtraordinarias = false,
 ) => {
   const tiposAlimentacaoFormatadas = tiposAlimentacao.map((alimentacao) => {
     return {
@@ -1052,24 +1057,25 @@ export const formatarLinhasTabelaAlimentacaoEmeiDaCemei = (
   });
 
   if (ehSolicitacoesAlimentacaoLocation) {
-    const rowsSolicitacoesAlimentacao = [];
-    rowsSolicitacoesAlimentacao.push(
+    const rowsSolicitacoesAlimentacao = [
       {
         nome: "Lanche Emergencial",
         name: "lanche_emergencial",
         uuid: null,
       },
-      {
+    ];
+    if (!ehSolicitacoesAlimentacaoExtraordinarias) {
+      rowsSolicitacoesAlimentacao.push({
         nome: "Kit Lanche",
         name: "kit_lanche",
         uuid: null,
-      },
-      {
-        nome: "Observações",
-        name: "observacoes",
-        uuid: null,
-      },
-    );
+      });
+    }
+    rowsSolicitacoesAlimentacao.push({
+      nome: "Observações",
+      name: "observacoes",
+      uuid: null,
+    });
 
     return rowsSolicitacoesAlimentacao;
   }

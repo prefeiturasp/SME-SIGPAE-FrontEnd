@@ -1135,13 +1135,13 @@ export const AcompanhamentoDeLancamentos = () => {
                             {usuarioEhDRE() &&
                               statusSelecionado ===
                                 "MEDICAO_CORRIGIDA_PARA_CODAE" && (
-                                <div className="col-4 d-flex align-items-end">
+                                <div className="col-4 d-flex align-items-center">
                                   <Field
                                     name="somente_pendentes_acao_dre"
                                     type="checkbox"
                                   >
                                     {({ input }) => (
-                                      <label className="filtro-pendencias-acao-dre">
+                                      <label className="filtro-pendencias-acao-dre mt-4">
                                         <input {...input} type="checkbox" />
                                         <span>
                                           Exibir itens pendentes de ação

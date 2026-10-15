@@ -6,8 +6,18 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
-import { getTermoRecebimentoDefinitivo } from "src/services/posRecebimento.service";
+import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import {
+  toastError,
+  toastSuccess,
+} from "src/components/Shareable/Toast/dialogs";
+import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
+import {
+  fiscalAssinaTermo,
+  getTermoRecebimentoDefinitivo,
+} from "src/services/posRecebimento.service";
+import {
+  PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_DEFINITIVO,
   TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR,
@@ -63,6 +73,8 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
   const navigate = useNavigate();
   const [termo, setTermo] = useState<TermoRecebimentoDetalhe | null>(null);
   const [carregando, setCarregando] = useState(false);
+  const [showModalAssinatura, setShowModalAssinatura] = useState(false);
+  const [loadingAssinatura, setLoadingAssinatura] = useState(false);
 
   const getDetalhes = async () => {
     if (uuid) {
@@ -90,6 +102,30 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
       ? `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`
       : `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`;
     navigate(rotaListagem);
+  };
+
+  const handleAssinar = async (password: string) => {
+    if (!uuid) return;
+    setLoadingAssinatura(true);
+    try {
+      const response = await fiscalAssinaTermo(uuid, password);
+      if (response.status === HTTP_STATUS.OK) {
+        setShowModalAssinatura(false);
+        setLoadingAssinatura(false);
+        navigate(`/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`);
+        toastSuccess("Termo de Recebimento Definitivo assinado com sucesso!");
+      }
+    } catch (error) {
+      setLoadingAssinatura(false);
+      if (error.response?.status === HTTP_STATUS.UNAUTHORIZED) {
+        toastError(MSG_SENHA_INVALIDA);
+      } else {
+        toastError(
+          error.response?.data?.detail ||
+            "Ocorreu um erro ao assinar o Termo de Recebimento Definitivo",
+        );
+      }
+    }
   };
 
   return (
@@ -190,16 +226,37 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mt-4 mb-4">
+              <div className="mt-4 mb-4 d-flex justify-content-end">
                 <Botao
                   texto="Voltar"
                   dataTestId="voltar"
                   type={BUTTON_TYPE.BUTTON}
                   style={BUTTON_STYLE.GREEN_OUTLINE}
-                  className="float-end"
+                  className="me-3"
                   onClick={() => handleBack()}
                 />
+                {termo.pode_assinar && (
+                  <Botao
+                    texto="Assinar Termo"
+                    dataTestId="assinar-termo"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN}
+                    onClick={() => setShowModalAssinatura(true)}
+                  />
+                )}
               </div>
+
+              <ModalAssinaturaUsuario
+                show={showModalAssinatura}
+                handleClose={() => setShowModalAssinatura(false)}
+                handleSim={handleAssinar}
+                loading={loadingAssinatura}
+                titulo="Assinar Termo de Recebimento Definitivo"
+                texto="Você confirma a leitura das informações apresentadas no Termo de Recebimento Definitivo?"
+                textoBotao="Sim, Assinar Termo"
+                segundoTitulo="Assinatura"
+                placeholderSenha="Digite sua Senha"
+              />
             </div>
           )}
         </div>

@@ -22,8 +22,6 @@ import {
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { EDITAR_SALDO_LAUDO, RECEBIMENTO } from "src/configs/constants";
 
-import { debug } from "jest-preview";
-
 describe("Testar Listagem dos Ajustes de Saldo", () => {
   beforeEach(async () => {
     mock.resetHistory();
@@ -77,8 +75,6 @@ describe("Testar Listagem dos Ajustes de Saldo", () => {
       .getByText("Cadastrar Saldo do Laudo")
       .closest("button");
     expect(botaoCadastro).toBeInTheDocument();
-
-    debug();
   });
 
   it("Testa o funcionamento dos filtros", async () => {

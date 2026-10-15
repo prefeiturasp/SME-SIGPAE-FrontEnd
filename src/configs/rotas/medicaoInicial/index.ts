@@ -1,4 +1,5 @@
 import {
+  exibirRelatorioAlimentacoesServidas,
   usuarioEhCODAEGabinete,
   usuarioEhCODAEGestaoAlimentacao,
   usuarioEhCODAENutriManifestacao,
@@ -28,6 +29,7 @@ import { PeriodoLancamentoMedicaoInicialPage } from "src/pages/LancamentoMedicao
 import { RelatorioFinanceiroConsolidadoPage } from "src/pages/LancamentoMedicaoInicial/RelatorioFinanceiroConsolidado/RelatorioFinanceiroConsolidadoPage";
 import { RelatorioFinanceiroPage } from "src/pages/LancamentoMedicaoInicial/RelatorioFinanceiro/RelatorioFinanceiroPage";
 import { RelatorioAdesaoPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAdesaoPage";
+import { RelatorioAlimentacoesServidasPage } from "src/pages/LancamentoMedicaoInicial/Relatorios/RelatorioAlimentacoesServidasPage";
 import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
 
@@ -140,6 +142,11 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
       usuarioEhAdministradorNutriSupervisao() ||
       usuarioEhCODAENutriManifestacao() ||
       usuarioEhCODAEGabinete(),
+  },
+  {
+    path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIOS}/${constants.RELATORIO_ALIMENTACOES_SERVIDAS}`,
+    component: RelatorioAlimentacoesServidasPage,
+    tipoUsuario: exibirRelatorioAlimentacoesServidas(),
   },
   {
     path: `/${constants.MEDICAO_INICIAL}/${constants.RELATORIO_FINANCEIRO}`,

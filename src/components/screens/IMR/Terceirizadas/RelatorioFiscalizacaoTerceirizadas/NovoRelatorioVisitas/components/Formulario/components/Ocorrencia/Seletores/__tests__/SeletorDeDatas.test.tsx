@@ -23,19 +23,25 @@ jest.mock("react-final-form", () => {
 jest.mock("src/components/Shareable/DatePicker", () => {
   const React = require("react");
 
+  const formatarData = (data) =>
+    `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(data.getDate()).padStart(2, "0")}`;
+
   return {
     InputComData: ({
       disabled,
+      excludeDates,
       form,
       indexTrash,
       inputOnChange,
       label,
       labelClassName,
+      maxDate,
       minDate,
       onClickTrash,
       required,
-      showMonthDropdown,
-      showYearDropdown,
     }) =>
       React.createElement(
         "div",
@@ -46,10 +52,12 @@ jest.mock("src/components/Shareable/DatePicker", () => {
           label,
           React.createElement("input", {
             "aria-label": `${label} ${indexTrash + 1}`,
+            "data-exclude-dates": (excludeDates ?? [])
+              .map(formatarData)
+              .join(","),
+            "data-max-date": String(maxDate),
             "data-min-date": String(minDate),
             "data-required": String(required),
-            "data-show-month-dropdown": String(showMonthDropdown),
-            "data-show-year-dropdown": String(showYearDropdown),
             disabled,
             onChange: (evento) => inputOnChange(evento.target.value),
           }),
@@ -149,19 +157,43 @@ describe("Seletor de datas do relatório de visitas", () => {
       "data-min-date",
       "null",
     );
-    expect(screen.getByLabelText(`${TITULO} 1`)).toHaveAttribute(
-      "data-show-month-dropdown",
-      "true",
-    );
-    expect(screen.getByLabelText(`${TITULO} 1`)).toHaveAttribute(
-      "data-show-year-dropdown",
-      "true",
-    );
     expect(screen.getByTestId("campo-datas-oculto")).toHaveAttribute(
       "name",
       NOME_DATAS_OCORRENCIA,
     );
     expect(form.change).not.toHaveBeenCalled();
+  });
+
+  it("limita as datas ao intervalo do mês informado", () => {
+    const minDate = new Date(2024, 5, 1);
+    const maxDate = new Date(2024, 5, 30);
+
+    renderizarSeletor({ minDate, maxDate });
+
+    expect(screen.getByLabelText(`${TITULO} 1`)).toHaveAttribute(
+      "data-min-date",
+      String(minDate),
+    );
+    expect(screen.getByLabelText(`${TITULO} 1`)).toHaveAttribute(
+      "data-max-date",
+      String(maxDate),
+    );
+  });
+
+  it("bloqueia nos demais campos as datas já selecionadas", () => {
+    const datasIniciais = ["10/09/2026", "11/09/2026"];
+    const form = criarFormulario({ estadoCampo: { value: datasIniciais } });
+
+    renderizarSeletor({ form });
+
+    expect(screen.getByLabelText(`${TITULO} 1`)).toHaveAttribute(
+      "data-exclude-dates",
+      "2026-09-11",
+    );
+    expect(screen.getByLabelText(`${TITULO} 2`)).toHaveAttribute(
+      "data-exclude-dates",
+      "2026-09-10",
+    );
   });
 
   it("restaura todas as datas preenchidas no formulário", () => {

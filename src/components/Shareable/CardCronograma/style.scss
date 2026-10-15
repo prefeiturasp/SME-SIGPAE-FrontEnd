@@ -90,6 +90,13 @@
       color: $orangeLight;
     }
   }
+
+  &.card-documento-reprovado {
+    border-left-color: $black !important;
+    i {
+      color: $black;
+    }
+  }
 }
 
 .programa-leve-leite {

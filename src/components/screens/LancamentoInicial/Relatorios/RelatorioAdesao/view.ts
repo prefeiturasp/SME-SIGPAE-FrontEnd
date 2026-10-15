@@ -42,6 +42,7 @@ export default () => {
   const [filtrosSelecionados, setFiltrosSelecionados] =
     useState<IFiltros | null>(null);
   const [resultado, setResultado] = useState<RelatorioAdesaoResponse>(null);
+  const [haAlgumaAdesao, setHaAlgumaAdesao] = useState(true);
   const [escola, setEscola] = useState<RelatorioAdesaoEscola | null>(null);
   const [resultadoIndividual, setResultadoIndividual] =
     useState<IResultadoIndividual | null>(null);
@@ -75,14 +76,20 @@ export default () => {
             (resultadoPagina as RelatorioAdesaoEscolaResultado)?.escola ?? null,
           );
         }
+        setHaAlgumaAdesao(data.possui_resultados);
         setResultado(resultadoPagina?.resultados ?? {});
         setPaginacao({ count: data.count, page_size: data.page_size });
         setPaginaAtual(page);
       } else {
+        const data = response.data as unknown as {
+          resultados: RelatorioAdesaoResponse;
+          possui_resultados: boolean;
+        };
+        setHaAlgumaAdesao(data.possui_resultados);
         setEscola(null);
         setResultadoIndividual(null);
         setPaginacao(null);
-        setResultado(response.data as unknown as RelatorioAdesaoResponse);
+        setResultado(data.resultados);
       }
     } else {
       toastError(
@@ -168,5 +175,6 @@ export default () => {
     atualizaFiltrosSelecionados,
     exibirTitulo,
     setExibirTitulo,
+    haAlgumaAdesao,
   };
 };

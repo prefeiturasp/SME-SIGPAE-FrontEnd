@@ -54,7 +54,7 @@ describe("Teste <CorpoRelatorio> - Visão ESCOLA", () => {
           }}
         >
           <CorpoRelatorio {...propsESCOLA} />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -73,8 +73,11 @@ describe("Teste <CorpoRelatorio> - Visão ESCOLA", () => {
     fireEvent.click(botaoImprimir);
 
     await waitFor(() => expect(getRelatorioKitLancheCEMEI).toHaveBeenCalled());
-    expect(getRelatorioKitLancheCEMEI).toHaveReturnedWith(
-      Promise.resolve(mockPdfBlob)
-    );
+    await expect(
+      getRelatorioKitLancheCEMEI.mock.results[0].value,
+    ).resolves.toEqual({
+      data: mockPdfBlob,
+      status: 200,
+    });
   });
 });

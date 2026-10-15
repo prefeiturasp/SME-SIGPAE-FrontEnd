@@ -1880,8 +1880,8 @@ export const exibirTooltipKitLancheSolAlimentacoes = (
     value &&
     categoria.nome.includes("SOLICITAÇÕES") &&
     !["Mês anterior", "Mês posterior"].includes(value) &&
-    kitLanchesAutorizadas.filter((kit) => kit.dia === column.dia).length ===
-      0 &&
+    (kitLanchesAutorizadas || []).filter((kit) => kit.dia === column.dia)
+      .length === 0 &&
     row.name.includes("kit_lanche");
   return campoBloqueado;
 };

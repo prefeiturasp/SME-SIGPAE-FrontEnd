@@ -12,4 +12,5 @@ export type Props = {
   escola?: RelatorioAdesaoEscola | null;
   resultadoIndividual?: IResultadoIndividual | null;
   exibirTitulo: boolean;
+  haAlgumaAdesao: boolean;
 };
