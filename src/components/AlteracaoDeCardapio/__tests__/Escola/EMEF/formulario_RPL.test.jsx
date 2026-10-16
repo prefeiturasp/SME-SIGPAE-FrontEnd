@@ -557,6 +557,8 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
     expect(selectDe.tagName).toBe("SELECT");
     expect(selectPara.tagName).toBe("SELECT");
     expect(opcoesDe).toContain("Refeição e Sobremesa");
+    expect(opcoesDe).toContain("Refeição");
+    expect(opcoesDe).not.toContain("Sobremesa");
     expect(opcoesDe).not.toContain("Todos");
     expect(opcoesPara).not.toContain("Todos");
   });

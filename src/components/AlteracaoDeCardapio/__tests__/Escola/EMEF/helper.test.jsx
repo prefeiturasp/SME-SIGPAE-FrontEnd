@@ -1,6 +1,6 @@
 import {
   REFEICAO_E_SOBREMESA,
-  adicionarRefeicaoESobremesa,
+  agruparRefeicaoESobremesa,
   expandirTiposAlimentacao,
   formataValues,
   obterTipoAlimentacaoSelecionado,
@@ -81,15 +81,25 @@ describe("helper formataValues - Alteração de Cardápio Escola", () => {
   });
 });
 
-describe("helper adicionarRefeicaoESobremesa - Alteração de Cardápio Escola", () => {
-  it("adiciona a opção Refeição e Sobremesa ao final da lista", () => {
-    const opcoes = adicionarRefeicaoESobremesa([
+describe("helper agruparRefeicaoESobremesa - Alteração de Cardápio Escola", () => {
+  it("substitui Sobremesa pela opção Refeição e Sobremesa quando há ambos", () => {
+    const opcoes = agruparRefeicaoESobremesa([
       { nome: "Refeição", uuid: "uuid-refeicao" },
+      { nome: "Sobremesa", uuid: "uuid-sobremesa" },
     ]);
-    expect(opcoes[opcoes.length - 1]).toEqual({
-      nome: "Refeição e Sobremesa",
-      uuid: REFEICAO_E_SOBREMESA,
-    });
+    expect(opcoes.map((opcao) => opcao.nome)).toEqual([
+      "Refeição",
+      "Refeição e Sobremesa",
+    ]);
+    expect(opcoes[opcoes.length - 1].uuid).toBe(REFEICAO_E_SOBREMESA);
+  });
+
+  it("mantém a lista original quando não há Refeição e Sobremesa juntos", () => {
+    const opcoes = agruparRefeicaoESobremesa([
+      { nome: "Sobremesa", uuid: "uuid-sobremesa" },
+      { nome: "Lanche", uuid: "uuid-lanche" },
+    ]);
+    expect(opcoes.map((opcao) => opcao.nome)).toEqual(["Sobremesa", "Lanche"]);
   });
 });
 
