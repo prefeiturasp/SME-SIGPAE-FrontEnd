@@ -1,9 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
-  findByText,
   fireEvent,
-  getByText,
   render,
   screen,
   waitFor,
@@ -175,22 +173,20 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
     ).toBeInTheDocument();
   });
 
-  const keyDownEvent = {
-    key: "ArrowDown",
-  };
-
   const selectOption = async (container, optionText) => {
-    const placeholder = getByText(container, "Selecione tipos de alimentação");
+    const select = container.querySelector("select");
+    const option = Array.from(select.options).find(
+      (opt) => opt.text === optionText,
+    );
     await act(async () => {
-      fireEvent.keyDown(placeholder, keyDownEvent);
-    });
-    await findByText(container, optionText);
-    await act(async () => {
-      fireEvent.click(getByText(container, optionText));
+      fireEvent.change(select, { target: { value: option.value } });
     });
   };
 
-  const preencherFormularioRPL = async () => {
+  const preencherFormularioRPL = async (
+    opcaoDe = "Refeição",
+    opcaoPara = "Lanche",
+  ) => {
     await selecionaMotivoRPL();
 
     const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
@@ -209,11 +205,11 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
 
     await selectOption(
       screen.getByTestId("select-tipos-alimentacao-de-MANHA"),
-      "Refeição",
+      opcaoDe,
     );
     await selectOption(
       screen.getByTestId("select-tipos-alimentacao-para-MANHA"),
-      "Lanche",
+      opcaoPara,
     );
 
     const divInputNumeroAlunosMANHA = screen.getByTestId(
@@ -541,6 +537,73 @@ describe("Teste Formulário Alteração de Cardápio - RPL - EMEF", () => {
 
     expect(screen.getByTestId("div-checkbox-MANHA")).toBeInTheDocument();
     expect(screen.getByTestId("div-checkbox-TARDE")).toBeInTheDocument();
+  });
+
+  it("renderiza select simples com Refeição e Sobremesa e sem a opção Todos", async () => {
+    await selecionaMotivoRPL();
+
+    const selectDe = screen
+      .getByTestId("select-tipos-alimentacao-de-MANHA")
+      .querySelector("select");
+    const selectPara = screen
+      .getByTestId("select-tipos-alimentacao-para-MANHA")
+      .querySelector("select");
+
+    const opcoesDe = Array.from(selectDe.options).map((option) => option.text);
+    const opcoesPara = Array.from(selectPara.options).map(
+      (option) => option.text,
+    );
+
+    expect(selectDe.tagName).toBe("SELECT");
+    expect(selectPara.tagName).toBe("SELECT");
+    expect(opcoesDe).toContain("Refeição e Sobremesa");
+    expect(opcoesDe).not.toContain("Todos");
+    expect(opcoesPara).not.toContain("Todos");
+  });
+
+  it("carrega rascunho preenchendo os selects de alimentação", async () => {
+    const botaoCarregarRascunho = screen.getByTestId("botao-carregar-rascunho");
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    const selectDe = screen
+      .getByTestId("select-tipos-alimentacao-de-MANHA")
+      .querySelector("select");
+    const selectPara = screen
+      .getByTestId("select-tipos-alimentacao-para-MANHA")
+      .querySelector("select");
+
+    expect(selectDe.value).toBe("65f11f11-630b-4629-bb17-07c875c548f1");
+    expect(selectPara.value).toBe("5d1304c8-77a8-4c96-badb-dd2e8c1b76d5");
+  });
+
+  it("expande Refeição e Sobremesa nos uuids de Refeição e Sobremesa ao salvar", async () => {
+    mock.resetHistory();
+    await preencherFormularioRPL("Refeição e Sobremesa", "Lanche");
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
+
+    await waitFor(() => {
+      expect(mock.history.post.length).toBeGreaterThan(0);
+    });
+    const payload = JSON.parse(mock.history.post[0].data);
+    const substituicao = payload.substituicoes.find(
+      (sub) => sub.periodo_escolar,
+    );
+
+    expect(substituicao.tipos_alimentacao_de).toEqual([
+      "65f11f11-630b-4629-bb17-07c875c548f1",
+      "5aa2c32b-1df2-46b6-b2e7-514b885fa9a4",
+    ]);
+    expect(substituicao.tipos_alimentacao_para).toEqual([
+      "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+    ]);
   });
 
   it("Desmarca período selecionado", async () => {
