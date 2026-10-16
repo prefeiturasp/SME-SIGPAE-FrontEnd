@@ -167,3 +167,27 @@ export interface NutricionistaOptionInterface {
   value: string;
   label: string;
 }
+
+export interface RespostaOcorrenciaDiretorInterface {
+  uuid: string;
+  parametrizacao: string | null;
+  titulo: string;
+  posicao: number | null;
+  resposta: string;
+}
+
+export interface OcorrenciaDiretorInterface {
+  uuid: string;
+  data: string;
+  categoria: {
+    uuid: string;
+    nome: string;
+    posicao: number | null;
+    gera_notificacao: boolean;
+  };
+  tipo_ocorrencia: string;
+  titulo: string;
+  descricao: string;
+  grupo: number | null;
+  respostas: RespostaOcorrenciaDiretorInterface[];
+}
