@@ -266,7 +266,6 @@ describe("Interações da tela Gestão de Requisição de Entrega", () => {
     });
 
     it("exibe mensagem de erro quando a resposta não é 200", async () => {
-      // Resposta 2xx diferente de 200: não lança exceção no axios
       mock.onPost(URL_CANCELAMENTO).reply(201, {});
       await consultarComResultados();
       await abrirModalCancelamento();
