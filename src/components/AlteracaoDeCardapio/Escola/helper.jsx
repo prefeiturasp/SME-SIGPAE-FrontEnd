@@ -1,3 +1,48 @@
+export const REFEICAO_E_SOBREMESA = "refeicao_e_sobremesa";
+
+const TIPOS_REFEICAO_E_SOBREMESA = ["Refeição", "Sobremesa"];
+
+export const adicionarRefeicaoESobremesa = (tiposAlimentacao) => [
+  ...tiposAlimentacao,
+  { nome: "Refeição e Sobremesa", uuid: REFEICAO_E_SOBREMESA },
+];
+
+export const expandirTiposAlimentacao = (
+  selecionado,
+  tiposAlimentacao = [],
+) => {
+  if (!selecionado) return [];
+  if (selecionado === REFEICAO_E_SOBREMESA) {
+    return tiposAlimentacao
+      .filter((tipo) => TIPOS_REFEICAO_E_SOBREMESA.includes(tipo.nome))
+      .map((tipo) => tipo.uuid);
+  }
+  return [selecionado];
+};
+
+export const obterTipoAlimentacaoSelecionado = (
+  tiposSelecionados = [],
+  tiposAlimentacao = [],
+) => {
+  const uuids = tiposSelecionados.map((tipo) => tipo.uuid);
+  const refeicao = tiposAlimentacao.find(
+    (tipo) => tipo.nome === "Refeição",
+  )?.uuid;
+  const sobremesa = tiposAlimentacao.find(
+    (tipo) => tipo.nome === "Sobremesa",
+  )?.uuid;
+  if (
+    refeicao &&
+    sobremesa &&
+    uuids.length === 2 &&
+    uuids.includes(refeicao) &&
+    uuids.includes(sobremesa)
+  ) {
+    return REFEICAO_E_SOBREMESA;
+  }
+  return uuids[0];
+};
+
 const getDaysArray = (start, end) => {
   let arr = [];
   for (
@@ -22,5 +67,20 @@ export const formataValues = (values) => {
       values.alterar_dia.split("/").reverse().join("-"),
     ).map((data) => ({ data: data }));
   }
+
+  values.substituicoes?.forEach((substituicao) => {
+    if (substituicao.tipos_alimentacao_de !== undefined) {
+      substituicao.tipos_alimentacao_de = expandirTiposAlimentacao(
+        substituicao.tipos_alimentacao_de,
+        substituicao.tipos_alimentacao,
+      );
+    }
+    if (substituicao.tipos_alimentacao_para !== undefined) {
+      substituicao.tipos_alimentacao_para = expandirTiposAlimentacao(
+        substituicao.tipos_alimentacao_para,
+        substituicao.tipos_alimentacao,
+      );
+    }
+  });
   return values;
 };
