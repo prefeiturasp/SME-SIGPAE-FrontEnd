@@ -13,7 +13,7 @@ import {
 import React, { Fragment } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-import { adicionarRefeicaoESobremesa } from "../../helper";
+import { agruparRefeicaoESobremesa } from "../../helper";
 
 export const PeriodosFields = ({ ...props }) => {
   const { ehMotivoPorNome, periodos, form, values } = props;
@@ -33,7 +33,7 @@ export const PeriodosFields = ({ ...props }) => {
         uuid: tipo_alimentacao.uuid,
       }),
     );
-    return adicionarRefeicaoESobremesa(tiposAlimentacao);
+    return agruparRefeicaoESobremesa(tiposAlimentacao);
   };
 
   const handleTiposAlimentacaoDe = (tiposAlimentacao, values) => {

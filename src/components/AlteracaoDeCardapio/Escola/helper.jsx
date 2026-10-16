@@ -2,10 +2,17 @@ export const REFEICAO_E_SOBREMESA = "refeicao_e_sobremesa";
 
 const TIPOS_REFEICAO_E_SOBREMESA = ["Refeição", "Sobremesa"];
 
-export const adicionarRefeicaoESobremesa = (tiposAlimentacao) => [
-  ...tiposAlimentacao,
-  { nome: "Refeição e Sobremesa", uuid: REFEICAO_E_SOBREMESA },
-];
+export const agruparRefeicaoESobremesa = (tiposAlimentacao) => {
+  const nomes = tiposAlimentacao.map((tipo) => tipo.nome);
+  const possuiRefeicaoESobremesa = TIPOS_REFEICAO_E_SOBREMESA.every((nome) =>
+    nomes.includes(nome),
+  );
+  if (!possuiRefeicaoESobremesa) return tiposAlimentacao;
+  return [
+    ...tiposAlimentacao.filter((tipo) => tipo.nome !== "Sobremesa"),
+    { nome: "Refeição e Sobremesa", uuid: REFEICAO_E_SOBREMESA },
+  ];
+};
 
 export const expandirTiposAlimentacao = (
   selecionado,
