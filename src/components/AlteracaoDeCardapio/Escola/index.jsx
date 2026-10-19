@@ -36,7 +36,7 @@ import {
   escolaIniciarSolicitacaoDeAlteracaoDeCardapio,
   getRascunhosAlteracaoTipoAlimentacao,
 } from "src/services/alteracaoDeCardapio";
-import { formataValues } from "./helper";
+import { formataValues, obterTipoAlimentacaoSelecionado } from "./helper";
 import { AlterarDiaOuPeriodo } from "./components/AlterarDiaOuPeriodoFields";
 import { PeriodosFields } from "./components/PeriodosFields";
 import { Rascunhos } from "./components/Rascunhos";
@@ -136,10 +136,15 @@ export const AlteracaoCardapio = ({ ...props }) => {
         (subs) => subs.nome === substituicao.periodo_escolar.nome,
       );
       substituicaoValue.check = true;
-      substituicaoValue.tipos_alimentacao_de_selecionados =
-        substituicao.tipos_alimentacao_de.map((tp) => tp.uuid);
-      substituicaoValue.tipos_alimentacao_para_selecionados =
-        substituicao.tipos_alimentacao_para.map((tp) => tp.uuid);
+      substituicaoValue.tipos_alimentacao_de = obterTipoAlimentacaoSelecionado(
+        substituicao.tipos_alimentacao_de,
+        substituicaoValue.tipos_alimentacao,
+      );
+      substituicaoValue.tipos_alimentacao_para =
+        obterTipoAlimentacaoSelecionado(
+          substituicao.tipos_alimentacao_para,
+          substituicaoValue.tipos_alimentacao,
+        );
       substituicaoValue.qtd_alunos = substituicao.qtd_alunos;
     }
 

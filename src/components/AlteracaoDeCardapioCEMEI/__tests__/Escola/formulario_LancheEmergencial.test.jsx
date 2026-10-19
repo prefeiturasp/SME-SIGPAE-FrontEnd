@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDiasUteis } from "src/mocks/diasUseisMock";
@@ -141,24 +141,16 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
     const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
       "select-alterar-alimentacao-de-EMEI",
     );
-    const selectControlDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
-      "combobox",
-    );
-    fireEvent.mouseDown(selectControlDe);
-
-    const optionDe = screen.getByText("Sobremesa");
-    fireEvent.click(optionDe);
+    fireEvent.change(selectAlterarAlimentacaoDeEMEI.querySelector("select"), {
+      target: { value: "65f11f11-630b-4629-bb17-07c875c548f1" },
+    });
 
     const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
       "select-alterar-alimentacao-para-EMEI",
     );
-    const selectControlPara = within(
-      selectAlterarAlimentacaoParaEMEI,
-    ).getByRole("combobox");
-    fireEvent.mouseDown(selectControlPara);
-
-    const optionPara = screen.getAllByText("Lanche Emergencial")[1];
-    fireEvent.click(optionPara);
+    fireEvent.change(selectAlterarAlimentacaoParaEMEI.querySelector("select"), {
+      target: { value: "c4255a14-85fd-412f-b35f-30828215e4d5" },
+    });
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
       `substituicoes[0][emei][quantidade_alunos]`,

@@ -381,6 +381,13 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const criarOnSelectedChanged = (form, indice) => (values_) => {
+    form.change(
+      `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
+      values_.map((value_) => value_.value),
+    );
+  };
+
   const handlePeriodoOnClick = async (form, name, indice, values) => {
     await form.change(
       `${name}.checked`,
@@ -408,6 +415,26 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       );
     }
   };
+
+  const renderLinhasFaixasEtarias = (values, indice, name) =>
+    values.substituicoes[indice].faixas_etarias.map((faixa, key) => (
+      <tr key={key} className="row">
+        <td className="col-8">{faixa.faixa_etaria.__str__}</td>
+        <td className="col-2 text-center">{faixa.count}</td>
+        <td className="col-2 text-center">
+          <Field
+            component={InputText}
+            type="number"
+            dataTestIdDiv={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
+            name={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
+            validate={
+              getPeriodo(values, indice).checked &&
+              composeValidators(naoPodeSerZero, maxValue(faixa.count))
+            }
+          />
+        </td>
+      </tr>
+    ));
 
   return (
     <>
@@ -604,14 +631,10 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           []
                                         }
                                         options={getTiposAlimentacaoDe(values)}
-                                        onSelectedChanged={(values_) => {
-                                          form.change(
-                                            `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
-                                            values_.map(
-                                              (value_) => value_.value,
-                                            ),
-                                          );
-                                        }}
+                                        onSelectedChanged={criarOnSelectedChanged(
+                                          form,
+                                          indice,
+                                        )}
                                         placeholder="Selecione tipos de alimentação"
                                       />
                                     </div>
@@ -666,36 +689,11 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           .faixas_etarias &&
                                           !values.substituicoes[indice]
                                             .loading_faixas &&
-                                          values.substituicoes[
-                                            indice
-                                          ].faixas_etarias.map((faixa, key) => {
-                                            return (
-                                              <tr key={key} className="row">
-                                                <td className="col-8">
-                                                  {faixa.faixa_etaria.__str__}
-                                                </td>
-                                                <td className="col-2 text-center">
-                                                  {faixa.count}
-                                                </td>
-                                                <td className="col-2 text-center">
-                                                  <Field
-                                                    component={InputText}
-                                                    type="number"
-                                                    dataTestIdDiv={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
-                                                    name={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
-                                                    validate={
-                                                      getPeriodo(values, indice)
-                                                        .checked &&
-                                                      composeValidators(
-                                                        naoPodeSerZero,
-                                                        maxValue(faixa.count),
-                                                      )
-                                                    }
-                                                  />
-                                                </td>
-                                              </tr>
-                                            );
-                                          })}
+                                          renderLinhasFaixasEtarias(
+                                            values,
+                                            indice,
+                                            name,
+                                          )}
                                         <tr className="row">
                                           <td className="col-8 fw-bold">
                                             Total

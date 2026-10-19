@@ -1,29 +1,39 @@
 import { InputText } from "src/components/Shareable/Input/InputText";
-import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
+import { Select } from "src/components/Shareable/Select";
 import {
   composeValidators,
   maxValue,
   naoPodeSerZero,
   required,
-  requiredMultiselect,
 } from "src/helpers/fieldValidators";
-import { usuarioEhEscolaSemAlunosRegulares } from "src/helpers/utilities";
+import {
+  agregarDefault,
+  usuarioEhEscolaSemAlunosRegulares,
+} from "src/helpers/utilities";
 import React, { Fragment } from "react";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
-
-const paraValoresSelecionados = (values_) =>
-  values_.map((value_) => value_.value);
+import { agruparRefeicaoESobremesa } from "../../helper";
 
 export const PeriodosFields = ({ ...props }) => {
   const { ehMotivoPorNome, periodos, form, values } = props;
 
   const exibeApenasPorNome = (tiposAlimentacao, nome) => {
-    return tiposAlimentacao.filter((tp) => tp.label.includes(nome));
+    return tiposAlimentacao.filter((tp) => tp.nome.includes(nome));
   };
 
   const removePorNome = (tiposAlimentacao, nome) => {
-    return tiposAlimentacao.filter((tp) => !tp.label.includes(nome));
+    return tiposAlimentacao.filter((tp) => !tp.nome.includes(nome));
+  };
+
+  const getOpcoes = (index) => {
+    const tiposAlimentacao = getPeriodo(index).tipos_alimentacao.map(
+      (tipo_alimentacao) => ({
+        nome: tipo_alimentacao.nome,
+        uuid: tipo_alimentacao.uuid,
+      }),
+    );
+    return agruparRefeicaoESobremesa(tiposAlimentacao);
   };
 
   const handleTiposAlimentacaoDe = (tiposAlimentacao, values) => {
@@ -71,14 +81,8 @@ export const PeriodosFields = ({ ...props }) => {
   const handlePeriodoOnClick = (name, index) => {
     form.change(`${name}.check`, !values.substituicoes[index]["check"]);
     if (values.substituicoes[index]["check"]) {
-      form.change(
-        `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
-        undefined,
-      );
-      form.change(
-        `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
-        undefined,
-      );
+      form.change(`substituicoes[${index}].tipos_alimentacao_de`, undefined);
+      form.change(`substituicoes[${index}].tipos_alimentacao_para`, undefined);
       form.change(`substituicoes[${index}].qtd_alunos`, undefined);
     }
   };
@@ -128,72 +132,40 @@ export const PeriodosFields = ({ ...props }) => {
               </div>
               <div className="col-3 pe-3">
                 <Field
-                  component={MultiselectRaw}
+                  component={Select}
                   dataTestId={`select-tipos-alimentacao-de-${
                     getPeriodo(index).nome
                   }`}
-                  name={`${name}.tipos_alimentacao_de_selecionados`}
-                  selected={
-                    form.getState().values.substituicoes[index]
-                      .tipos_alimentacao_de_selecionados || []
-                  }
-                  options={handleTiposAlimentacaoDe(
-                    getPeriodo(index).tipos_alimentacao.map(
-                      (tipo_alimentacao) => ({
-                        label: tipo_alimentacao.nome,
-                        value: tipo_alimentacao.uuid,
-                      }),
-                    ),
-                    values,
+                  name={`${name}.tipos_alimentacao_de`}
+                  options={agregarDefault(
+                    handleTiposAlimentacaoDe(getOpcoes(index), values),
                   )}
-                  onSelectedChanged={(values_) => {
-                    form.change(
-                      `substituicoes[${index}].tipos_alimentacao_de_selecionados`,
-                      paraValoresSelecionados(values_),
-                    );
-                  }}
-                  placeholder="Selecione tipos de alimentação"
+                  naoDesabilitarPrimeiraOpcao
                   disabled={!values.substituicoes[index]["check"]}
                   required={values.substituicoes[index]["check"]}
                   validate={(value, allValues) =>
                     allValues.substituicoes[index]?.check
-                      ? requiredMultiselect(value)
+                      ? required(value)
                       : undefined
                   }
                 />
               </div>
               <div className="col-3 pe-3">
                 <Field
-                  component={MultiselectRaw}
+                  component={Select}
                   dataTestId={`select-tipos-alimentacao-para-${
                     getPeriodo(index).nome
                   }`}
-                  name={`${name}.tipos_alimentacao_para_selecionados`}
-                  selected={
-                    values.substituicoes[index]
-                      .tipos_alimentacao_para_selecionados || []
-                  }
-                  required={values.substituicoes[index]["check"]}
-                  options={handleTiposAlimentacaoPara(
-                    getPeriodo(index).tipos_alimentacao.map(
-                      (tipo_alimentacao) => ({
-                        label: tipo_alimentacao.nome,
-                        value: tipo_alimentacao.uuid,
-                      }),
-                    ),
-                    values,
+                  name={`${name}.tipos_alimentacao_para`}
+                  options={agregarDefault(
+                    handleTiposAlimentacaoPara(getOpcoes(index), values),
                   )}
-                  onSelectedChanged={(values_) => {
-                    form.change(
-                      `substituicoes[${index}].tipos_alimentacao_para_selecionados`,
-                      paraValoresSelecionados(values_),
-                    );
-                  }}
-                  placeholder="Selecione tipos de alimentação"
+                  naoDesabilitarPrimeiraOpcao
+                  required={values.substituicoes[index]["check"]}
                   disabled={!values.substituicoes[index]["check"]}
                   validate={(value, allValues) =>
                     allValues.substituicoes[index]?.check
-                      ? requiredMultiselect(value)
+                      ? required(value)
                       : undefined
                   }
                 />

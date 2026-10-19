@@ -402,6 +402,15 @@ export const RecorrenciaTabela = ({ form, values, periodos }) => {
     getTiposDeAlimentacaoAsync();
   }, []);
 
+  const removerRecorrencia = (indice) => {
+    form.change(
+      "quantidades_periodo",
+      values.quantidades_periodo.length > 1
+        ? values.quantidades_periodo.filter((_, i) => i !== indice)
+        : undefined,
+    );
+  };
+
   const getAlimentacoesTabelaRecorrencia = (values, indice, periodos) => {
     const periodo = periodos.find(
       (p) => p.uuid === values.quantidades_periodo[indice].periodo_escolar,
@@ -493,16 +502,7 @@ export const RecorrenciaTabela = ({ form, values, periodos }) => {
                       />
                       <td className="col-1 text-center">
                         <Botao
-                          onClick={() =>
-                            form.change(
-                              "quantidades_periodo",
-                              values.quantidades_periodo.length > 1
-                                ? values.quantidades_periodo.filter(
-                                    (_, i) => i !== indice,
-                                  )
-                                : undefined,
-                            )
-                          }
+                          onClick={() => removerRecorrencia(indice)}
                           type={BUTTON_TYPE.BUTTON}
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           icon={BUTTON_ICON.TRASH}
