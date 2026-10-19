@@ -1,3 +1,35 @@
+import {
+  REFEICAO_E_SOBREMESA,
+  expandirTiposAlimentacao,
+} from "../AlteracaoDeCardapio/Escola/helper";
+
+export { agruparRefeicaoESobremesa } from "../AlteracaoDeCardapio/Escola/helper";
+
+const buscarTiposAlimentacaoDoVinculo = (vinculos, iniciais, periodoUuid) =>
+  vinculos?.find(
+    (vinculo) =>
+      vinculo.tipo_unidade_escolar.iniciais === iniciais &&
+      vinculo.periodo_escolar.uuid === periodoUuid,
+  )?.tipos_alimentacao;
+
+export const normalizarTiposAlimentacao = (
+  tipos,
+  vinculos,
+  iniciais,
+  periodoUuid,
+) => {
+  if (tipos === undefined || tipos === null) return tipos;
+  const tiposDisponiveis =
+    buscarTiposAlimentacaoDoVinculo(vinculos, iniciais, periodoUuid) || [];
+  if (Array.isArray(tipos)) {
+    if (tipos.includes(REFEICAO_E_SOBREMESA)) {
+      return expandirTiposAlimentacao(REFEICAO_E_SOBREMESA, tiposDisponiveis);
+    }
+    return tipos;
+  }
+  return expandirTiposAlimentacao(tipos, tiposDisponiveis);
+};
+
 export const backgroundLabelPeriodo = (periodos) => {
   const periodosComStyles = periodos.map((periodo) => {
     switch (periodo.nome) {
@@ -120,7 +152,7 @@ export const totalSolicitacao = (values, periodoCEI) => {
   return total;
 };
 
-export const formatarPayload = (values, meusDados) => {
+export const formatarPayload = (values, meusDados, vinculos) => {
   let substituicoes_cemei_cei_periodo_escolar = [];
   let substituicoes_cemei_emei_periodo_escolar = [];
 
@@ -129,14 +161,18 @@ export const formatarPayload = (values, meusDados) => {
       if (substituicao.cei) {
         substituicoes_cemei_cei_periodo_escolar.push({
           periodo_escolar: substituicao.periodo_uuid,
-          tipos_alimentacao_de:
-            typeof substituicao.cei.tipos_alimentacao_de === "string"
-              ? [substituicao.cei.tipos_alimentacao_de]
-              : substituicao.cei.tipos_alimentacao_de,
-          tipos_alimentacao_para:
-            typeof substituicao.cei.tipos_alimentacao_para === "string"
-              ? [substituicao.cei.tipos_alimentacao_para]
-              : substituicao.cei.tipos_alimentacao_para,
+          tipos_alimentacao_de: normalizarTiposAlimentacao(
+            substituicao.cei.tipos_alimentacao_de,
+            vinculos,
+            "CEI DIRET",
+            substituicao.periodo_uuid,
+          ),
+          tipos_alimentacao_para: normalizarTiposAlimentacao(
+            substituicao.cei.tipos_alimentacao_para,
+            vinculos,
+            "CEI DIRET",
+            substituicao.periodo_uuid,
+          ),
           faixas_etarias: substituicao.cei.faixas_etarias
             .filter((faixa) => faixa !== null)
             .map((faixa) => {
@@ -155,8 +191,18 @@ export const formatarPayload = (values, meusDados) => {
           matriculados_quando_criado:
             substituicao.emei.matriculados_quando_criado,
           periodo_escolar: substituicao.periodo_uuid,
-          tipos_alimentacao_de: substituicao.emei.tipos_alimentacao_de,
-          tipos_alimentacao_para: substituicao.emei.tipos_alimentacao_para,
+          tipos_alimentacao_de: normalizarTiposAlimentacao(
+            substituicao.emei.tipos_alimentacao_de,
+            vinculos,
+            "EMEI",
+            substituicao.periodo_uuid,
+          ),
+          tipos_alimentacao_para: normalizarTiposAlimentacao(
+            substituicao.emei.tipos_alimentacao_para,
+            vinculos,
+            "EMEI",
+            substituicao.periodo_uuid,
+          ),
         });
       }
     }
