@@ -26,22 +26,25 @@ export const CardPendenteAcao = ({ ...props }) => {
     setPedidosFiltrados(pedidos);
   }, [pedidos]);
 
+  const alternarSolicitacoesSimilares = (pedido, indexSolicitacaoSimilar) =>
+    pedido.solicitacoes_similares.map((sol, iSol) => ({
+      ...sol,
+      collapsed: iSol === indexSolicitacaoSimilar ? !sol.collapsed : false,
+    }));
+
   const collapseSolicitacaoSimilar = (indexPedido, indexSolicitacaoSimilar) => {
     setPedidosFiltrados((prevPedidos) =>
-      prevPedidos.map((pedido, iPedido) => {
-        if (iPedido !== indexPedido) return pedido;
-
-        return {
-          ...pedido,
-          solicitacoes_similares: pedido.solicitacoes_similares.map(
-            (sol, iSol) => ({
-              ...sol,
-              collapsed:
-                iSol === indexSolicitacaoSimilar ? !sol.collapsed : false,
-            }),
-          ),
-        };
-      }),
+      prevPedidos.map((pedido, iPedido) =>
+        iPedido !== indexPedido
+          ? pedido
+          : {
+              ...pedido,
+              solicitacoes_similares: alternarSolicitacoesSimilares(
+                pedido,
+                indexSolicitacaoSimilar,
+              ),
+            },
+      ),
     );
   };
 

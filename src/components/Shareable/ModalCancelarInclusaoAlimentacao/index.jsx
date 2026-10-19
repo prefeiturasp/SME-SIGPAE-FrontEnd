@@ -28,6 +28,10 @@ export const ModalCancelarInclusaoAlimentacao = ({ ...props }) => {
       solicitacao.dias_motivos_da_inclusao_cemei ||
       solicitacao.dias_motivos_da_inclusao_cei);
 
+  const dataDesabilitada = (dia) =>
+    dias_motivos.find((i) => i.data === dia).cancelado ||
+    moment(dia, "DD/MM/YYYY") <= moment();
+
   const onSubmit = async (values) => {
     if (
       [
@@ -42,7 +46,7 @@ export const ModalCancelarInclusaoAlimentacao = ({ ...props }) => {
     const values_ = deepCopy(values);
     if (values.datas) {
       values_.datas = values_.datas.map((data) =>
-        data.split("/").reverse().join("-")
+        data.split("/").reverse().join("-"),
       );
     }
     const resp = await endpoint(uuid, values_, tipoSolicitacao);
@@ -93,7 +97,7 @@ export const ModalCancelarInclusaoAlimentacao = ({ ...props }) => {
                 <>
                   <p>Selecione a(s) data(s) para solicitar o cancelamento:</p>
                   {Object.entries(
-                    formataMotivosDiasComOutros(dias_motivos)
+                    formataMotivosDiasComOutros(dias_motivos),
                   ).map((dadosMotivo, key) => {
                     const [motivo, datas] = dadosMotivo;
                     return (
@@ -108,11 +112,7 @@ export const ModalCancelarInclusaoAlimentacao = ({ ...props }) => {
                                 name="datas"
                                 data-testid={`data_${motivo}_${dia}`}
                                 component="input"
-                                disabled={
-                                  dias_motivos.find((i) => i.data === dia)
-                                    .cancelado ||
-                                  moment(dia, "DD/MM/YYYY") <= moment()
-                                }
+                                disabled={dataDesabilitada(dia)}
                                 type="checkbox"
                                 value={dia}
                               />{" "}
