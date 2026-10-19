@@ -112,6 +112,27 @@ const preencheTextArea = (placeholder, valor) => {
 };
 
 describe("AnaliseDocumentosRecebimento - Testes Completos", () => {
+  describe("Tooltip da Unidade de Medida", () => {
+    it("exibe o ícone de informação e a mensagem ao posicionar o cursor", async () => {
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.getByText("Unidade de Medida")).toBeInTheDocument();
+      });
+
+      const icone = document.querySelector(".fa-info-circle");
+      expect(icone).toBeInTheDocument();
+
+      fireEvent.mouseEnter(icone);
+
+      expect(
+        await screen.findByText(
+          "A unidade de medida deverá ser a mesma utilizada no cronograma.",
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
   describe("Carregamento Inicial", () => {
     it("carrega a página com dados do documento", async () => {
       await setup();
