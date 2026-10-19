@@ -16,7 +16,7 @@ import {
 import { ptBR } from "date-fns/locale/pt-BR";
 import arrayMutators from "final-form-arrays";
 import HTTP_STATUS from "http-status-codes";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { Field, Form, FormSpy } from "react-final-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
@@ -110,6 +110,7 @@ import {
   deveExistirObservacao,
   ehDiaParaCorrigir,
   ehUltimoDiaLetivoDoAno,
+  existeKitLanchePasseioNoDia,
   formataNomeCategoriaSolAlimentacoesInfantil,
   formatarLinhasTabelaAlimentacaoCEI,
   formatarLinhasTabelaAlimentacaoEmeiDaCemei,
@@ -138,8 +139,10 @@ import {
   exibirTooltipDietasInclusaoDiaNaoLetivoCEI,
   exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI,
   exibirTooltipSuspensoesAutorizadasCEI,
+  existeQuantidadeKitLanchePasseioExcedida,
   frequenciaComSuspensaoAutorizadaPreenchidaESemObservacao,
   repeticaoSobremesaDoceComValorESemObservacao,
+  validacoesKitLanchePasseioCEI,
   validacoesTabelaAlimentacaoCEI,
   validacoesTabelaAlimentacaoCEIRecreioNasFerias,
   validacoesTabelaAlimentacaoEmeidaCemei,
@@ -281,6 +284,14 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
   const [formErrorsAtualizados, setFormErrorsAtualizados] = useState({});
   const [diasLetivosSIGPAE, setDiaLetivosSIGPAE] = useState(new Set());
   const [diasSuspensaoAtividades, setDiasSuspensaoAtividades] = useState([]);
+
+  const uuidsFaixasMenoresDeUmAno = useMemo(
+    () =>
+      (faixaEtaria || [])
+        .filter((faixa) => Number(faixa.fim) <= 12)
+        .map((faixa) => faixa.uuid),
+    [faixaEtaria],
+  );
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -540,28 +551,32 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       setSuspensoesAutorizadas(response_suspensoes_autorizadas);
 
       let response_kit_lanches_autorizadas = [];
-      if (ehSolicitacoesAlimentacaoSomente) {
+      const ehPeriodoIntegral = periodo === "INTEGRAL";
+      if (ehSolicitacoesAlimentacaoSomente || ehPeriodoIntegral) {
         response_kit_lanches_autorizadas =
           await getSolicitacoesKitLanchesAutorizadasAsync(
             escola.uuid,
             mes,
             ano,
             location.state.recreioNasFerias,
+            ehPeriodoIntegral || ehCEIDaCEMEI,
           );
         setKitLanchesAutorizadas(response_kit_lanches_autorizadas);
 
-        response_alteracoes_alimentacao_autorizadas =
-          await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
-            escola.uuid,
-            mes,
-            ano,
-            undefined,
-            true,
-            recreioNasFeriasUuid,
+        if (ehSolicitacoesAlimentacaoSomente) {
+          response_alteracoes_alimentacao_autorizadas =
+            await getSolicitacoesAlteracoesAlimentacaoAutorizadasAsync(
+              escola.uuid,
+              mes,
+              ano,
+              undefined,
+              true,
+              recreioNasFeriasUuid,
+            );
+          setAlteracoesAlimentacaoAutorizadas(
+            response_alteracoes_alimentacao_autorizadas,
           );
-        setAlteracoesAlimentacaoAutorizadas(
-          response_alteracoes_alimentacao_autorizadas,
-        );
+        }
       }
 
       let response_log_matriculados_por_faixa_etaria_dia = [];
@@ -1623,6 +1638,29 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     feriadosNoMes,
   ]);
 
+  useEffect(() => {
+    const excedeuQuantidadeKitLanche = existeQuantidadeKitLanchePasseioExcedida(
+      formValuesAtualizados,
+      kitLanchesAutorizadas,
+      weekColumns,
+      categoriasDeMedicao,
+      inclusoesAutorizadas,
+      uuidsFaixasMenoresDeUmAno,
+    );
+
+    if (excedeuQuantidadeKitLanche) {
+      setDisableBotaoSalvarLancamentos(true);
+      setExibirTooltip(true);
+    }
+  }, [
+    formValuesAtualizados,
+    kitLanchesAutorizadas,
+    weekColumns,
+    categoriasDeMedicao,
+    inclusoesAutorizadas,
+    uuidsFaixasMenoresDeUmAno,
+  ]);
+
   const temDiaZeradoNaSemana =
     diasZerados &&
     diasDaSemanaSelecionada &&
@@ -2039,6 +2077,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     return true;
   };
 
+  const ehFaixaMenorDeUmAno = (uuidFaixa) => {
+    const faixa = faixaEtaria?.find(
+      (item) => String(item.uuid) === String(uuidFaixa),
+    );
+    return Boolean(faixa && Number(faixa.fim) <= 12);
+  };
+
   const diasLetivosCadastradosDaSemana = weekColumns
     .filter((column) => diasLetivosSIGPAE.has(Number(column.dia)))
     .sort((diaA, diaB) => Number(diaA.dia) - Number(diaB.dia));
@@ -2424,11 +2469,25 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             faixaEtaria,
           );
         } else {
-          return validacoesTabelaAlimentacaoCEI(
+          const erroQuantidadeMatriculados = validacoesTabelaAlimentacaoCEI(
             rowName,
             dia,
             idCategoria,
             allValues,
+            uuidFaixaEtaria,
+          );
+          if (erroQuantidadeMatriculados) {
+            return erroQuantidadeMatriculados;
+          }
+          return validacoesKitLanchePasseioCEI(
+            rowName,
+            dia,
+            idCategoria,
+            nomeCategoria,
+            allValues,
+            kitLanchesAutorizadas,
+            inclusoesAutorizadas,
+            uuidsFaixasMenoresDeUmAno,
             uuidFaixaEtaria,
           );
         }
@@ -2605,10 +2664,22 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         categoria.id,
         diasParaCorrecao,
       );
+      const temKitLanchePasseioNoDia = existeKitLanchePasseioNoDia(
+        kitLanchesAutorizadas,
+        column.dia,
+      );
+      const liberadoPorKitLanchePasseio =
+        row.name === "frequencia" &&
+        categoria.nome === "ALIMENTAÇÃO" &&
+        temKitLanchePasseioNoDia &&
+        !ehFaixaMenorDeUmAno(row.uuid);
 
       const resultado = estaEmDados
         ? ""
-        : !diaLetivo && !temInclusao && !diaCorrigir
+        : !diaLetivo &&
+            !temInclusao &&
+            !diaCorrigir &&
+            !liberadoPorKitLanchePasseio
           ? "nao-eh-dia-letivo"
           : "";
 
@@ -3082,6 +3153,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       calendarioMesConsiderado,
       ehRecreioNasFerias(),
       categoriasDeMedicao,
+      ehFaixaMenorDeUmAno(row.uuid),
     );
   };
 
@@ -3199,6 +3271,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       calendarioMesConsiderado,
       ehRecreioNasFerias(),
       categoriasDeMedicao,
+      ehFaixaMenorDeUmAno(row.uuid),
     );
 
     return (
@@ -3642,6 +3715,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                     calendarioMesConsiderado,
                     ehRecreioNasFerias(),
                     categoriasDeMedicao,
+                    ehFaixaMenorDeUmAno(row.uuid),
                   )}
                   defaultValue={defaultValue(column, row)}
                   exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(

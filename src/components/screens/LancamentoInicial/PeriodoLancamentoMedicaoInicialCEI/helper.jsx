@@ -1163,6 +1163,13 @@ const desabilitarCampoPadrao = (
   );
 };
 
+export const existeKitLanchePasseioNoDia = (kitLanchesAutorizadas, dia) =>
+  Boolean(
+    kitLanchesAutorizadas?.some(
+      (kitLanche) => Number(kitLanche.dia) === Number(dia),
+    ),
+  );
+
 export const desabilitarField = (
   dia,
   rowName,
@@ -1191,6 +1198,7 @@ export const desabilitarField = (
   calendarioMesConsiderado,
   ehRecreioNasFerias,
   categoriasDeMedicao,
+  ehFaixaMenorDeUmAno = false,
 ) => {
   const mesConsiderado = format(mesAnoConsiderado, "LLLL", {
     locale: ptBR,
@@ -1312,6 +1320,26 @@ export const desabilitarField = (
     return desabilitadoStatus;
   }
 
+  const temKitLanchePasseioNoDia = existeKitLanchePasseioNoDia(
+    kitLanchesAutorizadas,
+    dia,
+  );
+  const temInclusaoAlimentacaoNoDia = inclusoesAutorizadas?.some(
+    (inclusao) => Number(inclusao.dia) === Number(dia),
+  );
+  const liberadoPorKitLanchePasseio =
+    rowName === "frequencia" &&
+    nomeCategoria === "ALIMENTAÇÃO" &&
+    temKitLanchePasseioNoDia &&
+    !temInclusaoAlimentacaoNoDia &&
+    !ehEmeiDaCemeiLocation &&
+    !ehSolicitacoesAlimentacaoLocation &&
+    !ehProgramasEProjetosLocation;
+
+  if (liberadoPorKitLanchePasseio) {
+    return ehFaixaMenorDeUmAno;
+  }
+
   const desabilitadoEspecial = desabilitarLancamentoEspecialCei(
     nomeCategoria,
     permissoesLancamentosEspeciaisPorDia,
@@ -1345,6 +1373,7 @@ export const desabilitarField = (
   if (desabilitadoSolicitacoes !== null) {
     return desabilitadoSolicitacoes;
   }
+
   return desabilitarCampoPadrao(
     ehRecreioNasFerias,
     location,
@@ -1475,6 +1504,7 @@ export const getSolicitacoesKitLanchesAutorizadasAsync = async (
   mes,
   ano,
   recreioNasFerias = undefined,
+  ehCei = false,
 ) => {
   const params = {};
   params["escola_uuid"] = escolaUuuid;
@@ -1482,8 +1512,14 @@ export const getSolicitacoesKitLanchesAutorizadasAsync = async (
   params["mes"] = mes;
   params["ano"] = ano;
   params["recreio_nas_ferias"] = recreioNasFerias;
+  if (ehCei) {
+    params["eh_cei"] = true;
+  }
   const responseKitLanchesAutorizadas =
     await getSolicitacoesKitLanchesAutorizadasEscola(params);
+  if (!responseKitLanchesAutorizadas) {
+    return [];
+  }
   if (responseKitLanchesAutorizadas.status === HTTP_STATUS.OK) {
     return responseKitLanchesAutorizadas.data.results;
   } else {
