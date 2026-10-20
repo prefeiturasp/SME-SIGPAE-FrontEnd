@@ -29,13 +29,18 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 
-const renderWithReduxForm = (component, initialState = {}) => {
+const renderWithReduxForm = (
+  component,
+  initialState = {},
+  initialEntries = [`/gestao-produto/editar?uuid=${mockGetHomologacao.uuid}`],
+) => {
   const rootReducer = combineReducers({ form: formReducer });
   const store = createStore(rootReducer, initialState);
 
   return render(
     <Provider store={store}>
       <MemoryRouter
+        initialEntries={initialEntries}
         future={{
           v7_startTransition: true,
           v7_relativeSplatPath: true,
@@ -59,9 +64,6 @@ describe("Acesso somente de Visualização - USUARIO_EMPRESA", () => {
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem("tipo_perfil", TIPO_PERFIL.TERCEIRIZADA);
     localStorage.setItem("perfil", PERFIL.USUARIO_EMPRESA);
-
-    const search = `?uuid=${mockGetHomologacao.uuid}`;
-    window.history.pushState({}, "", search);
 
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosTerceirizada);
     mock.onGet("/marcas/").reply(200, mockGetMarcasProdutos);
