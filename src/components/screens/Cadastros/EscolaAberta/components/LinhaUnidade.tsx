@@ -1,7 +1,6 @@
 import { Tooltip } from "antd";
 import { Field } from "react-final-form";
 import InputText from "src/components/Shareable/Input/InputText";
-import { required } from "src/helpers/fieldValidators";
 import { truncarString } from "src/helpers/utilities";
 
 export const LinhaUnidade = ({
@@ -41,14 +40,13 @@ export const LinhaUnidade = ({
           </Tooltip>
         </td>
 
-        <td className="col-2">
+        <td className="col-2 td-num-participante">
           <Field
             component={InputText}
             name={`${name}.num_participantes`}
             dataTestId="num_participantes_input"
             type="number"
             required
-            validate={required}
             min={1}
           />
         </td>
