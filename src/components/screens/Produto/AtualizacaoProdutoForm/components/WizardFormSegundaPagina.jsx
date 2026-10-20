@@ -1,5 +1,5 @@
 import React from "react";
-import { Field, reduxForm, FormSection } from "redux-form";
+import { Field, reduxForm, FormSection, clearFields } from "redux-form";
 import InputText from "src/components/Shareable/Input/InputText";
 import { required, inteiroOuDecimal } from "src/helpers/fieldValidators";
 import "./styles.scss";
@@ -49,6 +49,21 @@ class WizardFormSegundaPagina extends React.Component {
     );
   };
 
+  // Remove do formulário valores nutricionais que não pertencem ao produto
+  // atual. Sem isso, ao abrir outro produto na mesma sessão, o redux-form
+  // mantém os campos do produto anterior e eles aparecem preenchidos.
+  limparInformacoesDeOutroProduto = (valuesForm) => {
+    const camposDeInformacoes = Object.keys(valuesForm || {}).filter((campo) =>
+      campo.startsWith("informacao="),
+    );
+    if (camposDeInformacoes.length === 0) {
+      return;
+    }
+    this.props.dispatch(
+      clearFields("atualizacaoProduto", false, false, ...camposDeInformacoes),
+    );
+  };
+
   componentDidMount() {
     let { informacoes, valuesForm } = this.state;
     const { produto, change, segundoStep, valoresSegundoForm } = this.props;
@@ -79,15 +94,19 @@ class WizardFormSegundaPagina extends React.Component {
     if (this.state.valuesForm !== this.props.valuesForm && objetoVazio) {
       valuesForm = this.props.valuesForm;
 
+      if (!segundoStep) {
+        this.limparInformacoesDeOutroProduto(valuesForm);
+      }
+
       if (segundoStep) {
         valoresSegundoForm.informacoes_nutricionais.forEach((info) => {
           this.props.change(
             `informacao=${info.informacao_nutricional}.porcao`,
-            info.quantidade_porcao
+            info.quantidade_porcao,
           );
           this.props.change(
             `informacao=${info.informacao_nutricional}.valor_diario`,
-            info.valor_diario
+            info.valor_diario,
           );
         });
       }
@@ -131,7 +150,7 @@ class WizardFormSegundaPagina extends React.Component {
     }
 
     const temCamposPreenchidos = this.verificaSeAlgumCampoEstaPreenchido(
-      this.props.valuesForm
+      this.props.valuesForm,
     );
 
     if (this.state.temCamposPreenchidos !== temCamposPreenchidos) {
@@ -166,11 +185,11 @@ class WizardFormSegundaPagina extends React.Component {
         valoresSegundoForm.informacoes_nutricionais.forEach((info) => {
           this.props.change(
             `informacao=${info.informacao_nutricional}.porcao`,
-            info.quantidade_porcao
+            info.quantidade_porcao,
           );
           this.props.change(
             `informacao=${info.informacao_nutricional}.valor_diario`,
-            info.valor_diario
+            info.valor_diario,
           );
         });
       }
@@ -214,7 +233,7 @@ class WizardFormSegundaPagina extends React.Component {
     }
 
     const temCamposPreenchidos = this.verificaSeAlgumCampoEstaPreenchido(
-      this.props.valuesForm
+      this.props.valuesForm,
     );
 
     if (prevState.temCamposPreenchidos !== temCamposPreenchidos) {
@@ -348,7 +367,7 @@ class WizardFormSegundaPagina extends React.Component {
                               </div>
                             </FormSection>
                           );
-                        }
+                        },
                       )}
                     </div>
                   )}

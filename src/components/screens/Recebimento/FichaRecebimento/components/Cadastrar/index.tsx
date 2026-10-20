@@ -86,6 +86,10 @@ import {
   QuestaoConferenciaSimples,
 } from "src/interfaces/recebimento.interface";
 
+const ICONE_TOOLTIP = "fa-info-circle";
+const TOOLTIP_EMBALAGEM_PRIMARIA = "Embalagem Primária";
+const TOOLTIP_EMBALAGEM_SECUNDARIA = "Embalagem Secundária";
+
 const ITENS_STEPS = [
   {
     title: "Cronograma",
@@ -1583,6 +1587,8 @@ export default () => {
                                 <Field
                                   component={InputText}
                                   label="Quantidade Nota Fiscal"
+                                  tooltipText={TOOLTIP_EMBALAGEM_PRIMARIA}
+                                  tooltipIcone={ICONE_TOOLTIP}
                                   name={`quantidade_nota_fiscal_${index}`}
                                   placeholder="Digite a qtde da nota"
                                   required
@@ -1595,6 +1601,8 @@ export default () => {
                                 <Field
                                   component={InputText}
                                   label="Embalagens Nota Fiscal"
+                                  tooltipText={TOOLTIP_EMBALAGEM_SECUNDARIA}
+                                  tooltipIcone={ICONE_TOOLTIP}
                                   name={`embalagens_nota_fiscal_${index}`}
                                   placeholder="Digite a qtde de embalagens"
                                   required
@@ -1607,6 +1615,8 @@ export default () => {
                                 <Field
                                   component={InputText}
                                   label="Quantidade Recebida"
+                                  tooltipText={TOOLTIP_EMBALAGEM_PRIMARIA}
+                                  tooltipIcone={ICONE_TOOLTIP}
                                   name={`quantidade_recebida_${index}`}
                                   placeholder="Digite a qtde recebida"
                                   required
@@ -1619,6 +1629,8 @@ export default () => {
                                 <Field
                                   component={InputText}
                                   label="Embalagens Recebidas"
+                                  tooltipText={TOOLTIP_EMBALAGEM_SECUNDARIA}
+                                  tooltipIcone={ICONE_TOOLTIP}
                                   name={`embalagens_recebidas_${index}`}
                                   placeholder="Digite qtde recebida"
                                   required

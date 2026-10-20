@@ -519,6 +519,8 @@ export default () => {
                       naoDesabilitarPrimeiraOpcao
                       options={unidades}
                       label="Unidade de Medida"
+                      tooltipText="A unidade de medida deverá ser a mesma utilizada no cronograma."
+                      iconeTooltip="fa-info-circle"
                       name={`unidade_medida`}
                       placeholder="Selecione uma Unidade"
                       className="input-analise"
