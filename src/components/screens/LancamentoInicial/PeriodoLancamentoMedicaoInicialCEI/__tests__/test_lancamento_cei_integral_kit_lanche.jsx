@@ -80,10 +80,10 @@ describe("PeriodoLancamentoMedicaoInicialCEI - Kit Lanche Passeio no Integral", 
     tiposAlimentacao: [],
   };
 
-  const renderizar = () =>
+  const renderizar = (state = mockLocationState) =>
     render(
       <MemoryRouter
-        initialEntries={[{ pathname: "/", state: mockLocationState }]}
+        initialEntries={[{ pathname: "/", state }]}
         future={{
           v7_startTransition: true,
           v7_relativeSplatPath: true,
@@ -117,6 +117,7 @@ describe("PeriodoLancamentoMedicaoInicialCEI - Kit Lanche Passeio no Integral", 
     );
 
   beforeEach(() => {
+    jest.clearAllMocks();
     getMeusDados.mockResolvedValue({
       data: mockMeusDadosEscolaCEI,
       status: 200,
@@ -194,6 +195,26 @@ describe("PeriodoLancamentoMedicaoInicialCEI - Kit Lanche Passeio no Integral", 
         tipo_solicitacao: "Kit Lanche",
       }),
     );
+  });
+
+  it("não envia eh_cei no período Solicitações de Alimentação - Infantil", async () => {
+    renderizar({
+      ...mockLocationState,
+      periodo: "Solicitações de Alimentação",
+      ehEmeiDaCemei: false,
+    });
+    await aguardarServicos();
+
+    expect(
+      periodoLancamentoMedicaoService.getSolicitacoesKitLanchesAutorizadasEscola,
+    ).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tipo_solicitacao: "Kit Lanche",
+      }),
+    );
+    expect(
+      periodoLancamentoMedicaoService.getSolicitacoesKitLanchesAutorizadasEscola,
+    ).not.toHaveBeenCalledWith(expect.objectContaining({ eh_cei: true }));
   });
 
   it("libera a frequência das faixas com 1 ano ou mais e mantém menores de 1 ano bloqueada", async () => {
