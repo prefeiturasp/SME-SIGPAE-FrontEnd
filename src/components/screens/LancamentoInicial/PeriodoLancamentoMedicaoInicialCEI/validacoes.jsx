@@ -6,6 +6,7 @@ import {
 } from "../PeriodoLancamentoMedicaoInicial/helper";
 import {
   WARNING_LANCHE_EMERGENCIAL_AUTORIZADO,
+  calcularSomaKitLanches,
   campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
 
@@ -422,6 +423,126 @@ export const validacoesTabelaAlimentacaoCEI = (
   }
 
   return undefined;
+};
+
+export const calcularSomaFrequenciaFaixasNoDia = (
+  values,
+  dia,
+  categoria,
+  uuidsFaixasIgnoradas = [],
+) => {
+  const sufixo = `__dia_${dia}__categoria_${categoria}`;
+  const faixasIgnoradas = new Set(uuidsFaixasIgnoradas.map(String));
+
+  return Object.entries(values || {}).reduce((total, [chave, valor]) => {
+    if (!chave.startsWith("frequencia__faixa_") || !chave.endsWith(sufixo)) {
+      return total;
+    }
+    const faixaEhIgnorada = [...faixasIgnoradas].some((uuid) =>
+      chave.includes(`__faixa_${uuid}__`),
+    );
+    if (faixaEhIgnorada) {
+      return total;
+    }
+    const quantidade = Number(valor);
+    return total + (Number.isFinite(quantidade) ? quantidade : 0);
+  }, 0);
+};
+
+export const validacoesKitLanchePasseioCEI = (
+  rowName,
+  dia,
+  categoria,
+  nomeCategoria,
+  allValues,
+  kitLanchesAutorizadas,
+  inclusoesAutorizadas,
+  uuidsFaixasMenoresDeUmAno = [],
+  uuidFaixaEtaria = null,
+) => {
+  if (rowName !== "frequencia" || nomeCategoria !== "ALIMENTAÇÃO") {
+    return undefined;
+  }
+
+  const faixaEtariaEhMenorDeUmAno = uuidsFaixasMenoresDeUmAno
+    .map(String)
+    .includes(String(uuidFaixaEtaria));
+  if (faixaEtariaEhMenorDeUmAno) {
+    return undefined;
+  }
+
+  const temInclusaoAlimentacaoNoDia = inclusoesAutorizadas?.some(
+    (inclusao) => Number(inclusao.dia) === Number(dia),
+  );
+  if (temInclusaoAlimentacaoNoDia) {
+    return undefined;
+  }
+
+  const totalAutorizadoKitLanche = calcularSomaKitLanches(
+    kitLanchesAutorizadas,
+    dia,
+  );
+  if (!totalAutorizadoKitLanche) {
+    return undefined;
+  }
+
+  const totalApontado = calcularSomaFrequenciaFaixasNoDia(
+    allValues,
+    dia,
+    categoria,
+    uuidsFaixasMenoresDeUmAno,
+  );
+  if (totalApontado > totalAutorizadoKitLanche) {
+    return "A quantidade de alunos apontada é superior à quantidade autorizada na solicitação de Kit Lanche Passeio.";
+  }
+
+  return undefined;
+};
+
+export const existeQuantidadeKitLanchePasseioExcedida = (
+  values,
+  kitLanchesAutorizadas,
+  weekColumns,
+  categoriasDeMedicao,
+  inclusoesAutorizadas,
+  uuidsFaixasMenoresDeUmAno = [],
+) => {
+  const categoriaAlimentacao = categoriasDeMedicao?.find(
+    (categoria) => categoria.nome === "ALIMENTAÇÃO",
+  );
+  if (
+    !values ||
+    !categoriaAlimentacao ||
+    !kitLanchesAutorizadas?.length ||
+    !weekColumns?.length
+  ) {
+    return false;
+  }
+
+  return weekColumns.some((column) => {
+    const temInclusaoAlimentacaoNoDia = inclusoesAutorizadas?.some(
+      (inclusao) => Number(inclusao.dia) === Number(column.dia),
+    );
+    if (temInclusaoAlimentacaoNoDia) {
+      return false;
+    }
+
+    const totalAutorizadoKitLanche = calcularSomaKitLanches(
+      kitLanchesAutorizadas,
+      column.dia,
+    );
+    if (!totalAutorizadoKitLanche) {
+      return false;
+    }
+
+    const totalApontado = calcularSomaFrequenciaFaixasNoDia(
+      values,
+      column.dia,
+      categoriaAlimentacao.id,
+      uuidsFaixasMenoresDeUmAno,
+    );
+    return totalApontado > totalAutorizadoKitLanche;
+  });
 };
 
 export const validacoesFaixasZeradasAlimentacao = (
