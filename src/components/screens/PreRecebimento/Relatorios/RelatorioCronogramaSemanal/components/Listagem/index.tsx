@@ -15,6 +15,12 @@ interface Props {
 }
 
 const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
+  const alternarExpansao = (chave: string, expandido: boolean) => {
+    expandido
+      ? setAtivos(ativos.filter((el: string) => el !== chave))
+      : setAtivos(ativos ? [...ativos, chave] : [chave]);
+  };
+
   return (
     <div className="listagem-relatorio-cronograma-semanal">
       <div className="titulo-verde mt-4 mb-3">Resultado da Pesquisa</div>
@@ -55,19 +61,11 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                     role="button"
                     tabIndex={0}
                     aria-expanded={expandido}
-                    onClick={() => {
-                      expandido
-                        ? setAtivos(ativos.filter((el: string) => el !== chave))
-                        : setAtivos(ativos ? [...ativos, chave] : [chave]);
-                    }}
+                    onClick={() => alternarExpansao(chave, expandido)}
                     onKeyDown={(e) =>
-                      acionaComEnterOuEspaco(e, () => {
-                        expandido
-                          ? setAtivos(
-                              ativos.filter((el: string) => el !== chave),
-                            )
-                          : setAtivos(ativos ? [...ativos, chave] : [chave]);
-                      })
+                      acionaComEnterOuEspaco(e, () =>
+                        alternarExpansao(chave, expandido),
+                      )
                     }
                   />
                 </div>
