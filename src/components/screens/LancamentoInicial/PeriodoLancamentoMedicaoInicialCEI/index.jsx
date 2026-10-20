@@ -559,7 +559,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             mes,
             ano,
             location.state.recreioNasFerias,
-            ehPeriodoIntegral || ehCEIDaCEMEI,
+            ehPeriodoIntegral,
           );
         setKitLanchesAutorizadas(response_kit_lanches_autorizadas);
 
