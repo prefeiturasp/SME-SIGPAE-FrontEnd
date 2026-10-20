@@ -217,6 +217,24 @@ describe("PeriodoLancamentoMedicaoInicialCEI - Kit Lanche Passeio no Integral", 
     ).not.toHaveBeenCalledWith(expect.objectContaining({ eh_cei: true }));
   });
 
+  it("não consulta kits lanches no fluxo de Solicitações de Alimentação Extraordinárias", async () => {
+    renderizar({
+      ...mockLocationState,
+      periodo: "Solicitações de Alimentação Extraordinárias",
+      grupo: "Solicitações de Alimentação Extraordinárias",
+      ehEmeiDaCemei: false,
+    });
+    await waitFor(() =>
+      expect(
+        periodoLancamentoMedicaoService.getFeriadosNoMes,
+      ).toHaveBeenCalled(),
+    );
+
+    expect(
+      periodoLancamentoMedicaoService.getSolicitacoesKitLanchesAutorizadasEscola,
+    ).not.toHaveBeenCalled();
+  });
+
   it("libera a frequência das faixas com 1 ano ou mais e mantém menores de 1 ano bloqueada", async () => {
     renderizar();
     await abrirSemanaDoKitLanche();
