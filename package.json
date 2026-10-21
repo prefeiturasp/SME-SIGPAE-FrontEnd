@@ -40,7 +40,7 @@
       "/src/mocks/"
     ],
     "transformIgnorePatterns": [
-      "/node_modules/(?!(axios|uuid|until-async|msw|antd|rc-.+|@babel/runtime)/)"
+      "/node_modules/(?!(axios|uuid|until-async|msw)/)"
     ],
     "transform": {
       "\\.js$": [
@@ -212,8 +212,5 @@
     "vite": "^8.0.16",
     "vite-plugin-environment": "^1.1.3",
     "whatwg-fetch": "^3.6.20"
-  },
-  "setupFiles": [
-    "./src/setupTests.js"
-  ]
+  }
 }

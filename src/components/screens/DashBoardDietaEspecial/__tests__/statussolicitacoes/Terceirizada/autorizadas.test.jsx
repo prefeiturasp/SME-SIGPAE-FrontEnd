@@ -14,6 +14,12 @@ import mock from "src/services/_mock";
 import { renderWithProvider } from "src/utils/test-utils";
 
 describe("Teste StatusSolicitacoes - Terceirizada - Autorizadas", () => {
+  afterEach(() => {
+    // Alguns testes usam fake timers; sem restaurar, os testes seguintes do
+    // arquivo herdam o relógio falsificado e falham de forma intermitente.
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
