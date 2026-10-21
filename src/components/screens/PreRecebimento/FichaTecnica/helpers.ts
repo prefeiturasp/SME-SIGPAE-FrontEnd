@@ -761,11 +761,7 @@ export const formataPayloadCadastroFichaTecnica = (
         false,
         mostrarBlocoFabricante,
       ),
-      ...gerarCamposDetalhesProduto(
-        values,
-        ehFLV,
-        mostrarNumeroRegistro,
-      ),
+      ...gerarCamposDetalhesProduto(values, ehFLV, mostrarNumeroRegistro),
       ...gerarCamposResponsavelTecnico(values, arquivo),
       ...gerarCamposOutrasInformacoes(values),
       password: password,
@@ -784,11 +780,7 @@ export const formataPayloadCadastroFichaTecnica = (
         false,
         mostrarBlocoFabricante,
       ),
-      ...gerarCamposDetalhesProduto(
-        values,
-        ehFLV,
-        mostrarNumeroRegistro,
-      ),
+      ...gerarCamposDetalhesProduto(values, ehFLV, mostrarNumeroRegistro),
       ...gerarCamposInformacoesNutricionais(values),
       ...gerarCamposConservacao(values, ehPereciveis),
       ...(ehPereciveis
@@ -1152,17 +1144,24 @@ export const salvarRascunho = async (
   ficha: FichaTecnicaDetalhada,
   setFicha: Dispatch<SetStateAction<FichaTecnicaDetalhada>>,
   setCarregando: Dispatch<SetStateAction<boolean>>,
+  navigate: NavigateFunction,
+  ehCopia: boolean = false,
 ) => {
   try {
     setCarregando(true);
 
-    const response = ficha.uuid
-      ? await editaRascunhoFichaTecnica(payload, ficha.uuid)
-      : await cadastraRascunhoFichaTecnica(payload);
+    const response =
+      ehCopia || !ficha.uuid
+        ? await cadastraRascunhoFichaTecnica(payload)
+        : await editaRascunhoFichaTecnica(payload, ficha.uuid);
 
     if (response.status === 201 || response.status === 200) {
       toastSuccess("Rascunho salvo com sucesso!");
-      setFicha(response.data);
+      if (ehCopia) {
+        navigate(`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`);
+      } else {
+        setFicha(response.data);
+      }
     } else {
       toastError("Ocorreu um erro ao salvar a Ficha Técnica");
     }
@@ -1178,16 +1177,22 @@ export const assinarEnviarFichaTecnica = async (
   ficha: FichaTecnicaDetalhada,
   setCarregando: Dispatch<SetStateAction<boolean>>,
   navigate: NavigateFunction,
+  ehCopia: boolean = false,
 ) => {
   try {
     setCarregando(true);
 
-    const response = ficha.uuid
-      ? await cadastrarFichaTecnicaDoRascunho(payload, ficha.uuid)
-      : await cadastrarFichaTecnica(payload);
+    const response =
+      ehCopia || !ficha.uuid
+        ? await cadastrarFichaTecnica(payload)
+        : await cadastrarFichaTecnicaDoRascunho(payload, ficha.uuid);
 
     if (response.status === 201 || response.status === 200) {
-      toastSuccess("Ficha Técnica Assinada e Enviada com sucesso!");
+      toastSuccess(
+        ehCopia
+          ? "Ficha Técnica enviada com sucesso!"
+          : "Ficha Técnica Assinada e Enviada com sucesso!",
+      );
       navigate(`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`);
     } else {
       toastError("Ocorreu um erro ao assinar e enviar a Ficha Técnica");

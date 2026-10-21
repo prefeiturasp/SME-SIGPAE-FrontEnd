@@ -1,11 +1,12 @@
-import React, { Dispatch, ReactElement, SetStateAction } from "react";
-import { NavLink } from "react-router-dom";
+import React, { Dispatch, ReactElement, SetStateAction, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import {
   PRE_RECEBIMENTO,
   CADASTRAR_FICHA_TECNICA,
   DETALHAR_FICHA_TECNICA,
   ALTERAR_FICHA_TECNICA,
+  CRIAR_COPIA_FICHA_TECNICA,
 } from "src/configs/constants";
 import { FichaTecnica } from "src/interfaces/pre_recebimento.interface";
 import "./styles.scss";
@@ -17,6 +18,7 @@ import {
 } from "../../../../../../helpers/utilities";
 import { imprimirFicha } from "../../helpers";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
 
 interface Props {
   objetos: Array<FichaTecnica>;
@@ -24,6 +26,20 @@ interface Props {
 }
 
 const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
+  const navigate = useNavigate();
+  const [fichaParaCopiar, setFichaParaCopiar] = useState<FichaTecnica | null>(
+    null,
+  );
+
+  const confirmarCriacaoCopia = () => {
+    if (!fichaParaCopiar) return;
+
+    navigate(
+      `/${PRE_RECEBIMENTO}/${CRIAR_COPIA_FICHA_TECNICA}?uuid=${fichaParaCopiar.uuid}`,
+    );
+    setFichaParaCopiar(null);
+  };
+
   const renderizarStatus = (status: string) =>
     status === "Enviada para Correção" ? (
       <span className="orange">Solicitação de Alteração</span>
@@ -85,6 +101,21 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
       </span>
     );
 
+    const botaoCriarCopia = (
+      <span
+        className="float-start ms-1 link-acoes green"
+        role="button"
+        tabIndex={0}
+        onClick={() => setFichaParaCopiar(objeto)}
+        onKeyDown={(e) =>
+          acionaComEnterOuEspaco(e, () => setFichaParaCopiar(objeto))
+        }
+        data-testid="btnCriarCopia"
+      >
+        <i className="fas fa-copy" title="Criar Cópia" />
+      </span>
+    );
+
     return (
       <div className="d-flex">
         {objeto.status === "Rascunho" && botaoContinuarCadastro}
@@ -93,6 +124,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
         {objeto.status === "Enviada para Correção" && botaoAlterar}
         {["Enviada para Análise", "Aprovada"].includes(objeto.status) &&
           botaoImprimir}
+        {objeto.status === "Aprovada" && botaoCriarCopia}
       </div>
     );
   };
@@ -158,6 +190,16 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
           );
         })}
       </article>
+
+      <ModalGenerico
+        show={Boolean(fichaParaCopiar)}
+        handleClose={() => setFichaParaCopiar(null)}
+        handleSim={confirmarCriacaoCopia}
+        titulo="Copiar Ficha Técnica"
+        texto="Você realmente deseja criar uma Cópia da Ficha Técnica?"
+        textoBotaoClose="Não"
+        textoBotaoSim="Sim, Criar Cópia"
+      />
     </div>
   );
 };

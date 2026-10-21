@@ -67,7 +67,7 @@ beforeEach(() => {
 
   mock.onPost(`/ficha-tecnica/`).reply(201);
 
-  mock.onPost(`/rascunho-ficha-tecnica/`).reply(201);
+  mock.onPost(`/rascunho-ficha-tecnica/`).reply(201, mockFichaTecnica);
 
   mock
     .onGet(`/ficha-tecnica/${mockFichaTecnica.uuid}/`)
@@ -155,6 +155,14 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
     const btnRascunho = screen.getByText("Salvar Rascunho").closest("button");
     expect(btnRascunho).not.toBeDisabled();
     fireEvent.click(btnRascunho);
+
+    await waitFor(() =>
+      expect(
+        mock.history.post.some((call) =>
+          call.url.includes("/rascunho-ficha-tecnica/"),
+        ),
+      ).toBe(true),
+    );
   });
 
   it("Assina e Envia uma ficha técnica", async () => {
