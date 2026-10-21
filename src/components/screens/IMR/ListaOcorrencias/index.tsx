@@ -1,5 +1,6 @@
 import Botao from "src/components/Shareable/Botao";
 import {
+  BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
@@ -174,6 +175,19 @@ export const ListaOcorrencias = () => {
             </div>
           </Spin>
         </section>
+        {ocorrencias.length !== 0 ? (
+          <div className="d-flex justify-content-end mt-4">
+            <Botao
+              texto="Exportar Excel"
+              type={BUTTON_TYPE.BUTTON}
+              style={BUTTON_STYLE.GREEN}
+              icon={BUTTON_ICON.FILE_EXCEL}
+              disabled
+            />
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
