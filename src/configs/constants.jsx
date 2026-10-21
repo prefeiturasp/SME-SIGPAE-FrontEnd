@@ -306,6 +306,7 @@ export const RELATORIO_DOCUMENTOS_RECEBIMENTO =
 
 export const FICHA_TECNICA = "ficha-tecnica";
 export const CADASTRAR_FICHA_TECNICA = "cadastrar-ficha-tecnica";
+export const CRIAR_COPIA_FICHA_TECNICA = "criar-copia-ficha-tecnica";
 export const PAINEL_FICHAS_TECNICAS = "painel-fichas-tecnicas";
 export const ANALISAR_FICHA_TECNICA = "analisar-ficha-tecnica";
 export const DETALHAR_FICHA_TECNICA = "detalhar-ficha-tecnica";

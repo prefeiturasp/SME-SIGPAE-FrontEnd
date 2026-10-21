@@ -41,6 +41,7 @@ import {
   PAINEL_FICHAS_TECNICAS,
   FICHA_TECNICA,
   ATUALIZAR_FICHA_TECNICA,
+  CRIAR_COPIA_FICHA_TECNICA,
 } from "src/configs/constants";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
@@ -60,6 +61,8 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
   const location = useLocation();
   const [carregando, setCarregando] = useState<boolean>(true);
   const [showModalCancelar, setShowModalCancelar] = useState<boolean>(false);
+  const [showModalCriarCopia, setShowModalCriarCopia] =
+    useState<boolean>(false);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhadaComAnalise>(
     {} as FichaTecnicaDetalhadaComAnalise,
@@ -531,17 +534,26 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                       <>
                         {ficha.status === "Aprovada" &&
                           usuarioEhEmpresaFornecedor() && (
-                            <Botao
-                              texto="Atualizar Ficha Técnica"
-                              type={BUTTON_TYPE.BUTTON}
-                              style={BUTTON_STYLE.GREEN_OUTLINE}
-                              className="float-end ms-3"
-                              onClick={() =>
-                                navigate(
-                                  `/${PRE_RECEBIMENTO}/${ATUALIZAR_FICHA_TECNICA}?uuid=${ficha.uuid}`,
-                                )
-                              }
-                            />
+                            <>
+                              <Botao
+                                texto="Criar Cópia"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                                className="float-end ms-3"
+                                onClick={() => setShowModalCriarCopia(true)}
+                              />
+                              <Botao
+                                texto="Atualizar Ficha Técnica"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                                className="float-end ms-3"
+                                onClick={() =>
+                                  navigate(
+                                    `/${PRE_RECEBIMENTO}/${ATUALIZAR_FICHA_TECNICA}?uuid=${ficha.uuid}`,
+                                  )
+                                }
+                              />
+                            </>
                           )}
                         {["Enviada para Análise", "Aprovada"].includes(
                           ficha.status,
@@ -598,6 +610,27 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     loading={carregando}
                     titulo={<>Cancelar Análise da Ficha Técnica</>}
                     texto={<>Deseja cancelar a Análise da Ficha Técnica?</>}
+                  />
+
+                  <ModalGenerico
+                    show={showModalCriarCopia}
+                    handleSim={() => {
+                      navigate(
+                        `/${PRE_RECEBIMENTO}/${CRIAR_COPIA_FICHA_TECNICA}?uuid=${ficha.uuid}`,
+                      );
+                    }}
+                    handleClose={() => {
+                      setShowModalCriarCopia(false);
+                    }}
+                    loading={carregando}
+                    titulo={<>Copiar Ficha Técnica</>}
+                    texto={
+                      <>
+                        Você realmente deseja criar uma Cópia da Ficha Técnica?
+                      </>
+                    }
+                    textoBotaoClose="Não"
+                    textoBotaoSim="Sim, Criar Cópia"
                   />
                 </form>
               );

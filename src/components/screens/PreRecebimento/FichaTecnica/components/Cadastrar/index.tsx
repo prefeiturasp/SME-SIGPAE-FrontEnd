@@ -25,6 +25,9 @@ import TabelaNutricional from "src/components/Shareable/TabelaNutricional";
 import Select from "src/components/Shareable/Select";
 import ModalCadastrarItemIndividual from "src/components/Shareable/ModalCadastrarItemIndividual";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
+import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import { FICHA_TECNICA, PRE_RECEBIMENTO } from "src/configs/constants";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import {
   ArquivoForm,
@@ -76,7 +79,11 @@ const ITENS_STEPS = [
   },
 ];
 
-export default () => {
+interface CadastrarProps {
+  ehCopia?: boolean;
+}
+
+export default ({ ehCopia = false }: CadastrarProps) => {
   const { meusDados } = useContext(MeusDadosContext);
   const [carregando, setCarregando] = useState<boolean>(true);
   const [produtosOptions, setProdutosOptions] = useState<OptionsGenerico[]>([]);
@@ -106,6 +113,7 @@ export default () => {
   >([]);
   const [showModalCadastro, setShowModalCadastro] = useState(false);
   const [showModalAssinatura, setShowModalAssinatura] = useState(false);
+  const [showModalCancelarCopia, setShowModalCancelarCopia] = useState(false);
   const [tipoCadastro, setTipoCadastro] = useState("");
   const [arquivo, setArquivo] = useState<ArquivoForm[]>([]);
 
@@ -155,6 +163,21 @@ export default () => {
       );
     })();
   }, []);
+
+  useEffect(() => {
+    if (!ehCopia || carregando) return;
+
+    if (!ficha.uuid) {
+      toastError("Selecione uma ficha aprovada para criar a cópia.");
+      navigate(`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`);
+      return;
+    }
+
+    if (ficha.status !== "Aprovada") {
+      toastError("Somente fichas aprovadas podem ser copiadas.");
+      navigate(`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`);
+    }
+  }, [ehCopia, carregando, ficha.uuid, ficha.status, navigate]);
 
   return (
     <Spin tip="Carregando..." spinning={carregando}>
@@ -351,46 +374,46 @@ export default () => {
                       </section>
 
                       {mostrarBlocoFabricante(values) && (
-                      <section id="formFabricante">
-                        <FormFabricante
-                          fabricantesCount={fabricantesCount}
-                          setFabricantesCount={setFabricantesCount}
-                          fabricantesOptions={fabricantesOptions}
-                          values={values}
-                          camposOpcionais={ehFLVPontoAPonto(
-                            values.categoria,
-                            values.tipo_entrega,
-                          )}
-                          gerenciaModalCadastroExterno={() => {
-                            gerenciaModalCadastroExterno(
-                              "FABRICANTE",
-                              setTipoCadastro,
-                              setShowModalCadastro,
-                            );
-                          }}
-                        />
-                        {fabricantesCount === 1 && (
-                          <div className="row mt-3">
-                            <div className="col-12 d-flex justify-content-center">
-                              <Tooltip
-                                className="float-end"
-                                title={
-                                  "Adicione somente se os dados do Envasador/Distribuidor forem diferentes do Fabricante."
-                                }
-                              >
-                                <div>
-                                  <Botao
-                                    texto="+ Adicionar Envasador/Distribuidor"
-                                    type={BUTTON_TYPE.BUTTON}
-                                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                                    onClick={() => setFabricantesCount(2)}
-                                  />
-                                </div>
-                              </Tooltip>
+                        <section id="formFabricante">
+                          <FormFabricante
+                            fabricantesCount={fabricantesCount}
+                            setFabricantesCount={setFabricantesCount}
+                            fabricantesOptions={fabricantesOptions}
+                            values={values}
+                            camposOpcionais={ehFLVPontoAPonto(
+                              values.categoria,
+                              values.tipo_entrega,
+                            )}
+                            gerenciaModalCadastroExterno={() => {
+                              gerenciaModalCadastroExterno(
+                                "FABRICANTE",
+                                setTipoCadastro,
+                                setShowModalCadastro,
+                              );
+                            }}
+                          />
+                          {fabricantesCount === 1 && (
+                            <div className="row mt-3">
+                              <div className="col-12 d-flex justify-content-center">
+                                <Tooltip
+                                  className="float-end"
+                                  title={
+                                    "Adicione somente se os dados do Envasador/Distribuidor forem diferentes do Fabricante."
+                                  }
+                                >
+                                  <div>
+                                    <Botao
+                                      texto="+ Adicionar Envasador/Distribuidor"
+                                      type={BUTTON_TYPE.BUTTON}
+                                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                                      onClick={() => setFabricantesCount(2)}
+                                    />
+                                  </div>
+                                </Tooltip>
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </section>
+                          )}
+                        </section>
                       )}
 
                       <section id="formProduto">
@@ -614,6 +637,8 @@ export default () => {
                             ficha,
                             setFicha,
                             setCarregando,
+                            navigate,
+                            ehCopia,
                           );
                         }}
                         disabled={validaRascunho(values as FichaTecnicaPayload)}
@@ -642,6 +667,19 @@ export default () => {
                     />
                   </div>
                 )}
+
+                {ehCopia && (
+                  <div className="mt-4 mb-4">
+                    <Botao
+                      texto="Cancelar Cópia"
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      className="float-end ms-3"
+                      onClick={() => setShowModalCancelarCopia(true)}
+                    />
+                  </div>
+                )}
+
                 <ModalCadastrarItemIndividual
                   closeModal={() => setShowModalCadastro(false)}
                   showModal={showModalCadastro}
@@ -673,6 +711,7 @@ export default () => {
                       ficha,
                       setCarregando,
                       navigate,
+                      ehCopia,
                     );
                   }}
                   loading={carregando}
@@ -680,6 +719,19 @@ export default () => {
                   texto="Você confirma o preenchimento correto de todas as
                   informações solicitadas na ficha técnica?"
                   textoBotao="Sim, Assinar Ficha"
+                />
+
+                <ModalGenerico
+                  show={showModalCancelarCopia}
+                  handleClose={() => setShowModalCancelarCopia(false)}
+                  handleSim={() =>
+                    navigate(`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`)
+                  }
+                  loading={carregando}
+                  titulo="Cancelar Cópia"
+                  texto="Você realmente deseja cancelar a Cópia da Ficha Técnica?"
+                  textoBotaoClose="Não"
+                  textoBotaoSim="Sim"
                 />
               </form>
             )}
