@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import Breadcrumb from "../../components/Shareable/Breadcrumb";
 import AtualizacaoProdutoForm from "../../components/screens/Produto/AtualizacaoProdutoForm";
 import Page from "../../components/Shareable/Page/Page";
@@ -12,13 +13,22 @@ const atual = {
   titulo: "Homologação de Produto",
 };
 
-export default () => (
-  <Page
-    titulo={"Ficha de identificação de Produto"}
-    botaoVoltar
-    voltarPara={"/"}
-  >
-    <Breadcrumb home={"/"} atual={atual} />
-    <AtualizacaoProdutoForm />
-  </Page>
-);
+const AtualizacaoProdutoFormPage = () => {
+  const [searchParams] = useSearchParams();
+  const uuid = searchParams.get("uuid");
+
+  return (
+    <Page
+      titulo={"Ficha de identificação de Produto"}
+      botaoVoltar
+      voltarPara={"/"}
+    >
+      <Breadcrumb home={"/"} atual={atual} />
+      {/* A key garante que a tela seja remontada ao trocar de produto,
+          recarregando os dados e limpando o formulário. */}
+      <AtualizacaoProdutoForm key={uuid} uuid={uuid} />
+    </Page>
+  );
+};
+
+export default AtualizacaoProdutoFormPage;

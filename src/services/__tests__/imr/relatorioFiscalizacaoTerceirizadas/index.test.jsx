@@ -1,6 +1,7 @@
 import axios from "src/services/_base";
 import { ErrorHandlerFunction } from "src/services/service-helpers";
 import {
+  buscarOcorrenciasDiretor,
   createFormularioDiretor,
   createFormularioSupervisao,
   createRascunhoFormularioSupervisao,
@@ -46,6 +47,7 @@ const API_URL_MOCK = "http://api.test";
 const UUID_FORMULARIO = "00000000-0000-4000-8000-000000000001";
 const UUID_EDITAL = "00000000-0000-4000-8000-000000000002";
 const UUID_ESCOLA = "00000000-0000-4000-8000-000000000003";
+const UUID_MEDICAO = "00000000-0000-4000-8000-000000000004";
 
 const formularioMock = {
   uuid: UUID_FORMULARIO,
@@ -69,6 +71,40 @@ const respostaMock = {
 const respostaAxiosMock = {
   data: respostaMock,
   status: 200,
+};
+
+const respostaListagemOcorrencias = {
+  status: 200,
+  data: {
+    count: 1,
+    next: null,
+    previous: null,
+    results: [
+      {
+        uuid: UUID_FORMULARIO,
+        data: "10/01/2026",
+        categoria: {
+          uuid: "00000000-0000-4000-8000-000000000005",
+          nome: "FUNCIONÁRIOS",
+          posicao: 1,
+          gera_notificacao: false,
+        },
+        tipo_ocorrencia: "00000000-0000-4000-8000-000000000006",
+        titulo: "UNIFORME DOS MANIPULADORES",
+        descricao: "Funcionários utilizavam uniforme completo?",
+        grupo: 1,
+        respostas: [
+          {
+            uuid: "00000000-0000-4000-8000-000000000007",
+            parametrizacao: "00000000-0000-4000-8000-000000000008",
+            titulo: "Qual item do uniforme faltou?",
+            posicao: 1,
+            resposta: "Touca",
+          },
+        ],
+      },
+    ],
+  },
 };
 
 const casosDeTeste = [
@@ -308,4 +344,93 @@ describe("relatorioFiscalizacaoTerceirizadas services", () => {
       });
     },
   );
+
+  describe("buscarOcorrenciasDiretor", () => {
+    it.each([
+      {
+        cenario: "com paginação",
+        parametros: {
+          solicitacao_medicao_inicial: UUID_MEDICAO,
+          page: 1,
+          page_size: 10,
+        },
+      },
+      {
+        cenario: "sem informar a paginação",
+        parametros: {
+          solicitacao_medicao_inicial: UUID_MEDICAO,
+        },
+      },
+    ])(
+      "consulta as ocorrências da medição $cenario e retorna os dados e o status",
+      async ({ parametros }) => {
+        axios.get.mockResolvedValueOnce(respostaListagemOcorrencias);
+
+        const resultado = await buscarOcorrenciasDiretor(parametros);
+
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith(
+          `${API_URL_MOCK}/imr/formulario-diretor/`,
+          { params: parametros },
+        );
+        expect(resultado).toEqual(respostaListagemOcorrencias);
+        expect(ErrorHandlerFunction).not.toHaveBeenCalled();
+      },
+    );
+
+    it("retorna a listagem vazia sem tratar como erro", async () => {
+      const respostaVazia = {
+        status: 200,
+        data: {
+          count: 0,
+          next: null,
+          previous: null,
+          results: [],
+        },
+      };
+      axios.get.mockResolvedValueOnce(respostaVazia);
+
+      const resultado = await buscarOcorrenciasDiretor({
+        solicitacao_medicao_inicial: UUID_MEDICAO,
+      });
+
+      expect(resultado).toEqual(respostaVazia);
+      expect(ErrorHandlerFunction).not.toHaveBeenCalled();
+    });
+
+    it("preserva os dados e o status de erro retornados pelo tratamento da requisição", async () => {
+      const respostaErro = {
+        status: 403,
+        data: {
+          detail: "Você não tem permissão para executar essa ação.",
+        },
+      };
+      const erro = new Error("Falha ao consultar as ocorrências");
+      erro.response = respostaErro;
+      axios.get.mockRejectedValueOnce(erro);
+      ErrorHandlerFunction.mockReturnValueOnce(respostaErro);
+
+      const resultado = await buscarOcorrenciasDiretor({
+        solicitacao_medicao_inicial: UUID_MEDICAO,
+      });
+
+      expect(ErrorHandlerFunction).toHaveBeenCalledTimes(1);
+      expect(ErrorHandlerFunction).toHaveBeenCalledWith(erro);
+      expect(resultado).toEqual(respostaErro);
+    });
+
+    it("retorna undefined quando o tratamento do erro não fornece resposta", async () => {
+      const erro = new Error("Falha ao consultar as ocorrências");
+      axios.get.mockRejectedValueOnce(erro);
+      ErrorHandlerFunction.mockReturnValueOnce(undefined);
+
+      const resultado = await buscarOcorrenciasDiretor({
+        solicitacao_medicao_inicial: UUID_MEDICAO,
+      });
+
+      expect(ErrorHandlerFunction).toHaveBeenCalledTimes(1);
+      expect(ErrorHandlerFunction).toHaveBeenCalledWith(erro);
+      expect(resultado).toBeUndefined();
+    });
+  });
 });

@@ -1,6 +1,7 @@
 /* eslint-env jest */
 
 import "@testing-library/jest-dom";
+import { configure } from "@testing-library/react";
 import { Blob } from "buffer";
 import { APIMockVersion } from "src/mocks/apiVersionMock";
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
@@ -27,6 +28,16 @@ if (typeof global.BroadcastChannel === "undefined") {
 }
 
 jest.setTimeout(120000);
+
+/**
+ * O timeout padrão do waitFor/findBy* é de 1s, o que é pouco quando a esteira
+ * roda vários workers disputando CPU. Um teste que demora 1,2s falha de forma
+ * intermitente mesmo estando correto. Como o polling para assim que a condição
+ * é satisfeita, aumentar esse valor não deixa os testes verdes mais lentos.
+ */
+configure({
+  asyncUtilTimeout: 5000,
+});
 
 jest.mock("src/constants/viteEnv", () => ({
   viteEnv: {
