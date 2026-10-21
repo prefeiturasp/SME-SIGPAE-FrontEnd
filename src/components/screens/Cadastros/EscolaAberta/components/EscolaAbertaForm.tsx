@@ -20,6 +20,7 @@ import { required, requiredMultiselect } from "src/helpers/fieldValidators";
 import { TabelaUnidades } from "./TabelaUnidades";
 import { ModalAdicionarUnidadeEducacional } from "./ModalAdicionarUnidadeEducacional";
 import { buildPayload, resetFormState, validateForm } from "../helper";
+import { CADASTROS, CONFIGURACOES, ESCOLA_ABERTA } from "src/configs/constants";
 
 const PAGE_SIZE = 10;
 
@@ -42,17 +43,30 @@ export const EscolaAbertaForm = ({
     null,
   );
 
+  const isEdit = mode === "edit";
+
   const handleSubmitSave = async (values: any, form: any) => {
     try {
       const payload = buildPayload(values);
       await onSubmitApi(payload);
-      toastSuccess("Escola Aberta cadastrada com sucesso!");
-      resetFormState(form);
-      setPage(1);
+      toastSuccess(
+        isEdit
+          ? "Escola Aberta atualizada com sucesso!"
+          : "Escola Aberta cadastrada com sucesso!",
+      );
+
+      if (isEdit) {
+        navigate(`/${CONFIGURACOES}/${CADASTROS}/${ESCOLA_ABERTA}`);
+      } else {
+        resetFormState(form);
+        setPage(1);
+      }
     } catch (e: any) {
       const errorMsg =
         e?.response?.data?.non_field_errors?.[0] ||
-        "Erro ao cadastrar Escola Aberta.";
+        (isEdit
+          ? "Erro ao atualizar Escola Aberta."
+          : "Erro ao cadastrar Escola Aberta.");
       toastError(errorMsg);
     }
   };
