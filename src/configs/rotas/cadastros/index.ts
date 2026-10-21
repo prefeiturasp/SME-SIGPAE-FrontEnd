@@ -260,13 +260,18 @@ export const rotasCadastros: Array<RotaInterface> = [
     tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
   },
   {
+    path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.DIAS_LETIVOS}/editar`,
+    component: EditarDiasLetivosPage,
+    tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
+  },
+  {
     path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.ESCOLA_ABERTA}`,
     component: CadastroEscolaAbertaPage,
     tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
   },
   {
-    path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.DIAS_LETIVOS}/editar`,
-    component: EditarDiasLetivosPage,
+    path: `/${constants.CONFIGURACOES}/${constants.CADASTROS}/${constants.ESCOLA_ABERTA}/:uuid`,
+    component: CadastroEscolaAbertaPage,
     tipoUsuario: usuarioEhCODAEGestaoAlimentacao(),
   },
 ];
