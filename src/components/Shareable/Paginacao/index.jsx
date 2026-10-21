@@ -1,7 +1,7 @@
 import React from "react";
 import "./style.scss";
 import { ConfigProvider, Pagination } from "antd";
-import ptBR from "antd/es/locale/pt_BR";
+import ptBR from "antd/locale/pt_BR";
 
 export const Paginacao = (props) => {
   const {

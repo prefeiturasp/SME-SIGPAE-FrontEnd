@@ -75,25 +75,27 @@ describe("Testes da interface de Relatorio Financeiro", () => {
     ).toBeInTheDocument();
   });
 
+  // O @khanacademy/react-multi-select só abre o painel no clique do
+  // .dropdown-heading (não no mouseDown do container) e, sem abrir o painel,
+  // o findByRole abaixo rejeita a promise sem ninguém aguardar — a rejeição
+  // vira falha intermitente do teste.
   const setMultiSelect = async (label, value) => {
-    const selectLabel = screen.getAllByText(label)[0];
-    const dropdown =
-      selectLabel.closest(".select") ||
-      selectLabel.closest(".final-form-multi-select");
+    const selectLabel = screen
+      .getAllByText(label)
+      .find((element) => element.tagName === "LABEL");
+    const dropdown = selectLabel.closest(".final-form-multi-select");
 
-    fireEvent.mouseDown(dropdown);
+    fireEvent.click(dropdown.querySelector(".dropdown-heading"));
 
     const listbox = await screen.findByRole("listbox");
-    const option = within(listbox).getByText(value);
+    fireEvent.click(within(listbox).getByText(value));
 
-    fireEvent.click(option);
+    fireEvent.mouseDown(document.body);
+    fireEvent.click(document.body);
   };
 
-  it("deve exibir resultados ao selecionar filtro e clicar em filtrar", () => {
-    setMultiSelect(
-      "Lote e DRE",
-      "04 - DIRETORIA REGIONAL DE EDUCACAO CAPELA DO SOCORRO",
-    );
+  it("deve exibir resultados ao selecionar filtro e clicar em filtrar", async () => {
+    await setMultiSelect("Lote e DRE", "1 - SANTO AMARO");
 
     const filtrar = screen.getByText("Filtrar").closest("button");
     fireEvent.click(filtrar);
@@ -108,15 +110,15 @@ describe("Testes da interface de Relatorio Financeiro", () => {
     expect(screen.getByText("Grupo 1 (CCI, CEI, CEI CEU)")).toBeInTheDocument();
   });
 
-  it("deve limpar o campo selecionado ao clicar em limpar filtros", () => {
-    setMultiSelect("Lote e DRE", "Grupo 3 (CEU EMEF, CEU GESTAO, EMEF, EMEFM)");
+  it("deve limpar o campo selecionado ao clicar em limpar filtros", async () => {
+    await setMultiSelect("Lote e DRE", "1 - SANTO AMARO");
+
+    expect(screen.getByText("1 - SANTO AMARO")).toBeInTheDocument();
 
     const limpar = screen.getByText("Limpar Filtros").closest("button");
     fireEvent.click(limpar);
 
-    expect(
-      screen.queryByText("Grupo 3 (CEU EMEF, CEU GESTAO, EMEF, EMEFM)"),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("1 - SANTO AMARO")).not.toBeInTheDocument();
   });
 
   it("deve abrir o ModalAnalisar ao clicar em opção Analisar", () => {
