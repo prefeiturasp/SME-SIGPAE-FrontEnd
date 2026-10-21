@@ -63,6 +63,8 @@ import { getTiposDeAlimentacao } from "src/services/cadastroTipoAlimentacao.serv
 import {
   getCategoriasDeMedicao,
   getPeriodosInclusaoContinua,
+  getSolicitacoesInclusoesAutorizadasEscola,
+  getSolicitacoesKitLanchesAutorizadasEscola,
   getValoresPeriodosLancamentos,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import {
@@ -87,7 +89,10 @@ import {
   initialStateWeekColumns,
   PERIODO_STATUS_DE_PROGRESSO,
 } from "../../constants";
-import { formatarNomePeriodo } from "../../helper";
+import {
+  calcularDiasComApontamentoKitLanchePasseio,
+  formatarNomePeriodo,
+} from "../../helper";
 import { LegendaDiasNaoLetivos } from "../LegendaDiasNaoLetivos";
 import { ModalAprovarPeriodo } from "../ModalAprovarPeriodo";
 import { ModalCancelarCorrecao } from "../ModalCancelarCorrecao";
@@ -160,6 +165,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
   const [tabelaEtecAlimentacaoRows, setTabelaEtecAlimentacaoRows] =
     useState(null);
   const [valoresLancamentos, setValoresLancamentos] = useState(null);
+  const [
+    diasComApontamentoKitLanchePasseio,
+    setDiasComApontamentoKitLanchePasseio,
+  ] = useState(new Set());
   const [loading, setLoading] = useState(false);
   const [exibirSpin, setExibirSpin] = useState(true);
   const [modoCorrecao, setModoCorrecao] = useState(false);
@@ -880,6 +889,78 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     }
   };
 
+  const ehPeriodoIntegralCeiOuCemeiCei = () =>
+    periodoGrupo?.nome_periodo_grupo === "INTEGRAL" &&
+    (ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+      ehEscolaTipoCEMEI({ nome: solicitacao.escola }));
+
+  const faixaEtariaMaiorDeUmAno = (uuidFaixaEtaria) => {
+    const valorFaixaEtaria = (valoresLancamentos || []).find(
+      (valor) =>
+        String(valor.faixa_etaria) === String(uuidFaixaEtaria) &&
+        valor.faixa_etaria_inicio !== null &&
+        valor.faixa_etaria_inicio !== undefined,
+    );
+    return valorFaixaEtaria
+      ? Number(valorFaixaEtaria.faixa_etaria_inicio) >= 12
+      : false;
+  };
+
+  const exibeTooltipKitLanchePasseio = (row, column, categoria) =>
+    categoria.nome === "ALIMENTAÇÃO" &&
+    row.name === "frequencia" &&
+    diasComApontamentoKitLanchePasseio.has(String(column.dia)) &&
+    faixaEtariaMaiorDeUmAno(row.uuid);
+
+  const carregarInclusoesAutorizadasKitLanchePasseio = async () => {
+    const params = {
+      escola_uuid: solicitacao.escola_uuid,
+      tipo_solicitacao: "Inclusão de",
+      mes: mesSolicitacao,
+      ano: anoSolicitacao,
+      periodos_escolares: [periodoGrupo.nome_periodo_grupo],
+      excluir_inclusoes_continuas: true,
+    };
+    if (ehEscolaTipoCEMEI({ nome: solicitacao.escola })) {
+      params.cemei_cei = true;
+    }
+    const response = await getSolicitacoesInclusoesAutorizadasEscola(params);
+    return response?.data?.results || [];
+  };
+
+  const carregarDiasComApontamentoKitLanchePasseio = async (valores) => {
+    if (!ehPeriodoIntegralCeiOuCemeiCei()) {
+      setDiasComApontamentoKitLanchePasseio(new Set());
+      return;
+    }
+
+    try {
+      const responseKitLanches =
+        await getSolicitacoesKitLanchesAutorizadasEscola({
+          escola_uuid: solicitacao.escola_uuid,
+          tipo_solicitacao: "Kit Lanche",
+          mes: mesSolicitacao,
+          ano: anoSolicitacao,
+          eh_cei: true,
+        });
+      const kitLanchesAutorizados = responseKitLanches?.data?.results || [];
+      if (!kitLanchesAutorizados.length) {
+        setDiasComApontamentoKitLanchePasseio(new Set());
+        return;
+      }
+      const inclusoesAutorizadasKit =
+        await carregarInclusoesAutorizadasKitLanchePasseio();
+      const dias = calcularDiasComApontamentoKitLanchePasseio(
+        valores,
+        kitLanchesAutorizados,
+        inclusoesAutorizadasKit,
+      );
+      setDiasComApontamentoKitLanchePasseio(dias);
+    } catch {
+      setDiasComApontamentoKitLanchePasseio(new Set());
+    }
+  };
+
   const carregarSolicitacoesAutorizadas = async () => {
     if (
       !ehEscolaTipoCEI({ nome: solicitacao.escola }) &&
@@ -954,6 +1035,10 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
           );
 
           setValoresLancamentos(response_valores_periodos.data);
+
+          await carregarDiasComApontamentoKitLanchePasseio(
+            response_valores_periodos.data,
+          );
 
           let categoriasMedicao = await getCategoriasDeMedicaoAsyncHelper(
             categoriasDeMedicao,
@@ -2132,6 +2217,11 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
                                             ),
                                           )
                                         }
+                                        exibeTooltipKitLanchePasseio={exibeTooltipKitLanchePasseio(
+                                          row,
+                                          column,
+                                          categoria,
+                                        )}
                                       />
                                     </div>
                                   )}
