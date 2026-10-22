@@ -10,22 +10,38 @@ export const LinhaUnidade = ({
   readOnly = false,
 }) => {
   if (readOnly) {
+    const loteNome =
+      participante.lote_nome ??
+      participante.lote?.nome_exibicao ??
+      participante.lote?.nome ??
+      "";
+
+    const unidadeNome =
+      participante.unidade_educacional_nome ??
+      participante.unidade_educacional?.nome ??
+      "";
+
+    const alimentacoes = Array.isArray(participante.tipos_alimentacao)
+      ? participante.tipos_alimentacao.map((t: any) => t.nome).join(", ")
+      : (participante.alimentacaoParticipantes ?? "");
+
     return (
-      <>
-        <tr>
-          <td className="dre-lote text-center">
-            {participante.lote.nome_exibicao || participante.lote.nome}
-          </td>
-          <td className="unidade-educacional text-left">
-            <Tooltip title={participante.unidade_educacional.nome}>
-              {truncarString(participante.unidade_educacional.nome, 35)}
-            </Tooltip>
-          </td>
-          <td className="num-participantes text-center">
-            {participante.num_participantes}
-          </td>
-        </tr>
-      </>
+      <tr>
+        <td className="dre-lote text-center">{loteNome}</td>
+        <td className="unidade-educacional text-left">
+          <Tooltip title={unidadeNome}>
+            {truncarString(unidadeNome, 35)}
+          </Tooltip>
+        </td>
+        <td className="num-participantes text-center">
+          {participante.num_participantes ?? "-"}
+        </td>
+        <td className="num-colaboradores text-left">
+          <Tooltip title={alimentacoes}>
+            {truncarString(alimentacoes, 35)}
+          </Tooltip>
+        </td>
+      </tr>
     );
   }
 
