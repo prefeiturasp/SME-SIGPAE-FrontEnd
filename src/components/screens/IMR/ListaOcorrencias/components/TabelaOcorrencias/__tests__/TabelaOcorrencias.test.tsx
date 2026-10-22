@@ -81,10 +81,10 @@ describe("TabelaOcorrencias", () => {
       within(celulas[2]).getByText(OCORRENCIA.descricao),
     ).toBeInTheDocument();
     expect(
-      within(celulas[2]).getByText("Qual item do uniforme faltou?: Touca"),
+      within(celulas[2]).getByText("Qual item do uniforme faltou? Touca"),
     ).toBeInTheDocument();
     expect(
-      within(celulas[2]).getByText("Qual a quantidade de itens ausentes?: 2.0"),
+      within(celulas[2]).getByText("Qual a quantidade de itens ausentes? 2.0"),
     ).toBeInTheDocument();
   });
 
@@ -96,10 +96,10 @@ describe("TabelaOcorrencias", () => {
     expect(screen.getByText(OCORRENCIA.titulo)).toBeInTheDocument();
     expect(screen.queryByText(OCORRENCIA.descricao)).not.toBeInTheDocument();
     expect(
-      screen.getByText("Qual item do uniforme faltou?: Touca"),
+      screen.getByText("Qual item do uniforme faltou? Touca"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Qual a quantidade de itens ausentes?: 2.0"),
+      screen.getByText("Qual a quantidade de itens ausentes? 2.0"),
     ).toBeInTheDocument();
   });
 
@@ -114,17 +114,49 @@ describe("TabelaOcorrencias", () => {
 
     expect(linhas).toHaveLength(3);
     expect(
-      within(linhas[1]).getByText("Qual item do uniforme faltou?: Touca"),
+      within(linhas[1]).getByText("Qual item do uniforme faltou? Touca"),
     ).toBeInTheDocument();
     expect(
-      within(linhas[1]).queryByText("Qual item do uniforme faltou?: Avental"),
+      within(linhas[1]).queryByText("Qual item do uniforme faltou? Avental"),
     ).not.toBeInTheDocument();
     expect(
-      within(linhas[2]).getByText("Qual item do uniforme faltou?: Avental"),
+      within(linhas[2]).getByText("Qual item do uniforme faltou? Avental"),
     ).toBeInTheDocument();
     expect(
-      within(linhas[2]).queryByText("Qual item do uniforme faltou?: Touca"),
+      within(linhas[2]).queryByText("Qual item do uniforme faltou? Touca"),
     ).not.toBeInTheDocument();
+  });
+
+  it("adiciona dois-pontos apenas quando o título da resposta não termina em ? ou :", () => {
+    const ocorrenciaComPontuacoes: OcorrenciaDiretorInterface = {
+      ...OCORRENCIA,
+      respostas: [
+        {
+          ...OCORRENCIA.respostas[0],
+          uuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          titulo: "Qual item faltou?",
+          resposta: "Touca",
+        },
+        {
+          ...OCORRENCIA.respostas[1],
+          uuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          titulo: "Observação:",
+          resposta: "Sem itens",
+        },
+        {
+          ...OCORRENCIA.respostas[1],
+          uuid: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          titulo: "Responsável",
+          resposta: "João",
+        },
+      ],
+    };
+
+    render(<TabelaOcorrencias ocorrencias={[ocorrenciaComPontuacoes]} />);
+
+    expect(screen.getByText("Qual item faltou? Touca")).toBeInTheDocument();
+    expect(screen.getByText("Observação: Sem itens")).toBeInTheDocument();
+    expect(screen.getByText("Responsável: João")).toBeInTheDocument();
   });
 
   it("mantém a edição desabilitada em todas as ocorrências", () => {

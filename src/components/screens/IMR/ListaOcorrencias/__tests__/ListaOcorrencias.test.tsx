@@ -212,7 +212,7 @@ describe("ListaOcorrencias", () => {
     fireEvent.click(within(screen.getByRole("list")).getByText("2"));
 
     expect(
-      await screen.findByText("Qual item do uniforme faltou?: Avental"),
+      await screen.findByText("Qual item do uniforme faltou? Avental"),
     ).toBeInTheDocument();
     expect(buscarOcorrenciasSimulado).toHaveBeenLastCalledWith({
       solicitacao_medicao_inicial: SOLICITACAO_UUID,
@@ -220,7 +220,7 @@ describe("ListaOcorrencias", () => {
       page_size: 10,
     });
     expect(
-      screen.queryByText("Qual item do uniforme faltou?: Touca"),
+      screen.queryByText("Qual item do uniforme faltou? Touca"),
     ).not.toBeInTheDocument();
     expect(screen.getAllByRole("row")).toHaveLength(2);
     expect(screen.getByRole("combobox")).toHaveValue("1/2026");
