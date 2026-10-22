@@ -28,6 +28,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import {
+  atualizarOcorrenciaDiretor,
   buscarOcorrenciaDiretor,
   createFormularioDiretor,
   getTiposOcorrenciaPorEditalDiretor,
@@ -36,10 +37,17 @@ import { AdicionarResposta } from "../Terceirizadas/RelatorioFiscalizacaoTerceir
 import RenderComponentByParametrizacao from "../Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioVisitas/components/Formulario/components/Ocorrencia/RenderComponentByParametrizacao";
 import { SeletorDeDatas } from "../Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioVisitas/components/Formulario/components/Ocorrencia/Seletores/SeletorDeDatas";
 import { ModalCancelaPreenchimento } from "./components/ModalCancelaPreenchimento";
+import { ModalCancelarEdicao } from "./components/ModalCancelarEdicao";
 import { ModalSalvar } from "./components/ModalSalvar";
+import { ModalSalvarEdicao } from "./components/ModalSalvarEdicao";
 import { SeletorCategoria } from "./components/SeletorCategoria";
 import { SeletorTipoOcorrencia } from "./components/SeletorTipoOcorrencia";
-import { formataPayload, getIntervaloMes } from "./helpers";
+import {
+  formataPayload,
+  formataPayloadEdicao,
+  getIntervaloMes,
+  getUrlListaOcorrencias,
+} from "./helpers";
 import { RegistrarNovaOcorrenciaFormInterface } from "./interfaces";
 import "./style.scss";
 
@@ -106,6 +114,8 @@ export const RegistrarNovaOcorrencia = ({
   const [showModalCancelaPreenchimento, setShowModalCancelaPreenchimento] =
     useState(false);
   const [showModalSalvar, setShowModalSalvar] = useState(false);
+  const [showModalCancelarEdicao, setShowModalCancelarEdicao] = useState(false);
+  const [showModalSalvarEdicao, setShowModalSalvarEdicao] = useState(false);
   const [erroAPI, setErroAPI] = useState<string>("");
 
   const { meusDados } = useContext(MeusDadosContext);
@@ -274,6 +284,40 @@ export const RegistrarNovaOcorrencia = ({
     }
   };
 
+  const urlListaOcorrencias = getUrlListaOcorrencias({
+    ano,
+    mes,
+    editalUuid,
+    solicitacaoMedicaoInicialUuid,
+  });
+
+  const onSubmitEdicao = async (
+    values: RegistrarNovaOcorrenciaFormInterface,
+  ): Promise<void> => {
+    if (!showModalSalvarEdicao) {
+      setShowModalSalvarEdicao(true);
+      return;
+    }
+
+    const response = await atualizarOcorrenciaDiretor({
+      uuid: ocorrenciaUuid,
+      ...formataPayloadEdicao(values, tipoOcorrenciaUuid, grupoSelecionado),
+    });
+
+    if (response?.status === HTTP_STATUS.OK) {
+      toastSuccess("Edição da Ocorrência realizada com sucesso!");
+      navigate(urlListaOcorrencias);
+    } else {
+      toastError(getError(response?.data));
+    }
+  };
+
+  const cancelarEdicao = (form: { reset: () => void }) => {
+    form.reset();
+    setShowModalCancelarEdicao(false);
+    navigate(urlListaOcorrencias);
+  };
+
   const exibeBotaoAdicionar = (tipoOcorrencia: TipoOcorrenciaInterface) => {
     return (
       !modoEdicao &&
@@ -305,7 +349,7 @@ export const RegistrarNovaOcorrencia = ({
                 mutators={{
                   ...arrayMutators,
                 }}
-                onSubmit={onSubmit}
+                onSubmit={modoEdicao ? onSubmitEdicao : onSubmit}
               >
                 {({
                   handleSubmit,
@@ -438,6 +482,25 @@ export const RegistrarNovaOcorrencia = ({
                             />
                           </div>
                         )}
+                        {modoEdicao && (
+                          <div className="row float-end mt-4">
+                            <div className="col-12">
+                              <Botao
+                                texto="Cancelar"
+                                type={BUTTON_TYPE.BUTTON}
+                                onClick={() => setShowModalCancelarEdicao(true)}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                              />
+                              <Botao
+                                texto="Salvar"
+                                className="ms-3"
+                                disabled={submitting}
+                                type={BUTTON_TYPE.SUBMIT}
+                                style={BUTTON_STYLE.GREEN}
+                              />
+                            </div>
+                          </div>
+                        )}
                         {!modoEdicao && (
                           <div className="row float-end mt-4">
                             <div className="col-12">
@@ -472,6 +535,25 @@ export const RegistrarNovaOcorrencia = ({
                           values={form.getState().values}
                           salvar={onSubmit}
                         />
+                        {modoEdicao && (
+                          <>
+                            <ModalCancelarEdicao
+                              show={showModalCancelarEdicao}
+                              handleClose={() =>
+                                setShowModalCancelarEdicao(false)
+                              }
+                              confirmar={() => cancelarEdicao(form)}
+                            />
+                            <ModalSalvarEdicao
+                              show={showModalSalvarEdicao}
+                              handleClose={() =>
+                                setShowModalSalvarEdicao(false)
+                              }
+                              values={form.getState().values}
+                              salvar={onSubmitEdicao}
+                            />
+                          </>
+                        )}
                       </section>
                     )}
                   </form>

@@ -153,6 +153,28 @@ export const buscarOcorrenciaDiretor = async (parametros: {
   }
 };
 
+export const atualizarOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+  data: string;
+  ocorrencias: Array<{
+    parametrizacao: string;
+    grupo: number;
+    resposta: unknown;
+    tipoOcorrencia?: string;
+  }>;
+}): Promise<RespostaOcorrenciaDiretorEdicaoInterface | undefined> => {
+  const { uuid, ...dados } = parametros;
+  const url = `${API_URL}/imr/formulario-diretor/${uuid}/`;
+  const resposta: RespostaOcorrenciaDiretorEdicaoInterface = await axios
+    .put(url, dados)
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
 export const getTiposOcorrenciaPorEditalNutrisupervisao = async (params: {
   edital_uuid: string;
   escola_uuid: string;
