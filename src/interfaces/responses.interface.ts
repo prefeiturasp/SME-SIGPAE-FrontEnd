@@ -30,6 +30,7 @@ import {
   EquipamentoInterface,
   InsumoInterface,
   MobiliarioInterface,
+  OcorrenciaDiretorEdicaoInterface,
   OcorrenciaDiretorInterface,
   PeriodoDeVisitaInterface,
   RelatorioVisitaItemListagem,
@@ -246,6 +247,11 @@ export interface ResponseFormularioSupervisaoTiposOcorrenciasInterface
 export interface RespostaListagemOcorrenciasDiretorInterface
   extends ResponseInterface {
   data: ListagemPaginada<OcorrenciaDiretorInterface>;
+}
+
+export interface RespostaOcorrenciaDiretorEdicaoInterface
+  extends ResponseInterface {
+  data: OcorrenciaDiretorEdicaoInterface;
 }
 
 export interface ResponseGetQuantidadeAlunosMatriculadosPorDataInterface

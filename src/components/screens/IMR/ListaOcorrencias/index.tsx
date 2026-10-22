@@ -9,6 +9,7 @@ import { formataMesNome } from "src/helpers/utilities";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
+  EDITAR_OCORRENCIA,
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   REGISTRAR_NOVA_OCORRENCIA,
@@ -102,6 +103,28 @@ export const ListaOcorrencias = () => {
 
   const onSubmit = () => {};
 
+  const editarOcorrencia = (ocorrencia: OcorrenciaDiretorInterface) => {
+    const parametros = {
+      ano,
+      mes,
+      editalUuid: searchParams.get("editalUuid"),
+      solicitacaoMedicaoInicialUuid,
+      ocorrenciaUuid: ocorrencia.uuid,
+      tipoOcorrenciaUuid: ocorrencia.tipo_ocorrencia,
+      grupo: ocorrencia.grupo !== null ? String(ocorrencia.grupo) : null,
+    };
+    const queryString = new URLSearchParams(
+      Object.entries(parametros).filter(([, valor]) => valor) as [
+        string,
+        string,
+      ][],
+    ).toString();
+
+    navigate(
+      `/${LANCAMENTO_INICIAL}/${LANCAMENTO_MEDICAO_INICIAL}/${REGISTRAR_OCORRENCIAS}/${EDITAR_OCORRENCIA}?${queryString}`,
+    );
+  };
+
   return (
     <div className="card lista-ocorrencias mt-3">
       <div className="card-body">
@@ -163,7 +186,10 @@ export const ListaOcorrencias = () => {
                   </p>
                 ) : (
                   <>
-                    <TabelaOcorrencias ocorrencias={ocorrencias} />
+                    <TabelaOcorrencias
+                      ocorrencias={ocorrencias}
+                      onEditar={editarOcorrencia}
+                    />
                     <Paginacao
                       current={pagina}
                       total={totalResultados}

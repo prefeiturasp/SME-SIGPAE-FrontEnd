@@ -220,6 +220,7 @@ export const DETALHAR_RELATORIO_FISCALIZACAO =
 export const EDITAR_RELATORIO_FISCALIZACAO = "editar-relatorio-fiscalizacao";
 export const REGISTRAR_OCORRENCIAS = "registrar-ocorrencias";
 export const REGISTRAR_NOVA_OCORRENCIA = "registrar-nova-ocorrencia";
+export const EDITAR_OCORRENCIA = "editar-ocorrencia";
 
 export const LANCAMENTO_MEDICAO_INICIAL = "lancamento-medicao-inicial";
 export const PERIODO_LANCAMENTO = "periodo-lancamento";
