@@ -9,6 +9,11 @@ interface TabelaOcorrenciasProps {
   ocorrencias: OcorrenciaDiretorInterface[];
 }
 
+const formatarResposta = (titulo: string, resposta: string) => {
+  const tituloJaPontuado = /[?:]\s*$/.test(titulo);
+  return `${titulo}${tituloJaPontuado ? " " : ": "}${resposta}`;
+};
+
 const TabelaOcorrencias = ({ ocorrencias }: TabelaOcorrenciasProps) => {
   const colunas: ColunaTabelaListagem<OcorrenciaDiretorInterface>[] = [
     {
@@ -39,7 +44,7 @@ const TabelaOcorrencias = ({ ocorrencias }: TabelaOcorrenciasProps) => {
               className="tabela-ocorrencias__resposta mt-1"
               key={resposta.uuid}
             >
-              {resposta.titulo}: {resposta.resposta}
+              {formatarResposta(resposta.titulo, resposta.resposta)}
             </div>
           ))}
         </div>
