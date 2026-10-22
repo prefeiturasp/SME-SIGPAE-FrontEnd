@@ -157,6 +157,27 @@ describe("ListaOcorrencias", () => {
     );
   });
 
+  it("redireciona para a edição da ocorrência com os dados da linha", async () => {
+    render(<ListaOcorrencias />);
+
+    await screen.findByRole("table");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: `Editar ocorrência ${OCORRENCIA.titulo}`,
+      }),
+    );
+
+    expect(mockNavegar).toHaveBeenCalledTimes(1);
+    expect(mockNavegar).toHaveBeenCalledWith(
+      "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias/editar-ocorrencia" +
+        `?ano=2026&mes=1&editalUuid=${EDITAL_UUID}` +
+        `&solicitacaoMedicaoInicialUuid=${SOLICITACAO_UUID}` +
+        `&ocorrenciaUuid=${OCORRENCIA.uuid}` +
+        `&tipoOcorrenciaUuid=${OCORRENCIA.tipo_ocorrencia}&grupo=1`,
+    );
+  });
+
   it("informa quando a consulta retorna nenhuma ocorrência", async () => {
     buscarOcorrenciasSimulado.mockResolvedValueOnce(criarRespostaListagem([]));
 

@@ -159,10 +159,13 @@ describe("TabelaOcorrencias", () => {
     expect(screen.getByText("Responsável: João")).toBeInTheDocument();
   });
 
-  it("mantém a edição desabilitada em todas as ocorrências", () => {
+  it("aciona a edição da ocorrência ao clicar no botão de ações", () => {
+    const onEditar = jest.fn();
+
     render(
       <TabelaOcorrencias
         ocorrencias={[OCORRENCIA, OCORRENCIA_SEGUNDO_GRUPO]}
+        onEditar={onEditar}
       />,
     );
 
@@ -172,8 +175,22 @@ describe("TabelaOcorrencias", () => {
 
     expect(botoesEditar).toHaveLength(2);
     botoesEditar.forEach((botao) => {
-      expect(botao).toBeDisabled();
-      expect(botao).toHaveAttribute("title", "Edição indisponível");
+      expect(botao).toBeEnabled();
+      expect(botao).toHaveAttribute("title", "Editar ocorrência");
     });
+
+    botoesEditar[1].click();
+
+    expect(onEditar).toHaveBeenCalledWith(OCORRENCIA_SEGUNDO_GRUPO);
+  });
+
+  it("mantém a edição desabilitada quando não há ação de edição", () => {
+    render(<TabelaOcorrencias ocorrencias={[OCORRENCIA]} />);
+
+    expect(
+      screen.getByRole("button", {
+        name: `Editar ocorrência ${OCORRENCIA.titulo}`,
+      }),
+    ).toBeDisabled();
   });
 });

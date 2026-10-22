@@ -7,6 +7,7 @@ import { RegistrarNovaOcorrencia } from "../index";
 
 const mockNavigate = jest.fn();
 const mockGetTiposOcorrencia = jest.fn();
+const mockBuscarOcorrencia = jest.fn();
 const mockCreateFormularioDiretor = jest.fn();
 const mockFormataPayload = jest.fn();
 const mockToastSuccess = jest.fn();
@@ -37,6 +38,8 @@ const ESCOLA_UUID = "33333333-3333-4333-8333-333333333333";
 const CATEGORIA_UUID = "44444444-4444-4444-8444-444444444444";
 
 const TIPO_OCORRENCIA_UUID = "55555555-5555-4555-8555-555555555555";
+
+const OCORRENCIA_UUID = "88888888-8888-4888-8888-888888888888";
 
 const PARAMETRIZACAO_UUID = "66666666-6666-4666-8666-666666666666";
 
@@ -96,6 +99,9 @@ jest.mock("react-router-dom", () => ({
 jest.mock("src/services/imr/relatorioFiscalizacaoTerceirizadas", () => ({
   getTiposOcorrenciaPorEditalDiretor: (params: Record<string, any>) =>
     mockGetTiposOcorrencia(params),
+
+  buscarOcorrenciaDiretor: (params: Record<string, any>) =>
+    mockBuscarOcorrencia(params),
 
   createFormularioDiretor: (payload: Record<string, any>) =>
     mockCreateFormularioDiretor(payload),
@@ -194,7 +200,7 @@ const meusDadosMock = {
   },
 };
 
-const renderizarComponente = () =>
+const renderizarComponente = (props: Record<string, any> = {}) =>
   render(
     <MeusDadosContext.Provider
       value={
@@ -203,7 +209,7 @@ const renderizarComponente = () =>
         } as any
       }
     >
-      <RegistrarNovaOcorrencia />
+      <RegistrarNovaOcorrencia {...props} />
     </MeusDadosContext.Provider>,
   );
 
@@ -235,6 +241,29 @@ describe("RegistrarNovaOcorrencia", () => {
     mockGetTiposOcorrencia.mockResolvedValue({
       status: 200,
       data: [tipoOcorrenciaSelecionado, segundoTipoOcorrencia],
+    });
+
+    mockBuscarOcorrencia.mockResolvedValue({
+      status: 200,
+      data: {
+        uuid: OCORRENCIA_UUID,
+        solicitacao_medicao_inicial: SOLICITACAO_UUID,
+        data: "10/06/2024",
+        categoria,
+        tipo_ocorrencia: TIPO_OCORRENCIA_UUID,
+        titulo: tipoOcorrenciaSelecionado.titulo,
+        descricao: tipoOcorrenciaSelecionado.descricao,
+        grupo: 1,
+        respostas: [
+          {
+            uuid: "99999999-9999-4999-8999-999999999999",
+            parametrizacao: PARAMETRIZACAO_UUID,
+            titulo: "Descrição da ocorrência",
+            posicao: 1,
+            resposta: "Resposta carregada",
+          },
+        ],
+      },
     });
 
     mockCreateFormularioDiretor.mockResolvedValue({
@@ -663,5 +692,126 @@ describe("RegistrarNovaOcorrencia", () => {
         name: "Selecionar tipo de ocorrência",
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it("carrega a ocorrência e preenche os valores iniciais na edição", async () => {
+    renderizarComponente({
+      modoEdicao: true,
+      ocorrenciaUuid: OCORRENCIA_UUID,
+      tipoOcorrenciaUuid: TIPO_OCORRENCIA_UUID,
+      grupo: 1,
+      editalUuid: EDITAL_UUID,
+      solicitacaoMedicaoInicialUuid: SOLICITACAO_UUID,
+      mes: "6",
+      ano: "2024",
+    });
+
+    await waitFor(() => {
+      expect(mockBuscarOcorrencia).toHaveBeenCalledWith({
+        uuid: OCORRENCIA_UUID,
+        tipo_ocorrencia: TIPO_OCORRENCIA_UUID,
+        grupo: 1,
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockForm).toHaveBeenCalled();
+    });
+
+    const ultimaChamada =
+      mockForm.mock.calls[mockForm.mock.calls.length - 1][0];
+
+    expect(ultimaChamada.initialValues).toEqual({
+      categoria: CATEGORIA_UUID,
+      tipo_ocorrencia: TIPO_OCORRENCIA_UUID,
+      datas: ["10/06/2024"],
+      grupos: [
+        {
+          [`tipoocorrencia_${TIPO_OCORRENCIA_UUID}_parametrizacao_${PARAMETRIZACAO_UUID}_uuid_undefined`]:
+            "Resposta carregada",
+        },
+      ],
+    });
+
+    expect(screen.getByText("Falha na higienização:")).toBeInTheDocument();
+
+    const seletorCategoria =
+      mockSeletorCategoria.mock.calls[
+        mockSeletorCategoria.mock.calls.length - 1
+      ][0];
+    const seletorTipo =
+      mockSeletorTipoOcorrencia.mock.calls[
+        mockSeletorTipoOcorrencia.mock.calls.length - 1
+      ][0];
+
+    expect(seletorCategoria.disabled).toBe(true);
+    expect(seletorTipo.disabled).toBe(true);
+  });
+
+  it("exibe carregamento enquanto os dados da ocorrência não são retornados", async () => {
+    mockBuscarOcorrencia.mockReturnValue(new Promise(() => {}));
+
+    renderizarComponente({
+      modoEdicao: true,
+      ocorrenciaUuid: OCORRENCIA_UUID,
+      tipoOcorrenciaUuid: TIPO_OCORRENCIA_UUID,
+      grupo: 1,
+      editalUuid: EDITAL_UUID,
+      solicitacaoMedicaoInicialUuid: SOLICITACAO_UUID,
+      mes: "6",
+      ano: "2024",
+    });
+
+    await waitFor(() => {
+      const ultimaChamada =
+        mockSpin.mock.calls[mockSpin.mock.calls.length - 1][0];
+      expect(ultimaChamada.spinning).toBe(true);
+    });
+  });
+
+  it("mantém os botões de cancelar e salvar ocultos na edição", async () => {
+    renderizarComponente({
+      modoEdicao: true,
+      ocorrenciaUuid: OCORRENCIA_UUID,
+      tipoOcorrenciaUuid: TIPO_OCORRENCIA_UUID,
+      grupo: 1,
+      editalUuid: EDITAL_UUID,
+      solicitacaoMedicaoInicialUuid: SOLICITACAO_UUID,
+      mes: "6",
+      ano: "2024",
+    });
+
+    await screen.findByText("Seletor de categoria");
+
+    expect(
+      screen.queryByRole("button", { name: "Cancelar" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Salvar" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("informa erro ao tentar carregar ocorrência de outra escola", async () => {
+    mockBuscarOcorrencia.mockResolvedValue({
+      status: 403,
+      data: {},
+    });
+
+    renderizarComponente({
+      modoEdicao: true,
+      ocorrenciaUuid: OCORRENCIA_UUID,
+      tipoOcorrenciaUuid: TIPO_OCORRENCIA_UUID,
+      grupo: 1,
+      editalUuid: EDITAL_UUID,
+      solicitacaoMedicaoInicialUuid: SOLICITACAO_UUID,
+      mes: "6",
+      ano: "2024",
+    });
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Você não tem permissão para editar a ocorrência desta unidade educacional.",
+      );
+    });
   });
 });
