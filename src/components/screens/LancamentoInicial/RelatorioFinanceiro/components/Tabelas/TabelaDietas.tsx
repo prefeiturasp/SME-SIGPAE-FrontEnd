@@ -2,14 +2,15 @@ import { useMemo, forwardRef, useImperativeHandle } from "react";
 import {
   TabelaParametrizacao,
   TipoAlimentacao,
-  ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
-import { formataMilharDecimal } from "src/helpers/utilities";
-import { stringDecimalToNumber } from "src/helpers/parsers";
+import { formataMilhar, formataMilharDecimal } from "src/helpers/utilities";
 import { TabelaDietasHandle } from "../../types";
 import {
-  buscarCampoEMEF,
+  chaveCampoConsumo,
+  chaveLinhaTipoAlimentacao,
+  formataPercentual,
   listaAlimentacoes,
+  obterValorParametrizado,
   prioridadeAlimentacao,
 } from "../../helpers";
 import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
@@ -24,10 +25,40 @@ type Props = {
   unidade?: string;
 };
 
+type LinhaDieta = {
+  chave: string;
+  nomeExibicao: string;
+  grupo: string | null;
+  numeroConsumo: number;
+  valorUnitario: number;
+  valorAcrescimo: number;
+  valorUnitarioTotal: number;
+  valorTotal: number;
+};
+
 const _TIPO_CLASS = {
   "TIPO A": "cor-tipo-a",
   "TIPO B": "cor-tipo-b",
 };
+
+const obterTabelaDieta = (
+  tabelas: TabelaParametrizacao[],
+  tipoDieta: string,
+  ehCemei: boolean,
+) => {
+  if (ehCemei) {
+    const tipo = tipoDieta === "TIPO A" ? "Tipo A e Tipo A Enteral" : "Tipo B";
+    return tabelas.find(
+      (tabela) => tabela.nome === `Dietas ${tipo} - Turma Infantil - EMEI`,
+    );
+  }
+
+  return tabelas.find((tabela) =>
+    tabela.nome.toUpperCase().includes(tipoDieta),
+  );
+};
+
+const moeda = (valor: number) => `R$ ${formataMilharDecimal(valor)}`;
 
 export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
   (
@@ -42,153 +73,137 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
     },
     ref,
   ) => {
-    let totalConsumoGeral = 0;
-    let valorTotalGeral = 0;
-    const ehCieja = unidade === "CIEJA";
-    const ehCemei = unidade === "CEMEI";
-    const ehEmebs = unidade?.includes("EMEBS");
-
-    useImperativeHandle(ref, () => ({
-      getTotais: () => ({
-        totalConsumoGeral,
-        valorTotalGeral,
-      }),
-    }));
-
-    const alimentacoes = useMemo(() => {
-      const lista = listaAlimentacoes(tipoDieta, ehCieja);
+    const linhas = useMemo<LinhaDieta[]>(() => {
+      const ehCieja = unidade === "CIEJA";
+      const tabela = obterTabelaDieta(tabelas, tipoDieta, unidade === "CEMEI");
+      const permitidas = listaAlimentacoes(tipoDieta, ehCieja);
 
       return tiposAlimentacao
-        .filter((t) => {
-          const nome = normalizar(t.nome);
+        .filter((tipo) => {
+          const nome = normalizar(tipo.nome);
           return (
-            lista.includes(nome) ||
+            permitidas.includes(nome) ||
             (exibeNoturno && nome.startsWith("refeicao"))
           );
-        })
-        .map((ta) => {
-          const nomeNormalizado = normalizar(ta.nome);
-
-          return {
-            ...ta,
-            grupo: nomeNormalizado.includes("refeicao")
-              ? "Dieta Enteral"
-              : null,
-          };
         })
         .sort(
           (a, b) =>
             prioridadeAlimentacao(a.nome) - prioridadeAlimentacao(b.nome),
-        );
-    }, [tipoDieta, tiposAlimentacao, unidade]);
+        )
+        .map((tipo) => {
+          const nomeNormalizado = normalizar(tipo.nome);
+          const valorUnitario = obterValorParametrizado(
+            tabela,
+            tipo,
+            "UNITARIO",
+          );
+          const valorAcrescimo = obterValorParametrizado(
+            tabela,
+            tipo,
+            "ACRESCIMO",
+          );
+          const numeroConsumo =
+            totaisConsumo?.[`DIETA ESPECIAL - ${tipoDieta}`]?.[
+              chaveCampoConsumo(tipo.nome)
+            ] ?? 0;
+          const valorUnitarioTotal = valorUnitario * (1 + valorAcrescimo / 100);
+
+          return {
+            chave: chaveLinhaTipoAlimentacao(tipo),
+            nomeExibicao:
+              ehCieja && nomeNormalizado === "refeicao"
+                ? "Refeição CIEJA e CMCT"
+                : tipo.nome,
+            grupo: nomeNormalizado.includes("refeicao")
+              ? "Dieta Enteral"
+              : null,
+            numeroConsumo,
+            valorUnitario,
+            valorAcrescimo,
+            valorUnitarioTotal,
+            valorTotal: valorUnitarioTotal * numeroConsumo,
+          };
+        });
+    }, [
+      tabelas,
+      tipoDieta,
+      tiposAlimentacao,
+      totaisConsumo,
+      exibeNoturno,
+      unidade,
+    ]);
+
+    const totais = useMemo(
+      () => ({
+        totalConsumoGeral: linhas.reduce(
+          (soma, linha) => soma + linha.numeroConsumo,
+          0,
+        ),
+        valorTotalGeral: linhas.reduce(
+          (soma, linha) => soma + linha.valorTotal,
+          0,
+        ),
+      }),
+      [linhas],
+    );
+
+    useImperativeHandle(ref, () => ({ getTotais: () => totais }), [totais]);
 
     return (
-      <table className="tabela-relatorio">
-        <thead>
-          <tr className={_TIPO_CLASS[tipoDieta] ?? ""}>
-            <th className="col-faixa">
-              DIETA ESPECIAL -{" "}
-              {tipoDieta !== "TIPO A"
-                ? tipoDieta
-                : "TIPO A, A ENTERAL E RESTRIÇÃO DE AMINOÁCIDOS"}
-            </th>
-            <th className="col-unitario">VALOR UNITÁRIO</th>
-            <th className="col-reajuste">% de ACRÉSCIMO</th>
-            <th className="col-total-unitario">VALOR UNITÁRIO TOTAL</th>
-            <th className="col-atendimentos">CONSUMO {tipoDieta}</th>
-            <th className="col-valor-total">VALOR TOTAL</th>
-          </tr>
-        </thead>
+      <div className="tabela-relatorio-responsiva">
+        <table className="tabela-relatorio tabela-detalhada tabela-detalhada-dieta">
+          <thead>
+            <tr className={_TIPO_CLASS[tipoDieta] ?? ""}>
+              <th scope="col" className="col-descricao">
+                DIETA ESPECIAL -{" "}
+                {tipoDieta === "TIPO A"
+                  ? "TIPO A, A ENTERAL E RESTRIÇÃO DE AMINOÁCIDOS"
+                  : tipoDieta}
+              </th>
+              <th scope="col" className="col-numero">
+                NÚMERO DE ATEND. {tipoDieta}
+              </th>
+              <th scope="col">VALOR UNITÁRIO</th>
+              <th scope="col">% DE ACRÉSCIMO</th>
+              <th scope="col">VALOR UNITÁRIO TOTAL</th>
+              <th scope="col" className="col-valor-total">
+                VALOR TOTAL
+              </th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {alimentacoes.map((tipo) => {
-            const nomeExibicao =
-              ehCieja && normalizar(tipo.nome) === "refeicao"
-                ? "Refeição CIEJA e CMCT"
-                : tipo.nome;
-
-            const tabela = tabelas.find((tabela) => {
-              if (ehCemei) {
-                return (
-                  tabela.nome ===
-                  `Dietas ${tipoDieta === "TIPO A" ? "Tipo A e Tipo A Enteral" : "Tipo B"} - Turma Infantil - EMEI`
-                );
-              }
-
-              if (ehEmebs) {
-                return tabela.nome === `${tabela.nome} - ${unidade}`;
-              }
-
-              return tabela.nome.toUpperCase().includes(tipoDieta);
-            });
-
-            const valorUnitario = stringDecimalToNumber(
-              tabela?.valores.find((v: ValorTabela) =>
-                buscarCampoEMEF(v, tipo, "UNITARIO"),
-              )?.valor ?? "0",
-            );
-
-            const valorAcrescimo = stringDecimalToNumber(
-              tabela?.valores.find((v: ValorTabela) =>
-                buscarCampoEMEF(v, tipo, "ACRESCIMO"),
-              )?.valor ?? "0",
-            );
-
-            const numeroConsumo =
-              totaisConsumo?.[`DIETA ESPECIAL - ${tipoDieta}`]?.[
-                tipo.nome
-                  .normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .replace(/\s+/g, "_")
-                  .toLowerCase()
-              ] ?? 0;
-
-            const totalUnitario = valorUnitario * (1 + valorAcrescimo / 100);
-
-            const valorTotal = totalUnitario * numeroConsumo;
-
-            totalConsumoGeral += numeroConsumo;
-            valorTotalGeral += valorTotal;
-
-            return (
-              <tr
-                key={`${tipoDieta
-                  .replace(" ", "_")
-                  .toLowerCase()}_${tipo.uuid}${tipo?.nome_campo}`}
-              >
-                <td className="col-tipo">
-                  <b>{nomeExibicao.toUpperCase()}</b>{" "}
-                  {tipo.grupo && `- ${tipo.grupo}`}
+          <tbody>
+            {linhas.map((linha) => (
+              <tr key={`${tipoDieta}-${linha.chave}`}>
+                <td className="col-descricao">
+                  <b>{linha.nomeExibicao.toUpperCase()}</b>{" "}
+                  {linha.grupo && `- ${linha.grupo}`}
                 </td>
-                <td className="col-unitario">
-                  R$ {formataMilharDecimal(valorUnitario)}
+                <td className="col-numero">
+                  {formataMilhar(linha.numeroConsumo)}
                 </td>
-                <td className="col-reajuste">
-                  % {formataMilharDecimal(valorAcrescimo)}
-                </td>
-                <td className="col-total-unitario">
-                  R$ {formataMilharDecimal(totalUnitario)}
-                </td>
-                <td className="col-atendimentos">{numeroConsumo}</td>
-                <td className="col-valor-total">
-                  R$ {formataMilharDecimal(valorTotal)}
-                </td>
+                <td>{moeda(linha.valorUnitario)}</td>
+                <td>{formataPercentual(linha.valorAcrescimo)}</td>
+                <td>{moeda(linha.valorUnitarioTotal)}</td>
+                <td className="col-valor-total">{moeda(linha.valorTotal)}</td>
               </tr>
-            );
-          })}
+            ))}
 
-          <tr key={`total_${ordem}`} className="linha-total">
-            <td className="col-faixa">TOTAL ({ordem})</td>
-            <td />
-            <td />
-            <td />
-            <td className="col-atendimentos">{totalConsumoGeral}</td>
-            <td className="col-valor-total">
-              R$ {formataMilharDecimal(valorTotalGeral)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            <tr className="linha-total">
+              <td>TOTAL ({ordem})</td>
+              <td className="col-numero">
+                {formataMilhar(totais.totalConsumoGeral)}
+              </td>
+              <td />
+              <td />
+              <td />
+              <td className="col-valor-total">
+                {moeda(totais.valorTotalGeral)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     );
   },
 );
