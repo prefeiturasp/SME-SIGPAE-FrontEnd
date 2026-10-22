@@ -20,6 +20,24 @@ describe("InputValueMedicao - validação Preenchimento obrigatório.", () => {
     );
   });
 
+  it("exibe tooltip verde de Kit Lanche Passeio quando solicitado", () => {
+    render(
+      <InputText
+        className="teste"
+        name="frequencia__faixa_1__dia_01__categoria_1"
+        input={{ name: "frequencia__faixa_1__dia_01__categoria_1" }}
+        meta={{}}
+        exibeTooltipKitLanchePasseio={true}
+      />,
+    );
+
+    expect(
+      screen.getByTestId(
+        "tooltip-kit-lanche-passeio_frequencia__faixa_1__dia_01__categoria_1",
+      ),
+    ).toHaveClass("icone-info-success");
+  });
+
   it("aplica classe invalid-field quando meta.error é 'Preenchimento obrigatório.' em campo de frequencia", () => {
     render(
       <InputText
