@@ -15,9 +15,11 @@ import {
 } from "../../helpers";
 import { normalizar } from "src/components/screens/LancamentoInicial/ParametrizacaoFinanceira/AdicionarParametrizacaoFinanceira/helpers";
 
+type TipoDieta = "TIPO A" | "TIPO B";
+
 type Props = {
   tabelas: TabelaParametrizacao[];
-  tipoDieta: string;
+  tipoDieta: TipoDieta;
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo?: any;
   ordem?: string;
@@ -36,14 +38,14 @@ type LinhaDieta = {
   valorTotal: number;
 };
 
-const _TIPO_CLASS = {
+const _TIPO_CLASS: Record<TipoDieta, string> = {
   "TIPO A": "cor-tipo-a",
   "TIPO B": "cor-tipo-b",
 };
 
 const obterTabelaDieta = (
   tabelas: TabelaParametrizacao[],
-  tipoDieta: string,
+  tipoDieta: TipoDieta,
   ehCemei: boolean,
 ) => {
   if (ehCemei) {
@@ -153,7 +155,7 @@ export const TabelaDietas = forwardRef<TabelaDietasHandle, Props>(
       <div className="tabela-relatorio-responsiva">
         <table className="tabela-relatorio tabela-detalhada tabela-detalhada-dieta">
           <thead>
-            <tr className={_TIPO_CLASS[tipoDieta] ?? ""}>
+            <tr className={_TIPO_CLASS[tipoDieta]}>
               <th scope="col" className="col-descricao">
                 DIETA ESPECIAL -{" "}
                 {tipoDieta === "TIPO A"
