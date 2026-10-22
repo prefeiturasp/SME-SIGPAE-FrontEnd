@@ -8,8 +8,11 @@ import { RegistrarNovaOcorrencia } from "../index";
 const mockNavigate = jest.fn();
 const mockGetTiposOcorrencia = jest.fn();
 const mockBuscarOcorrencia = jest.fn();
+const mockAtualizarOcorrencia = jest.fn();
 const mockCreateFormularioDiretor = jest.fn();
 const mockFormataPayload = jest.fn();
+const mockFormataPayloadEdicao = jest.fn();
+const mockGetUrlListaOcorrencias = jest.fn();
 const mockToastSuccess = jest.fn();
 const mockToastError = jest.fn();
 
@@ -24,10 +27,13 @@ const mockRenderParametrizacao = jest.fn();
 const mockAdicionarResposta = jest.fn();
 const mockModalCancelar = jest.fn();
 const mockModalSalvar = jest.fn();
+const mockModalCancelarEdicao = jest.fn();
+const mockModalSalvarEdicao = jest.fn();
 
 const mockPush = jest.fn();
 const mockFormChange = jest.fn();
 const mockFormGetState = jest.fn();
+const mockFormReset = jest.fn();
 
 const EDITAL_UUID = "11111111-1111-4111-8111-111111111111";
 
@@ -57,6 +63,7 @@ let mockFormValues: Record<string, any>;
 const mockFormApi = {
   getState: mockFormGetState,
   change: mockFormChange,
+  reset: mockFormReset,
   mutators: {
     push: mockPush,
   },
@@ -102,6 +109,9 @@ jest.mock("src/services/imr/relatorioFiscalizacaoTerceirizadas", () => ({
 
   buscarOcorrenciaDiretor: (params: Record<string, any>) =>
     mockBuscarOcorrencia(params),
+
+  atualizarOcorrenciaDiretor: (params: Record<string, any>) =>
+    mockAtualizarOcorrencia(params),
 
   createFormularioDiretor: (payload: Record<string, any>) =>
     mockCreateFormularioDiretor(payload),
@@ -186,10 +196,25 @@ jest.mock("../components/ModalSalvar", () => ({
   ModalSalvar: (props: any) => mockModalSalvar(props),
 }));
 
+jest.mock("../components/ModalCancelarEdicao", () => ({
+  ModalCancelarEdicao: (props: any) => mockModalCancelarEdicao(props),
+}));
+
+jest.mock("../components/ModalSalvarEdicao", () => ({
+  ModalSalvarEdicao: (props: any) => mockModalSalvarEdicao(props),
+}));
+
 jest.mock("../helpers", () => ({
   ...jest.requireActual("../helpers"),
   formataPayload: (values: Record<string, any>, solicitacaoUuid: string) =>
     mockFormataPayload(values, solicitacaoUuid),
+  formataPayloadEdicao: (
+    values: Record<string, any>,
+    tipoOcorrenciaUuid: string,
+    grupo: number,
+  ) => mockFormataPayloadEdicao(values, tipoOcorrenciaUuid, grupo),
+  getUrlListaOcorrencias: (parametros: Record<string, any>) =>
+    mockGetUrlListaOcorrencias(parametros),
 }));
 
 const meusDadosMock = {
@@ -271,9 +296,22 @@ describe("RegistrarNovaOcorrencia", () => {
       data: {},
     });
 
+    mockAtualizarOcorrencia.mockResolvedValue({
+      status: 200,
+      data: {},
+    });
+
     mockFormataPayload.mockReturnValue({
       ocorrencia: "payload formatado",
     });
+
+    mockFormataPayloadEdicao.mockReturnValue({
+      ocorrencia: "payload de edição formatado",
+    });
+
+    mockGetUrlListaOcorrencias.mockReturnValue(
+      "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias?ano=2024&mes=6",
+    );
 
     mockSpin.mockImplementation(({ children, spinning }: any) => (
       <div data-testid="carregamento" data-spinning={String(spinning)}>
@@ -389,6 +427,36 @@ describe("RegistrarNovaOcorrencia", () => {
 
             <button type="button" onClick={handleClose}>
               Fechar salvamento
+            </button>
+          </div>
+        ) : null,
+    );
+
+    mockModalCancelarEdicao.mockImplementation(
+      ({ show, confirmar, handleClose }: any) =>
+        show ? (
+          <div data-testid="modal-cancelar-edicao">
+            <button type="button" onClick={confirmar}>
+              Confirmar cancelamento
+            </button>
+
+            <button type="button" onClick={handleClose}>
+              Fechar cancelamento
+            </button>
+          </div>
+        ) : null,
+    );
+
+    mockModalSalvarEdicao.mockImplementation(
+      ({ show, salvar, values, handleClose }: any) =>
+        show ? (
+          <div data-testid="modal-salvar-edicao">
+            <button type="button" onClick={() => salvar(values)}>
+              Confirmar edição
+            </button>
+
+            <button type="button" onClick={handleClose}>
+              Fechar edição
             </button>
           </div>
         ) : null,
@@ -769,7 +837,7 @@ describe("RegistrarNovaOcorrencia", () => {
     });
   });
 
-  it("mantém os botões de cancelar e salvar ocultos na edição", async () => {
+  it("exibe os botões de cancelar e salvar na edição", async () => {
     renderizarComponente({
       modoEdicao: true,
       ocorrenciaUuid: OCORRENCIA_UUID,
@@ -784,11 +852,9 @@ describe("RegistrarNovaOcorrencia", () => {
     await screen.findByText("Seletor de categoria");
 
     expect(
-      screen.queryByRole("button", { name: "Cancelar" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Salvar" }),
-    ).not.toBeInTheDocument();
+      screen.getByRole("button", { name: "Cancelar" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Salvar" })).toBeInTheDocument();
   });
 
   it("informa erro ao tentar carregar ocorrência de outra escola", async () => {
@@ -813,5 +879,112 @@ describe("RegistrarNovaOcorrencia", () => {
         "Você não tem permissão para editar a ocorrência desta unidade educacional.",
       );
     });
+  });
+
+  const propsEdicao = {
+    modoEdicao: true,
+    ocorrenciaUuid: OCORRENCIA_UUID,
+    tipoOcorrenciaUuid: TIPO_OCORRENCIA_UUID,
+    grupo: 1,
+    editalUuid: EDITAL_UUID,
+    solicitacaoMedicaoInicialUuid: SOLICITACAO_UUID,
+    mes: "6",
+    ano: "2024",
+  };
+
+  const URL_LISTA_OCORRENCIAS =
+    "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias?ano=2024&mes=6";
+
+  it("abre o modal de cancelamento e retorna à listagem somente ao confirmar", async () => {
+    renderizarComponente(propsEdicao);
+
+    await screen.findByText("Seletor de categoria");
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+
+    expect(screen.getByTestId("modal-cancelar-edicao")).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Fechar cancelamento" }),
+    );
+
+    expect(
+      screen.queryByTestId("modal-cancelar-edicao"),
+    ).not.toBeInTheDocument();
+    expect(mockNavigate).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancelar" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Confirmar cancelamento" }),
+    );
+
+    expect(mockFormReset).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith(URL_LISTA_OCORRENCIAS);
+  });
+
+  it("abre o modal de salvar e atualiza a ocorrência ao confirmar", async () => {
+    renderizarComponente(propsEdicao);
+
+    await screen.findByText("Seletor de categoria");
+
+    fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
+
+    expect(screen.getByTestId("modal-salvar-edicao")).toBeInTheDocument();
+    expect(mockAtualizarOcorrencia).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar edição" }));
+
+    await waitFor(() => {
+      expect(mockFormataPayloadEdicao).toHaveBeenCalledWith(
+        mockFormValues,
+        TIPO_OCORRENCIA_UUID,
+        1,
+      );
+      expect(mockAtualizarOcorrencia).toHaveBeenCalledWith({
+        uuid: OCORRENCIA_UUID,
+        ocorrencia: "payload de edição formatado",
+      });
+    });
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Edição da Ocorrência realizada com sucesso!",
+    );
+    expect(mockNavigate).toHaveBeenCalledWith(URL_LISTA_OCORRENCIAS);
+  });
+
+  it("não atualiza a ocorrência quando o modal de salvar é fechado", async () => {
+    renderizarComponente(propsEdicao);
+
+    await screen.findByText("Seletor de categoria");
+
+    fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Fechar edição" }));
+
+    expect(mockAtualizarOcorrencia).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockToastSuccess).not.toHaveBeenCalled();
+  });
+
+  it("informa erro quando não consegue salvar a edição", async () => {
+    mockAtualizarOcorrencia.mockResolvedValue({
+      status: 400,
+      data: { detail: "Mensagem retornada pelo back" },
+    });
+
+    renderizarComponente(propsEdicao);
+
+    await screen.findByText("Seletor de categoria");
+
+    fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar edição" }));
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Mensagem retornada pelo back",
+      );
+    });
+
+    expect(mockToastSuccess).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
