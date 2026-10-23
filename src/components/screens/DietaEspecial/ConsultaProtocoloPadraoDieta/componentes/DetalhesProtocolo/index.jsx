@@ -42,9 +42,6 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
       } else {
         toastError(mensagemErro);
       }
-      if (resposta.status !== HTTP_STATUS.OK) {
-        toastError(mensagemErro);
-      }
     } catch {
       toastError(mensagemErro);
     } finally {
