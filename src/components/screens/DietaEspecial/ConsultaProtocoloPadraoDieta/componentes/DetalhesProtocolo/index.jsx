@@ -54,13 +54,6 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
       <tr className={selecionado === idx ? "" : "d-none"}>
         <td colSpan="4">
           <Botao
-            texto="Histórico"
-            type={BUTTON_TYPE.BUTTON}
-            style={BUTTON_STYLE.GREEN_OUTLINE}
-            className="float-end mt-3 mb-3 ms-3"
-            onClick={visualizarModal}
-          />
-          <Botao
             texto="Imprimir"
             type={BUTTON_TYPE.BUTTON}
             style={BUTTON_STYLE.GREEN}
@@ -68,6 +61,13 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
             className="float-end mt-3 mb-3 ms-3"
             disabled={solicitandoPdf}
             onClick={imprimirProtocolo}
+          />
+          <Botao
+            texto="Histórico"
+            type={BUTTON_TYPE.BUTTON}
+            style={BUTTON_STYLE.GREEN_OUTLINE}
+            className="float-end mt-3 mb-3 ms-3"
+            onClick={visualizarModal}
           />
         </td>
       </tr>
@@ -77,6 +77,7 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
           onOk={handleCancel}
           onCancel={handleCancel}
           history={historico}
+          f
         />
       )}
       <tr className={selecionado === idx ? "" : "d-none"}>
