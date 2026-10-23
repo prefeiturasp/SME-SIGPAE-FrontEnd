@@ -98,19 +98,23 @@ export const EscolaAbertaCadastradas = () => {
     <Spin tip="Carregando..." spinning={loading}>
       <div className="card pt-3 mt-3">
         <div className="card-body card-table-cadastro">
-          <table className="recreios-cadastrados">
+          <div className="escola-aberta-filtros">
+            <InputPesquisa
+              valor={pesquisar}
+              onChange={onPesquisaChanged}
+              placeholder="Pesquisar"
+            />
+          </div>
+
+          <table className="tabela-escolas-abertas">
             <thead>
               <tr>
-                <th className="col">Período de Realização</th>
-                <th className="col">Repetição</th>
-                <th className="col">Qtde. de Unidades</th>
-                <th className="col">
-                  <InputPesquisa
-                    valor={pesquisar}
-                    onChange={onPesquisaChanged}
-                    placeholder="Pesquisar"
-                  />
+                <th className="periodo-realizacao text-center">
+                  Período de Realização
                 </th>
+                <th className="repeticao text-center">Repetição</th>
+                <th className="qtde-unidades text-center">Qtde. de Unidades</th>
+                <th className="acoes text-center">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -124,41 +128,44 @@ export const EscolaAbertaCadastradas = () => {
                 return (
                   <React.Fragment key={ea.uuid}>
                     <tr>
-                      <td>
+                      <td className="text-center">
                         {ea.data_inicial} até {ea.data_final}
                       </td>
-                      <td>{formatarDias(ea.dias_semana)}</td>
-                      <td className="ps-4">
+                      <td className="text-center">
+                        {formatarDias(ea.dias_semana)}
+                      </td>
+                      <td className="text-center">
                         {count} {count === 1 ? "UE" : "UEs"}
                       </td>
-                      <td>
-                        {periodoEditavel ? (
-                          <Tooltip title="Editar">
-                            <span>
-                              <NavLink
-                                className="float-start botao-editar"
-                                to={`/${CONFIGURACOES}/${CADASTROS}/${ESCOLA_ABERTA}/${ea.uuid}`}
-                              >
-                                <i className="fas fa-edit icone-edicao" />
-                              </NavLink>
+                      <td className="text-center">
+                        <div className="acoes-celula">
+                          {periodoEditavel ? (
+                            <Tooltip title="Editar">
+                              <span>
+                                <NavLink
+                                  className="botao-editar"
+                                  to={`/${CONFIGURACOES}/${CADASTROS}/${ESCOLA_ABERTA}/${ea.uuid}`}
+                                >
+                                  <i className="fas fa-edit icone-edicao" />
+                                </NavLink>
+                              </span>
+                            </Tooltip>
+                          ) : (
+                            <span className="esconder-icone">
+                              <i className="fas fa-edit icone-edicao" />
                             </span>
-                          </Tooltip>
-                        ) : (
-                          <span className="esconder-icone">
-                            <i className="fas fa-edit icone-edicao" />
-                          </span>
-                        )}
-                        <ToggleExpandir
-                          className="ms-5"
-                          ativo={!!expandidos[ea.uuid]}
-                          onClick={() => toggleExpandir(ea.uuid)}
-                          dataTestId={`toggle-${ea.uuid}`}
-                        />
+                          )}
+                          <ToggleExpandir
+                            ativo={!!expandidos[ea.uuid]}
+                            onClick={() => toggleExpandir(ea.uuid)}
+                            dataTestId={`toggle-${ea.uuid}`}
+                          />
+                        </div>
                       </td>
                     </tr>
 
                     {!!expandidos[ea.uuid] && (
-                      <tr>
+                      <tr className="linha-expandida">
                         <td colSpan={4}>
                           <Collapse isOpened={!!expandidos[ea.uuid]}>
                             <TabelaUnidades
