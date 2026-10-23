@@ -3,14 +3,22 @@ import { useNavigate } from "react-router-dom";
 import Botao from "src/components/Shareable/Botao";
 import ModalHistoricoProtocoloPadrao from "src/components/Shareable/ModalHistoricoProtocoloPadrao";
 import {
+  BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import HTTP_STATUS from "http-status-codes";
+import { toastError } from "src/components/Shareable/Toast/dialogs";
+import { solicitarPdfProtocoloPadrao } from "src/services/dietaEspecial.service";
+import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoDownload";
 
 export default ({ protocoloPadrao, idx, selecionado }) => {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
   const [historico, setHistorico] = useState([]);
+  const [solicitandoPdf, setSolicitandoPdf] = useState(false);
+  const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
+    useState(false);
 
   const visualizarModal = () => {
     setHistorico(protocoloPadrao.historico);
@@ -19,6 +27,29 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
 
   const handleCancel = () => {
     setVisible(false);
+  };
+
+  const imprimirProtocolo = async () => {
+    const mensagemErro =
+      "Não foi possível solicitar a impressão do protocolo. Tente novamente.";
+    setSolicitandoPdf(true);
+
+    try {
+      const resposta = await solicitarPdfProtocoloPadrao(protocoloPadrao.uuid);
+
+      if (resposta.status === HTTP_STATUS.OK) {
+        setExibirModalCentralDownloads(true);
+      } else {
+        toastError(mensagemErro);
+      }
+      if (resposta.status !== HTTP_STATUS.OK) {
+        toastError(mensagemErro);
+      }
+    } catch {
+      toastError(mensagemErro);
+    } finally {
+      setSolicitandoPdf(false);
+    }
   };
 
   return (
@@ -31,6 +62,15 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
             style={BUTTON_STYLE.GREEN_OUTLINE}
             className="float-end mt-3 mb-3 ms-3"
             onClick={visualizarModal}
+          />
+          <Botao
+            texto="Imprimir"
+            type={BUTTON_TYPE.BUTTON}
+            style={BUTTON_STYLE.GREEN}
+            icon={solicitandoPdf ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}
+            className="float-end mt-3 mb-3 ms-3"
+            disabled={solicitandoPdf}
+            onClick={imprimirProtocolo}
           />
         </td>
       </tr>
@@ -78,18 +118,18 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
                           {substituicao.alimentos_substitutos.map(
                             (alimento, idxAlimento) => {
                               return <li key={idxAlimento}>{alimento.nome}</li>;
-                            }
+                            },
                           )}
                           {substituicao.substitutos.map(
                             (alimento, idxAlimento) => {
                               return <li key={idxAlimento}>{alimento.nome}</li>;
-                            }
+                            },
                           )}
                         </ul>
                       </td>
                     </tr>
                   );
-                }
+                },
               )}
             </tbody>
           </table>
@@ -116,7 +156,7 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
             className="float-end mt-3 mb-3 ms-3"
             onClick={() => {
               navigate(
-                `/dieta-especial/protocolo-padrao/${protocoloPadrao.uuid}/criar-copia`
+                `/dieta-especial/protocolo-padrao/${protocoloPadrao.uuid}/criar-copia`,
               );
             }}
           />
@@ -127,12 +167,16 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
             className="float-end mt-3 mb-3 ms-3"
             onClick={() => {
               navigate(
-                `/dieta-especial/protocolo-padrao/${protocoloPadrao.uuid}/editar`
+                `/dieta-especial/protocolo-padrao/${protocoloPadrao.uuid}/editar`,
               );
             }}
           />
         </td>
       </tr>
+      <ModalSolicitacaoDownload
+        show={exibirModalCentralDownloads}
+        setShow={setExibirModalCentralDownloads}
+      />
     </>
   );
 };
