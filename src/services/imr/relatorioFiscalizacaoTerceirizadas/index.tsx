@@ -175,6 +175,25 @@ export const atualizarOcorrenciaDiretor = async (parametros: {
   }
 };
 
+export const excluirOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+}): Promise<{ data: unknown; status: number } | undefined> => {
+  const url = `${API_URL}/imr/formulario-diretor/${parametros.uuid}/`;
+  const resposta: { data: unknown; status: number } = await axios
+    .delete(url, {
+      params: {
+        tipo_ocorrencia: parametros.tipo_ocorrencia,
+        grupo: parametros.grupo,
+      },
+    })
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
 export const getTiposOcorrenciaPorEditalNutrisupervisao = async (params: {
   edital_uuid: string;
   escola_uuid: string;

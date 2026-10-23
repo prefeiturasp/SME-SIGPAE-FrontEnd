@@ -31,6 +31,7 @@ import {
   atualizarOcorrenciaDiretor,
   buscarOcorrenciaDiretor,
   createFormularioDiretor,
+  excluirOcorrenciaDiretor,
   getTiposOcorrenciaPorEditalDiretor,
 } from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
 import { AdicionarResposta } from "../Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioVisitas/components/Formulario/components/BotaoAdicionar";
@@ -38,6 +39,7 @@ import RenderComponentByParametrizacao from "../Terceirizadas/RelatorioFiscaliza
 import { SeletorDeDatas } from "../Terceirizadas/RelatorioFiscalizacaoTerceirizadas/NovoRelatorioVisitas/components/Formulario/components/Ocorrencia/Seletores/SeletorDeDatas";
 import { ModalCancelaPreenchimento } from "./components/ModalCancelaPreenchimento";
 import { ModalCancelarEdicao } from "./components/ModalCancelarEdicao";
+import { ModalExcluirEdicao } from "./components/ModalExcluirEdicao";
 import { ModalSalvar } from "./components/ModalSalvar";
 import { ModalSalvarEdicao } from "./components/ModalSalvarEdicao";
 import { SeletorCategoria } from "./components/SeletorCategoria";
@@ -115,6 +117,7 @@ export const RegistrarNovaOcorrencia = ({
     useState(false);
   const [showModalSalvar, setShowModalSalvar] = useState(false);
   const [showModalCancelarEdicao, setShowModalCancelarEdicao] = useState(false);
+  const [showModalExcluirEdicao, setShowModalExcluirEdicao] = useState(false);
   const [showModalSalvarEdicao, setShowModalSalvarEdicao] = useState(false);
   const [erroAPI, setErroAPI] = useState<string>("");
 
@@ -318,6 +321,21 @@ export const RegistrarNovaOcorrencia = ({
     navigate(urlListaOcorrencias);
   };
 
+  const excluirOcorrencia = async (): Promise<void> => {
+    const response = await excluirOcorrenciaDiretor({
+      uuid: ocorrenciaUuid,
+      tipo_ocorrencia: tipoOcorrenciaUuid,
+      grupo: grupoSelecionado,
+    });
+
+    if (response?.status === HTTP_STATUS.NO_CONTENT) {
+      toastSuccess("Registro de Ocorrência excluído com sucesso!");
+      navigate(urlListaOcorrencias);
+    } else {
+      toastError(getError(response?.data));
+    }
+  };
+
   const exibeBotaoAdicionar = (tipoOcorrencia: TipoOcorrenciaInterface) => {
     return (
       !modoEdicao &&
@@ -492,6 +510,13 @@ export const RegistrarNovaOcorrencia = ({
                                 style={BUTTON_STYLE.GREEN_OUTLINE}
                               />
                               <Botao
+                                texto="Excluir Registro"
+                                className="ms-3"
+                                type={BUTTON_TYPE.BUTTON}
+                                onClick={() => setShowModalExcluirEdicao(true)}
+                                style={BUTTON_STYLE.RED_OUTLINE}
+                              />
+                              <Botao
                                 texto="Salvar"
                                 className="ms-3"
                                 disabled={submitting}
@@ -543,6 +568,13 @@ export const RegistrarNovaOcorrencia = ({
                                 setShowModalCancelarEdicao(false)
                               }
                               confirmar={() => cancelarEdicao(form)}
+                            />
+                            <ModalExcluirEdicao
+                              show={showModalExcluirEdicao}
+                              handleClose={() =>
+                                setShowModalExcluirEdicao(false)
+                              }
+                              excluir={excluirOcorrencia}
                             />
                             <ModalSalvarEdicao
                               show={showModalSalvarEdicao}
