@@ -9,6 +9,7 @@ const mockNavigate = jest.fn();
 const mockGetTiposOcorrencia = jest.fn();
 const mockBuscarOcorrencia = jest.fn();
 const mockAtualizarOcorrencia = jest.fn();
+const mockExcluirOcorrencia = jest.fn();
 const mockCreateFormularioDiretor = jest.fn();
 const mockFormataPayload = jest.fn();
 const mockFormataPayloadEdicao = jest.fn();
@@ -28,6 +29,7 @@ const mockAdicionarResposta = jest.fn();
 const mockModalCancelar = jest.fn();
 const mockModalSalvar = jest.fn();
 const mockModalCancelarEdicao = jest.fn();
+const mockModalExcluirEdicao = jest.fn();
 const mockModalSalvarEdicao = jest.fn();
 
 const mockPush = jest.fn();
@@ -112,6 +114,9 @@ jest.mock("src/services/imr/relatorioFiscalizacaoTerceirizadas", () => ({
 
   atualizarOcorrenciaDiretor: (params: Record<string, any>) =>
     mockAtualizarOcorrencia(params),
+
+  excluirOcorrenciaDiretor: (params: Record<string, any>) =>
+    mockExcluirOcorrencia(params),
 
   createFormularioDiretor: (payload: Record<string, any>) =>
     mockCreateFormularioDiretor(payload),
@@ -198,6 +203,10 @@ jest.mock("../components/ModalSalvar", () => ({
 
 jest.mock("../components/ModalCancelarEdicao", () => ({
   ModalCancelarEdicao: (props: any) => mockModalCancelarEdicao(props),
+}));
+
+jest.mock("../components/ModalExcluirEdicao", () => ({
+  ModalExcluirEdicao: (props: any) => mockModalExcluirEdicao(props),
 }));
 
 jest.mock("../components/ModalSalvarEdicao", () => ({
@@ -299,6 +308,11 @@ describe("RegistrarNovaOcorrencia", () => {
     mockAtualizarOcorrencia.mockResolvedValue({
       status: 200,
       data: {},
+    });
+
+    mockExcluirOcorrencia.mockResolvedValue({
+      status: 204,
+      data: "",
     });
 
     mockFormataPayload.mockReturnValue({
@@ -457,6 +471,21 @@ describe("RegistrarNovaOcorrencia", () => {
 
             <button type="button" onClick={handleClose}>
               Fechar edição
+            </button>
+          </div>
+        ) : null,
+    );
+
+    mockModalExcluirEdicao.mockImplementation(
+      ({ show, excluir, handleClose }: any) =>
+        show ? (
+          <div data-testid="modal-excluir-edicao">
+            <button type="button" onClick={excluir}>
+              Confirmar exclusão
+            </button>
+
+            <button type="button" onClick={handleClose}>
+              Fechar exclusão
             </button>
           </div>
         ) : null,
@@ -854,6 +883,9 @@ describe("RegistrarNovaOcorrencia", () => {
     expect(
       screen.getByRole("button", { name: "Cancelar" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Excluir Registro" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Salvar" })).toBeInTheDocument();
   });
 
@@ -977,6 +1009,62 @@ describe("RegistrarNovaOcorrencia", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Salvar" }));
     fireEvent.click(screen.getByRole("button", { name: "Confirmar edição" }));
+
+    await waitFor(() => {
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Mensagem retornada pelo back",
+      );
+    });
+
+    expect(mockToastSuccess).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("abre o modal de exclusão e exclui a ocorrência somente ao confirmar", async () => {
+    renderizarComponente(propsEdicao);
+
+    await screen.findByText("Seletor de categoria");
+
+    fireEvent.click(screen.getByRole("button", { name: "Excluir Registro" }));
+
+    expect(screen.getByTestId("modal-excluir-edicao")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Fechar exclusão" }));
+
+    expect(
+      screen.queryByTestId("modal-excluir-edicao"),
+    ).not.toBeInTheDocument();
+    expect(mockExcluirOcorrencia).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Excluir Registro" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar exclusão" }));
+
+    await waitFor(() => {
+      expect(mockExcluirOcorrencia).toHaveBeenCalledWith({
+        uuid: OCORRENCIA_UUID,
+        tipo_ocorrencia: TIPO_OCORRENCIA_UUID,
+        grupo: 1,
+      });
+    });
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Registro de Ocorrência excluído com sucesso!",
+    );
+    expect(mockNavigate).toHaveBeenCalledWith(URL_LISTA_OCORRENCIAS);
+  });
+
+  it("informa erro quando não consegue excluir a ocorrência", async () => {
+    mockExcluirOcorrencia.mockResolvedValue({
+      status: 400,
+      data: { detail: "Mensagem retornada pelo back" },
+    });
+
+    renderizarComponente(propsEdicao);
+
+    await screen.findByText("Seletor de categoria");
+
+    fireEvent.click(screen.getByRole("button", { name: "Excluir Registro" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar exclusão" }));
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalledWith(
