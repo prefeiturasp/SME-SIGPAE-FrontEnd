@@ -1050,7 +1050,9 @@ describe("RegistrarNovaOcorrencia", () => {
     expect(mockToastSuccess).toHaveBeenCalledWith(
       "Registro de Ocorrência excluído com sucesso!",
     );
-    expect(mockNavigate).toHaveBeenCalledWith(URL_LISTA_OCORRENCIAS);
+    expect(mockNavigate).toHaveBeenCalledWith(URL_LISTA_OCORRENCIAS, {
+      replace: true,
+    });
   });
 
   it("informa erro quando não consegue excluir a ocorrência", async () => {
