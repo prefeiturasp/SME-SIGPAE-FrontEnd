@@ -12,13 +12,13 @@ import { CADASTROS, CONFIGURACOES, ESCOLA_ABERTA } from "src/configs/constants";
 import "./styles.scss";
 
 const DIAS_SEMANA: Record<string, string> = {
-  "0": "Dom",
-  "1": "Seg",
-  "2": "Ter",
-  "3": "Qua",
-  "4": "Qui",
-  "5": "Sex",
-  "6": "Sáb",
+  "0": "Segunda-feira",
+  "1": "Terça-feira",
+  "2": "Quarta-feira",
+  "3": "Quinta-feira",
+  "4": "Sexta-feira",
+  "5": "Sábado",
+  "6": "Domingo",
 };
 
 const formatarDias = (dias: string[] = []) =>
