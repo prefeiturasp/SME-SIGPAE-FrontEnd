@@ -330,7 +330,7 @@ export const RegistrarNovaOcorrencia = ({
 
     if (response?.status === HTTP_STATUS.NO_CONTENT) {
       toastSuccess("Registro de Ocorrência excluído com sucesso!");
-      navigate(urlListaOcorrencias);
+      navigate(urlListaOcorrencias, { replace: true });
     } else {
       toastError(getError(response?.data));
     }
