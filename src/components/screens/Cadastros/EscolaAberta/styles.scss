@@ -5,6 +5,10 @@
   margin-top: 8px;
 }
 
+.card-body.card-table-cadastro {
+  padding: 1.25rem !important;
+}
+
 .card-body .header-container {
   margin-bottom: 32px !important;
   display: flex;
@@ -98,4 +102,79 @@
 
 .td-num-participante {
   max-width: 192px;
+}
+
+.escola-aberta-filtros {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+
+  > * {
+    width: 280px;
+    max-width: 100%;
+  }
+
+  .container-input-pesquisa .icone-pesquisa {
+    right: 7%;
+  }
+}
+
+.tabela-escolas-abertas {
+  width: 100%;
+  font-size: 14px;
+  color: $blackInput;
+  border-collapse: collapse;
+
+  > thead > tr {
+    font-weight: 700;
+  }
+
+  > thead > tr > th {
+    border: 1px solid $grayDisabled;
+    background-color: $grayLightHeader;
+    padding: 0.5em;
+  }
+
+  > tbody > tr > td {
+    border: 1px solid $grayDisabled;
+    padding: 0.5em;
+  }
+
+  .periodo-realizacao {
+    width: 34%;
+  }
+
+  .repeticao {
+    width: 26%;
+  }
+
+  .qtde-unidades {
+    width: 20%;
+  }
+
+  .acoes {
+    width: 20%;
+  }
+
+  .acoes-celula {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+
+    .botao-editar,
+    .esconder-icone {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    i {
+      font-size: 18px;
+    }
+  }
+
+  .linha-expandida > td {
+    padding: 8px;
+    background-color: #fff;
+  }
 }
