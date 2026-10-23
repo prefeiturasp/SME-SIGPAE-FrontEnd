@@ -56,7 +56,7 @@ export default ({ protocoloPadrao, idx, selecionado }) => {
           <Botao
             texto="Imprimir"
             type={BUTTON_TYPE.BUTTON}
-            style={BUTTON_STYLE.GREEN}
+            style={BUTTON_STYLE.GREEN_OUTLINE}
             icon={solicitandoPdf ? BUTTON_ICON.LOADING : BUTTON_ICON.PRINT}
             className="float-end mt-3 mb-3 ms-3"
             disabled={solicitandoPdf}
