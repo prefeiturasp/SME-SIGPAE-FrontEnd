@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Field, Form } from "react-final-form";
 
 import { required } from "src/helpers/fieldValidators";
@@ -26,7 +26,7 @@ import Select from "src/components/Shareable/Select";
 import ModalCadastrarItemIndividual from "src/components/Shareable/ModalCadastrarItemIndividual";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
-import { FICHA_TECNICA, PRE_RECEBIMENTO } from "src/configs/constants";
+import { AJUDA, FICHA_TECNICA, PRE_RECEBIMENTO } from "src/configs/constants";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 
 import {
@@ -189,6 +189,30 @@ export default ({ ehCopia = false }: CadastrarProps) => {
             decorators={[cepCalculator()]}
             render={({ handleSubmit, values, errors }) => (
               <form onSubmit={handleSubmit}>
+                <div
+                  className="aviso-ajuda-ficha-tecnica"
+                  data-testid="aviso-ajuda-ficha-tecnica"
+                  role="note"
+                >
+                  <div className="alert alert-warning d-flex align-items-center">
+                    <i
+                      className="fas fa-exclamation-triangle me-2"
+                      aria-hidden="true"
+                    />
+                    <span>
+                      Em caso de dúvidas no preenchimento,{" "}
+                      <NavLink
+                        to={`/${AJUDA}`}
+                        className="texto-ajuda-destaque"
+                        aria-label="Acesse as perguntas mais frequentes sobre fichas técnicas"
+                      >
+                        acesse
+                      </NavLink>{" "}
+                      as perguntas mais frequentes sobre fichas técnicas.
+                    </span>
+                  </div>
+                </div>
+
                 <StepsSigpae current={stepAtual} items={ITENS_STEPS} />
 
                 <hr />

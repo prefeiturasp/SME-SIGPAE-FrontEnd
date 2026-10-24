@@ -24,6 +24,7 @@ import mock from "src/services/_mock";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { exibeError } from "src/helpers/utilities";
 import {
+  AJUDA,
   CRIAR_COPIA_FICHA_TECNICA,
   FICHA_TECNICA,
   PRE_RECEBIMENTO,
@@ -205,6 +206,25 @@ describe("CriarCopiaFichaTecnicaPage", () => {
     );
     expect(screen.getByText("Cancelar Cópia")).toBeInTheDocument();
     expect(screen.getByText("Salvar Rascunho")).toBeInTheDocument();
+  });
+
+  it("exibe o aviso de ajuda com link para as perguntas frequentes", async () => {
+    await setup();
+
+    const aviso = screen.getByTestId("aviso-ajuda-ficha-tecnica");
+
+    expect(aviso.tagName).toBe("DIV");
+    expect(aviso).toHaveAttribute("role", "note");
+    expect(aviso).toHaveTextContent(
+      /Em caso de dúvidas no preenchimento, acesse as perguntas mais frequentes sobre fichas técnicas\./,
+    );
+
+    const linkAcesso = screen.getByRole("link", {
+      name: "Acesse as perguntas mais frequentes sobre fichas técnicas",
+    });
+    expect(aviso).toContainElement(linkAcesso);
+    expect(linkAcesso).toHaveAttribute("href", `/${AJUDA}`);
+    expect(linkAcesso).toHaveTextContent(/^acesse$/);
   });
 
   it("cancela a cópia sem gravar ao clicar em Não", async () => {

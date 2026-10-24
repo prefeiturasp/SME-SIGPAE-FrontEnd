@@ -17,6 +17,7 @@ import { mockFichaTecnica } from "src/mocks/services/fichaTecnica.service/mockGe
 import { mockMeusDadosFornecedor } from "src/mocks/services/perfil.service/mockMeusDados";
 import { mockEmpresa } from "src/mocks/terceirizada.service/mockGetTerceirizadaUUID";
 import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
+import { AJUDA } from "src/configs/constants";
 import mock from "src/services/_mock";
 import { getEnderecoPorCEP } from "src/services/cep.service";
 import {
@@ -163,6 +164,28 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
         ),
       ).toBe(true),
     );
+  });
+
+  it("exibe o aviso de ajuda com link para as perguntas frequentes", async () => {
+    await setup();
+
+    const aviso = screen.getByTestId("aviso-ajuda-ficha-tecnica");
+
+    expect(aviso.tagName).toBe("DIV");
+    expect(aviso).toHaveAttribute("role", "note");
+    expect(aviso).toHaveTextContent(
+      "Em caso de dúvidas no preenchimento, acesse as perguntas mais frequentes sobre fichas técnicas.",
+    );
+    expect(aviso).toHaveClass("aviso-ajuda-ficha-tecnica");
+    expect(aviso.querySelector(".fa-exclamation-triangle")).toBeInTheDocument();
+
+    const linkAcesso = screen.getByRole("link", {
+      name: "Acesse as perguntas mais frequentes sobre fichas técnicas",
+    });
+    expect(aviso).toContainElement(linkAcesso);
+    expect(linkAcesso).toHaveAttribute("href", `/${AJUDA}`);
+    expect(linkAcesso).toHaveClass("texto-ajuda-destaque");
+    expect(linkAcesso).toHaveTextContent(/^acesse$/);
   });
 
   it("Assina e Envia uma ficha técnica", async () => {
@@ -375,6 +398,13 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
         screen.queryByText(/Quantidade por 100g ou 100 ml/i),
       ).not.toBeInTheDocument();
     });
+
+    // No FLV Ponto a Ponto, o botão Anterior no último step retorna ao primeiro
+    fireEvent.click(screen.getByText("Anterior").closest("button"));
+    await waitFor(() => {
+      expect(screen.getByTestId("especie_variedade")).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByText("Próximo").closest("button"));
 
     const inputsStep3 = screen.getAllByRole("textbox");
     inputsStep3.forEach((input) => {
