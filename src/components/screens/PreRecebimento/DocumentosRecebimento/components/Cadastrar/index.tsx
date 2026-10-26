@@ -297,20 +297,18 @@ export default () => {
                   </div>
                 </div>
 
-                {values.tipos_de_documentos?.map(
-                  (value: string, idx: number) => (
-                    <InserirDocumento
-                      setFiles={(files: Array<ArquivoForm>) =>
-                        setFilesDocumentos(files, value)
-                      }
-                      removeFile={(index: number) =>
-                        removeFileDocumentos(index, value)
-                      }
-                      tipoDocumento={value}
-                      key={idx}
-                    />
-                  ),
-                )}
+                {values.tipos_de_documentos?.map((value: string) => (
+                  <InserirDocumento
+                    setFiles={(files: Array<ArquivoForm>) =>
+                      setFilesDocumentos(files, value)
+                    }
+                    removeFile={(index: number) =>
+                      removeFileDocumentos(index, value)
+                    }
+                    tipoDocumento={value}
+                    key={value}
+                  />
+                ))}
 
                 <hr />
 
