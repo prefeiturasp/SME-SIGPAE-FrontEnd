@@ -145,6 +145,18 @@
     font-weight: 700;
   }
 
+  &.tabela-detalhada-alimentacao.sem-reajuste {
+    min-width: 40rem;
+
+    .col-descricao {
+      width: 32%;
+    }
+
+    .col-numero {
+      width: 14%;
+    }
+  }
+
   &.tabela-detalhada-dieta {
     min-width: 40rem;
 
