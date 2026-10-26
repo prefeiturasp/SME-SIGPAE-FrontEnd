@@ -9,6 +9,7 @@ import { formataMesNome } from "src/helpers/utilities";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import {
+  EDITAR_OCORRENCIA,
   LANCAMENTO_INICIAL,
   LANCAMENTO_MEDICAO_INICIAL,
   REGISTRAR_NOVA_OCORRENCIA,
@@ -102,6 +103,28 @@ export const ListaOcorrencias = () => {
 
   const onSubmit = () => {};
 
+  const editarOcorrencia = (ocorrencia: OcorrenciaDiretorInterface) => {
+    const parametros = {
+      ano,
+      mes,
+      editalUuid: searchParams.get("editalUuid"),
+      solicitacaoMedicaoInicialUuid,
+      ocorrenciaUuid: ocorrencia.uuid,
+      tipoOcorrenciaUuid: ocorrencia.tipo_ocorrencia,
+      grupo: ocorrencia.grupo !== null ? String(ocorrencia.grupo) : null,
+    };
+    const queryString = new URLSearchParams(
+      Object.entries(parametros).filter(([, valor]) => valor) as [
+        string,
+        string,
+      ][],
+    ).toString();
+
+    navigate(
+      `/${LANCAMENTO_INICIAL}/${LANCAMENTO_MEDICAO_INICIAL}/${REGISTRAR_OCORRENCIAS}/${EDITAR_OCORRENCIA}?${queryString}`,
+    );
+  };
+
   return (
     <div className="card lista-ocorrencias mt-3">
       <div className="card-body">
@@ -148,7 +171,7 @@ export const ListaOcorrencias = () => {
             </form>
           )}
         </Form>
-        <section className="mt-4" aria-label="Ocorrências Registradas">
+        <section className="mt-4 px-3" aria-label="Ocorrências Registradas">
           <h2 className="titulo-verde mb-3">Ocorrências Registradas</h2>
           <Spin spinning={carregando} tip="Carregando...">
             <div
@@ -158,12 +181,13 @@ export const ListaOcorrencias = () => {
               {consultaComSucesso &&
                 !carregando &&
                 (ocorrencias.length === 0 ? (
-                  <p className="text-center">
-                    Nenhuma ocorrência registrada para este período.
-                  </p>
+                  <p>Nenhuma ocorrência registrada para este período.</p>
                 ) : (
                   <>
-                    <TabelaOcorrencias ocorrencias={ocorrencias} />
+                    <TabelaOcorrencias
+                      ocorrencias={ocorrencias}
+                      onEditar={editarOcorrencia}
+                    />
                     <Paginacao
                       current={pagina}
                       total={totalResultados}
@@ -176,7 +200,7 @@ export const ListaOcorrencias = () => {
           </Spin>
         </section>
         {ocorrencias.length !== 0 ? (
-          <div className="d-flex justify-content-end mt-4">
+          <div className="d-flex justify-content-end mt-4 px-3">
             <Botao
               texto="Exportar Excel"
               type={BUTTON_TYPE.BUTTON}

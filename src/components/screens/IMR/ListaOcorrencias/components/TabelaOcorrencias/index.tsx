@@ -7,9 +7,18 @@ import "./style.scss";
 
 interface TabelaOcorrenciasProps {
   ocorrencias: OcorrenciaDiretorInterface[];
+  onEditar?: (_: OcorrenciaDiretorInterface) => void;
 }
 
-const TabelaOcorrencias = ({ ocorrencias }: TabelaOcorrenciasProps) => {
+const formatarResposta = (titulo: string, resposta: string) => {
+  const tituloJaPontuado = /[?:]\s*$/.test(titulo);
+  return `${titulo}${tituloJaPontuado ? " " : ": "}${resposta}`;
+};
+
+const TabelaOcorrencias = ({
+  ocorrencias,
+  onEditar,
+}: TabelaOcorrenciasProps) => {
   const colunas: ColunaTabelaListagem<OcorrenciaDiretorInterface>[] = [
     {
       chave: "data",
@@ -39,7 +48,7 @@ const TabelaOcorrencias = ({ ocorrencias }: TabelaOcorrenciasProps) => {
               className="tabela-ocorrencias__resposta mt-1"
               key={resposta.uuid}
             >
-              {resposta.titulo}: {resposta.resposta}
+              {formatarResposta(resposta.titulo, resposta.resposta)}
             </div>
           ))}
         </div>
@@ -55,9 +64,10 @@ const TabelaOcorrencias = ({ ocorrencias }: TabelaOcorrenciasProps) => {
           <button
             type="button"
             className="tabela-listagem__botao-acao"
-            title="Edição indisponível"
+            title="Editar ocorrência"
             aria-label={`Editar ocorrência ${ocorrencia.titulo}`}
-            disabled
+            onClick={() => onEditar?.(ocorrencia)}
+            disabled={!onEditar}
           >
             <i className="fas fa-edit" aria-hidden="true" />
           </button>

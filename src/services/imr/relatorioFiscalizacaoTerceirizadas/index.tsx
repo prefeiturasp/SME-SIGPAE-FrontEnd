@@ -4,6 +4,7 @@ import { ErrorHandlerFunction } from "../../service-helpers";
 import { NovoRelatorioVisitasFormInterface } from "src/interfaces/imr.interface";
 import {
   RespostaListagemOcorrenciasDiretorInterface,
+  RespostaOcorrenciaDiretorEdicaoInterface,
   ResponseEquipamentoInterface,
   ResponseExportarPDFAssincronoInterface,
   ResponseFormularioSupervisaoTiposOcorrenciasInterface,
@@ -127,6 +128,66 @@ export const buscarOcorrenciasDiretor = async (parametros: {
   const url = `${API_URL}/imr/formulario-diretor/`;
   const resposta: RespostaListagemOcorrenciasDiretorInterface = await axios
     .get(url, { params: parametros })
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
+export const buscarOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+}): Promise<RespostaOcorrenciaDiretorEdicaoInterface | undefined> => {
+  const url = `${API_URL}/imr/formulario-diretor/${parametros.uuid}/`;
+  const resposta: RespostaOcorrenciaDiretorEdicaoInterface = await axios
+    .get(url, {
+      params: {
+        tipo_ocorrencia: parametros.tipo_ocorrencia,
+        grupo: parametros.grupo,
+      },
+    })
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
+export const atualizarOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+  data: string;
+  ocorrencias: Array<{
+    parametrizacao: string;
+    grupo: number;
+    resposta: unknown;
+    tipoOcorrencia?: string;
+  }>;
+}): Promise<RespostaOcorrenciaDiretorEdicaoInterface | undefined> => {
+  const { uuid, ...dados } = parametros;
+  const url = `${API_URL}/imr/formulario-diretor/${uuid}/`;
+  const resposta: RespostaOcorrenciaDiretorEdicaoInterface = await axios
+    .put(url, dados)
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
+export const excluirOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+}): Promise<{ data: unknown; status: number } | undefined> => {
+  const url = `${API_URL}/imr/formulario-diretor/${parametros.uuid}/`;
+  const resposta: { data: unknown; status: number } = await axios
+    .delete(url, {
+      params: {
+        tipo_ocorrencia: parametros.tipo_ocorrencia,
+        grupo: parametros.grupo,
+      },
+    })
     .catch(ErrorHandlerFunction);
   if (resposta) {
     return { data: resposta.data, status: resposta.status };

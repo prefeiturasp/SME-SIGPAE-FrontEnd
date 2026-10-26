@@ -157,6 +157,27 @@ describe("ListaOcorrencias", () => {
     );
   });
 
+  it("redireciona para a edição da ocorrência com os dados da linha", async () => {
+    render(<ListaOcorrencias />);
+
+    await screen.findByRole("table");
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: `Editar ocorrência ${OCORRENCIA.titulo}`,
+      }),
+    );
+
+    expect(mockNavegar).toHaveBeenCalledTimes(1);
+    expect(mockNavegar).toHaveBeenCalledWith(
+      "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias/editar-ocorrencia" +
+        `?ano=2026&mes=1&editalUuid=${EDITAL_UUID}` +
+        `&solicitacaoMedicaoInicialUuid=${SOLICITACAO_UUID}` +
+        `&ocorrenciaUuid=${OCORRENCIA.uuid}` +
+        `&tipoOcorrenciaUuid=${OCORRENCIA.tipo_ocorrencia}&grupo=1`,
+    );
+  });
+
   it("informa quando a consulta retorna nenhuma ocorrência", async () => {
     buscarOcorrenciasSimulado.mockResolvedValueOnce(criarRespostaListagem([]));
 
@@ -212,7 +233,7 @@ describe("ListaOcorrencias", () => {
     fireEvent.click(within(screen.getByRole("list")).getByText("2"));
 
     expect(
-      await screen.findByText("Qual item do uniforme faltou?: Avental"),
+      await screen.findByText("Qual item do uniforme faltou? Avental"),
     ).toBeInTheDocument();
     expect(buscarOcorrenciasSimulado).toHaveBeenLastCalledWith({
       solicitacao_medicao_inicial: SOLICITACAO_UUID,
@@ -220,7 +241,7 @@ describe("ListaOcorrencias", () => {
       page_size: 10,
     });
     expect(
-      screen.queryByText("Qual item do uniforme faltou?: Touca"),
+      screen.queryByText("Qual item do uniforme faltou? Touca"),
     ).not.toBeInTheDocument();
     expect(screen.getAllByRole("row")).toHaveLength(2);
     expect(screen.getByRole("combobox")).toHaveValue("1/2026");

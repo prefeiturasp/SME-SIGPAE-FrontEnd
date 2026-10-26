@@ -191,3 +191,23 @@ export interface OcorrenciaDiretorInterface {
   grupo: number | null;
   respostas: RespostaOcorrenciaDiretorInterface[];
 }
+
+export interface RespostaOcorrenciaEdicaoInterface {
+  uuid: string;
+  parametrizacao: string | null;
+  titulo: string;
+  posicao: number | null;
+  resposta: string | number | boolean | string[] | null;
+}
+
+export interface OcorrenciaDiretorEdicaoInterface {
+  uuid: string;
+  solicitacao_medicao_inicial: string;
+  data: string;
+  categoria: CategoriaTipoOcorrenciaInterface;
+  tipo_ocorrencia: string;
+  titulo: string;
+  descricao: string;
+  grupo: number;
+  respostas: RespostaOcorrenciaEdicaoInterface[];
+}
