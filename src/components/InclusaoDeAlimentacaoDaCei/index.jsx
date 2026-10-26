@@ -112,40 +112,49 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
   const [rascunhos, setRascunhos] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const salvarInclusao = async (dados) => {
+    if (dados.uuid) {
+      const resposta = await atualizarInclusoesDaCEI(dados, dados.uuid);
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.OK,
+        mensagem: "Rascunho atualizado com sucesso",
+      };
+    }
+
+    const resposta = await criarInclusoesDaCEI(dados);
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.CREATED,
+      mensagem: "Solicitação Rascunho criada com sucesso!",
+    };
+  };
+
   const onSubmit = async (values) => {
-    const payload = formataPayload(values);
-    const erro = validarForm(payload);
+    const dados = formataPayload(values);
+    const erro = validarForm(dados);
+
     if (erro) {
       toastError(erro);
       return;
     }
+
     setLoading(true);
-    if (payload.uuid) {
-      const response = await atualizarInclusoesDaCEI(payload, payload.uuid);
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, values);
-        } else {
-          toastSuccess("Rascunho atualizado com sucesso");
-          refresh(values);
-        }
+    const { resposta, statusEsperado, mensagem } = await salvarInclusao(dados);
+
+    if (resposta.status === statusEsperado) {
+      if (values.status === STATUS_DRE_A_VALIDAR) {
+        iniciarPedido(resposta.data.uuid, values);
       } else {
-        toastError(getError(response.data));
+        toastSuccess(mensagem);
+        refresh(values);
       }
     } else {
-      const response = await criarInclusoesDaCEI(payload);
-
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, values);
-        } else {
-          toastSuccess("Solicitação Rascunho criada com sucesso!");
-          refresh(values);
-        }
-      } else {
-        toastError(getError(response.data));
-      }
+      toastError(getError(resposta.data));
     }
+
     setLoading(false);
   };
 
