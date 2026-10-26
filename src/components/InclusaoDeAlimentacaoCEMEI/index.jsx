@@ -292,41 +292,54 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     }
   };
 
+  const salvarInclusaoNormal = async (dados, vinculosAlimentacao) => {
+    if (!dados.uuid_) {
+      const resposta = await createInclusaoAlimentacaoCEMEI(
+        formataInclusaoCEMEI(dados, vinculosAlimentacao),
+      );
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.CREATED,
+        mensagem: "Solicitação Rascunho criada com sucesso!",
+      };
+    }
+
+    const resposta = await updateInclusaoAlimentacaoCEMEI(
+      dados.uuid_,
+      formataInclusaoCEMEI(dados, vinculosAlimentacao),
+    );
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.OK,
+      mensagem: "Rascunho atualizado com sucesso",
+    };
+  };
+
   const fluxoInclusaoNormal = async (values, form) => {
     let vinculosAlimentacao = vinculos;
     if (motivoEspecifico) {
       vinculosAlimentacao = vinculosMotivoEspecifico;
     }
-    if (!values.uuid_) {
-      const response = await createInclusaoAlimentacaoCEMEI(
-        formataInclusaoCEMEI(values, vinculosAlimentacao),
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Solicitação Rascunho criada com sucesso!");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
-    } else {
-      const response = await updateInclusaoAlimentacaoCEMEI(
-        values.uuid_,
-        formataInclusaoCEMEI(values, vinculosAlimentacao),
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(values.uuid_, form);
-        } else {
-          toastSuccess("Rascunho atualizado com sucesso");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const { resposta, statusEsperado, mensagem } = await salvarInclusaoNormal(
+      values,
+      vinculosAlimentacao,
+    );
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
     }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(values.uuid_ || resposta.data.uuid, form);
+    } else {
+      toastSuccess(mensagem);
+    }
+
+    refresh(form);
   };
 
   const fluxoInclusaoContinua = async (values, form) => {
