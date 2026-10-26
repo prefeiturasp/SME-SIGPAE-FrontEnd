@@ -113,46 +113,56 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const salvarSolicitacao = async (values) => {
+    if (!values.uuid) {
+      const resposta = await escolaCriarSolicitacaoDeAlteracaoCardapio(
+        formataPayload(values),
+        SOLICITACAO_CEI,
+      );
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.CREATED,
+        mensagem: "Alteração do tipo de alimentação criada com sucesso!",
+      };
+    }
+
+    const resposta = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
+      values.uuid,
+      formataPayload(values),
+      SOLICITACAO_CEI,
+    );
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.OK,
+      mensagem: "Alteração do tipo de alimentação alterada com sucesso!",
+    };
+  };
+
   const onSubmit = async (values, form) => {
     const erro = validaForm(values);
+
     if (erro) {
       toastError(erro);
       return;
     }
-    if (!values.uuid) {
-      const response = await escolaCriarSolicitacaoDeAlteracaoCardapio(
-        formataPayload(values),
-        SOLICITACAO_CEI,
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Alteração do tipo de alimentação criada com sucesso!");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
-    } else {
-      const response = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
-        values.uuid,
-        formataPayload(values),
-        SOLICITACAO_CEI,
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess(
-            "Alteração do tipo de alimentação alterada com sucesso!",
-          );
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const { resposta, statusEsperado, mensagem } =
+      await salvarSolicitacao(values);
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
     }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(resposta.data.uuid, form);
+    } else {
+      toastSuccess(mensagem);
+    }
+
+    refresh(form);
   };
 
   const getPeriodo = (values, indice) => {
