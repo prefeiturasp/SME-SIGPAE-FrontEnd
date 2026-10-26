@@ -281,3 +281,158 @@ describe("Tabela Alimentação - detalhamento da composição dos valores", () =
     expect(valorTotalGeral).toBeCloseTo(13696.4, 2);
   });
 });
+
+describe("Tabela Alimentação - apresentação conforme possui_reajuste", () => {
+  const tiposAlimentacao = [{ uuid: "uuid-refeicao", nome: "Refeição" }];
+
+  const tabelas = [
+    {
+      nome: "Preço das Alimentações",
+      periodo_escolar: null,
+      valores: [
+        {
+          tipo_alimentacao: { uuid: "uuid-refeicao" },
+          tipo_valor: "UNITARIO",
+          valor: "9,54",
+        },
+        {
+          tipo_alimentacao: { uuid: "uuid-refeicao" },
+          tipo_valor: "REAJUSTE",
+          valor: "0,16",
+        },
+      ],
+    },
+  ];
+
+  const totaisConsumo = { ALIMENTAÇÃO: { total_refeicao: 5 } };
+
+  const COLUNAS_COM_REAJUSTE = [
+    "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
+    "NÚMERO DE ATEND.",
+    "VALOR UNITÁRIO",
+    "VALOR TOTAL UNITÁRIO",
+    "VALOR DO REAJUSTE",
+    "VALOR TOTAL DO REAJUSTE",
+    "VALOR UNITÁRIO REAJUSTADO",
+    "VALOR TOTAL",
+  ];
+
+  const COLUNAS_SEM_REAJUSTE = [
+    "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
+    "NÚMERO DE ATEND.",
+    "VALOR UNITÁRIO",
+    "VALOR TOTAL UNITÁRIO",
+    "VALOR TOTAL",
+  ];
+
+  const cabecalhos = () =>
+    screen.getAllByRole("columnheader").map((th) => th.textContent);
+
+  const textosDaLinha = (texto) =>
+    Array.from(screen.getByText(texto).closest("tr").cells).map(
+      (celula) => celula.textContent,
+    );
+
+  const tabela = (possuiReajuste) => (
+    <TabelaAlimentacao
+      tabelas={tabelas}
+      tiposAlimentacao={tiposAlimentacao}
+      totaisConsumo={totaisConsumo}
+      ordem="A"
+      possuiReajuste={possuiReajuste}
+    />
+  );
+
+  it("exibe as oito colunas quando possui_reajuste é true", () => {
+    render(tabela(true));
+
+    expect(cabecalhos()).toEqual(COLUNAS_COM_REAJUSTE);
+    expect(textosDaLinha("REFEIÇÃO")).toEqual([
+      "REFEIÇÃO",
+      "5",
+      "R$ 9,54",
+      "R$ 47,70",
+      "R$ 0,16",
+      "R$ 0,80",
+      "R$ 9,70",
+      "R$ 48,50",
+    ]);
+  });
+
+  it("exibe somente as cinco colunas quando possui_reajuste é false", () => {
+    render(tabela(false));
+
+    expect(cabecalhos()).toEqual(COLUNAS_SEM_REAJUSTE);
+    expect(
+      screen.queryByRole("columnheader", { name: "VALOR DO REAJUSTE" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "VALOR TOTAL DO REAJUSTE" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", {
+        name: "VALOR UNITÁRIO REAJUSTADO",
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("calcula valor total unitário e valor total sem o reajuste", () => {
+    const ref = createRef();
+
+    render(
+      <TabelaAlimentacao
+        ref={ref}
+        tabelas={tabelas}
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+        ordem="A"
+        possuiReajuste={false}
+      />,
+    );
+
+    expect(textosDaLinha("REFEIÇÃO")).toEqual([
+      "REFEIÇÃO",
+      "5",
+      "R$ 9,54",
+      "R$ 47,70",
+      "R$ 47,70",
+    ]);
+    expect(textosDaLinha("TOTAL (A)")).toEqual([
+      "TOTAL (A)",
+      "5",
+      "",
+      "",
+      "R$ 47,70",
+    ]);
+    expect(ref.current.getTotais().valorTotalGeral).toBeCloseTo(47.7, 2);
+  });
+
+  it("mantém as oito colunas quando a flag ainda não foi recebida", () => {
+    render(
+      <TabelaAlimentacao
+        tabelas={tabelas}
+        tiposAlimentacao={tiposAlimentacao}
+        totaisConsumo={totaisConsumo}
+        ordem="A"
+      />,
+    );
+
+    expect(cabecalhos()).toEqual(COLUNAS_COM_REAJUSTE);
+  });
+
+  it("atualiza as colunas quando uma nova consulta traz outra flag", () => {
+    const { rerender } = render(tabela(true));
+
+    expect(cabecalhos()).toEqual(COLUNAS_COM_REAJUSTE);
+
+    rerender(tabela(false));
+
+    expect(cabecalhos()).toEqual(COLUNAS_SEM_REAJUSTE);
+    expect(textosDaLinha("REFEIÇÃO")[4]).toBe("R$ 47,70");
+
+    rerender(tabela(true));
+
+    expect(cabecalhos()).toEqual(COLUNAS_COM_REAJUSTE);
+    expect(textosDaLinha("REFEIÇÃO")[7]).toBe("R$ 48,50");
+  });
+});
