@@ -129,6 +129,7 @@ export default ({
           totaisConsumo={totaisConsumo["INFANTIL"]}
           ordem="INF. A"
           unidade="EMEBS Infantil"
+          possuiReajuste={relatorioConsolidado.possui_reajuste}
         />
         <TabelaDietas
           ref={refDietaAInfantil}
@@ -159,6 +160,7 @@ export default ({
           totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
           ordem="FUND. A"
           unidade="EMEBS Fundamental"
+          possuiReajuste={relatorioConsolidado.possui_reajuste}
         />
         <TabelaDietas
           ref={refDietaAFundamental}
