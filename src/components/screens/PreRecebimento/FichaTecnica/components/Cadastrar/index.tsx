@@ -50,7 +50,7 @@ import {
   carregarProdutos,
   carregarUnidadesMedida,
   cepCalculator,
-  ehFLVPontoAPonto,
+  ehFLV,
   exibirBlocoFabricante,
   exibirNumeroRegistro,
   formataPayloadCadastroFichaTecnica,
@@ -122,7 +122,6 @@ export default ({ ehCopia = false }: CadastrarProps) => {
   const mostrarBlocoFabricante = (values: Record<string, any>) =>
     exibirBlocoFabricante({
       categoria: values.categoria,
-      tipo_entrega: values.tipo_entrega,
       fabricante: ficha.fabricante,
       envasador_distribuidor: ficha.envasador_distribuidor,
     });
@@ -130,7 +129,6 @@ export default ({ ehCopia = false }: CadastrarProps) => {
   const mostrarNumeroRegistro = (values: Record<string, any>) =>
     exibirNumeroRegistro({
       categoria: values.categoria,
-      tipo_entrega: values.tipo_entrega,
       numero_registro: ficha.numero_registro,
     });
 
@@ -306,9 +304,9 @@ export default ({ ehCopia = false }: CadastrarProps) => {
                           label="Marca"
                           name={`marca`}
                           className="input-ficha-tecnica"
-                          required={values.categoria !== "FLV"}
+                          required={!ehFLV(values["categoria"])}
                           validate={
-                            values.categoria !== "FLV" ? required : undefined
+                            !ehFLV(values["categoria"]) ? required : undefined
                           }
                           tooltipText={
                             "Caso não localize a marca no seletor, faça o cadastro no botão Cadastrar Marca."
@@ -404,10 +402,7 @@ export default ({ ehCopia = false }: CadastrarProps) => {
                             setFabricantesCount={setFabricantesCount}
                             fabricantesOptions={fabricantesOptions}
                             values={values}
-                            camposOpcionais={ehFLVPontoAPonto(
-                              values.categoria,
-                              values.tipo_entrega,
-                            )}
+                            camposOpcionais={ehFLV(values["categoria"])}
                             gerenciaModalCadastroExterno={() => {
                               gerenciaModalCadastroExterno(
                                 "FABRICANTE",
@@ -608,11 +603,10 @@ export default ({ ehCopia = false }: CadastrarProps) => {
                           style={BUTTON_STYLE.GREEN_OUTLINE}
                           className="float-end ms-3"
                           onClick={() => {
-                            const ehFLV =
-                              values["categoria"] === "FLV" &&
-                              values["tipo_entrega"] === "PONTO_A_PONTO";
                             const proximoStep =
-                              ehFLV && stepAtual === 0 ? 2 : stepAtual + 1;
+                              ehFLV(values["categoria"]) && stepAtual === 0
+                                ? 2
+                                : stepAtual + 1;
 
                             setStepAtual(proximoStep);
                             setCollapse({ 0: true });
@@ -679,11 +673,10 @@ export default ({ ehCopia = false }: CadastrarProps) => {
                       style={BUTTON_STYLE.GREEN_OUTLINE}
                       className="float-end ms-3"
                       onClick={() => {
-                        const ehFLV =
-                          values["categoria"] === "FLV" &&
-                          values["tipo_entrega"] === "PONTO_A_PONTO";
                         const proximoStep =
-                          ehFLV && stepAtual === 2 ? 0 : stepAtual - 1;
+                          ehFLV(values["categoria"]) && stepAtual === 2
+                            ? 0
+                            : stepAtual - 1;
 
                         setStepAtual(proximoStep);
                         setCollapse({});

@@ -13,6 +13,7 @@ import Botao from "src/components/Shareable/Botao";
 import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
+  ehFLV,
   exibirBlocoFabricante,
   exibirNumeroRegistro,
   imprimirFicha,
@@ -216,13 +217,13 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     navigate(link);
   };
 
-  const validaForm = (ehNaoPerecivel: boolean, ehFLV: boolean) => {
+  const validaForm = (ehNaoPerecivel: boolean, ehFichaFLV: boolean) => {
     let conferidosFiltrados = conferidos;
     if (ehNaoPerecivel) {
       delete conferidos.temperatura_e_transporte;
     }
 
-    if (ehFLV) {
+    if (ehFichaFLV) {
       delete conferidos.armazenamento;
       delete conferidos.conservacao;
       delete conferidos.embalagem_e_rotulagem;
@@ -281,12 +282,9 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
             render={({ handleSubmit, values }) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
-              const ehFLV =
-                values["categoria"] === "FLV (Frutas, Legumes e Verduras)" &&
-                values["tipo_entrega"] === "Ponto a Ponto";
+              const ehFichaFLV = ehFLV(values["categoria"]);
               const mostrarNumeroRegistro = exibirNumeroRegistro({
                 categoria: ficha.categoria,
-                tipo_entrega: ficha.tipo_entrega,
                 numero_registro: ficha.numero_registro,
               });
               const collapseConfigsFLV = [
@@ -399,7 +397,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                 },
               ];
 
-              const collapseConfigs = ehFLV
+              const collapseConfigs = ehFichaFLV
                 ? collapseConfigsFLV
                 : collapseConfigsPadrao;
 
@@ -487,7 +485,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
 
                   <hr />
 
-                  {!ehFLV && (
+                  {!ehFichaFLV && (
                     <CollapsesPadrao
                       idCollapse={idCollapse}
                       collapse={collapse}
@@ -511,7 +509,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     />
                   )}
 
-                  {ehFLV && (
+                  {ehFichaFLV && (
                     <CollapsesFLV
                       idCollapse={idCollapse}
                       collapse={collapse}
@@ -577,7 +575,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           style={BUTTON_STYLE.GREEN}
                           className="float-end ms-3"
                           onClick={() => salvarAnalise(values)}
-                          disabled={validaForm(ehNaoPerecivel, ehFLV)}
+                          disabled={validaForm(ehNaoPerecivel, ehFichaFLV)}
                         />
                         <Botao
                           texto="Salvar Rascunho"
