@@ -45,6 +45,7 @@ import {
   carregarFabricantes,
   carregarUnidadesMedida,
   cepCalculator,
+  ehFLV,
   exibirBlocoFabricante,
   exibirNumeroRegistro,
   formataPayloadCorrecaoFichaTecnica,
@@ -218,15 +219,12 @@ export default () => {
               const valuesAny = values as any;
               const ehPerecivel = ficha.categoria === "PERECIVEIS";
               const ehNaoPerecivel = ficha.categoria === "NAO_PERECIVEIS";
-              const ehFLV =
-                ficha.categoria === "FLV" &&
-                ficha.tipo_entrega === "PONTO_A_PONTO";
+              const ehFichaFLV = ehFLV(ficha.categoria);
               const mostrarBlocoFabricante =
                 exibirBlocoFabricante(ficha) ||
                 conferidos.fabricante_envasador === false;
               const mostrarNumeroRegistro = exibirNumeroRegistro({
                 categoria: ficha.categoria,
-                tipo_entrega: ficha.tipo_entrega,
                 numero_registro: ficha.numero_registro,
               });
 
@@ -310,7 +308,7 @@ export default () => {
 
                   <hr />
 
-                  {ehFLV && (
+                  {ehFichaFLV && (
                     <CollapsesFLV
                       idCollapse={idCollapse}
                       collapse={collapse}
@@ -333,7 +331,7 @@ export default () => {
                     />
                   )}
 
-                  {!ehFLV && (
+                  {!ehFichaFLV && (
                     <Collapse
                       collapse={collapse}
                       setCollapse={setCollapse}
@@ -371,7 +369,7 @@ export default () => {
                           somenteLeitura={conferidos.fabricante_envasador}
                           ocultarBotaoCadastroFabricante={true}
                         />
-                        {!ehFLV && fabricantesCount === 1 && (
+                        {!ehFichaFLV && fabricantesCount === 1 && (
                           <div className="row mt-3">
                             <div className="col-12 d-flex justify-content-center">
                               <Tooltip
@@ -415,7 +413,7 @@ export default () => {
                         />
                       </section>
 
-                      {!ehFLV && (
+                      {!ehFichaFLV && (
                         <>
                           <section id="informacoes_nutricionais">
                             {!conferidos.informacoes_nutricionais && (
@@ -1142,7 +1140,7 @@ export default () => {
                         </div>
                       </section>
 
-                      {!ehFLV && (
+                      {!ehFichaFLV && (
                         <section id="modo_preparo">
                           {!conferidos.modo_preparo && (
                             <div className="row campo-correcao mb-4">
@@ -1220,7 +1218,7 @@ export default () => {
                         arquivo,
                         ficha.categoria === "PERECIVEIS",
                         password,
-                        ehFLV,
+                        ehFichaFLV,
                         mostrarNumeroRegistro,
                       );
 

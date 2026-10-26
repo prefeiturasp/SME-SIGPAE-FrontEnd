@@ -19,6 +19,7 @@ import {
 import { imprimirFicha } from "../../helpers";
 import TagLeveLeite from "src/components/Shareable/PreRecebimento/TagLeveLeite";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
+import { ehFLV } from "src/helpers/preRecebimento";
 
 interface Props {
   objetos: Array<FichaTecnica>;
@@ -156,7 +157,7 @@ const Listagem: React.FC<Props> = ({ objetos, setCarregando }) => {
         </div>
 
         {objetos.map((objeto) => {
-          const classNameVerde = objeto.ponto_a_ponto ? "green" : "";
+          const classNameVerde = ehFLV(objeto.categoria) ? "green" : "";
           return (
             <>
               <div key={objeto.uuid} className="grid-table body-table">

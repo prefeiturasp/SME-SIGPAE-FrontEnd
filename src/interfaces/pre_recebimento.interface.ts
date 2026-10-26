@@ -173,6 +173,7 @@ export interface FichaTecnica {
   criado_em: string;
   status: string;
   programa: ProgramaChoices;
+  categoria?: CategoriaFichaTecnicaChoices;
   ponto_a_ponto: boolean;
 }
 

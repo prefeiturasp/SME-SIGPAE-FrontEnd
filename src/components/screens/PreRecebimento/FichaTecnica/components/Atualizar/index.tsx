@@ -38,7 +38,7 @@ import {
   carregarDadosAtualizar,
   carregarFabricantes,
   cepCalculator,
-  ehFLVPontoAPonto,
+  ehFLV,
   exibirBlocoFabricante,
   exibirNumeroRegistro,
   formataPayloadAtualizacaoFichaTecnica,
@@ -175,13 +175,9 @@ export default () => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
               const mostrarBlocoFabricante = exibirBlocoFabricante(ficha);
-              const camposOpcionais = ehFLVPontoAPonto(
-                ficha.categoria,
-                ficha.tipo_entrega,
-              );
+              const camposOpcionais = ehFLV(ficha.categoria);
               const mostrarNumeroRegistro = exibirNumeroRegistro({
                 categoria: ficha.categoria,
-                tipo_entrega: ficha.tipo_entrega,
                 numero_registro: ficha.numero_registro,
               });
 
@@ -257,39 +253,39 @@ export default () => {
                     </section>
 
                     {mostrarBlocoFabricante && (
-                    <section>
-                      <FormFabricante
-                        fabricantesCount={fabricantesCount}
-                        setFabricantesCount={setFabricantesCount}
-                        fabricantesOptions={fabricantesOptions}
-                        desabilitaEndereco={desabilitaEndereco}
-                        values={values}
-                        somenteLeitura={false}
-                        ocultarBotaoCadastroFabricante={true}
-                        camposOpcionais={camposOpcionais}
-                      />
-                      {fabricantesCount === 1 && (
-                        <div className="row mt-3">
-                          <div className="col-12 d-flex justify-content-center">
-                            <Tooltip
-                              className="float-end"
-                              title={
-                                "Adicione somente se os dados do Envasador/Distribuidor forem diferentes do Fabricante."
-                              }
-                            >
-                              <div>
-                                <Botao
-                                  texto="+ Adicionar Envasador/Distribuidor"
-                                  type={BUTTON_TYPE.BUTTON}
-                                  style={BUTTON_STYLE.GREEN_OUTLINE}
-                                  onClick={() => setFabricantesCount(2)}
-                                />
-                              </div>
-                            </Tooltip>
+                      <section>
+                        <FormFabricante
+                          fabricantesCount={fabricantesCount}
+                          setFabricantesCount={setFabricantesCount}
+                          fabricantesOptions={fabricantesOptions}
+                          desabilitaEndereco={desabilitaEndereco}
+                          values={values}
+                          somenteLeitura={false}
+                          ocultarBotaoCadastroFabricante={true}
+                          camposOpcionais={camposOpcionais}
+                        />
+                        {fabricantesCount === 1 && (
+                          <div className="row mt-3">
+                            <div className="col-12 d-flex justify-content-center">
+                              <Tooltip
+                                className="float-end"
+                                title={
+                                  "Adicione somente se os dados do Envasador/Distribuidor forem diferentes do Fabricante."
+                                }
+                              >
+                                <div>
+                                  <Botao
+                                    texto="+ Adicionar Envasador/Distribuidor"
+                                    type={BUTTON_TYPE.BUTTON}
+                                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                                    onClick={() => setFabricantesCount(2)}
+                                  />
+                                </div>
+                              </Tooltip>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </section>
+                        )}
+                      </section>
                     )}
 
                     <section id="detalhes_produto">
