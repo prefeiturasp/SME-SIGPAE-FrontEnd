@@ -305,9 +305,9 @@ export const TabelaFaixasCEMEI = ({
                               validate={composeValidators(
                                 required,
                                 naoPodeSerZero,
-                                maxValue(parseInt(periodo.EMEI)),
+                                maxValue(Number.parseInt(periodo.EMEI)),
                               )}
-                              max={parseInt(periodo.EMEI)}
+                              max={Number.parseInt(periodo.EMEI)}
                               min={0}
                               step="1"
                               className="input-quantidades"
@@ -319,9 +319,9 @@ export const TabelaFaixasCEMEI = ({
                                   ].emei.quantidade_alunos;
                                 await form.change(
                                   `substituicoes[${periodoIndice}][emei][matriculados_quando_criado]`,
-                                  parseInt(periodo.EMEI),
+                                  Number.parseInt(periodo.EMEI),
                                 );
-                                setTotalFrequenciaEMEI(parseInt(value_));
+                                setTotalFrequenciaEMEI(Number.parseInt(value_));
                               }}
                             />
                             <Field
