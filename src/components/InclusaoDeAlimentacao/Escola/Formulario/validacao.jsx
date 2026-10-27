@@ -15,7 +15,7 @@ export const validarSubmissaoNormal = (
   values.quantidades_periodo
     .filter((qp) => qp.checked)
     .forEach((quantidade_periodo) => {
-      totalAlunos += parseInt(quantidade_periodo.numero_alunos);
+      totalAlunos += Number.parseInt(quantidade_periodo.numero_alunos);
       if (
         (usuarioEhEscolaSemAlunosRegulares() &&
           !quantidade_periodo.tipos_alimentacao_selecionados) ||
@@ -52,7 +52,7 @@ export const validarSubmissaoContinua = (
   let totalAlunos = 0;
 
   values.quantidades_periodo.forEach((quantidade_periodo) => {
-    totalAlunos += parseInt(quantidade_periodo.numero_alunos);
+    totalAlunos += Number.parseInt(quantidade_periodo.numero_alunos);
   });
 
   if (
