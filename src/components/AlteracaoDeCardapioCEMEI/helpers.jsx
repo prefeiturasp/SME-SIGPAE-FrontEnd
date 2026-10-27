@@ -79,13 +79,13 @@ export const formataDadosTabelaCEMEI = (solicitacao) => {
   periodos = backgroundLabelPeriodo(periodos);
   substituicoes = periodos.map((p) => {
     const alunosPorFaixaCEI =
-      solicitacao.substituicoes_cemei_cei_periodo_escolar.filter(
+      solicitacao.substituicoes_cemei_cei_periodo_escolar.find(
         (s) => s.periodo_escolar.nome === p.nome,
-      )[0];
+      );
     const alunosPorFaixaEMEI =
-      solicitacao.substituicoes_cemei_emei_periodo_escolar.filter(
+      solicitacao.substituicoes_cemei_emei_periodo_escolar.find(
         (s) => s.periodo_escolar.nome === p.nome,
-      )[0];
+      );
     p["substituicoesCEI"] = alunosPorFaixaCEI;
     p["substituicoesEMEI"] = alunosPorFaixaEMEI;
     return p;
