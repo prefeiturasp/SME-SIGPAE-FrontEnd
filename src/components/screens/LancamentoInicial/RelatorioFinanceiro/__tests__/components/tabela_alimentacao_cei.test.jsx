@@ -83,12 +83,17 @@ describe("Teste de comportamentos componente - TabelaAlimentacaoCEI", () => {
     );
 
     expect(
-      screen.getByText("ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("VALOR UNITÁRIO")).toBeInTheDocument();
-    expect(screen.getByText("VALOR DO REAJUSTE")).toBeInTheDocument();
-    expect(screen.getByText("NÚMERO DE ATENDIMENTO")).toBeInTheDocument();
-    expect(screen.getByText("VALOR TOTAL")).toBeInTheDocument();
+      screen.getAllByRole("columnheader").map((th) => th.textContent),
+    ).toEqual([
+      "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
+      "NÚMERO DE ATEND.",
+      "VALOR UNITÁRIO",
+      "VALOR TOTAL UNITÁRIO",
+      "VALOR DO REAJUSTE",
+      "VALOR TOTAL DO REAJUSTE",
+      "VALOR UNITÁRIO REAJUSTADO",
+      "VALOR TOTAL",
+    ]);
 
     expect(
       screen.getAllByText((_, el) =>
@@ -101,9 +106,26 @@ describe("Teste de comportamentos componente - TabelaAlimentacaoCEI", () => {
       ).length,
     ).toBeGreaterThan(0);
 
+    const linhaIntegral = screen
+      .getByText(
+        (_, el) => el?.textContent === "Período Integral - 04 anos a 06 anos",
+      )
+      .closest("tr");
+
+    expect(
+      Array.from(linhaIntegral.cells).map((celula) => celula.textContent),
+    ).toEqual([
+      "Período Integral - 04 anos a 06 anos",
+      "6",
+      "R$ 3,00",
+      "R$ 18,00",
+      "R$ 5,00",
+      "R$ 30,00",
+      "R$ 8,00",
+      "R$ 48,00",
+    ]);
+
     expect(screen.getAllByText("R$ 0,00").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("R$ 8,00").length).toBeGreaterThan(0);
-    expect(screen.getByText("R$ 48,00")).toBeInTheDocument();
     expect(screen.getByText("R$ 14,00")).toBeInTheDocument();
     expect(screen.getByText("R$ 84,00")).toBeInTheDocument();
 

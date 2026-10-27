@@ -1,5 +1,6 @@
 import {
   chaveCampoConsumo,
+  obterValorFaixa,
   chaveLinhaTipoAlimentacao,
   formataPercentual,
   listaAlimentacoes,
@@ -76,6 +77,35 @@ describe("Helpers - Relatório Financeiro", () => {
 
       expect(obterValorParametrizado(undefined, tipo, "UNITARIO")).toBe(0);
       expect(obterValorParametrizado(tabela, tipo, "ACRESCIMO")).toBe(0);
+    });
+  });
+
+  describe("obterValorFaixa", () => {
+    const tabela = {
+      nome: "Preço das Alimentações",
+      periodo_escolar: "INTEGRAL",
+      valores: [
+        {
+          faixa_etaria: { uuid: "faixa-1" },
+          tipo_valor: "UNITARIO",
+          valor: "9,54",
+        },
+        {
+          faixa_etaria: { uuid: "faixa-1" },
+          tipo_valor: "REAJUSTE",
+          valor: "0,16",
+        },
+      ],
+    };
+
+    it("retorna o valor da faixa e do tipo pedidos", () => {
+      expect(obterValorFaixa(tabela, "faixa-1", "UNITARIO")).toBe(9.54);
+      expect(obterValorFaixa(tabela, "faixa-1", "REAJUSTE")).toBe(0.16);
+    });
+
+    it("retorna 0 quando a faixa ou a tabela não existem", () => {
+      expect(obterValorFaixa(tabela, "outra-faixa", "UNITARIO")).toBe(0);
+      expect(obterValorFaixa(undefined, "faixa-1", "UNITARIO")).toBe(0);
     });
   });
 
