@@ -144,7 +144,7 @@ export const totalSolicitacao = (values, periodoCEI) => {
     ) {
       substituicao.cei.faixas_etarias.forEach((faixa) => {
         total += faixa.quantidade_alunos
-          ? parseInt(faixa.quantidade_alunos)
+          ? Number.parseInt(faixa.quantidade_alunos)
           : 0;
       });
     }
