@@ -8,3 +8,6 @@ export const getEscolaAberta = async (uuid: string) =>
 
 export const atualizarEscolaAberta = (uuid: string, payload: any) =>
   axios.put(`/escola-aberta/${uuid}/`, payload); // ou patch
+
+export const listarEscolaAberta = async () =>
+  await axios.get("/escola-aberta/");

@@ -10,22 +10,28 @@ export const LinhaUnidade = ({
   readOnly = false,
 }) => {
   if (readOnly) {
+    const alimentacoes = (participante.tipos_alimentacao ?? [])
+      .map((t: any) => t.nome)
+      .join(", ");
+
     return (
-      <>
-        <tr>
-          <td className="dre-lote text-center">
-            {participante.lote.nome_exibicao || participante.lote.nome}
-          </td>
-          <td className="unidade-educacional text-left">
-            <Tooltip title={participante.unidade_educacional.nome}>
-              {truncarString(participante.unidade_educacional.nome, 35)}
-            </Tooltip>
-          </td>
-          <td className="num-participantes text-center">
-            {participante.num_participantes}
-          </td>
-        </tr>
-      </>
+      <tr>
+        <td className="dre-lote text-center">{participante.lote_nome}</td>
+        <td className="unidade-educacional text-left">
+          <Tooltip title={participante.unidade_educacional_nome}>
+            {truncarString(participante.unidade_educacional_nome, 35)}
+          </Tooltip>
+        </td>
+        <td className="num-participantes text-center">
+          {participante.num_participantes ?? "-"}
+        </td>
+        <td className="num-colaboradores text-left">
+          <Tooltip title={alimentacoes}>
+            {truncarString(alimentacoes, 35)}
+          </Tooltip>
+        </td>
+        <td className="action-column" />
+      </tr>
     );
   }
 
