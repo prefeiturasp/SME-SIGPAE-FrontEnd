@@ -134,6 +134,7 @@ export default ({
           faixasEtarias={faixasEtarias}
           totaisConsumo={_TOTAIS_CONSUMO_POR_FAIXA_ETARIA}
           ordem="A"
+          possuiReajuste={relatorioConsolidado.possui_reajuste}
         />
 
         <TabelaDietasCEI
