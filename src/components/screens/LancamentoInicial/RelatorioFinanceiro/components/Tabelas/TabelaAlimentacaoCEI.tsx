@@ -12,6 +12,7 @@ type Props = {
   faixasEtarias: FaixaEtaria[];
   totaisConsumo?: any;
   ordem?: string;
+  possuiReajuste?: boolean;
 };
 
 type PeriodoFaixa = {
@@ -40,7 +41,9 @@ const _PERIODOS: PeriodoFaixa[] = [
 const moeda = (valor: number) => `R$ ${formataMilharDecimal(valor)}`;
 
 export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
-  ({ tabelas, faixasEtarias, totaisConsumo, ordem }, ref) => {
+  ({ tabelas, faixasEtarias, totaisConsumo, ordem, possuiReajuste }, ref) => {
+    const exibeReajuste = possuiReajuste !== false;
+
     const linhas = useMemo<LinhaFaixa[]>(
       () =>
         _PERIODOS.flatMap((periodo) => {
@@ -65,6 +68,7 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
               totaisConsumo?.[`ALIMENTAÇÃO - ${periodo.value}`]?.[
                 faixa.__str__
               ] ?? 0;
+            const valorTotalUnitario = valorUnitario * numeroAtendimentos;
             const valorUnitarioReajustado = valorUnitario + valorReajuste;
 
             return {
@@ -73,15 +77,17 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
               faixa: faixa.__str__,
               numeroAtendimentos,
               valorUnitario,
-              valorTotalUnitario: valorUnitario * numeroAtendimentos,
+              valorTotalUnitario,
               valorReajuste,
               valorTotalReajuste: valorReajuste * numeroAtendimentos,
               valorUnitarioReajustado,
-              valorTotal: valorUnitarioReajustado * numeroAtendimentos,
+              valorTotal: exibeReajuste
+                ? valorUnitarioReajustado * numeroAtendimentos
+                : valorTotalUnitario,
             };
           });
         }),
-      [tabelas, faixasEtarias, totaisConsumo],
+      [tabelas, faixasEtarias, totaisConsumo, exibeReajuste],
     );
 
     const totais = useMemo(
@@ -102,7 +108,11 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
 
     return (
       <div className="tabela-relatorio-responsiva">
-        <table className="tabela-relatorio tabela-detalhada tabela-detalhada-alimentacao">
+        <table
+          className={`tabela-relatorio tabela-detalhada tabela-detalhada-alimentacao${
+            exibeReajuste ? "" : " sem-reajuste"
+          }`}
+        >
           <thead>
             <tr>
               <th scope="col" className="col-descricao">
@@ -113,9 +123,13 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
               </th>
               <th scope="col">VALOR UNITÁRIO</th>
               <th scope="col">VALOR TOTAL UNITÁRIO</th>
-              <th scope="col">VALOR DO REAJUSTE</th>
-              <th scope="col">VALOR TOTAL DO REAJUSTE</th>
-              <th scope="col">VALOR UNITÁRIO REAJUSTADO</th>
+              {exibeReajuste && (
+                <>
+                  <th scope="col">VALOR DO REAJUSTE</th>
+                  <th scope="col">VALOR TOTAL DO REAJUSTE</th>
+                  <th scope="col">VALOR UNITÁRIO REAJUSTADO</th>
+                </>
+              )}
               <th scope="col" className="col-valor-total">
                 VALOR TOTAL
               </th>
@@ -132,9 +146,13 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
                 </td>
                 <td>{moeda(linha.valorUnitario)}</td>
                 <td>{moeda(linha.valorTotalUnitario)}</td>
-                <td>{moeda(linha.valorReajuste)}</td>
-                <td>{moeda(linha.valorTotalReajuste)}</td>
-                <td>{moeda(linha.valorUnitarioReajustado)}</td>
+                {exibeReajuste && (
+                  <>
+                    <td>{moeda(linha.valorReajuste)}</td>
+                    <td>{moeda(linha.valorTotalReajuste)}</td>
+                    <td>{moeda(linha.valorUnitarioReajustado)}</td>
+                  </>
+                )}
                 <td className="col-valor-total">{moeda(linha.valorTotal)}</td>
               </tr>
             ))}
@@ -145,9 +163,13 @@ export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
               </td>
               <td />
               <td />
-              <td />
-              <td />
-              <td />
+              {exibeReajuste && (
+                <>
+                  <td />
+                  <td />
+                  <td />
+                </>
+              )}
               <td className="col-valor-total">
                 {moeda(totais.valorTotalGeral)}
               </td>
