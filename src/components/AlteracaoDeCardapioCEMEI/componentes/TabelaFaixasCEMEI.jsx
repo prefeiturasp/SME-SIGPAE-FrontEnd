@@ -178,9 +178,9 @@ export const TabelaFaixasCEMEI = ({
                                 name={`substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][quantidade_alunos]`}
                                 validate={validaQuantidadeFaixaCEI({
                                   periodoIndice,
-                                  max: parseInt(faixa.quantidade_alunos),
+                                  max: Number.parseInt(faixa.quantidade_alunos),
                                 })}
-                                max={parseInt(faixa.quantidade_alunos)}
+                                max={Number.parseInt(faixa.quantidade_alunos)}
                                 min={0}
                                 step="1"
                                 className="input-quantidades"
@@ -191,7 +191,7 @@ export const TabelaFaixasCEMEI = ({
                                   );
                                   await form.change(
                                     `substituicoes[${periodoIndice}][cei][faixas_etarias][${faixaIndice}][matriculados_quando_criado]`,
-                                    parseInt(faixa.quantidade_alunos),
+                                    Number.parseInt(faixa.quantidade_alunos),
                                   );
                                   const values_ = form.getState().values;
                                   setTotalFrequenciaCEI(
@@ -237,7 +237,7 @@ export const TabelaFaixasCEMEI = ({
         ["EMEI", "TODOS"].includes(values.alunos_cei_e_ou_emei) &&
         values.substituicoes[periodoIndice] &&
         values.substituicoes[periodoIndice].checked &&
-        parseInt(periodo.EMEI) > 0 && (
+        Number.parseInt(periodo.EMEI) > 0 && (
           <>
             <div className="row mt-2">
               <div className="col-4">
