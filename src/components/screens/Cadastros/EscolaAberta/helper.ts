@@ -97,3 +97,26 @@ export const isPeriodoEditavel = (
 
   return hoje <= dataFim;
 };
+
+const DIAS_SEMANA: Record<string, string> = {
+  "0": "Segunda-feira",
+  "1": "Terça-feira",
+  "2": "Quarta-feira",
+  "3": "Quinta-feira",
+  "4": "Sexta-feira",
+  "5": "Sábado",
+  "6": "Domingo",
+};
+
+export const formatarDias = (dias: string[] = []) =>
+  [...dias]
+    .sort((a, b) => Number(a) - Number(b))
+    .map((d) => DIAS_SEMANA[String(d)] ?? d)
+    .join(", ");
+
+export const contarUnidades = (escolaAberta: any) =>
+  new Set(
+    (escolaAberta.unidades_participantes || []).map(
+      (u: any) => u.unidade_educacional,
+    ),
+  ).size;

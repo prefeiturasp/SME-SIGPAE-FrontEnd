@@ -7,32 +7,9 @@ import { listarEscolaAberta } from "./escolaAberta.service";
 import { InputPesquisa } from "../../../Shareable/Input/InputPesquisa/index";
 import { toastError } from "../../../Shareable/Toast/dialogs";
 import { TabelaUnidades } from "./components/TabelaUnidades";
-import { isPeriodoEditavel } from "./helper";
+import { contarUnidades, formatarDias, isPeriodoEditavel } from "./helper";
 import { CADASTROS, CONFIGURACOES, ESCOLA_ABERTA } from "src/configs/constants";
 import "./styles.scss";
-
-const DIAS_SEMANA: Record<string, string> = {
-  "0": "Segunda-feira",
-  "1": "Terça-feira",
-  "2": "Quarta-feira",
-  "3": "Quinta-feira",
-  "4": "Sexta-feira",
-  "5": "Sábado",
-  "6": "Domingo",
-};
-
-const formatarDias = (dias: string[] = []) =>
-  [...dias]
-    .sort((a, b) => Number(a) - Number(b))
-    .map((d) => DIAS_SEMANA[String(d)] ?? d)
-    .join(", ");
-
-const contarUnidades = (escolaAberta: any) =>
-  new Set(
-    (escolaAberta.unidades_participantes || []).map(
-      (u: any) => u.unidade_educacional,
-    ),
-  ).size;
 
 export const EscolaAbertaCadastradas = () => {
   const [expandidos, setExpandidos] = useState<Record<string, boolean>>({});
@@ -57,10 +34,11 @@ export const EscolaAbertaCadastradas = () => {
     }
 
     setFiltradas(
-      lista.filter((ea) => {
-        const periodo = `${ea.data_inicial} ${ea.data_final}`.toLowerCase();
-        const dias = formatarDias(ea.dias_semana).toLowerCase();
-        const quantidade = contarUnidades(ea).toString();
+      lista.filter((escolaAberta) => {
+        const periodo =
+          `${escolaAberta.data_inicial} ${escolaAberta.data_final}`.toLowerCase();
+        const dias = formatarDias(escolaAberta.dias_semana).toLowerCase();
+        const quantidade = contarUnidades(escolaAberta).toString();
 
         return (
           periodo.includes(termo) ||
@@ -118,21 +96,22 @@ export const EscolaAbertaCadastradas = () => {
               </tr>
             </thead>
             <tbody>
-              {filtradas.map((ea) => {
+              {filtradas.map((escolaAberta) => {
                 const periodoEditavel = isPeriodoEditavel(
-                  ea.data_inicial,
-                  ea.data_final,
+                  escolaAberta.data_inicial,
+                  escolaAberta.data_final,
                 );
-                const count = contarUnidades(ea);
+                const count = contarUnidades(escolaAberta);
 
                 return (
-                  <React.Fragment key={ea.uuid}>
+                  <React.Fragment key={escolaAberta.uuid}>
                     <tr>
                       <td className="text-center">
-                        {ea.data_inicial} até {ea.data_final}
+                        {escolaAberta.data_inicial} até{" "}
+                        {escolaAberta.data_final}
                       </td>
                       <td className="text-center">
-                        {formatarDias(ea.dias_semana)}
+                        {formatarDias(escolaAberta.dias_semana)}
                       </td>
                       <td className="text-center">
                         {count} {count === 1 ? "UE" : "UEs"}
@@ -144,7 +123,7 @@ export const EscolaAbertaCadastradas = () => {
                               <span>
                                 <NavLink
                                   className="botao-editar"
-                                  to={`/${CONFIGURACOES}/${CADASTROS}/${ESCOLA_ABERTA}/${ea.uuid}`}
+                                  to={`/${CONFIGURACOES}/${CADASTROS}/${ESCOLA_ABERTA}/${escolaAberta.uuid}`}
                                 >
                                   <i className="fas fa-edit icone-edicao" />
                                 </NavLink>
@@ -156,23 +135,27 @@ export const EscolaAbertaCadastradas = () => {
                             </span>
                           )}
                           <ToggleExpandir
-                            ativo={!!expandidos[ea.uuid]}
-                            onClick={() => toggleExpandir(ea.uuid)}
-                            dataTestId={`toggle-${ea.uuid}`}
+                            ativo={!!expandidos[escolaAberta.uuid]}
+                            onClick={() => toggleExpandir(escolaAberta.uuid)}
+                            dataTestId={`toggle-${escolaAberta.uuid}`}
                           />
                         </div>
                       </td>
                     </tr>
 
-                    {!!expandidos[ea.uuid] && (
+                    {!!expandidos[escolaAberta.uuid] && (
                       <tr className="linha-expandida">
                         <td colSpan={4}>
-                          <Collapse isOpened={!!expandidos[ea.uuid]}>
+                          <Collapse isOpened={!!expandidos[escolaAberta.uuid]}>
                             <TabelaUnidades
                               editable={false}
-                              participantes={ea.unidades_participantes}
-                              page={paginas[ea.uuid] || 1}
-                              setPage={(page) => setPageFor(ea.uuid, page)}
+                              participantes={
+                                escolaAberta.unidades_participantes
+                              }
+                              page={paginas[escolaAberta.uuid] || 1}
+                              setPage={(page) =>
+                                setPageFor(escolaAberta.uuid, page)
+                              }
                               loading={false}
                             />
                           </Collapse>
