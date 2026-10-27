@@ -60,6 +60,19 @@ export const obterValorParametrizado = (
     )?.valor ?? "0",
   );
 
+export const obterValorFaixa = (
+  tabela: TabelaParametrizacao | undefined,
+  faixaUuid: string,
+  tipoValor: string,
+) =>
+  stringDecimalToNumber(
+    tabela?.valores.find(
+      (valor) =>
+        valor.faixa_etaria?.uuid === faixaUuid &&
+        valor.tipo_valor === tipoValor,
+    )?.valor ?? "0",
+  ) ?? 0;
+
 export const chaveCampoConsumo = (nome: string) =>
   normalizar(nome).replaceAll(/\s+/g, "_");
 
