@@ -1,5 +1,13 @@
+@use "src/styles/variables.scss" as *;
+
 div.lista-ocorrencias {
   min-height: 73vh;
+
+  .titulo-verde {
+    color: $green;
+    font-weight: bold;
+    font-size: 14px;
+  }
 
   .lista-ocorrencias__resultados {
     min-height: 80px;

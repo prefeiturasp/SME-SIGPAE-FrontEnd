@@ -355,11 +355,6 @@ describe("Carrega página de Cadastro de Ficha técnica", () => {
       target: { value: "FLV" },
     });
 
-    preencheInput("fabricante_0", mockListaFabricantes.results[0].uuid);
-    preencheInput("email_fabricante_0", "fabricante@teste.com");
-    preencheInput("telefone_fabricante_0", "123456789");
-    preencheInput("numero_registro", "11111");
-
     let selectTipoEntrega = screen
       .getByTestId("tipo_entrega")
       .querySelector("select");

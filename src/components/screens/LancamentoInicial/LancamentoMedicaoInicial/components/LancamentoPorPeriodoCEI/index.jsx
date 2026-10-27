@@ -547,6 +547,9 @@ export const LancamentoPorPeriodoCEI = ({
               <BlocoOcorrencias
                 comOcorrencias={comOcorrencias}
                 setComOcorrencias={setComOcorrencias}
+                desabilitarAvaliacao={Boolean(
+                  solicitacaoMedicaoInicial?.com_ocorrencias,
+                )}
                 errosAoSalvar={errosAoSalvar}
                 setErrosAoSalvar={setErrosAoSalvar}
                 mes={mes}

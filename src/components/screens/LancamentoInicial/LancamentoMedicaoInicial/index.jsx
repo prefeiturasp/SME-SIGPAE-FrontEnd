@@ -732,6 +732,7 @@ export default () => {
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
     await getDiasCalendarioAsync(payload, solicitacao.data[0]);
     setSolicitacaoMedicaoInicial(solicitacao.data[0]);
+    setComOcorrencias(solicitacao.data[0]?.com_ocorrencias ? "true" : "");
   };
 
   const { Option } = Select;
@@ -854,6 +855,7 @@ export default () => {
     setAno(null);
     setNaoPodeFinalizar(true);
     setErrosAoSalvar([]);
+    setComOcorrencias("");
     setOpen(false);
     setLoadingSolicitacaoMedicaoInicial(true);
     setPeriodoSelecionado(value);
@@ -928,6 +930,7 @@ export default () => {
 
     const solicitacao = await getSolicitacaoMedicaoInicial(payload);
     setSolicitacaoMedicaoInicial(solicitacao.data[0]);
+    setComOcorrencias(solicitacao.data[0]?.com_ocorrencias ? "true" : "");
   };
 
   const handleFinalizarMedicao = async () => {
