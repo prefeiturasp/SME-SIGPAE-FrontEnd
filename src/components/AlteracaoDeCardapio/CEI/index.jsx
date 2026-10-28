@@ -34,6 +34,7 @@ import {
   getError,
 } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
+import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
@@ -789,4 +790,13 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       )}
     </>
   );
+};
+
+AlteracaoDoTipoDeAlimentacaoCEI.propTypes = {
+  periodos: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      nome: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
 };
