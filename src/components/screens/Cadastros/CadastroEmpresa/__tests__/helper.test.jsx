@@ -8,6 +8,7 @@ import {
 import {
   buscaCep,
   formataJsonParaEnvio,
+  mensagemErroCnpj,
   retornArrayTerceirizadas,
   transformaObjetos,
 } from "../helper";
@@ -221,5 +222,23 @@ describe("Função formataJsonParaEnvio", () => {
 
     expect(payload.representante_telefone).toEqual("11111111111");
     expect(payload.responsavel_telefone).toEqual("22222222222");
+  });
+});
+
+describe("Função mensagemErroCnpj", () => {
+  const mensagem =
+    "Não foi possível concluir o cadastro, pois já existe uma empresa cadastrada com o CNPJ informado.";
+
+  it("retorna a mensagem quando o backend aponta erro no CNPJ", () => {
+    expect(mensagemErroCnpj({ cnpj: [mensagem] })).toEqual(mensagem);
+  });
+
+  it("retorna null quando o backend não aponta erro no CNPJ", () => {
+    expect(mensagemErroCnpj({ razao_social: ["Erro"] })).toBeNull();
+    expect(mensagemErroCnpj(undefined)).toBeNull();
+  });
+
+  it("retorna null quando a lista de erros do CNPJ está vazia", () => {
+    expect(mensagemErroCnpj({ cnpj: [] })).toBeNull();
   });
 });

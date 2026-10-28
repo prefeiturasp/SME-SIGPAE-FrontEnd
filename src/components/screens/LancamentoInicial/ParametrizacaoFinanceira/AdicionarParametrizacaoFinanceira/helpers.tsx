@@ -93,6 +93,10 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
       total =
         stringDecimalToNumber(valor_unitario) *
         (1 + stringDecimalToNumber(percentual_acrescimo) / 100);
+    else if (temValorUnitario) {
+      const unitario = stringDecimalToNumber(valor_unitario);
+      if (unitario !== null && !Number.isNaN(unitario)) total = unitario;
+    }
 
     if (!isNaN(total)) valores.valor_unitario_total = formatarTotal(total);
   });
