@@ -14,7 +14,7 @@ import { UsuarioResponsavel } from "./components/Form/UsuarioResponsavel";
 import { ContratosFormSet } from "./components/Form/ContratosFormSet";
 import { ContatoFormSet } from "./components/Form/ContatoFormSet";
 import { PERFIL } from "src/constants/shared";
-import { formataJsonParaEnvio } from "./helper";
+import { formataJsonParaEnvio, mensagemErroCnpj } from "./helper";
 import {
   createTerceirizada,
   createNaoTerceirizada,
@@ -300,6 +300,10 @@ export const CadastroEmpresa = () => {
     setExibirModal(false);
   };
 
+  const exibirErro400 = (data, prefixo) => {
+    toastError(mensagemErroCnpj(data) || `${prefixo}: ${getError(data)}`);
+  };
+
   const atualizarEmpresa = (uuid, dados, ehDistribuidor) => {
     const service = ehDistribuidor ? updateNaoTerceirizada : updateTerceirizada;
 
@@ -309,9 +313,7 @@ export const CadastroEmpresa = () => {
           toastSuccess("Empresa atualizada com sucesso!");
           navigate("/configuracoes/cadastros/empresas-cadastradas");
         } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(
-            `Erro ao atualizar cadastro de empresa: ${getError(response.data)}`,
-          );
+          exibirErro400(response.data, "Erro ao atualizar cadastro de empresa");
         } else {
           toastError(`Erro ao atualizar cadastro de empresa`);
         }
@@ -330,7 +332,7 @@ export const CadastroEmpresa = () => {
           toastSuccess("Empresa cadastrada com sucesso!");
           navigate("/configuracoes/cadastros/empresas-cadastradas");
         } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(`Erro ao cadastrar empresa: ${getError(response.data)}`);
+          exibirErro400(response.data, "Erro ao cadastrar empresa");
         } else {
           toastError(`Erro ao cadastrar empresa`);
         }
