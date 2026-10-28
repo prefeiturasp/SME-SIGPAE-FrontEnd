@@ -1,18 +1,10 @@
 import { saveAs } from "file-saver";
 
-import { API_URL } from "../constants/config";
-import authService from "./auth";
-
 import axios from "./_base";
 import { ENDPOINT_RELATORIO_QUANTITATIVO } from "src/constants/shared";
 import { ErrorHandlerFunction } from "./service-helpers";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-
-const authToken = {
-  Authorization: `JWT ${authService.getToken()}`,
-  "Content-Type": "application/json",
-};
 
 export const getTerceirizada = async (filtros = null) => {
   let url = "/terceirizadas/";
@@ -45,46 +37,22 @@ export const createNaoTerceirizada = async (payload) => {
   }
 };
 
-export const createTerceirizada = (payload) => {
-  const url = `${API_URL}/terceirizadas/`;
-
-  let status = 0;
-  return fetch(url, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+export const createTerceirizada = async (payload) => {
+  const response = await axios
+    .post("/terceirizadas/", payload)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    return { data: response.data, status: response.status };
+  }
 };
 
-export const updateTerceirizada = (uuid, payload) => {
-  const url = `${API_URL}/terceirizadas/${uuid}/`;
-
-  let status = 0;
-  return fetch(url, {
-    method: "PUT",
-    body: JSON.stringify(payload),
-    headers: authToken,
-  })
-    .then((res) => {
-      status = res.status;
-      return res.json();
-    })
-    .then((data) => {
-      return { data: data, status: status };
-    })
-    .catch((error) => {
-      return error.json();
-    });
+export const updateTerceirizada = async (uuid, payload) => {
+  const response = await axios
+    .put(`/terceirizadas/${uuid}/`, payload)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    return { data: response.data, status: response.status };
+  }
 };
 
 export const updateNaoTerceirizada = async (uuid, payload) => {
