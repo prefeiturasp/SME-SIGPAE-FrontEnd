@@ -17,8 +17,22 @@ import {
   justificativaAoNegarSolicitacao,
   prazoDoPedidoMensagem,
 } from "src/helpers/utilities";
+import PropTypes from "prop-types";
 import { useState } from "react";
 import { getRelatorioAlteracaoTipoAlimentacao } from "src/services/relatorios";
+
+const validacaoTiposAlimentacao = PropTypes.arrayOf(
+  PropTypes.shape({
+    nome: PropTypes.string.isRequired,
+  }),
+);
+
+const validacaoSubstituicao = PropTypes.shape({
+  tipos_alimentacao_de: validacaoTiposAlimentacao.isRequired,
+  tipos_alimentacao_para: validacaoTiposAlimentacao.isRequired,
+  matriculados_quando_criado: PropTypes.number,
+  qtd_alunos: PropTypes.number,
+});
 
 export const CorpoRelatorio = ({ ...props }) => {
   let totalMatriculados = 0;
@@ -35,7 +49,7 @@ export const CorpoRelatorio = ({ ...props }) => {
       await getRelatorioAlteracaoTipoAlimentacao(
         solicitacao.uuid,
         TIPO_SOLICITACAO.SOLICITACAO_CEMEI,
-        solicitacao?.escola?.nome
+        solicitacao?.escola?.nome,
       );
     } catch {
       toastError("Houve um erro ao imprimir o relatório");
@@ -47,7 +61,7 @@ export const CorpoRelatorio = ({ ...props }) => {
     <>
       <p
         className={`col-12 title-message fw-bold ${corDaMensagem(
-          prazoDoPedidoMensagem(solicitacao.prioridade)
+          prazoDoPedidoMensagem(solicitacao.prioridade),
         )}`}
       >
         {prazoDoPedidoMensagem(solicitacao.prioridade)}
@@ -230,7 +244,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                         <tbody>
                           {solicitacao.substituicoes_cemei_cei_periodo_escolar
                             .filter(
-                              (q) => q.periodo_escolar.nome === periodo.nome
+                              (q) => q.periodo_escolar.nome === periodo.nome,
                             )
                             .map((faixa, key) =>
                               faixa.faixas_etarias.map((f) => {
@@ -247,7 +261,7 @@ export const CorpoRelatorio = ({ ...props }) => {
                                     </td>
                                   </tr>
                                 );
-                              })
+                              }),
                             )}
                         </tbody>
                         <thead>
@@ -256,31 +270,31 @@ export const CorpoRelatorio = ({ ...props }) => {
                             <th className="col-3 text-center">
                               {solicitacao.substituicoes_cemei_cei_periodo_escolar
                                 .filter(
-                                  (q) => q.periodo_escolar.nome === periodo.nome
+                                  (q) =>
+                                    q.periodo_escolar.nome === periodo.nome,
                                 )
                                 .map((faixa) =>
                                   faixa.faixas_etarias.reduce(function (
                                     total,
-                                    f
+                                    f,
                                   ) {
                                     return total + f.matriculados_quando_criado;
-                                  },
-                                  totalMatriculados)
+                                  }, totalMatriculados),
                                 )}
                             </th>
                             <th className="col-2 text-center">
                               {solicitacao.substituicoes_cemei_cei_periodo_escolar
                                 .filter(
-                                  (q) => q.periodo_escolar.nome === periodo.nome
+                                  (q) =>
+                                    q.periodo_escolar.nome === periodo.nome,
                                 )
                                 .map((faixa) =>
                                   faixa.faixas_etarias.reduce(function (
                                     total,
-                                    f
+                                    f,
                                   ) {
                                     return total + f.quantidade;
-                                  },
-                                  totalQuantidadeAlunos)
+                                  }, totalQuantidadeAlunos),
                                 )}
                             </th>
                           </tr>
@@ -357,7 +371,7 @@ export const CorpoRelatorio = ({ ...props }) => {
         </div>
       )}
       {solicitacao.datas_intervalo.find(
-        (data_intervalo) => data_intervalo.cancelado_justificativa
+        (data_intervalo) => data_intervalo.cancelado_justificativa,
       ) && (
         <>
           <hr />
@@ -365,7 +379,7 @@ export const CorpoRelatorio = ({ ...props }) => {
             <strong>Histórico de cancelamento</strong>
             {solicitacao.datas_intervalo
               .filter(
-                (data_intervalo) => data_intervalo.cancelado_justificativa
+                (data_intervalo) => data_intervalo.cancelado_justificativa,
               )
               .map((data_intervalo, key) => {
                 return (
@@ -402,7 +416,7 @@ export const CorpoRelatorio = ({ ...props }) => {
               </p>
               <p>{`${
                 solicitacao.logs.find(
-                  (log) => log.status_evento_explicacao === "CODAE autorizou"
+                  (log) => log.status_evento_explicacao === "CODAE autorizou",
                 ).criado_em
               } - Informações da CODAE`}</p>
               <p
@@ -418,4 +432,70 @@ export const CorpoRelatorio = ({ ...props }) => {
       <RelatorioHistoricoQuestionamento solicitacao={solicitacao} />
     </>
   );
+};
+
+CorpoRelatorio.propTypes = {
+  dadosTabela: PropTypes.arrayOf(
+    PropTypes.shape({
+      nome: PropTypes.string.isRequired,
+      background: PropTypes.string,
+      borderColor: PropTypes.string,
+      substituicoesCEI: validacaoSubstituicao,
+      substituicoesEMEI: validacaoSubstituicao,
+    }),
+  ).isRequired,
+  solicitacao: PropTypes.shape({
+    uuid: PropTypes.string.isRequired,
+    prioridade: PropTypes.string.isRequired,
+    id_externo: PropTypes.string.isRequired,
+    escola: PropTypes.shape({
+      nome: PropTypes.string.isRequired,
+      codigo_eol: PropTypes.string.isRequired,
+      diretoria_regional: PropTypes.shape({
+        nome: PropTypes.string.isRequired,
+      }).isRequired,
+      lote: PropTypes.shape({
+        nome: PropTypes.string.isRequired,
+      }).isRequired,
+      tipo_gestao: PropTypes.shape({
+        nome: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
+    rastro_terceirizada: PropTypes.shape({
+      nome_fantasia: PropTypes.string,
+    }),
+    logs: PropTypes.arrayOf(
+      PropTypes.shape({
+        status_evento_explicacao: PropTypes.string,
+        criado_em: PropTypes.string,
+      }),
+    ).isRequired,
+    alterar_dia: PropTypes.bool,
+    motivo: PropTypes.shape({
+      nome: PropTypes.string.isRequired,
+    }).isRequired,
+    datas_intervalo: PropTypes.arrayOf(
+      PropTypes.shape({
+        data: PropTypes.string.isRequired,
+        cancelado_justificativa: PropTypes.string,
+      }),
+    ).isRequired,
+    substituicoes_cemei_cei_periodo_escolar: PropTypes.arrayOf(
+      PropTypes.shape({
+        periodo_escolar: PropTypes.shape({
+          nome: PropTypes.string.isRequired,
+        }).isRequired,
+        faixas_etarias: PropTypes.arrayOf(
+          PropTypes.shape({
+            faixa_etaria: PropTypes.shape({
+              __str__: PropTypes.string.isRequired,
+            }).isRequired,
+            matriculados_quando_criado: PropTypes.number.isRequired,
+            quantidade: PropTypes.number.isRequired,
+          }),
+        ).isRequired,
+      }),
+    ).isRequired,
+    observacao: PropTypes.string,
+  }).isRequired,
 };
