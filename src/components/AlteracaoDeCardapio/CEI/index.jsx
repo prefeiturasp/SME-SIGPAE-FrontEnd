@@ -34,6 +34,7 @@ import {
   getError,
 } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
+import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
@@ -113,46 +114,56 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const salvarSolicitacao = async (values) => {
+    if (!values.uuid) {
+      const resposta = await escolaCriarSolicitacaoDeAlteracaoCardapio(
+        formataPayload(values),
+        SOLICITACAO_CEI,
+      );
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.CREATED,
+        mensagem: "Alteração do tipo de alimentação criada com sucesso!",
+      };
+    }
+
+    const resposta = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
+      values.uuid,
+      formataPayload(values),
+      SOLICITACAO_CEI,
+    );
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.OK,
+      mensagem: "Alteração do tipo de alimentação alterada com sucesso!",
+    };
+  };
+
   const onSubmit = async (values, form) => {
     const erro = validaForm(values);
+
     if (erro) {
       toastError(erro);
       return;
     }
-    if (!values.uuid) {
-      const response = await escolaCriarSolicitacaoDeAlteracaoCardapio(
-        formataPayload(values),
-        SOLICITACAO_CEI,
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Alteração do tipo de alimentação criada com sucesso!");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
-    } else {
-      const response = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
-        values.uuid,
-        formataPayload(values),
-        SOLICITACAO_CEI,
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess(
-            "Alteração do tipo de alimentação alterada com sucesso!",
-          );
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const { resposta, statusEsperado, mensagem } =
+      await salvarSolicitacao(values);
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
     }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(resposta.data.uuid, form);
+    } else {
+      toastSuccess(mensagem);
+    }
+
+    refresh(form);
   };
 
   const getPeriodo = (values, indice) => {
@@ -779,4 +790,42 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       )}
     </>
   );
+};
+
+AlteracaoDoTipoDeAlimentacaoCEI.propTypes = {
+  meusDados: PropTypes.shape({
+    vinculo_atual: PropTypes.shape({
+      instituicao: PropTypes.shape({
+        uuid: PropTypes.string.isRequired,
+        quantidade_alunos: PropTypes.number,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+  motivos: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      nome: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  periodos: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      nome: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  proximosCincoDiasUteis: PropTypes.instanceOf(Date).isRequired,
+  proximosDoisDiasUteis: PropTypes.instanceOf(Date).isRequired,
+  vinculos: PropTypes.arrayOf(
+    PropTypes.shape({
+      periodo_escolar: PropTypes.shape({
+        nome: PropTypes.string.isRequired,
+      }).isRequired,
+      tipos_alimentacao: PropTypes.arrayOf(
+        PropTypes.shape({
+          uuid: PropTypes.string.isRequired,
+          nome: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+    }),
+  ).isRequired,
 };

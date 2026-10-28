@@ -10,7 +10,7 @@ import {
   agregarDefault,
   usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
-import React, { Fragment } from "react";
+import PropTypes from "prop-types";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import { agruparRefeicaoESobremesa } from "../../helper";
@@ -104,30 +104,28 @@ export const PeriodosFields = ({ ...props }) => {
                   className={`period-quantity number-${index} ps-5 pt-2 pb-2`}
                   data-testid={`div-checkbox-${getPeriodo(index).nome}`}
                 >
-                  <Fragment>
-                    <label htmlFor="check" className="checkbox-label">
-                      <Field
-                        component={"input"}
-                        type="checkbox"
-                        name={`${name}.check`}
-                      />
-                      <span
-                        onClick={() => handlePeriodoOnClick(name, index)}
-                        className="checkbox-custom"
-                        data-cy={`checkbox-${getPeriodo(index).nome}`}
-                        role="checkbox"
-                        tabIndex={0}
-                        aria-checked={values.substituicoes[index]["check"]}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            handlePeriodoOnClick(name, index);
-                          }
-                        }}
-                      />
-                      <div className=""> {getPeriodo(index).nome}</div>
-                    </label>
-                  </Fragment>
+                  <label htmlFor="check" className="checkbox-label">
+                    <Field
+                      component={"input"}
+                      type="checkbox"
+                      name={`${name}.check`}
+                    />
+                    <span
+                      onClick={() => handlePeriodoOnClick(name, index)}
+                      className="checkbox-custom"
+                      data-cy={`checkbox-${getPeriodo(index).nome}`}
+                      role="checkbox"
+                      tabIndex={0}
+                      aria-checked={values.substituicoes[index]["check"]}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handlePeriodoOnClick(name, index);
+                        }
+                      }}
+                    />
+                    <div className=""> {getPeriodo(index).nome}</div>
+                  </label>
                 </div>
               </div>
               <div className="col-3 pe-3">
@@ -195,4 +193,30 @@ export const PeriodosFields = ({ ...props }) => {
       </FieldArray>
     </section>
   );
+};
+
+PeriodosFields.propTypes = {
+  ehMotivoPorNome: PropTypes.func.isRequired,
+  periodos: PropTypes.arrayOf(
+    PropTypes.shape({
+      nome: PropTypes.string.isRequired,
+      maximo_alunos: PropTypes.number,
+      tipos_alimentacao: PropTypes.arrayOf(
+        PropTypes.shape({
+          nome: PropTypes.string.isRequired,
+          uuid: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+    }),
+  ).isRequired,
+  form: PropTypes.shape({
+    change: PropTypes.func.isRequired,
+  }).isRequired,
+  values: PropTypes.shape({
+    substituicoes: PropTypes.arrayOf(
+      PropTypes.shape({
+        check: PropTypes.bool,
+      }),
+    ).isRequired,
+  }).isRequired,
 };

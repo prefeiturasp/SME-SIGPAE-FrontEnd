@@ -7,8 +7,11 @@ import {
   ALTERACAO_TIPO_ALIMENTACAO,
   ALTERACAO_TIPO_ALIMENTACAO_CEMEI,
 } from "src/configs/constants";
-import { gerarLinkRelatorio, talvezPluralizar } from "src/helpers/utilities";
-import { calcularNumeroDeEscolasUnicas } from "src/helpers/utilities";
+import {
+  gerarLinkRelatorio,
+  talvezPluralizar,
+  calcularNumeroDeEscolasUnicas,
+} from "src/helpers/utilities";
 
 export const CardPendenteAcao = ({
   pedidos,

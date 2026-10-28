@@ -77,7 +77,7 @@ export const Relatorio = ({ ...props }) => {
       setDadosTabela(formataDadosTabelaCEMEI(response.data));
       getMatriculados(response.data.escola.codigo_eol);
       const logCancelamentoEscola = response.data.logs.filter(
-        (log) => log.status_evento_explicacao === "Escola cancelou"
+        (log) => log.status_evento_explicacao === "Escola cancelou",
       );
       setJustificativaCancelamentoEscola(logCancelamentoEscola);
     }
@@ -89,7 +89,7 @@ export const Relatorio = ({ ...props }) => {
     const response = await endpointAprovaSolicitacao(
       uuid,
       values,
-      tipoSolicitacao
+      tipoSolicitacao,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(toastAprovaMensagem);
@@ -111,173 +111,169 @@ export const Relatorio = ({ ...props }) => {
       spinning={!solicitacao || !dadosTabela || !matriculados}
     >
       {solicitacao && dadosTabela && matriculados && (
-        <>
-          <Form onSubmit={onSubmit}>
-            {({ handleSubmit, submitting, values }) => (
-              <form onSubmit={handleSubmit}>
-                {endpointAprovaSolicitacao && (
-                  <ModalAutorizarAposQuestionamento
-                    showModal={showAutorizarModal}
-                    loadSolicitacao={getSolicitacao}
-                    closeModal={() => setShowAutorizarModal(false)}
-                    endpoint={endpointAprovaSolicitacao}
-                    uuid={uuid}
-                    tipoSolicitacao={tipoSolicitacao}
+        <Form onSubmit={onSubmit}>
+          {({ handleSubmit, submitting, values }) => (
+            <form onSubmit={handleSubmit}>
+              {endpointAprovaSolicitacao && (
+                <ModalAutorizarAposQuestionamento
+                  showModal={showAutorizarModal}
+                  loadSolicitacao={getSolicitacao}
+                  closeModal={() => setShowAutorizarModal(false)}
+                  endpoint={endpointAprovaSolicitacao}
+                  uuid={uuid}
+                  tipoSolicitacao={tipoSolicitacao}
+                />
+              )}
+              {ModalCODAEAutoriza && (
+                <ModalCODAEAutoriza
+                  showModal={showModalCodaeAutorizar}
+                  loadSolicitacao={getSolicitacao}
+                  closeModal={() => setShowModalCodaeAutorizar(false)}
+                  endpoint={endpointAprovaSolicitacao}
+                  uuid={uuid}
+                  ehInclusao={true}
+                  tipoSolicitacao={tipoSolicitacao}
+                />
+              )}
+              <span className="page-title">{`Alteração do Tipo de Alimentação - Solicitação # ${solicitacao.id_externo}`}</span>
+              <div className="card style-padrao-inclusao-cei mt-3">
+                <div className="card-body">
+                  <CorpoRelatorio
+                    solicitacao={solicitacao}
+                    dadosTabela={dadosTabela}
+                    matriculados={matriculados}
+                    justificativaCancelamentoEscola={
+                      justificativaCancelamentoEscola
+                    }
                   />
-                )}
-                {ModalCODAEAutoriza && (
-                  <ModalCODAEAutoriza
-                    showModal={showModalCodaeAutorizar}
-                    loadSolicitacao={getSolicitacao}
-                    closeModal={() => setShowModalCodaeAutorizar(false)}
-                    endpoint={endpointAprovaSolicitacao}
-                    uuid={uuid}
-                    ehInclusao={true}
-                    tipoSolicitacao={tipoSolicitacao}
-                  />
-                )}
-                <span className="page-title">{`Alteração do Tipo de Alimentação - Solicitação # ${solicitacao.id_externo}`}</span>
-                <div className="card style-padrao-inclusao-cei mt-3">
-                  <div className="card-body">
-                    <CorpoRelatorio
-                      solicitacao={solicitacao}
-                      dadosTabela={dadosTabela}
-                      matriculados={matriculados}
-                      justificativaCancelamentoEscola={
-                        justificativaCancelamentoEscola
-                      }
-                    />
-                    {visualizaBotoesDoFluxo(solicitacao) && (
-                      <div className="row">
-                        <div className="col-12 text-end">
-                          {exibeBotaoNaoAprovar(
-                            solicitacao,
-                            textoBotaoNaoAprova
-                          ) && (
-                            <Botao
-                              texto={textoBotaoNaoAprova}
-                              type={BUTTON_TYPE.BUTTON}
-                              style={BUTTON_STYLE.GREEN_OUTLINE}
-                              onClick={() => {
-                                setRespostaSimNao("Não");
-                                setShowNaoAprovaModal(true);
-                              }}
-                            />
-                          )}
-                          {exibirBotaoQuestionamento(
-                            solicitacao,
-                            visao,
-                            tipoPerfil
-                          ) && (
-                            <Botao
-                              texto={
-                                tipoPerfil ===
-                                TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
-                                  ? "Questionar"
-                                  : "Sim"
-                              }
-                              type={BUTTON_TYPE.BUTTON}
-                              onClick={() => {
-                                setRespostaSimNao("Sim");
-                                setShowQuestionamentoModal(true);
-                              }}
-                              style={BUTTON_STYLE.GREEN}
-                              className="ms-3"
-                            />
-                          )}
-                          {exibeBotaoAprovar(
-                            solicitacao,
-                            visao,
-                            textoBotaoAprova
-                          ) && (
-                            <Botao
-                              texto={textoBotaoAprova}
-                              type={BUTTON_TYPE.BUTTON}
-                              onClick={() =>
-                                visao === DRE
-                                  ? onSubmit(values)
-                                  : exibirModalAutorizacaoAposQuestionamento(
+                  {visualizaBotoesDoFluxo(solicitacao) && (
+                    <div className="row">
+                      <div className="col-12 text-end">
+                        {exibeBotaoNaoAprovar(
+                          solicitacao,
+                          textoBotaoNaoAprova,
+                        ) && (
+                          <Botao
+                            texto={textoBotaoNaoAprova}
+                            type={BUTTON_TYPE.BUTTON}
+                            style={BUTTON_STYLE.GREEN_OUTLINE}
+                            onClick={() => {
+                              setRespostaSimNao("Não");
+                              setShowNaoAprovaModal(true);
+                            }}
+                          />
+                        )}
+                        {exibirBotaoQuestionamento(
+                          solicitacao,
+                          visao,
+                          tipoPerfil,
+                        ) && (
+                          <Botao
+                            texto={
+                              tipoPerfil ===
+                              TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA
+                                ? "Questionar"
+                                : "Sim"
+                            }
+                            type={BUTTON_TYPE.BUTTON}
+                            onClick={() => {
+                              setRespostaSimNao("Sim");
+                              setShowQuestionamentoModal(true);
+                            }}
+                            style={BUTTON_STYLE.GREEN}
+                            className="ms-3"
+                          />
+                        )}
+                        {exibeBotaoAprovar(
+                          solicitacao,
+                          visao,
+                          textoBotaoAprova,
+                        ) && (
+                          <Botao
+                            texto={textoBotaoAprova}
+                            type={BUTTON_TYPE.BUTTON}
+                            onClick={() =>
+                              visao === DRE
+                                ? onSubmit(values)
+                                : exibirModalAutorizacaoAposQuestionamento(
                                       solicitacao,
-                                      visao
+                                      visao,
                                     )
                                   ? setShowAutorizarModal(true)
                                   : setShowModalCodaeAutorizar(true)
-                              }
-                              disabled={submitting}
-                              style={BUTTON_STYLE.GREEN}
-                              className="ms-3"
-                            />
-                          )}
-                          {exibirBotaoMarcarConferencia(solicitacao, visao) && (
-                            <div className="form-group float-end mt-4">
-                              {solicitacao.terceirizada_conferiu_gestao ? (
-                                <label className="ms-3 conferido">
-                                  <i className="fas fa-check me-2" />
-                                  Solicitação Conferida
-                                </label>
-                              ) : (
-                                <Botao
-                                  texto="Marcar Conferência"
-                                  type={BUTTON_TYPE.BUTTON}
-                                  style={BUTTON_STYLE.GREEN}
-                                  className="ms-3"
-                                  onClick={() => {
-                                    setShowModalMarcarConferencia(true);
-                                  }}
-                                />
-                              )}
-                            </div>
-                          )}
-                          <ModalMarcarConferencia
-                            showModal={showModalMarcarConferencia}
-                            closeModal={() =>
-                              setShowModalMarcarConferencia(false)
                             }
-                            onMarcarConferencia={() => {
-                              getSolicitacao();
-                            }}
-                            uuid={solicitacao.uuid}
-                            endpoint={"alteracoes-cardapio-cemei"}
+                            disabled={submitting}
+                            style={BUTTON_STYLE.GREEN}
+                            className="ms-3"
                           />
-                          {ModalNaoAprova && showNaoAprovaModal && (
-                            <ModalNaoAprova
-                              showModal={showNaoAprovaModal}
-                              closeModal={() => setShowNaoAprovaModal(false)}
-                              motivosDREnaoValida={motivosDREnaoValida}
-                              endpoint={endpointNaoAprovaSolicitacao}
-                              uuid={solicitacao.uuid}
-                              solicitacao={solicitacao}
-                              resposta_sim_nao={respostaSimNao}
-                              loadSolicitacao={getSolicitacao}
-                              tipoSolicitacao={tipoSolicitacao}
-                              toastNaoAprovaMensagem={toastNaoAprovaMensagem}
-                              toastNaoAprovaMensagemErro={
-                                toastNaoAprovaMensagemErro
-                              }
-                            />
-                          )}
-                          {ModalQuestionamento && showQuestionamentoModal && (
-                            <ModalQuestionamento
-                              closeModal={() =>
-                                setShowQuestionamentoModal(false)
-                              }
-                              showModal={showQuestionamentoModal}
-                              loadSolicitacao={getSolicitacao}
-                              resposta_sim_nao={respostaSimNao}
-                              endpoint={endpointQuestionamento}
-                              tipoSolicitacao={tipoSolicitacao}
-                              solicitacao={solicitacao}
-                            />
-                          )}
-                        </div>
+                        )}
+                        {exibirBotaoMarcarConferencia(solicitacao, visao) && (
+                          <div className="form-group float-end mt-4">
+                            {solicitacao.terceirizada_conferiu_gestao ? (
+                              <label className="ms-3 conferido">
+                                <i className="fas fa-check me-2" />
+                                Solicitação Conferida
+                              </label>
+                            ) : (
+                              <Botao
+                                texto="Marcar Conferência"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN}
+                                className="ms-3"
+                                onClick={() => {
+                                  setShowModalMarcarConferencia(true);
+                                }}
+                              />
+                            )}
+                          </div>
+                        )}
+                        <ModalMarcarConferencia
+                          showModal={showModalMarcarConferencia}
+                          closeModal={() =>
+                            setShowModalMarcarConferencia(false)
+                          }
+                          onMarcarConferencia={() => {
+                            getSolicitacao();
+                          }}
+                          uuid={solicitacao.uuid}
+                          endpoint={"alteracoes-cardapio-cemei"}
+                        />
+                        {ModalNaoAprova && showNaoAprovaModal && (
+                          <ModalNaoAprova
+                            showModal={showNaoAprovaModal}
+                            closeModal={() => setShowNaoAprovaModal(false)}
+                            motivosDREnaoValida={motivosDREnaoValida}
+                            endpoint={endpointNaoAprovaSolicitacao}
+                            uuid={solicitacao.uuid}
+                            solicitacao={solicitacao}
+                            resposta_sim_nao={respostaSimNao}
+                            loadSolicitacao={getSolicitacao}
+                            tipoSolicitacao={tipoSolicitacao}
+                            toastNaoAprovaMensagem={toastNaoAprovaMensagem}
+                            toastNaoAprovaMensagemErro={
+                              toastNaoAprovaMensagemErro
+                            }
+                          />
+                        )}
+                        {ModalQuestionamento && showQuestionamentoModal && (
+                          <ModalQuestionamento
+                            closeModal={() => setShowQuestionamentoModal(false)}
+                            showModal={showQuestionamentoModal}
+                            loadSolicitacao={getSolicitacao}
+                            resposta_sim_nao={respostaSimNao}
+                            endpoint={endpointQuestionamento}
+                            tipoSolicitacao={tipoSolicitacao}
+                            solicitacao={solicitacao}
+                          />
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
-              </form>
-            )}
-          </Form>
-        </>
+              </div>
+            </form>
+          )}
+        </Form>
       )}
     </Spin>
   );

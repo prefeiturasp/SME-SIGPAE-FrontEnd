@@ -112,44 +112,53 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     }
   };
 
+  const salvarSolicitacao = async (dados) => {
+    if (uuid) {
+      const resposta = await updateAlteracaoCardapioCEMEI(uuid, dados);
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.OK,
+        mensagem: "Rascunho atualizado com sucesso",
+      };
+    }
+
+    const resposta = await createAlteracaoCardapioCEMEI(dados);
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.CREATED,
+      mensagem: "Solicitação Rascunho criada com sucesso!",
+    };
+  };
+
   const onSubmit = async (values, form) => {
-    const values_ = deepCopy(values);
-    const erro = validarSubmit(values_);
+    const dados = deepCopy(values);
+    const erro = validarSubmit(dados);
+
     if (erro) {
       toastError(erro);
       return;
     }
-    const formatedValues = formatarPayload(values_, meusDados, vinculos);
-    if (!uuid) {
-      const response = await createAlteracaoCardapioCEMEI(
-        formataValues(formatedValues),
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Solicitação Rascunho criada com sucesso!");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
-    } else {
-      const response = await updateAlteracaoCardapioCEMEI(
-        uuid,
-        formataValues(formatedValues),
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(uuid, form);
-        } else {
-          toastSuccess("Rascunho atualizado com sucesso");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const dadosFormatados = formataValues(
+      formatarPayload(dados, meusDados, vinculos),
+    );
+    const { resposta, statusEsperado, mensagem } =
+      await salvarSolicitacao(dadosFormatados);
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
     }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(uuid || resposta.data.uuid, form);
+    } else {
+      toastSuccess(mensagem);
+    }
+
+    refresh(form);
   };
 
   const modificarOpcoesAlimentos = async (motivo) => {
