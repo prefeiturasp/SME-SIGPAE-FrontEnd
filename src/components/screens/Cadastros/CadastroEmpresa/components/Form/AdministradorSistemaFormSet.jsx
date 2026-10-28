@@ -49,6 +49,7 @@ export const AdministradorSistemaFormSet = ({ ehDistribuidor }) => {
                     label="CPF"
                     required
                     validate={required}
+                    dataTestId="responsavel-cpf-input"
                   />
                 </div>
                 <div className="col">
@@ -59,6 +60,7 @@ export const AdministradorSistemaFormSet = ({ ehDistribuidor }) => {
                     label={"Telefone"}
                     validate={required}
                     required
+                    dataTestId="responsavel-telefone-input"
                   />
                 </div>
               </div>
