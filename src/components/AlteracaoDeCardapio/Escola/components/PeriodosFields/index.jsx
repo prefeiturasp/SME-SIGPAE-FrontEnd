@@ -10,6 +10,7 @@ import {
   agregarDefault,
   usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
+import PropTypes from "prop-types";
 import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import { agruparRefeicaoESobremesa } from "../../helper";
@@ -192,4 +193,30 @@ export const PeriodosFields = ({ ...props }) => {
       </FieldArray>
     </section>
   );
+};
+
+PeriodosFields.propTypes = {
+  ehMotivoPorNome: PropTypes.func.isRequired,
+  periodos: PropTypes.arrayOf(
+    PropTypes.shape({
+      nome: PropTypes.string.isRequired,
+      maximo_alunos: PropTypes.number,
+      tipos_alimentacao: PropTypes.arrayOf(
+        PropTypes.shape({
+          nome: PropTypes.string.isRequired,
+          uuid: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+    }),
+  ).isRequired,
+  form: PropTypes.shape({
+    change: PropTypes.func.isRequired,
+  }).isRequired,
+  values: PropTypes.shape({
+    substituicoes: PropTypes.arrayOf(
+      PropTypes.shape({
+        check: PropTypes.bool,
+      }),
+    ).isRequired,
+  }).isRequired,
 };
