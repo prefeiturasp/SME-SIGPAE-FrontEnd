@@ -3,6 +3,7 @@ import { required } from "src/helpers/fieldValidators";
 import { fimDoCalendario } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import moment from "moment";
+import PropTypes from "prop-types";
 import React, { useState } from "react";
 import { Field } from "react-final-form";
 import { getDiasUteis } from "src/services/diasUteis.service";
@@ -91,4 +92,20 @@ export const AlterarDiaOuPeriodo = ({ ...props }) => {
       />
     </section>
   );
+};
+
+AlterarDiaOuPeriodo.propTypes = {
+  values: PropTypes.shape({
+    alterar_dia: PropTypes.string,
+    data_inicial: PropTypes.string,
+    data_final: PropTypes.string,
+    motivo: PropTypes.string,
+  }).isRequired,
+  onAlterarDiaChanged: PropTypes.func.isRequired,
+  ehMotivoPorNome: PropTypes.func.isRequired,
+  setErro: PropTypes.func.isRequired,
+  proximosDoisDiasUteis: PropTypes.instanceOf(Date).isRequired,
+  form: PropTypes.shape({
+    change: PropTypes.func.isRequired,
+  }).isRequired,
 };
