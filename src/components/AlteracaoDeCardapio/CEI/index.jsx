@@ -793,10 +793,39 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
 };
 
 AlteracaoDoTipoDeAlimentacaoCEI.propTypes = {
+  meusDados: PropTypes.shape({
+    vinculo_atual: PropTypes.shape({
+      instituicao: PropTypes.shape({
+        uuid: PropTypes.string.isRequired,
+        quantidade_alunos: PropTypes.number,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+  motivos: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      nome: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   periodos: PropTypes.arrayOf(
     PropTypes.shape({
       uuid: PropTypes.string.isRequired,
       nome: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  proximosCincoDiasUteis: PropTypes.instanceOf(Date).isRequired,
+  proximosDoisDiasUteis: PropTypes.instanceOf(Date).isRequired,
+  vinculos: PropTypes.arrayOf(
+    PropTypes.shape({
+      periodo_escolar: PropTypes.shape({
+        nome: PropTypes.string.isRequired,
+      }).isRequired,
+      tipos_alimentacao: PropTypes.arrayOf(
+        PropTypes.shape({
+          uuid: PropTypes.string.isRequired,
+          nome: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
     }),
   ).isRequired,
 };
