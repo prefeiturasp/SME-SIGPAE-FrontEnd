@@ -20,7 +20,7 @@ describe("Teste StatusSolicitacoes - Terceirizada - Canceladas", () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosTerceirizada);
     mock
       .onGet(`/terceirizada-solicitacoes/cancelados-dieta/${terceirizadaUuid}/`)
-      .replyOnce(200, mockDietasAutorizadas);
+      .reply(200, mockDietasAutorizadas);
     mock
       .onGet("/lotes/meus-lotes-vinculados/")
       .reply(200, mockMeusLotesVinculados);
