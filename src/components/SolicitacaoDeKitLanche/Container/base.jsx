@@ -274,24 +274,21 @@ export class SolicitacaoDeKitLanche extends Component {
       if (ehCei) {
         validateFormKitLanchePasseioCei(values);
       }
-      return new Promise((resolve) => {
-        this.salvarOuEnviar(
-          solicitacao_kit_lanche,
-          values,
-          ehCei
-            ? TIPO_SOLICITACAO.SOLICITACAO_CEI
-            : TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        );
-        this.handleConfirmation();
-        resolve();
-      });
+      this.handleConfirmation();
+      return this.salvarOuEnviar(
+        solicitacao_kit_lanche,
+        values,
+        ehCei
+          ? TIPO_SOLICITACAO.SOLICITACAO_CEI
+          : TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+      );
     } catch (SubmissionError) {
       toastError(SubmissionError.errors.kit_lanche);
     }
   }
 
   iniciarPedido(uuid) {
-    inicioPedido(uuid, this.state.tipoSolicitacao).then(
+    return inicioPedido(uuid, this.state.tipoSolicitacao).then(
       (res) => {
         if (res.status === HTTP_STATUS.OK) {
           toastSuccess(
@@ -332,11 +329,11 @@ export class SolicitacaoDeKitLanche extends Component {
       solicitacao_kit_lanche.status = values.status;
     }
     if (!values.uuid) {
-      solicitarKitLanche(solicitacao_kit_lanche, tipoSolicitacao).then(
+      return solicitarKitLanche(solicitacao_kit_lanche, tipoSolicitacao).then(
         (resp) => {
           if (resp.status === HTTP_STATUS.CREATED) {
             if (values.status === STATUS_DRE_A_VALIDAR) {
-              this.iniciarPedido(resp.data.uuid);
+              return this.iniciarPedido(resp.data.uuid);
             } else {
               toastSuccess(
                 "Solicitação de Kit Lanche Passeio salva com sucesso!",
@@ -351,7 +348,7 @@ export class SolicitacaoDeKitLanche extends Component {
         },
       );
     } else {
-      registroAtualizaKitLanche(
+      return registroAtualizaKitLanche(
         solicitacao_kit_lanche,
         values.uuid,
         tipoSolicitacao,
@@ -359,7 +356,7 @@ export class SolicitacaoDeKitLanche extends Component {
         .then((resp) => {
           if (resp.status === HTTP_STATUS.OK) {
             if (values.status === STATUS_DRE_A_VALIDAR) {
-              this.iniciarPedido(values.uuid);
+              return this.iniciarPedido(values.uuid);
             } else {
               toastSuccess(
                 "Solicitação de Kit Lanche Passeio atualizada com sucesso!",
