@@ -191,7 +191,8 @@ export const CorpoRelatorio = ({ ...props }) => {
         return (
           <div className="row" key={index}>
             <div className="col-12">
-              <label
+              <div
+                className="d-inline-block"
                 style={{
                   background: periodo.background,
                   border: `1px solid ${periodo.borderColor}`,
@@ -203,14 +204,16 @@ export const CorpoRelatorio = ({ ...props }) => {
                 }}
               >
                 {periodo.nome}
-              </label>
+              </div>
             </div>
             <div className="col-12">
               <div className="container-fluid pe-0">
                 {periodo.substituicoesCEI && (
                   <div className="row">
                     <div className="col-12">
-                      <label className="periodo-label-style">Alunos CEI</label>
+                      <div className="periodo-label-style d-inline-block">
+                        Alunos CEI
+                      </div>
                     </div>
                     <div className="col-12 substituicoes-font-style">
                       <p>
@@ -306,7 +309,9 @@ export const CorpoRelatorio = ({ ...props }) => {
                 {periodo.substituicoesEMEI && (
                   <div className="row">
                     <div className="col-12">
-                      <label className="periodo-label-style">Alunos EMEI</label>
+                      <div className="periodo-label-style d-inline-block">
+                        Alunos EMEI
+                      </div>
                     </div>
                     <div className="col-12 substituicoes-font-style">
                       <p>
