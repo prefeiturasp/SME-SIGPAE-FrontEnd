@@ -30,7 +30,6 @@ export const LinhaUnidade = ({
             {truncarString(alimentacoes, 35)}
           </Tooltip>
         </td>
-        <td className="action-column" />
       </tr>
     );
   }
