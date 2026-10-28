@@ -593,8 +593,10 @@ export class SolicitacaoDeKitLanche extends Component {
                     <Field
                       component={InputText}
                       name="quantidade_alunos"
-                      type="number"
+                      apenasNumeros
+                      inputMode="numeric"
                       label="Número de alunos"
+                      helpText="Informe o número de alunos utilizando apenas números inteiros, sem pontos ou vírgulas."
                       required
                       validate={(value) => {
                         if (usuarioEhEscolaSemAlunosRegulares()) {

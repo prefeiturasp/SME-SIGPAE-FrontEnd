@@ -246,6 +246,28 @@ describe("Teste de Solicitação de Kit Lanche", () => {
     expect(campoInput).toHaveValue("");
   });
 
+  it("Testa inserção de vírgula ou sinais no número de alunos", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("numero-alunos");
+    expect(campoInput).toHaveValue("");
+
+    // ponto separador: 1.167 deve virar 1167
+    await usuario.type(campoInput, "1.167");
+    expect(campoInput).toHaveValue("1167");
+
+    await usuario.clear(campoInput);
+
+    // vírgula separadora: 1,167 deve virar 1167
+    await usuario.type(campoInput, "1,167");
+    expect(campoInput).toHaveValue("1167");
+
+    await usuario.clear(campoInput);
+
+    // sinal negativo e letras são descartados
+    await usuario.type(campoInput, "-12a3");
+    expect(campoInput).toHaveValue("123");
+  });
+
   it("Testa o input número de alunos quando número de alunos for maior que o permitido", async () => {
     const usuario = userEvent.setup();
     const campoInput = screen.getByTestId("numero-alunos");
