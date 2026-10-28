@@ -1,4 +1,8 @@
-import { validacoesFaixasZeradasAlimentacao } from "../validacoes";
+import {
+  existeQuantidadeKitLanchePasseioExcedida,
+  validacoesFaixasZeradasAlimentacao,
+  validacoesKitLanchePasseioCEI,
+} from "../validacoes";
 
 describe("Testa o metodo validacoesFaixasZeradasAlimentacao", () => {
   const mockCalendario = [
@@ -147,5 +151,120 @@ describe("Testa o metodo validacoesFaixasZeradasAlimentacao", () => {
       { dia: "01", tem_observacao: true },
       { dia: "04", tem_observacao: true },
     ]);
+  });
+});
+
+describe("Validações de Kit Lanche Passeio na CEI Integral", () => {
+  const MENSAGEM_ERRO =
+    "A quantidade de alunos apontada é superior à quantidade autorizada na solicitação de Kit Lanche Passeio.";
+  const dia = "18";
+  const categoria = 1;
+  const categoriaMedicao = [{ id: 1, nome: "ALIMENTAÇÃO" }];
+  const kitLanchesAutorizadas = [{ dia, numero_alunos: 40 }];
+  const inclusoesAutorizadas = [];
+
+  const valuesComTotal = (valores) => {
+    const values = {};
+    valores.forEach((valor, index) => {
+      values[`frequencia__faixa_${index}__dia_${dia}__categoria_1`] =
+        String(valor);
+    });
+    return values;
+  };
+
+  it("não valida quando não é frequência", () => {
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "matriculados",
+        dia,
+        categoria,
+        "ALIMENTAÇÃO",
+        valuesComTotal([10, 10]),
+        kitLanchesAutorizadas,
+        inclusoesAutorizadas,
+      ),
+    ).toBeUndefined();
+  });
+
+  it("não valida quando existe inclusão de alimentação na data", () => {
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "frequencia",
+        dia,
+        categoria,
+        "ALIMENTAÇÃO",
+        valuesComTotal([50]),
+        kitLanchesAutorizadas,
+        [{ dia }],
+      ),
+    ).toBeUndefined();
+  });
+
+  it("permite total apontado igual ao total autorizado", () => {
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "frequencia",
+        dia,
+        categoria,
+        "ALIMENTAÇÃO",
+        valuesComTotal([15, 18, 7]),
+        kitLanchesAutorizadas,
+        inclusoesAutorizadas,
+      ),
+    ).toBeUndefined();
+  });
+
+  it("retorna erro quando total apontado supera o total autorizado", () => {
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "frequencia",
+        dia,
+        categoria,
+        "ALIMENTAÇÃO",
+        valuesComTotal([15, 18, 8]),
+        kitLanchesAutorizadas,
+        inclusoesAutorizadas,
+      ),
+    ).toBe(MENSAGEM_ERRO);
+  });
+
+  it("não retorna erro na faixa menor de 1 ano", () => {
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "frequencia",
+        dia,
+        categoria,
+        "ALIMENTAÇÃO",
+        valuesComTotal([15, 18, 8]),
+        kitLanchesAutorizadas,
+        inclusoesAutorizadas,
+        ["0"],
+        "0",
+      ),
+    ).toBeUndefined();
+  });
+
+  it("detecta inconsistência na semana para bloquear o salvamento", () => {
+    expect(
+      existeQuantidadeKitLanchePasseioExcedida(
+        valuesComTotal([15, 18, 8]),
+        kitLanchesAutorizadas,
+        [{ dia }],
+        categoriaMedicao,
+        inclusoesAutorizadas,
+      ),
+    ).toBe(true);
+  });
+
+  it("não detecta inconsistência quando existe inclusão de alimentação na data", () => {
+    expect(
+      existeQuantidadeKitLanchePasseioExcedida(
+        valuesComTotal([15, 18, 8]),
+        kitLanchesAutorizadas,
+        [{ dia }],
+        categoriaMedicao,
+        [{ dia }],
+      ),
+    ).toBe(false);
   });
 });

@@ -370,6 +370,24 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const criarOnClickPeriodo = (form, name, indice, values) => () => {
+    handlePeriodoOnClick(form, name, indice, values);
+  };
+
+  const criarOnKeyDownPeriodo = (form, name, indice, values) => (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handlePeriodoOnClick(form, name, indice, values);
+    }
+  };
+
+  const criarOnSelectedChanged = (form, indice) => (values_) => {
+    form.change(
+      `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
+      values_.map((value_) => value_.value),
+    );
+  };
+
   const handlePeriodoOnClick = async (form, name, indice, values) => {
     await form.change(
       `${name}.checked`,
@@ -397,6 +415,26 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       );
     }
   };
+
+  const renderLinhasFaixasEtarias = (values, indice, name) =>
+    values.substituicoes[indice].faixas_etarias.map((faixa, key) => (
+      <tr key={key} className="row">
+        <td className="col-8">{faixa.faixa_etaria.__str__}</td>
+        <td className="col-2 text-center">{faixa.count}</td>
+        <td className="col-2 text-center">
+          <Field
+            component={InputText}
+            type="number"
+            dataTestIdDiv={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
+            name={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
+            validate={
+              getPeriodo(values, indice).checked &&
+              composeValidators(naoPodeSerZero, maxValue(faixa.count))
+            }
+          />
+        </td>
+      </tr>
+    ));
 
   return (
     <>
@@ -534,34 +572,24 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                         <span
                                           role="checkbox"
                                           tabIndex={0}
-                                          onKeyDown={(e) => {
-                                            if (
-                                              e.key === "Enter" ||
-                                              e.key === " "
-                                            ) {
-                                              e.preventDefault();
-                                              handlePeriodoOnClick(
-                                                form,
-                                                name,
-                                                indice,
-                                                values,
-                                              );
-                                            }
-                                          }}
+                                          onKeyDown={criarOnKeyDownPeriodo(
+                                            form,
+                                            name,
+                                            indice,
+                                            values,
+                                          )}
                                           aria-checked={
                                             values.substituicoes[indice].checked
                                           }
                                           aria-disabled={
                                             !getPeriodo(values, indice).checked
                                           }
-                                          onClick={async () => {
-                                            handlePeriodoOnClick(
-                                              form,
-                                              name,
-                                              indice,
-                                              values,
-                                            );
-                                          }}
+                                          onClick={criarOnClickPeriodo(
+                                            form,
+                                            name,
+                                            indice,
+                                            values,
+                                          )}
                                           className="checkbox-custom"
                                           data-cy={`checkbox-${
                                             getPeriodo(values, indice).nome
@@ -603,14 +631,10 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           []
                                         }
                                         options={getTiposAlimentacaoDe(values)}
-                                        onSelectedChanged={(values_) => {
-                                          form.change(
-                                            `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
-                                            values_.map(
-                                              (value_) => value_.value,
-                                            ),
-                                          );
-                                        }}
+                                        onSelectedChanged={criarOnSelectedChanged(
+                                          form,
+                                          indice,
+                                        )}
                                         placeholder="Selecione tipos de alimentação"
                                       />
                                     </div>
@@ -665,36 +689,11 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           .faixas_etarias &&
                                           !values.substituicoes[indice]
                                             .loading_faixas &&
-                                          values.substituicoes[
-                                            indice
-                                          ].faixas_etarias.map((faixa, key) => {
-                                            return (
-                                              <tr key={key} className="row">
-                                                <td className="col-8">
-                                                  {faixa.faixa_etaria.__str__}
-                                                </td>
-                                                <td className="col-2 text-center">
-                                                  {faixa.count}
-                                                </td>
-                                                <td className="col-2 text-center">
-                                                  <Field
-                                                    component={InputText}
-                                                    type="number"
-                                                    dataTestIdDiv={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
-                                                    name={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
-                                                    validate={
-                                                      getPeriodo(values, indice)
-                                                        .checked &&
-                                                      composeValidators(
-                                                        naoPodeSerZero,
-                                                        maxValue(faixa.count),
-                                                      )
-                                                    }
-                                                  />
-                                                </td>
-                                              </tr>
-                                            );
-                                          })}
+                                          renderLinhasFaixasEtarias(
+                                            values,
+                                            indice,
+                                            name,
+                                          )}
                                         <tr className="row">
                                           <td className="col-8 fw-bold">
                                             Total

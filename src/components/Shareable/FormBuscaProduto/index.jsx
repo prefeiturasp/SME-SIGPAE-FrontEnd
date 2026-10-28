@@ -92,6 +92,9 @@ function reducer(state, { type: actionType, payload }) {
   }
 }
 
+const extrairNomesFantasia = (resposta) =>
+  resposta.data.results.map((el) => el.nome_fantasia);
+
 export const FormBuscaProduto = ({
   onSubmit,
   naoExibirRowTerceirizadas,
@@ -114,12 +117,12 @@ export const FormBuscaProduto = ({
         setEditaisDRE(
           response.data.results.map((element) => {
             return { value: element.numero, label: element.numero };
-          })
+          }),
         );
       } else {
         setErroAPI &&
           setErroAPI(
-            "Erro ao carregar editais da DRE. Tente novamente mais tarde"
+            "Erro ao carregar editais da DRE. Tente novamente mais tarde",
           );
       }
     };
@@ -134,7 +137,7 @@ export const FormBuscaProduto = ({
       Promise.all(endpoints).then(
         ([produtos, marcas, fabricantes, editais, terceirizadas]) => {
           const nomesTerceirizadas = terceirizadas
-            ? terceirizadas.data.results.map((el) => el.nome_fantasia)
+            ? extrairNomesFantasia(terceirizadas)
             : [];
           dispatch({
             type: "popularDados",
@@ -148,7 +151,7 @@ export const FormBuscaProduto = ({
             },
           });
           setLoading(false);
-        }
+        },
       );
     }
     fetchData();

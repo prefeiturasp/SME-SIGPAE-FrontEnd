@@ -67,6 +67,7 @@ export const InputText = (props) => {
     exibirTooltipRefeicaoSimultanea,
     exibirTooltipFeriado,
     exibeTooltipSobremesaAFDreCodae,
+    exibeTooltipKitLanchePasseio,
   } = props;
 
   const inputProps = {
@@ -236,6 +237,14 @@ export const InputText = (props) => {
             <i className="fas fa-info icone-info-warning" />
           </Tooltip>
         )}
+      {exibeTooltipKitLanchePasseio && (
+        <Tooltip title="Apontamento de frequência realizado mediante solicitação autorizada de Kit Lanche Passeio para esta data.">
+          <i
+            data-testid={`tooltip-kit-lanche-passeio_${input.name}`}
+            className="fas fa-info icone-info-success"
+          />
+        </Tooltip>
+      )}
       {exibeTooltipRepeticao && (
         <Tooltip
           title={`${

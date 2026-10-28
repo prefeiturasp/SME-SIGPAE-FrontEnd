@@ -13,6 +13,7 @@ import {
 } from "src/helpers/utilities";
 import { ListaOcorrenciasPage } from "src/pages/IMR/ListaOcorrenciasPage";
 import { RegistrarNovaOcorrenciaPage } from "src/pages/IMR/RegistrarNovaOcorrenciaPage";
+import { EditarOcorrenciaPage } from "src/pages/IMR/EditarOcorrenciaPage";
 import { AcompanhamentoDeLancamentosPage } from "src/pages/LancamentoMedicaoInicial/AcompanhamentoDeLancamentosPage";
 import { CadastroDeClausulasPage } from "src/pages/LancamentoMedicaoInicial/CadastroDeClausulasPage";
 import { ClausulasParaDescontosPage } from "src/pages/LancamentoMedicaoInicial/ClausulasParaDescontosPage";
@@ -57,6 +58,11 @@ export const rotasMedicaoInicial: Array<RotaInterface> = [
   {
     path: `/${constants.LANCAMENTO_INICIAL}/${constants.LANCAMENTO_MEDICAO_INICIAL}/${constants.REGISTRAR_OCORRENCIAS}/${constants.REGISTRAR_NOVA_OCORRENCIA}`,
     component: RegistrarNovaOcorrenciaPage,
+    tipoUsuario: usuarioEhEscolaTerceirizadaQualquerPerfil(),
+  },
+  {
+    path: `/${constants.LANCAMENTO_INICIAL}/${constants.LANCAMENTO_MEDICAO_INICIAL}/${constants.REGISTRAR_OCORRENCIAS}/${constants.EDITAR_OCORRENCIA}`,
+    component: EditarOcorrenciaPage,
     tipoUsuario: usuarioEhEscolaTerceirizadaQualquerPerfil(),
   },
   {

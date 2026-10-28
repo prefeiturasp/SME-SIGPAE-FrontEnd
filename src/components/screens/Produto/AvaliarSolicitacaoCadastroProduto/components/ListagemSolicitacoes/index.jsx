@@ -36,6 +36,13 @@ const ListagemProdutos = ({
   const gridTableClassName = usuarioTerceirizada
     ? "grid-table-solicitacoes-terceirizada"
     : "grid-table-solicitacoes-nutricodae";
+  const alternarAtivo = (uuid) => {
+    if (ativos && ativos.includes(uuid)) {
+      setAtivos(ativos.filter((el) => el !== uuid));
+    } else {
+      setAtivos(ativos ? [...ativos, uuid] : [uuid]);
+    }
+  };
   return (
     <section className="resultado-busca-solic-cad-produto">
       <header>Veja os resultados para busca</header>
@@ -83,29 +90,11 @@ const ListagemProdutos = ({
                     aria-expanded={Boolean(
                       ativos && ativos.includes(solicitacao.uuid),
                     )}
-                    onClick={() => {
-                      ativos && ativos.includes(solicitacao.uuid)
-                        ? setAtivos(
-                            ativos.filter((el) => el !== solicitacao.uuid),
-                          )
-                        : setAtivos(
-                            ativos
-                              ? [...ativos, solicitacao.uuid]
-                              : [solicitacao.uuid],
-                          );
-                    }}
+                    onClick={() => alternarAtivo(solicitacao.uuid)}
                     onKeyDown={(e) =>
-                      acionaComEnterOuEspaco(e, () => {
-                        ativos && ativos.includes(solicitacao.uuid)
-                          ? setAtivos(
-                              ativos.filter((el) => el !== solicitacao.uuid),
-                            )
-                          : setAtivos(
-                              ativos
-                                ? [...ativos, solicitacao.uuid]
-                                : [solicitacao.uuid],
-                            );
-                      })
+                      acionaComEnterOuEspaco(e, () =>
+                        alternarAtivo(solicitacao.uuid),
+                      )
                     }
                   />
                 </div>

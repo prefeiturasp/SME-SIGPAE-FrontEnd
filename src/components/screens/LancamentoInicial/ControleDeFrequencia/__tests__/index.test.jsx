@@ -401,7 +401,7 @@ describe("Teste ControleDeFrequencia", () => {
       setupMocks();
 
       await renderComponent();
-      preencherFiltros({ selecionarPeriodo: true });
+      await preencherFiltros({ selecionarPeriodo: true });
 
       await waitFor(() => {
         expect(getTotalAlunosMatriculados).toHaveBeenCalled();
@@ -498,7 +498,7 @@ describe("Teste ControleDeFrequencia", () => {
       );
 
       await renderComponent();
-      preencherFiltros({ selecionarPeriodo: true });
+      await preencherFiltros({ selecionarPeriodo: true });
 
       await waitFor(() => {
         expect(getTotalAlunosMatriculados).toHaveBeenCalled();
@@ -605,7 +605,7 @@ describe("Teste ControleDeFrequencia", () => {
       setupMocks();
 
       await renderComponent();
-      preencherFiltros();
+      await preencherFiltros();
       await waitFor(() => {
         expect(getTotalAlunosMatriculados).toHaveBeenCalled();
       });

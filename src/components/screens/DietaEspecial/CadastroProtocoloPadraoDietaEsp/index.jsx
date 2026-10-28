@@ -35,6 +35,67 @@ import { formataSubstituicoes } from "../Relatorio/componentes/FormAutorizaDieta
 
 const FORM_NAME = "cadastrarProtocoloPadrao";
 
+const salvarCopiaDoProtocolo = async (values, navigate) => {
+  try {
+    const response = await cadastraProtocoloPadraoDietaEspecial(values);
+    if (response.status === HTTP_STATUS.CREATED) {
+      toastSuccess(
+        "Cópia do protocolo padrão da dieta especial salvo com sucesso",
+      );
+      navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
+    } else {
+      toastError(
+        "Houve um erro ao cadastrar cópia do protocolo de dieta especial",
+      );
+    }
+  } catch (e) {
+    if (e.response.status === HTTP_STATUS.BAD_REQUEST) {
+      // setValoresIniciais(getInitialValues(values));
+      toastError(getError(e.response));
+    } else {
+      toastError(
+        "Houve um erro ao cadastrar cópia do protocolo de dieta especial",
+      );
+    }
+  }
+};
+
+const editarProtocoloPadrao = async (values, navigate) => {
+  try {
+    const response = await editaProtocoloPadraoDietaEspecial(values);
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess("Protocolo Padrão de dieta especial salvo com sucesso");
+      navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
+    } else {
+      toastError("Houve um erro ao editar protocolo de dieta especial");
+    }
+  } catch (e) {
+    if (e.response.status === HTTP_STATUS.BAD_REQUEST) {
+      toastError(getError(e.response));
+    } else {
+      toastError("Houve um erro ao editar protocolo de dieta especial");
+    }
+  }
+};
+
+const criarProtocoloPadrao = async (values, navigate) => {
+  try {
+    const response = await cadastraProtocoloPadraoDietaEspecial(values);
+    if (response.status === HTTP_STATUS.CREATED) {
+      toastSuccess("Protocolo Padrão de dieta especial criado com sucesso");
+      navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
+    } else {
+      toastError("Houve um erro ao cadastrar protocolo de dieta especial");
+    }
+  } catch (e) {
+    if (e.response.status === HTTP_STATUS.BAD_REQUEST) {
+      toastError(getError(e.response));
+    } else {
+      toastError("Houve um erro ao cadastrar protocolo de dieta especial");
+    }
+  }
+};
+
 export default ({ uuid }) => {
   const [alimentos, setAlimentos] = useState([]);
   const [produtos, setProdutos] = useState([]);
@@ -122,65 +183,12 @@ export default ({ uuid }) => {
   }
 
   const onSubmit = async (values) => {
-    if (protocoloPadrao) {
-      if (ehCopia) {
-        try {
-          const response = await cadastraProtocoloPadraoDietaEspecial(values);
-          if (response.status === HTTP_STATUS.CREATED) {
-            toastSuccess(
-              "Cópia do protocolo padrão da dieta especial salvo com sucesso",
-            );
-            navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
-          } else {
-            toastError(
-              "Houve um erro ao cadastrar cópia do protocolo de dieta especial",
-            );
-          }
-        } catch (e) {
-          if (e.response.status === HTTP_STATUS.BAD_REQUEST) {
-            // setValoresIniciais(getInitialValues(values));
-            toastError(getError(e.response));
-          } else {
-            toastError(
-              "Houve um erro ao cadastrar cópia do protocolo de dieta especial",
-            );
-          }
-        }
-      } else {
-        try {
-          const response = await editaProtocoloPadraoDietaEspecial(values);
-          if (response.status === HTTP_STATUS.OK) {
-            toastSuccess(
-              "Protocolo Padrão de dieta especial salvo com sucesso",
-            );
-            navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
-          } else {
-            toastError("Houve um erro ao editar protocolo de dieta especial");
-          }
-        } catch (e) {
-          if (e.response.status === HTTP_STATUS.BAD_REQUEST) {
-            toastError(getError(e.response));
-          } else {
-            toastError("Houve um erro ao editar protocolo de dieta especial");
-          }
-        }
-      }
+    if (!protocoloPadrao) {
+      await criarProtocoloPadrao(values, navigate);
+    } else if (ehCopia) {
+      await salvarCopiaDoProtocolo(values, navigate);
     } else {
-      try {
-        const response = await cadastraProtocoloPadraoDietaEspecial(values);
-        if (response.status === HTTP_STATUS.CREATED) {
-          toastSuccess("Protocolo Padrão de dieta especial criado com sucesso");
-          navigate("/dieta-especial/consultar-protocolo-padrao-dieta");
-        } else {
-          toastError("Houve um erro ao cadastrar protocolo de dieta especial");
-        }
-      } catch (e) {
-        if (e.response.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(getError(e.response));
-        } else {
-          toastError("Houve um erro ao cadastrar protocolo de dieta especial");
-        }
-      }
+      await editarProtocoloPadrao(values, navigate);
     }
   };
 

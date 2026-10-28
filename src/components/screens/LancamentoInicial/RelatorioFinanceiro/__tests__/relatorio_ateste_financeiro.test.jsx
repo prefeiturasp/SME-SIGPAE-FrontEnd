@@ -170,6 +170,37 @@ describe("Testes da interface de Análise do Relatório Financeiro - Relatorio F
     expect(await screen.findByText("R$ 154.888,20")).toBeInTheDocument();
   });
 
+  it("oculta as colunas de reajuste da faixa etária quando possui_reajuste é false", async () => {
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, {
+        ...mockRelatorioFinanceiroFaixaEtaria,
+        possui_reajuste: false,
+      });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoFaixaEtaria);
+
+    await setup();
+
+    expect(
+      await screen.findByRole("columnheader", {
+        name: "ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "VALOR DO REAJUSTE" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("DIETA ESPECIAL - TIPO A")).toBeInTheDocument();
+    expect(screen.getByText("DIETA ESPECIAL - TIPO B")).toBeInTheDocument();
+    expect(screen.getAllByText("% DE ACRÉSCIMO").length).toBeGreaterThan(0);
+    expect(
+      screen.getByText("CONSOLIDADO TOTAL (A + B + C)"),
+    ).toBeInTheDocument();
+  });
+
   const verificaTabelaDietas = async () => {
     const headers = await screen.findAllByRole("columnheader", {
       name: /DIETA ESPECIAL/i,
@@ -261,6 +292,44 @@ describe("Testes da interface de Análise do Relatório Financeiro - Relatorio F
     ).toBeInTheDocument();
     expect(await screen.findByText("9.236")).toBeInTheDocument();
     expect(await screen.findByText("R$ 101.706,08")).toBeInTheDocument();
+  });
+
+  it("oculta as colunas de reajuste quando possui_reajuste é false", async () => {
+    const grupoEMEI = gruposUnidadeEscolar.find((grupo) =>
+      grupo.nome.includes("Grupo 3"),
+    );
+
+    mock
+      .onGet("/medicao-inicial/relatorio-financeiro/relatorio-consolidado/123/")
+      .reply(200, {
+        ...mockRelatorioFinanceiroTipoAlimentacao,
+        grupo_unidade_escolar: grupoEMEI,
+        possui_reajuste: false,
+      });
+    mock
+      .onGet(
+        "/medicao-inicial/solicitacao-medicao-inicial/totais-atendimento-consumo/",
+      )
+      .reply(200, mockTotaisAtendimentoTipoAlimentacao);
+
+    await setup(grupoEMEI.uuid);
+
+    expect(
+      await screen.findByRole("columnheader", {
+        name: "TIPOS DE ALIMENTAÇÕES - SEM DIETAS",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "VALOR DO REAJUSTE" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "VALOR UNITÁRIO REAJUSTADO" }),
+    ).not.toBeInTheDocument();
+
+    await verificaTabelaDietas();
+    expect(
+      screen.getByText("CONSOLIDADO TOTAL (A + B + C)"),
+    ).toBeInTheDocument();
   });
 
   it("deve exibir tabelas e valores do grupo 4 - EMEF", async () => {

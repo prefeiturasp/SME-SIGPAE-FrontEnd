@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  render,
-  screen,
-  act,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { render, screen, act, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -80,6 +74,8 @@ const getRotaAtualizar = () => {
   return rota;
 };
 
+const aguardarCarregamento = () => screen.findByText("Salvar e Enviar");
+
 describe("AtualizarFichaTecnicaPage", () => {
   beforeEach(() => {
     mock.reset();
@@ -104,9 +100,7 @@ describe("AtualizarFichaTecnicaPage", () => {
 
     await setup();
 
-    await waitFor(() =>
-      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
-    );
+    await aguardarCarregamento();
 
     expect(screen.getByText("Ficha Técnica FT016")).toBeInTheDocument();
     expect(screen.getByText("Salvar e Enviar")).toBeInTheDocument();
@@ -118,9 +112,7 @@ describe("AtualizarFichaTecnicaPage", () => {
       .reply(200, mockFichaTecnicaComDetalhe);
 
     await setup();
-    await waitFor(() =>
-      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
-    );
+    await aguardarCarregamento();
 
     const botoesVoltar = screen.getAllByText("Voltar");
     fireEvent.click(botoesVoltar[botoesVoltar.length - 1]);
@@ -136,11 +128,9 @@ describe("AtualizarFichaTecnicaPage", () => {
       .reply(200, mockFichaTecnicaComDetalhe);
 
     await setup();
-    await waitFor(() =>
-      expect(screen.queryByText("Carregando...")).not.toBeInTheDocument(),
-    );
 
-    fireEvent.click(screen.getByTestId("delete-file-0"));
+    const botaoRemover = await screen.findByTestId("delete-file-0");
+    fireEvent.click(botaoRemover);
 
     expect(screen.queryByTestId("delete-file-0")).not.toBeInTheDocument();
   });

@@ -220,6 +220,7 @@ export const DETALHAR_RELATORIO_FISCALIZACAO =
 export const EDITAR_RELATORIO_FISCALIZACAO = "editar-relatorio-fiscalizacao";
 export const REGISTRAR_OCORRENCIAS = "registrar-ocorrencias";
 export const REGISTRAR_NOVA_OCORRENCIA = "registrar-nova-ocorrencia";
+export const EDITAR_OCORRENCIA = "editar-ocorrencia";
 
 export const LANCAMENTO_MEDICAO_INICIAL = "lancamento-medicao-inicial";
 export const PERIODO_LANCAMENTO = "periodo-lancamento";
@@ -306,6 +307,7 @@ export const RELATORIO_DOCUMENTOS_RECEBIMENTO =
 
 export const FICHA_TECNICA = "ficha-tecnica";
 export const CADASTRAR_FICHA_TECNICA = "cadastrar-ficha-tecnica";
+export const CRIAR_COPIA_FICHA_TECNICA = "criar-copia-ficha-tecnica";
 export const PAINEL_FICHAS_TECNICAS = "painel-fichas-tecnicas";
 export const ANALISAR_FICHA_TECNICA = "analisar-ficha-tecnica";
 export const DETALHAR_FICHA_TECNICA = "detalhar-ficha-tecnica";

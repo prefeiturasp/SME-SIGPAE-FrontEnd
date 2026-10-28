@@ -282,6 +282,14 @@ const SolicitacaoUnificada = ({
     setUnidadesEscolaresSelecionadas(selecionadas);
   };
 
+  const criarInputOnChangeNumeroAlunos = (form, values, ue, idx) => (event) => {
+    handleNumeroAlunosChange(event, form, values, ue, idx);
+  };
+
+  const criarOnChangeQuantidadeKits = (value, form, values, ue, idx) => () => {
+    handleChangeQuantidadeKits(value, form, values, ue, idx);
+  };
+
   const handleNumeroAlunosChange = (event, form, values, ue, idx) => {
     const novoValor = Number(event.target.value) || 0;
 
@@ -535,15 +543,12 @@ const SolicitacaoUnificada = ({
                                         placeholder="Quantidade de alunos"
                                         name={`unidades_escolares[${idx}].nmr_alunos`}
                                         className="form-control"
-                                        inputOnChange={(event) => {
-                                          handleNumeroAlunosChange(
-                                            event,
-                                            form,
-                                            values,
-                                            ue,
-                                            idx,
-                                          );
-                                        }}
+                                        inputOnChange={criarInputOnChangeNumeroAlunos(
+                                          form,
+                                          values,
+                                          ue,
+                                          idx,
+                                        )}
                                         required
                                         validate={validaNdeAlunos(ue)}
                                       />
@@ -570,15 +575,13 @@ const SolicitacaoUnificada = ({
                                                   validate={required}
                                                   name={`unidades_escolares[${idx}].quantidade_kits`}
                                                   data-testid={`${testId}-${idx}`}
-                                                  onChange={() =>
-                                                    handleChangeQuantidadeKits(
-                                                      value,
-                                                      form,
-                                                      values,
-                                                      ue,
-                                                      idx,
-                                                    )
-                                                  }
+                                                  onChange={criarOnChangeQuantidadeKits(
+                                                    value,
+                                                    form,
+                                                    values,
+                                                    ue,
+                                                    idx,
+                                                  )}
                                                 />
                                                 <span className="checkmark" />
                                               </label>

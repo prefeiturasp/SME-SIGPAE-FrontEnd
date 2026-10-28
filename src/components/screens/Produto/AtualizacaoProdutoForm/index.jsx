@@ -24,7 +24,7 @@ import {
   TerceirizadaCancelaSoliticaoCorrecao,
 } from "../../../../services/produto.service";
 import { connect } from "react-redux";
-import { getFormValues } from "redux-form";
+import { destroy, getFormValues } from "redux-form";
 import MotivoEvento from "src/components/Shareable/MotivoEvento";
 import MotivoHomologacao from "../../../Shareable/MotivoHomologacao";
 import InformativoReclamacao from "src/components/Shareable/InformativoReclamacao";
@@ -152,14 +152,31 @@ class AtualizacaoProdutoForm extends Component {
   };
 
   componentDidMount() {
+    this.limparFormulario();
     this.carregarDadosIniciais();
   }
+
+  componentWillUnmount() {
+    this.limparFormulario();
+  }
+
+  limparFormulario = () => {
+    this.props.dispatch(destroy("atualizacaoProduto"));
+  };
 
   carregarDadosIniciais = async () => {
     let { produto, homologacao, informacoesNutricionais, logs } = this.state;
     let homologacao_dados = null;
-    const urlParams = new URLSearchParams(window.location.search);
-    const uuid = urlParams.get("uuid");
+    const { uuid } = this.props;
+
+    if (!uuid) {
+      this.setState({
+        loading: false,
+        erro: true,
+      });
+      return;
+    }
+
     try {
       homologacao_dados = await getHomologacao(uuid);
       produto = homologacao_dados.data.produto;
@@ -187,6 +204,7 @@ class AtualizacaoProdutoForm extends Component {
       homologacao,
       logs,
       informacoesNutricionais,
+      uuid,
     });
   };
 
@@ -388,7 +406,9 @@ class AtualizacaoProdutoForm extends Component {
 }
 
 AtualizacaoProdutoForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func,
+  uuid: PropTypes.string,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({

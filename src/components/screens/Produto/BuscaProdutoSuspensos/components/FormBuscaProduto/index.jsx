@@ -49,6 +49,10 @@ function reducer(state, { type: actionType, payload }) {
   }
 }
 
+const extrairNomes = (resposta) => resposta.data.results.map((el) => el.nome);
+const extrairNomesFantasia = (resposta) =>
+  resposta.data.results.map((el) => el.nome_fantasia);
+
 const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -64,12 +68,10 @@ const FormBuscaProduto = ({ onSubmit, bloquearEdital, initialStateForm }) => {
         dispatch({
           type: "popularDados",
           payload: {
-            produtos: produtos.data.results.map((el) => el.nome),
-            marcas: marcas.data.results.map((el) => el.nome),
-            fabricantes: fabricantes.data.results.map((el) => el.nome),
-            terceirizadas: terceirizadas.data.results.map(
-              (el) => el.nome_fantasia,
-            ),
+            produtos: extrairNomes(produtos),
+            marcas: extrairNomes(marcas),
+            fabricantes: extrairNomes(fabricantes),
+            terceirizadas: extrairNomesFantasia(terceirizadas),
             tipos: ["Comum", "Dieta especial"],
             editais: editais.data.results,
           },

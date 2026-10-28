@@ -17,6 +17,22 @@ import {
 import { InputText } from "src/components/Shareable/Input/InputText";
 import { createEmailsTerceirizadasPorModulo } from "src/services/terceirizada.service";
 
+const exibirErroDeCadastro = (erro) => {
+  if (!erro.response || erro.response.status !== BAD_REQUEST) {
+    return;
+  }
+  const { terceirizada, email: errosDeEmail } = erro.response.data;
+  if (terceirizada) {
+    toastError(terceirizada[0]);
+  } else if (!errosDeEmail) {
+    toastError("Erro");
+  } else if (errosDeEmail[0].includes("existe")) {
+    toastError("E-mail já cadastrado para esta empresa");
+  } else {
+    toastError(errosDeEmail[0]);
+  }
+};
+
 export default (props) => {
   const [showModal, setShowModal] = useState(false);
   const [empresaSelect, setEmpresaSelect] = useState();
@@ -41,21 +57,7 @@ export default (props) => {
         props.atualizaTabela();
       }
     } catch (erro) {
-      if (erro.response && erro.response.status === BAD_REQUEST) {
-        if (erro.response.data.terceirizada) {
-          toastError(erro.response.data.terceirizada[0]);
-        } else {
-          if (erro.response.data.email) {
-            if (erro.response.data.email[0].includes("existe")) {
-              toastError("E-mail já cadastrado para esta empresa");
-            } else {
-              toastError(erro.response.data.email[0]);
-            }
-          } else {
-            toastError("Erro");
-          }
-        }
-      }
+      exibirErroDeCadastro(erro);
     }
   };
 

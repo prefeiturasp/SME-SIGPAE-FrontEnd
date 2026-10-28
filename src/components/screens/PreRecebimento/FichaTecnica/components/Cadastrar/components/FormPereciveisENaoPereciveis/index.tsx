@@ -3,6 +3,7 @@ import { Field } from "react-final-form";
 import InputText from "src/components/Shareable/Input/InputText";
 import { TextArea } from "src/components/Shareable/TextArea/TextArea";
 import { required } from "src/helpers/fieldValidators";
+import { ehFLV } from "src/helpers/preRecebimento";
 
 interface Props {
   values: Record<string, any>;
@@ -17,15 +18,11 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
   atualizacao = false,
   mostrarNumeroRegistro = true,
 }) => {
-  const ehFLV =
-    (values.categoria === "FLV" ||
-      values.categoria === "FLV (Frutas, Legumes e Verduras)") &&
-    (values.tipo_entrega === "PONTO_A_PONTO" ||
-      values.tipo_entrega === "Ponto a Ponto");
+  const ehFichaFLV = ehFLV(values.categoria);
 
   return (
     <>
-      {!ehFLV && (
+      {!ehFichaFLV && (
         <div>
           <div className="row">
             <div className="col-4">
@@ -292,7 +289,7 @@ const FormPereciveisENaoPereciveis: React.FC<Props> = ({
         </div>
       )}
 
-      {ehFLV && (
+      {ehFichaFLV && (
         <>
           {mostrarNumeroRegistro && (
             <div className="row">

@@ -82,6 +82,32 @@ type Props = {
   tiposAlimentacao: Array<TipoAlimentacao>;
 };
 
+const criarHandlerRemoverDesconto = (fields, index) => () => {
+  fields.remove(index);
+};
+
+const criarHandlerUnidadesEducacionais = (form, name) => (values_: any) => {
+  form.change(
+    `${name}.unidades_educacionais`,
+    values_.map((v: any) => v.value),
+  );
+};
+
+const criarHandlerTipoLancamento = (form, name) => (e) => {
+  if (e.target?.value?.includes("EMEI")) {
+    form.change(`${name}.faixa_etaria`, null);
+    form.change(`${name}.periodo_escolar`, null);
+  } else if (e.target?.value?.includes("CEI")) {
+    form.change(`${name}.tipo_alimentacao`, null);
+  }
+};
+
+const formatarOpcoesClausulas = (clausulas: ClausulaInterface[]) =>
+  clausulas.map((clausula) => ({
+    uuid: clausula.uuid,
+    nome: `${clausula.numero_clausula}. ${clausula.item_clausula} - (${clausula.porcentagem_desconto}%)`,
+  }));
+
 const ModalAplicarDesconto = ({
   showModal,
   setShowModal,
@@ -373,7 +399,10 @@ const ModalAplicarDesconto = ({
                                   icon={BUTTON_ICON.TRASH}
                                   style={BUTTON_STYLE.GREEN_OUTLINE}
                                   type={BUTTON_TYPE.BUTTON}
-                                  onClick={() => fields.remove(index)}
+                                  onClick={criarHandlerRemoverDesconto(
+                                    fields,
+                                    index,
+                                  )}
                                 />
                               </div>
                             </div>
@@ -392,12 +421,10 @@ const ModalAplicarDesconto = ({
                                   values.cadastros_desconto?.[index]
                                     ?.unidades_educacionais || []
                                 }
-                                onSelectedChanged={(values_: any) => {
-                                  form.change(
-                                    `${name}.unidades_educacionais`,
-                                    values_.map((v: any) => v.value),
-                                  );
-                                }}
+                                onSelectedChanged={criarHandlerUnidadesEducacionais(
+                                  form,
+                                  name,
+                                )}
                                 required
                               />
                             </div>
@@ -415,20 +442,10 @@ const ModalAplicarDesconto = ({
                                 placeholder="Selecione o tipo"
                                 required
                                 validate={required}
-                                onChangeEffect={(e) => {
-                                  if (e.target?.value?.includes("EMEI")) {
-                                    form.change(`${name}.faixa_etaria`, null);
-                                    form.change(
-                                      `${name}.periodo_escolar`,
-                                      null,
-                                    );
-                                  } else if (e.target?.value?.includes("CEI")) {
-                                    form.change(
-                                      `${name}.tipo_alimentacao`,
-                                      null,
-                                    );
-                                  }
-                                }}
+                                onChangeEffect={criarHandlerTipoLancamento(
+                                  form,
+                                  name,
+                                )}
                               />
                             </div>
 
@@ -479,10 +496,7 @@ const ModalAplicarDesconto = ({
                                     uuid: "",
                                     nome: "Selecione a cláusula",
                                   },
-                                  ...clausulas.map((clausula) => ({
-                                    uuid: clausula.uuid,
-                                    nome: `${clausula.numero_clausula}. ${clausula.item_clausula} - (${clausula.porcentagem_desconto}%)`,
-                                  })),
+                                  ...formatarOpcoesClausulas(clausulas),
                                 ]}
                                 label="Cláusula de Desconto"
                                 name={`${name}.clausula_desconto`}
