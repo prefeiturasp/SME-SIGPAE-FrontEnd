@@ -150,6 +150,52 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
       ).toBe("12,00");
     });
 
+    it("calcula o total pelo valor unitário quando reajuste e acréscimo não existem", () => {
+      const alimentacao = carregarValores(
+        [
+          {
+            nome: "Preço das Alimentações",
+            periodo_escolar: null,
+            valores: [
+              {
+                tipo_alimentacao: { nome: "Lanche", uuid: "lanche" },
+                nome_campo: "lanche",
+                tipo_valor: "UNITARIO",
+                valor: "10,50",
+              },
+            ],
+          },
+        ],
+        "Grupo 1",
+      );
+
+      expect(
+        alimentacao["Preço das Alimentações"].Lanche.valor_unitario_total,
+      ).toBe("10,50");
+
+      const dieta = carregarValores(
+        [
+          {
+            nome: "Dietas Tipo A",
+            periodo_escolar: "PARCIAL",
+            valores: [
+              {
+                faixa_etaria: { __str__: "01 a 03 meses", uuid: "faixa" },
+                tipo_valor: "UNITARIO",
+                valor: "20",
+              },
+            ],
+          },
+        ],
+        "Grupo 1",
+      );
+
+      expect(
+        dieta["Dietas Tipo A - Período Parcial"]["01 a 03 meses"]
+          .valor_unitario_total,
+      ).toBe("20,00");
+    });
+
     it("deve calcular valor total com percentual de acréscimo", () => {
       const tabelas = [
         {
@@ -480,7 +526,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
       expect(tabela["undefined"].tipo_alimentacao).toBe("uuid-string");
     });
 
-    it("calcula total zero, ignora total inválido e aceita faixa sem objeto", () => {
+    it("calcula o total pelo valor unitário, ignora total inválido e aceita faixa sem objeto", () => {
       const somenteUnitario = carregarValores(
         [
           {
@@ -499,7 +545,7 @@ describe("Testes de Funções Helpers.tsx - Parametrização Financeira", () => 
       );
       expect(
         somenteUnitario["Dietas Tipo B"]["undefined"].valor_unitario_total,
-      ).toBe("0,00");
+      ).toBe("8,00");
       expect(somenteUnitario["Dietas Tipo B"]["undefined"].faixa_etaria).toBe(
         "faixa-uuid",
       );
