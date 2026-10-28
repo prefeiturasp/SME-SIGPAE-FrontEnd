@@ -300,8 +300,17 @@ export const CadastroEmpresa = () => {
     setExibirModal(false);
   };
 
-  const exibirErro400 = (data, prefixo) => {
-    toastError(mensagemErroCnpj(data) || `${prefixo}: ${getError(data)}`);
+  const exibirErroEnvio = (response, prefixo) => {
+    const data = response?.data ?? response;
+    const mensagemCnpj = mensagemErroCnpj(data);
+
+    if (mensagemCnpj) {
+      toastError(mensagemCnpj);
+    } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
+      toastError(`${prefixo}: ${getError(data)}`);
+    } else {
+      toastError(prefixo);
+    }
   };
 
   const atualizarEmpresa = (uuid, dados, ehDistribuidor) => {
@@ -312,10 +321,8 @@ export const CadastroEmpresa = () => {
         if (response?.status === HTTP_STATUS.OK) {
           toastSuccess("Empresa atualizada com sucesso!");
           navigate("/configuracoes/cadastros/empresas-cadastradas");
-        } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
-          exibirErro400(response.data, "Erro ao atualizar cadastro de empresa");
         } else {
-          toastError(`Erro ao atualizar cadastro de empresa`);
+          exibirErroEnvio(response, "Erro ao atualizar cadastro de empresa");
         }
       })
       .catch(() => {
@@ -331,10 +338,8 @@ export const CadastroEmpresa = () => {
         if (response?.status === HTTP_STATUS.CREATED) {
           toastSuccess("Empresa cadastrada com sucesso!");
           navigate("/configuracoes/cadastros/empresas-cadastradas");
-        } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
-          exibirErro400(response.data, "Erro ao cadastrar empresa");
         } else {
-          toastError(`Erro ao cadastrar empresa`);
+          exibirErroEnvio(response, "Erro ao cadastrar empresa");
         }
       })
       .catch(() => {

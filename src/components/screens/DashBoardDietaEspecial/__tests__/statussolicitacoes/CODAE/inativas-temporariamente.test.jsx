@@ -16,7 +16,7 @@ describe("Teste StatusSolicitacoes - Inativas Temporariamente - CODAE", () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
       .onGet("/codae-solicitacoes/inativas-temporariamente-dieta/")
-      .replyOnce(200, mockDietasAutorizadas);
+      .reply(200, mockDietasAutorizadas);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(

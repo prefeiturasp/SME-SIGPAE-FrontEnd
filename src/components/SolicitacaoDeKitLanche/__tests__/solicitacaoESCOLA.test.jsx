@@ -182,7 +182,7 @@ describe("Teste de Solicitação de Kit Lanche", () => {
       within(cardSolicitacao).getAllByText(/Local do passeio/i),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText(/Número de alunos/i),
+      within(cardSolicitacao).getAllByText(/^Número de alunos$/i),
     ).toHaveLength(1);
     expect(
       within(cardSolicitacao).getAllByText("Evento/Atividade"),

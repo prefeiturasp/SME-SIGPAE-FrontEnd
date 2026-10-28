@@ -28,7 +28,12 @@ import {
   toastError,
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
-import { createNaoTerceirizada } from "src/services/terceirizada.service";
+import {
+  createNaoTerceirizada,
+  createTerceirizada,
+  updateTerceirizada,
+} from "src/services/terceirizada.service";
+import * as terceirizadaService from "src/services/terceirizada.service";
 
 const MENSAGEM_CNPJ_DUPLICADO =
   "Não foi possível concluir o cadastro, pois já existe uma empresa cadastrada com o CNPJ informado.";
@@ -54,8 +59,6 @@ const empresaFornecedor = () => ({
     },
   ],
 });
-
-let respostaFetchTerceirizada;
 
 const configurarMocksApi = (empresa = empresaDistribuidor()) => {
   mock.reset();
@@ -132,7 +135,6 @@ beforeEach(() => {
   localStorage.clear();
   configurarMocksApi();
 
-  respostaFetchTerceirizada = { status: 201, data: {}, rejeitar: false };
   global.fetch = jest.fn((url) => {
     if (String(url).includes("viacep.com.br")) {
       return Promise.resolve({
@@ -141,18 +143,12 @@ beforeEach(() => {
       });
     }
 
-    if (respostaFetchTerceirizada.rejeitar) {
-      return Promise.reject(new Error("falha na requisição"));
-    }
-
-    return Promise.resolve({
-      status: respostaFetchTerceirizada.status,
-      json: () => Promise.resolve(respostaFetchTerceirizada.data),
-    });
+    return Promise.reject(new Error(`fetch inesperado: ${url}`));
   });
 });
 
 afterEach(() => {
+  jest.restoreAllMocks();
   delete global.fetch;
 });
 
@@ -279,10 +275,9 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   });
 
   it("exibe a mensagem da história ao cadastrar empresa com CNPJ duplicado", async () => {
-    respostaFetchTerceirizada = {
-      status: 400,
-      data: { cnpj: [MENSAGEM_CNPJ_DUPLICADO] },
-    };
+    mock.onPost("/terceirizadas/").reply(400, {
+      cnpj: [MENSAGEM_CNPJ_DUPLICADO],
+    });
 
     await setup();
     await preencherFormularioFornecedor();
@@ -294,10 +289,9 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   });
 
   it("mantém a mensagem genérica quando o erro do cadastro não é de CNPJ", async () => {
-    respostaFetchTerceirizada = {
-      status: 400,
-      data: { razao_social: ["Razão social inválida"] },
-    };
+    mock.onPost("/terceirizadas/").reply(400, {
+      razao_social: ["Razão social inválida"],
+    });
 
     await setup();
     await preencherFormularioFornecedor();
@@ -311,6 +305,8 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   });
 
   it("confirma o cadastro de empresa com CNPJ válido e inexistente", async () => {
+    mock.onPost("/terceirizadas/").reply(201, {});
+
     await setup();
     await preencherFormularioFornecedor();
     await confirmarEnvio(/Salvar/i);
@@ -325,10 +321,9 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   it("exibe a mensagem da história ao editar empresa com CNPJ duplicado", async () => {
     configurarMocksApi(empresaFornecedor());
     window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
-    respostaFetchTerceirizada = {
-      status: 400,
-      data: { cnpj: [MENSAGEM_CNPJ_DUPLICADO] },
-    };
+    mock
+      .onPut(`/terceirizadas/${mockEmpresa.uuid}/`)
+      .reply(400, { cnpj: [MENSAGEM_CNPJ_DUPLICADO] });
 
     await setup();
     await waitFor(() =>
@@ -344,10 +339,9 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   it("mantém a mensagem genérica quando o erro da edição não é de CNPJ", async () => {
     configurarMocksApi(empresaFornecedor());
     window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
-    respostaFetchTerceirizada = {
-      status: 400,
-      data: { razao_social: ["Razão social inválida"] },
-    };
+    mock
+      .onPut(`/terceirizadas/${mockEmpresa.uuid}/`)
+      .reply(400, { razao_social: ["Razão social inválida"] });
 
     await setup();
     await waitFor(() =>
@@ -363,7 +357,7 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   });
 
   it("exibe mensagem genérica quando o cadastro retorna erro não mapeado", async () => {
-    respostaFetchTerceirizada = { status: 500, data: {} };
+    mock.onPost("/terceirizadas/").reply(500, {});
 
     await setup();
     await preencherFormularioFornecedor();
@@ -375,7 +369,7 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   });
 
   it("exibe mensagem genérica quando a requisição de cadastro falha", async () => {
-    respostaFetchTerceirizada = { rejeitar: true };
+    mock.onPost("/terceirizadas/").networkError();
 
     await setup();
     await preencherFormularioFornecedor();
@@ -389,7 +383,7 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
   it("exibe mensagem genérica quando a requisição de edição falha", async () => {
     configurarMocksApi(empresaFornecedor());
     window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
-    respostaFetchTerceirizada = { rejeitar: true };
+    mock.onPut(`/terceirizadas/${mockEmpresa.uuid}/`).networkError();
 
     await setup();
     await waitFor(() =>
@@ -416,15 +410,105 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
 
     expect(document.querySelector('[data-cy="razao_social"]')).toHaveValue("");
   });
+
+  it("exibe a mensagem de CNPJ mesmo quando o status não é 400", async () => {
+    mock.onPost("/terceirizadas/").reply(500, {
+      cnpj: [MENSAGEM_CNPJ_DUPLICADO],
+    });
+
+    await setup();
+    await preencherFormularioFornecedor();
+    await confirmarEnvio(/Salvar/i);
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith(MENSAGEM_CNPJ_DUPLICADO),
+    );
+  });
+
+  it("exibe a mensagem de CNPJ quando o serviço devolve o body cru", async () => {
+    jest
+      .spyOn(terceirizadaService, "createTerceirizada")
+      .mockResolvedValueOnce({ cnpj: [MENSAGEM_CNPJ_DUPLICADO] });
+
+    await setup();
+    await preencherFormularioFornecedor();
+    await confirmarEnvio(/Salvar/i);
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith(MENSAGEM_CNPJ_DUPLICADO),
+    );
+  });
+
+  it("exibe mensagem genérica quando o serviço de cadastro lança exceção", async () => {
+    jest
+      .spyOn(terceirizadaService, "createTerceirizada")
+      .mockRejectedValueOnce(new Error("falha"));
+
+    await setup();
+    await preencherFormularioFornecedor();
+    await confirmarEnvio(/Salvar/i);
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith("Erro ao cadastrar empresa"),
+    );
+  });
+
+  it("exibe mensagem genérica quando o serviço de edição lança exceção", async () => {
+    configurarMocksApi(empresaFornecedor());
+    window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
+    jest
+      .spyOn(terceirizadaService, "updateTerceirizada")
+      .mockRejectedValueOnce(new Error("falha"));
+
+    await setup();
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /Atualizar/i })).toBeEnabled(),
+    );
+    await confirmarEnvio(/Atualizar/i);
+
+    await waitFor(() =>
+      expect(toastError).toHaveBeenCalledWith(
+        "Erro ao atualizar cadastro de empresa",
+      ),
+    );
+  });
 });
 
-describe("Service de cadastro de empresa não terceirizada", () => {
-  it("devolve o erro de CNPJ duplicado enviado pelo backend", async () => {
+describe("Services de empresa", () => {
+  it("createNaoTerceirizada devolve o erro de CNPJ duplicado", async () => {
     mock.onPost("/empresas-nao-terceirizadas/").reply(400, {
       cnpj: [MENSAGEM_CNPJ_DUPLICADO],
     });
 
     const response = await createNaoTerceirizada({ cnpj: "10558126000130" });
+
+    expect(response).toEqual({
+      data: { cnpj: [MENSAGEM_CNPJ_DUPLICADO] },
+      status: 400,
+    });
+  });
+
+  it("createTerceirizada devolve o erro de CNPJ duplicado", async () => {
+    mock.onPost("/terceirizadas/").reply(400, {
+      cnpj: [MENSAGEM_CNPJ_DUPLICADO],
+    });
+
+    const response = await createTerceirizada({ cnpj: "10558126000130" });
+
+    expect(response).toEqual({
+      data: { cnpj: [MENSAGEM_CNPJ_DUPLICADO] },
+      status: 400,
+    });
+  });
+
+  it("updateTerceirizada devolve o erro de CNPJ duplicado", async () => {
+    mock
+      .onPut(`/terceirizadas/${mockEmpresa.uuid}/`)
+      .reply(400, { cnpj: [MENSAGEM_CNPJ_DUPLICADO] });
+
+    const response = await updateTerceirizada(mockEmpresa.uuid, {
+      cnpj: "10558126000130",
+    });
 
     expect(response).toEqual({
       data: { cnpj: [MENSAGEM_CNPJ_DUPLICADO] },
