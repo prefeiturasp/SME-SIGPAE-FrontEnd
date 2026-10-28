@@ -65,7 +65,7 @@ jest.mock("src/components/Shareable/Botao", () => ({
 
 const mockLotes = [
   { uuid: "lote-1", nome: "Lote 1", nome_exibicao: "DRE Sul - Lote 1" },
-  { uuid: "lote-2", nome: "Lote 2" }, // sem nome_exibicao
+  { uuid: "lote-2", nome: "Lote 2" },
 ];
 
 const mockAlimentacaoApi = {
@@ -73,7 +73,7 @@ const mockAlimentacaoApi = {
     { value: "alim-1", label: "Desjejum" },
     { value: "alim-2", label: "Almoço" },
     { value: "alim-3", label: "Lanche Emergencial" },
-    { value: "alim-4" }, // sem label
+    { value: "alim-4" },
   ] as any,
   reset: jest.fn(),
   loadAlimentacao: jest.fn(),
@@ -161,7 +161,7 @@ describe("ModalAdicionarUnidadeEducacional", () => {
       jest.fn().mockReturnValueOnce({}).mockReturnValueOnce(undefined),
     );
 
-    notify({ dres_lote: "lote-1" }); // field state existe -> reseta
+    notify({ dres_lote: "lote-1" });
     expect(formApi.resetFieldState).toHaveBeenCalledTimes(1);
     expect(formApi.change).toHaveBeenCalledWith("tipos_unidades", undefined);
     expect(formApi.change).toHaveBeenCalledWith("unidades_educacionais", []);
@@ -170,10 +170,10 @@ describe("ModalAdicionarUnidadeEducacional", () => {
       [],
     );
 
-    notify({ dres_lote: "lote-2" }); // field state inexistente -> não reseta
+    notify({ dres_lote: "lote-2" });
     expect(formApi.resetFieldState).toHaveBeenCalledTimes(1);
 
-    notify({ dres_lote: "lote-2", tipos_unidades: "tipo-1" }); // troca de tipo
+    notify({ dres_lote: "lote-2", tipos_unidades: "tipo-1" });
     expect(mockUnidadesApi.fetchUnidades).toHaveBeenCalledWith(
       "dre-1",
       "tipo-1",
@@ -181,7 +181,7 @@ describe("ModalAdicionarUnidadeEducacional", () => {
     expect(mockAlimentacaoApi.loadAlimentacao).toHaveBeenCalledWith("tipo-1");
 
     formApi.change.mockClear();
-    notify({ dres_lote: "lote-2", tipos_unidades: "tipo-1" }); // nada mudou
+    notify({ dres_lote: "lote-2", tipos_unidades: "tipo-1" });
     expect(formApi.change).not.toHaveBeenCalled();
   });
 
