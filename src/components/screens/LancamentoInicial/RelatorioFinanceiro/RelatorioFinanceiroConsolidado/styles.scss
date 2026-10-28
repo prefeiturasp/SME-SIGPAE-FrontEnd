@@ -105,6 +105,71 @@
   width: 10%;
 }
 
+.tabela-relatorio-responsiva {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabela-relatorio.tabela-detalhada {
+  table-layout: fixed;
+  min-width: 56rem;
+
+  thead th {
+    font-size: 12px;
+    line-height: 1.25;
+    overflow-wrap: break-word;
+  }
+
+  tbody td {
+    padding-inline: 6px;
+  }
+
+  .col-descricao {
+    width: 20%;
+  }
+
+  .col-numero {
+    width: 9%;
+  }
+
+  .col-valor-total {
+    width: auto;
+  }
+
+  tbody td.col-descricao {
+    text-align: left;
+    padding-left: 12px;
+  }
+
+  tbody td.col-valor-total {
+    font-weight: 700;
+  }
+
+  &.tabela-detalhada-alimentacao.sem-reajuste {
+    min-width: 40rem;
+
+    .col-descricao {
+      width: 32%;
+    }
+
+    .col-numero {
+      width: 14%;
+    }
+  }
+
+  &.tabela-detalhada-dieta {
+    min-width: 40rem;
+
+    .col-descricao {
+      width: 32%;
+    }
+
+    .col-numero {
+      width: 14%;
+    }
+  }
+}
+
 .titulo-relatorio-financeiro {
   font-family: Arial, Helvetica, sans-serif;
   display: flex;

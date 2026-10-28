@@ -38,6 +38,7 @@ describe("desabilitarField CEI/CEMEI", () => {
     calendarioMesConsiderado: [{ dia: 1 }],
     ehRecreioNasFerias: false,
     categoriasDeMedicao: [{ id: 1, nome: "ALIMENTAÇÃO" }],
+    ehFaixaMenorDeUmAno: false,
   });
 
   const call = (a) =>
@@ -69,6 +70,7 @@ describe("desabilitarField CEI/CEMEI", () => {
       a.calendarioMesConsiderado,
       a.ehRecreioNasFerias,
       a.categoriasDeMedicao,
+      a.ehFaixaMenorDeUmAno,
     );
   describe("Regras gerais", () => {
     it("deve desabilitar quando valor é mês anterior", () => {
@@ -531,6 +533,50 @@ describe("desabilitarField CEI/CEMEI", () => {
       expectCampo(a, "repeticao_2_refeicao", false);
       expectCampo(a, "2_sobremesa_1_oferta", false);
       expectCampo(a, "repeticao_2_sobremesa", false);
+    });
+  });
+
+  describe("Kit Lanche Passeio em dia sem atendimento regular na CEI Integral", () => {
+    const argsKitLanche = ({ ehFaixaMenorDeUmAno = false } = {}) => {
+      const a = baseArgs();
+      a.dia = "18";
+      a.values = {
+        matriculados__faixa_1__dia_18__categoria_1: "0",
+        frequencia__faixa_1__dia_18__categoria_1: "",
+      };
+      a.inclusoesAutorizadas = [];
+      a.validacaoDiaLetivo = jest.fn(() => false);
+      a.kitLanchesAutorizadas = [
+        { dia: "18", numero_alunos: 20, kit_lanche_id_externo: "ABC12" },
+      ];
+      a.ehFaixaMenorDeUmAno = ehFaixaMenorDeUmAno;
+      return a;
+    };
+
+    it("libera a frequência em dia sem atendimento regular quando há kit lanche autorizado", () => {
+      const a = argsKitLanche();
+
+      expect(call(a)).toBe(false);
+    });
+
+    it("mantém a frequência de menores de 1 ano bloqueada quando liberada por kit lanche", () => {
+      const a = argsKitLanche({ ehFaixaMenorDeUmAno: true });
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("mantém o dia bloqueado quando não há kit lanche autorizado", () => {
+      const a = argsKitLanche();
+      a.kitLanchesAutorizadas = [];
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("não libera por kit lanche quando existe inclusão de alimentação na data", () => {
+      const a = argsKitLanche();
+      a.inclusoesAutorizadas = [{ dia: "18" }];
+
+      expect(call(a)).toBe(true);
     });
   });
 });

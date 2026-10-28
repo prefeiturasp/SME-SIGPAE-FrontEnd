@@ -30,6 +30,7 @@ export const InputText = (props) => {
     required,
     title,
     tooltipText,
+    tooltipIcone,
     maxlength,
     pattern,
     icone,
@@ -84,7 +85,9 @@ export const InputText = (props) => {
           {label}
         </label>,
       ]}
-      {tooltipText && <TooltipIcone tooltipText={tooltipText} />}
+      {tooltipText && (
+        <TooltipIcone tooltipText={tooltipText} icone={tooltipIcone} />
+      )}
       <div
         className={`${prefix ? "input-com-prefixo" : suffix ? "input-com-sufixo" : ""}`}
       >
@@ -168,6 +171,8 @@ InputText.propTypes = {
   input: PropTypes.object,
   label: PropTypes.string,
   step: PropTypes.string,
+  tooltipText: PropTypes.string,
+  tooltipIcone: PropTypes.string,
   labelClassName: PropTypes.string,
   meta: PropTypes.object,
   name: PropTypes.string,

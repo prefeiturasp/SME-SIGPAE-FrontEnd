@@ -57,6 +57,7 @@ export default ({
         tiposAlimentacao={_TIPOS_ALIMENTACAO}
         totaisConsumo={totaisConsumo}
         ordem="A"
+        possuiReajuste={relatorioConsolidado.possui_reajuste}
       />
       <TabelaDietas
         ref={refDietaA}

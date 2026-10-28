@@ -90,7 +90,9 @@ class PainelPedidos extends Component {
     if (busca) {
       params.busca = busca;
     }
-    this.setState({ [chave]: { ...this.state[chave], buscando: true, busca } });
+    this.setState((prevState) => ({
+      [chave]: { ...prevState[chave], buscando: true, busca },
+    }));
     getDREPedidosDeKitLanche(FiltroEnum.SEM_FILTRO, params).then((data) => {
       this.setState({
         [chave]: {
@@ -123,7 +125,9 @@ class PainelPedidos extends Component {
   }
 
   onBusca(chave, termo) {
-    this.setState({ [chave]: { ...this.state[chave], busca: termo } });
+    this.setState((prevState) => ({
+      [chave]: { ...prevState[chave], busca: termo },
+    }));
     clearTimeout(this.buscaTimeouts[chave]);
     this.buscaTimeouts[chave] = setTimeout(() => {
       if (termo.length === 0 || termo.length > 2) {

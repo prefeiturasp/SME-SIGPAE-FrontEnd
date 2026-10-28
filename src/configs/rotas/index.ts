@@ -19,7 +19,7 @@ import { rotasRecebimento } from "../rotas/recebimento";
 import { rotasSupervisao } from "../rotas/supervisao";
 import { rotasFaq } from "./Faq";
 
-export let rotas = [
+export const rotas = [
   {
     path: "/",
     component: PainelInicialPage,
@@ -45,17 +45,16 @@ export let rotas = [
     component: CentralDownloadsPage,
     tipoUsuario: constants.QUALQUER_USUARIO,
   },
-];
-
-rotas = rotas.concat(rotasGestaoDeAlimentacao);
-rotas = rotas.concat(rotasDietaEspecial);
-rotas = rotas.concat(rotasGestaoDeProdutos);
-rotas = rotas.concat(rotasMedicaoInicial);
-rotas = rotas.concat(rotasSupervisao);
-rotas = rotas.concat(rotasAbastecimento);
-rotas = rotas.concat(rotasPreRecebimento);
-rotas = rotas.concat(rotasPosRecebimento);
-rotas = rotas.concat(rotasRecebimento);
-rotas = rotas.concat(rotasCadastros);
-rotas = rotas.concat(rotasConfiguracoes);
-rotas = rotas.concat(rotasFaq);
+]
+  .concat(rotasGestaoDeAlimentacao)
+  .concat(rotasDietaEspecial)
+  .concat(rotasGestaoDeProdutos)
+  .concat(rotasMedicaoInicial)
+  .concat(rotasSupervisao)
+  .concat(rotasAbastecimento)
+  .concat(rotasPreRecebimento)
+  .concat(rotasPosRecebimento)
+  .concat(rotasRecebimento)
+  .concat(rotasCadastros)
+  .concat(rotasConfiguracoes)
+  .concat(rotasFaq);

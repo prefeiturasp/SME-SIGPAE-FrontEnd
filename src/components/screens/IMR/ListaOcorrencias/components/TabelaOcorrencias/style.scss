@@ -1,0 +1,8 @@
+.tabela-ocorrencias {
+  overflow-wrap: anywhere;
+
+  .tabela-ocorrencias__descricao,
+  .tabela-ocorrencias__resposta {
+    white-space: pre-wrap;
+  }
+}

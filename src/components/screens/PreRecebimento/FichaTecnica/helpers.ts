@@ -22,6 +22,7 @@ import {
 } from "src/services/fichaTecnica.service";
 
 import { removeCaracteresEspeciais, exibeError } from "src/helpers/utilities";
+import { ehFLV } from "src/helpers/preRecebimento";
 import { downloadAndConvertToBase64 } from "src/components/Shareable/Input/InputFile/helper";
 import {
   toastError,
@@ -63,6 +64,8 @@ import {
 } from "./constants";
 
 import { LogSolicitacoesUsuarioSimples } from "src/interfaces/dados_comuns.interface";
+
+export { ehFLV };
 
 export const cepCalculator = (
   setDesabilitaEndereco?: React.Dispatch<React.SetStateAction<Array<boolean>>>,
@@ -394,8 +397,7 @@ export const validaProximoIdentificacaoProduto = (
   values: FichaTecnicaPayload,
   errors: Record<string, string>,
 ): boolean => {
-  const ehFLV =
-    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
+  const ehFichaFLV = ehFLV(values.categoria);
 
   const campoAlergenicosValido =
     (values.alergenicos === "1" && values.ingredientes_alergenicos) ||
@@ -409,7 +411,7 @@ export const validaProximoIdentificacaoProduto = (
     (values.organico === "1" && values.mecanismo_controle) ||
     values.organico === "0";
 
-  if (ehFLV) {
+  if (ehFichaFLV) {
     return (
       Object.keys(errors).length !== 0 ||
       !values.produto ||
@@ -428,7 +430,7 @@ export const validaProximoIdentificacaoProduto = (
     !values.prazo_validade ||
     !values.componentes_produto ||
     !values.gluten ||
-    (values.categoria !== "FLV" && !values.marca) ||
+    !values.marca ||
     !campoAlergenicosValido ||
     !campoComLactoseValido ||
     (values.categoria === "PERECIVEIS" && !campoOrganicoValido)
@@ -453,10 +455,9 @@ export const validaAssinarEnviar = (
   errors: Record<string, string>,
   arquivo: ArquivoForm[],
 ): boolean => {
-  const ehFLV =
-    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
+  const ehFichaFLV = ehFLV(values.categoria);
 
-  if (ehFLV) {
+  if (ehFichaFLV) {
     return Object.keys(errors).length !== 0 || !arquivo.length;
   }
 
@@ -466,20 +467,6 @@ export const validaAssinarEnviar = (
     !values.rotulo_legivel ||
     !arquivo.length
   );
-};
-
-export const ehFLVPontoAPonto = (
-  categoria?: string,
-  tipoEntrega?: string,
-): boolean => {
-  const categoriaUUID = CATEGORIA_OPTIONS.find(
-    (opcao) => opcao.uuid === categoria || opcao.nome === categoria,
-  )?.uuid;
-  const tipoEntregaUUID = TIPO_ENTREGA_OPTIONS.find(
-    (opcao) => opcao.uuid === tipoEntrega || opcao.nome === tipoEntrega,
-  )?.uuid;
-
-  return categoriaUUID === "FLV" && tipoEntregaUUID === "PONTO_A_PONTO";
 };
 
 const entidadeFabricantePossuiDados = (
@@ -506,7 +493,6 @@ const entidadeFabricantePossuiDados = (
 
 export const exibirBlocoFabricante = (ficha: {
   categoria?: string;
-  tipo_entrega?: string;
   fabricante?: FabricanteFichaTecnica | FabricanteFichaPayload | null;
   envasador_distribuidor?:
     | FabricanteFichaTecnica
@@ -514,7 +500,7 @@ export const exibirBlocoFabricante = (ficha: {
     | null;
 }): boolean => {
   return (
-    !ehFLVPontoAPonto(ficha.categoria, ficha.tipo_entrega) ||
+    !ehFLV(ficha.categoria) ||
     entidadeFabricantePossuiDados(ficha.fabricante) ||
     entidadeFabricantePossuiDados(ficha.envasador_distribuidor)
   );
@@ -522,13 +508,9 @@ export const exibirBlocoFabricante = (ficha: {
 
 export const exibirNumeroRegistro = (ficha: {
   categoria?: string;
-  tipo_entrega?: string;
   numero_registro?: string;
 }): boolean => {
-  return (
-    !ehFLVPontoAPonto(ficha.categoria, ficha.tipo_entrega) ||
-    Boolean(ficha.numero_registro)
-  );
+  return !ehFLV(ficha.categoria) || Boolean(ficha.numero_registro);
 };
 
 export const geraInitialValuesCadastrar = (ficha: FichaTecnicaDetalhada) => {
@@ -742,12 +724,11 @@ export const formataPayloadCadastroFichaTecnica = (
   mostrarNumeroRegistro: boolean = true,
 ) => {
   const ehPereciveis = values.categoria === "PERECIVEIS";
-  const ehFLV =
-    values.categoria === "FLV" && values.tipo_entrega === "PONTO_A_PONTO";
+  const ehFichaFLV = ehFLV(values.categoria);
 
   let payload: FichaTecnicaPayload;
 
-  if (ehFLV) {
+  if (ehFichaFLV) {
     payload = {
       ...gerarCamposObrigatoriosRascunho(values, produtosOptions),
       marca: values.marca || undefined,
@@ -761,11 +742,7 @@ export const formataPayloadCadastroFichaTecnica = (
         false,
         mostrarBlocoFabricante,
       ),
-      ...gerarCamposDetalhesProduto(
-        values,
-        ehFLV,
-        mostrarNumeroRegistro,
-      ),
+      ...gerarCamposDetalhesProduto(values, ehFichaFLV, mostrarNumeroRegistro),
       ...gerarCamposResponsavelTecnico(values, arquivo),
       ...gerarCamposOutrasInformacoes(values),
       password: password,
@@ -784,11 +761,7 @@ export const formataPayloadCadastroFichaTecnica = (
         false,
         mostrarBlocoFabricante,
       ),
-      ...gerarCamposDetalhesProduto(
-        values,
-        ehFLV,
-        mostrarNumeroRegistro,
-      ),
+      ...gerarCamposDetalhesProduto(values, ehFichaFLV, mostrarNumeroRegistro),
       ...gerarCamposInformacoesNutricionais(values),
       ...gerarCamposConservacao(values, ehPereciveis),
       ...(ehPereciveis
@@ -815,7 +788,7 @@ export const formataPayloadCorrecaoFichaTecnica = (
   arquivo: ArquivoForm[],
   ehPereciveis: boolean,
   password: string,
-  ehFLV: boolean = false,
+  ehFichaFLV: boolean = false,
   mostrarNumeroRegistro: boolean = true,
 ) => {
   let payload: FichaTecnicaPayload = {
@@ -829,7 +802,7 @@ export const formataPayloadCorrecaoFichaTecnica = (
         )
       : {}),
     ...(!conferidos.detalhes_produto
-      ? gerarCamposDetalhesProduto(values, ehFLV, mostrarNumeroRegistro)
+      ? gerarCamposDetalhesProduto(values, ehFichaFLV, mostrarNumeroRegistro)
       : {}),
     ...(!conferidos.responsavel_tecnico
       ? gerarCamposResponsavelTecnico(values, arquivo)
@@ -837,7 +810,7 @@ export const formataPayloadCorrecaoFichaTecnica = (
     password: password,
   };
 
-  if (!ehFLV) {
+  if (!ehFichaFLV) {
     payload = {
       ...payload,
       ...(!conferidos.informacoes_nutricionais
@@ -970,14 +943,14 @@ const gerarCamposProponenteFabricante = (
 
 const gerarCamposDetalhesProduto = (
   values: Record<string, any>,
-  ehFLV: boolean = false,
+  ehFichaFLV: boolean = false,
   incluirNumeroRegistro: boolean = true,
 ) => {
   const numeroRegistro = incluirNumeroRegistro
     ? { numero_registro: values.numero_registro || "" }
     : {};
 
-  if (ehFLV) {
+  if (ehFichaFLV) {
     return {
       ...numeroRegistro,
       organico: stringToBoolean(values.organico as string),
@@ -1152,17 +1125,24 @@ export const salvarRascunho = async (
   ficha: FichaTecnicaDetalhada,
   setFicha: Dispatch<SetStateAction<FichaTecnicaDetalhada>>,
   setCarregando: Dispatch<SetStateAction<boolean>>,
+  navigate: NavigateFunction,
+  ehCopia: boolean = false,
 ) => {
   try {
     setCarregando(true);
 
-    const response = ficha.uuid
-      ? await editaRascunhoFichaTecnica(payload, ficha.uuid)
-      : await cadastraRascunhoFichaTecnica(payload);
+    const response =
+      ehCopia || !ficha.uuid
+        ? await cadastraRascunhoFichaTecnica(payload)
+        : await editaRascunhoFichaTecnica(payload, ficha.uuid);
 
     if (response.status === 201 || response.status === 200) {
       toastSuccess("Rascunho salvo com sucesso!");
-      setFicha(response.data);
+      if (ehCopia) {
+        navigate(`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`);
+      } else {
+        setFicha(response.data);
+      }
     } else {
       toastError("Ocorreu um erro ao salvar a Ficha Técnica");
     }
@@ -1178,16 +1158,22 @@ export const assinarEnviarFichaTecnica = async (
   ficha: FichaTecnicaDetalhada,
   setCarregando: Dispatch<SetStateAction<boolean>>,
   navigate: NavigateFunction,
+  ehCopia: boolean = false,
 ) => {
   try {
     setCarregando(true);
 
-    const response = ficha.uuid
-      ? await cadastrarFichaTecnicaDoRascunho(payload, ficha.uuid)
-      : await cadastrarFichaTecnica(payload);
+    const response =
+      ehCopia || !ficha.uuid
+        ? await cadastrarFichaTecnica(payload)
+        : await cadastrarFichaTecnicaDoRascunho(payload, ficha.uuid);
 
     if (response.status === 201 || response.status === 200) {
-      toastSuccess("Ficha Técnica Assinada e Enviada com sucesso!");
+      toastSuccess(
+        ehCopia
+          ? "Ficha Técnica enviada com sucesso!"
+          : "Ficha Técnica Assinada e Enviada com sucesso!",
+      );
       navigate(`/${PRE_RECEBIMENTO}/${FICHA_TECNICA}`);
     } else {
       toastError("Ocorreu um erro ao assinar e enviar a Ficha Técnica");

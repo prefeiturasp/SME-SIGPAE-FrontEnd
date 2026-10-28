@@ -54,6 +54,11 @@ function reducer(state, { type: actionType, payload }) {
   }
 }
 
+const extrairNomesFantasia = (resposta) =>
+  resposta.data.results.map((el) => el.nome_fantasia);
+const filtrarEditais = (resposta) =>
+  resposta.data.results?.filter((item) => item !== "PARCEIRA");
+
 const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [status, setStatus] = useState({
@@ -78,12 +83,8 @@ const FormBuscaProduto = ({ setFiltros, setPage, initialValues }) => {
             produtos: produtos.data.results,
             marcas: marcas.data.results,
             fabricantes: fabricantes.data.results,
-            terceirizadas: terceirizadas.data.results.map(
-              (el) => el.nome_fantasia,
-            ),
-            editais: editais.data.results?.filter(
-              (item) => item !== "PARCEIRA",
-            ),
+            terceirizadas: extrairNomesFantasia(terceirizadas),
+            editais: filtrarEditais(editais),
           },
         }),
       );

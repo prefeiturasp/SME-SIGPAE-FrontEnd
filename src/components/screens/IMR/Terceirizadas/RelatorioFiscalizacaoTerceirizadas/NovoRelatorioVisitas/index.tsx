@@ -127,6 +127,57 @@ export const NovoRelatorioVisitas = ({
     );
   }
 
+  const finalizarAposSalvar = async (
+    uuid: string,
+    gerarRelatorioNotificacoes: boolean,
+  ): Promise<void> => {
+    if (gerarRelatorioNotificacoes) {
+      solicitarGeracaoRelatorioNotificacoes(uuid);
+    } else {
+      navigateToPainelRelatorios();
+    }
+  };
+
+  const atualizarRascunhoExistente = async (
+    values: NovoRelatorioVisitasFormInterface,
+    gerarRelatorioNotificacoes: boolean,
+  ): Promise<void> => {
+    const response = await updateRascunhoFormularioSupervisao(
+      formataPayloadUpdate(
+        values,
+        escolaSelecionada,
+        anexos,
+        notificacoesAssinadas,
+        respostasOcorrenciaNaoSeAplica,
+      ),
+    );
+    if (response.status === HTTP_STATUS.OK) {
+      toastSuccess("Rascunho do Relatório de Fiscalização salvo com sucesso!");
+      await finalizarAposSalvar(values.uuid, gerarRelatorioNotificacoes);
+    } else {
+      toastError(
+        "Erro ao atualizar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
+      );
+    }
+  };
+
+  const criarNovoRascunho = async (
+    values: NovoRelatorioVisitasFormInterface,
+    gerarRelatorioNotificacoes: boolean,
+  ): Promise<void> => {
+    const response = await createRascunhoFormularioSupervisao(
+      formataPayload(values, escolaSelecionada, anexos, notificacoesAssinadas),
+    );
+    if (response.status === HTTP_STATUS.CREATED) {
+      toastSuccess("Rascunho do Relatório de Fiscalização salvo com sucesso!");
+      await finalizarAposSalvar(response.data.uuid, gerarRelatorioNotificacoes);
+    } else {
+      toastError(
+        "Erro ao criar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
+      );
+    }
+  };
+
   const salvarRascunho = async (
     values: NovoRelatorioVisitasFormInterface,
     gerarRelatorioNotificacoes = false,
@@ -142,52 +193,9 @@ export const NovoRelatorioVisitas = ({
       return;
     }
     if (values.uuid) {
-      const response = await updateRascunhoFormularioSupervisao(
-        formataPayloadUpdate(
-          values,
-          escolaSelecionada,
-          anexos,
-          notificacoesAssinadas,
-          respostasOcorrenciaNaoSeAplica,
-        ),
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        toastSuccess(
-          "Rascunho do Relatório de Fiscalização salvo com sucesso!",
-        );
-        if (gerarRelatorioNotificacoes) {
-          solicitarGeracaoRelatorioNotificacoes(values.uuid);
-        } else {
-          navigateToPainelRelatorios();
-        }
-      } else {
-        toastError(
-          "Erro ao atualizar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
-        );
-      }
+      await atualizarRascunhoExistente(values, gerarRelatorioNotificacoes);
     } else {
-      const response = await createRascunhoFormularioSupervisao(
-        formataPayload(
-          values,
-          escolaSelecionada,
-          anexos,
-          notificacoesAssinadas,
-        ),
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        toastSuccess(
-          "Rascunho do Relatório de Fiscalização salvo com sucesso!",
-        );
-        if (gerarRelatorioNotificacoes) {
-          solicitarGeracaoRelatorioNotificacoes(response.data.uuid);
-        } else {
-          navigateToPainelRelatorios();
-        }
-      } else {
-        toastError(
-          "Erro ao criar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
-        );
-      }
+      await criarNovoRascunho(values, gerarRelatorioNotificacoes);
     }
   };
 

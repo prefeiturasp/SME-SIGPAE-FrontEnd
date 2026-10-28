@@ -37,6 +37,29 @@ const imprimirFicha = async (
   }
 };
 
+const criarHandlerImprimirFicha =
+  (
+    uuid: string,
+    numero: string,
+    setCarregando: Dispatch<SetStateAction<boolean>>,
+  ) =>
+  (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    imprimirFicha(uuid, numero, setCarregando);
+  };
+
+const criarHandlerAlternarAtivo =
+  (
+    uuid: string,
+    ativos: string[],
+    setAtivos: Dispatch<SetStateAction<string[]>>,
+  ) =>
+  () => {
+    ativos && ativos.includes(uuid)
+      ? setAtivos(ativos.filter((el: string) => el !== uuid))
+      : setAtivos(ativos ? [...ativos, uuid] : [uuid]);
+  };
+
 const Listagem: React.FC<Props> = ({
   objetos,
   ativos,
@@ -118,33 +141,20 @@ const Listagem: React.FC<Props> = ({
                     aria-expanded={Boolean(
                       ativos && ativos.includes(cronograma.uuid),
                     )}
-                    onClick={() => {
-                      ativos && ativos.includes(cronograma.uuid)
-                        ? setAtivos(
-                            ativos.filter(
-                              (el: string) => el !== cronograma.uuid,
-                            ),
-                          )
-                        : setAtivos(
-                            ativos
-                              ? [...ativos, cronograma.uuid]
-                              : [cronograma.uuid],
-                          );
-                    }}
+                    onClick={criarHandlerAlternarAtivo(
+                      cronograma.uuid,
+                      ativos,
+                      setAtivos,
+                    )}
                     onKeyDown={(e) =>
-                      acionaComEnterOuEspaco(e, () => {
-                        ativos && ativos.includes(cronograma.uuid)
-                          ? setAtivos(
-                              ativos.filter(
-                                (el: string) => el !== cronograma.uuid,
-                              ),
-                            )
-                          : setAtivos(
-                              ativos
-                                ? [...ativos, cronograma.uuid]
-                                : [cronograma.uuid],
-                            );
-                      })
+                      acionaComEnterOuEspaco(
+                        e,
+                        criarHandlerAlternarAtivo(
+                          cronograma.uuid,
+                          ativos,
+                          setAtivos,
+                        ),
+                      )
                     }
                   />
                 </div>
@@ -215,14 +225,11 @@ const Listagem: React.FC<Props> = ({
                                 {ficha.situacao === "Ocorrência" ? (
                                   <a
                                     href="#"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      imprimirFicha(
-                                        ficha.uuid,
-                                        cronograma.numero,
-                                        setCarregando,
-                                      );
-                                    }}
+                                    onClick={criarHandlerImprimirFicha(
+                                      ficha.uuid,
+                                      cronograma.numero,
+                                      setCarregando,
+                                    )}
                                     className="link-ocorrencia"
                                   >
                                     {ficha.situacao}

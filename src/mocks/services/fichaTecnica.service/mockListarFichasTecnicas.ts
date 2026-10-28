@@ -96,5 +96,14 @@ export const mockListaFichaTecnica: ListagemPaginada<FichaTecnica> = {
       status: "Enviada para Análise",
       programa: "LEVE_LEITE",
     },
+    {
+      uuid: "397f0963-3745-42a6-9ea9-724ea1957a4c",
+      numero: "FT036",
+      nome_produto: "DOCE DE BANANA",
+      pregao_chamada_publica: "453453",
+      criado_em: "23/02/2026",
+      status: "Aprovada",
+      programa: "ALIMENTACAO_ESCOLAR",
+    },
   ],
 };
