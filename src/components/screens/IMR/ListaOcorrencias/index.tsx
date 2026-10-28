@@ -15,6 +15,7 @@ import {
   REGISTRAR_NOVA_OCORRENCIA,
   REGISTRAR_OCORRENCIAS,
 } from "src/configs/constants";
+import { ENVIRONMENT } from "src/constants/config";
 import {
   NavigateFunction,
   useNavigate,
@@ -28,6 +29,8 @@ import { OcorrenciaDiretorInterface } from "src/interfaces/imr.interface";
 import { buscarOcorrenciasDiretor } from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
 import TabelaOcorrencias from "./components/TabelaOcorrencias";
 import "./style.scss";
+
+const EXIBIR_LISTAGEM_OCORRENCIAS = !ENVIRONMENT.includes("production");
 
 const MENSAGENS_ERRO_OCORRENCIAS: Record<number, string> = {
   [HTTP_STATUS.BAD_REQUEST]:
@@ -62,6 +65,8 @@ export const ListaOcorrencias = () => {
   }, [solicitacaoMedicaoInicialUuid]);
 
   useEffect(() => {
+    if (!EXIBIR_LISTAGEM_OCORRENCIAS) return;
+
     let consultaAtiva = true;
 
     const carregarOcorrencias = async () => {
@@ -171,35 +176,37 @@ export const ListaOcorrencias = () => {
             </form>
           )}
         </Form>
-        <section className="mt-4 px-3" aria-label="Ocorrências Registradas">
-          <h2 className="titulo-verde mb-3">Ocorrências Registradas</h2>
-          <Spin spinning={carregando} tip="Carregando...">
-            <div
-              className="lista-ocorrencias__resultados"
-              aria-busy={carregando}
-            >
-              {consultaComSucesso &&
-                !carregando &&
-                (ocorrencias.length === 0 ? (
-                  <p>Nenhuma ocorrência registrada para este período.</p>
-                ) : (
-                  <>
-                    <TabelaOcorrencias
-                      ocorrencias={ocorrencias}
-                      onEditar={editarOcorrencia}
-                    />
-                    <Paginacao
-                      current={pagina}
-                      total={totalResultados}
-                      pageSize={10}
-                      onChange={setPagina}
-                    />
-                  </>
-                ))}
-            </div>
-          </Spin>
-        </section>
-        {ocorrencias.length !== 0 ? (
+        {EXIBIR_LISTAGEM_OCORRENCIAS && (
+          <section className="mt-4 px-3" aria-label="Ocorrências Registradas">
+            <h2 className="titulo-verde mb-3">Ocorrências Registradas</h2>
+            <Spin spinning={carregando} tip="Carregando...">
+              <div
+                className="lista-ocorrencias__resultados"
+                aria-busy={carregando}
+              >
+                {consultaComSucesso &&
+                  !carregando &&
+                  (ocorrencias.length === 0 ? (
+                    <p>Nenhuma ocorrência registrada para este período.</p>
+                  ) : (
+                    <>
+                      <TabelaOcorrencias
+                        ocorrencias={ocorrencias}
+                        onEditar={editarOcorrencia}
+                      />
+                      <Paginacao
+                        current={pagina}
+                        total={totalResultados}
+                        pageSize={10}
+                        onChange={setPagina}
+                      />
+                    </>
+                  ))}
+              </div>
+            </Spin>
+          </section>
+        )}
+        {EXIBIR_LISTAGEM_OCORRENCIAS && ocorrencias.length !== 0 && (
           <div className="d-flex justify-content-end mt-4 px-3">
             <Botao
               texto="Exportar Excel"
@@ -209,8 +216,6 @@ export const ListaOcorrencias = () => {
               disabled
             />
           </div>
-        ) : (
-          <></>
         )}
       </div>
     </div>
