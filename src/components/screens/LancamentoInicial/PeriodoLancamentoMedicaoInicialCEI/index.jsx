@@ -2458,6 +2458,13 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
 
       const idCategoria = categoria.id;
+      const categoriasIdsAlimentacaoEDieta = (categoriasDeMedicao || [])
+        .filter(
+          (categoriaMedicao) =>
+            categoriaMedicao.nome === "ALIMENTAÇÃO" ||
+            categoriaMedicao.nome.includes("DIETA"),
+        )
+        .map((categoriaMedicao) => categoriaMedicao.id);
       if (nomeCategoria === "ALIMENTAÇÃO") {
         if (ehRecreioNasFerias()) {
           return validacoesTabelaAlimentacaoCEIRecreioNasFerias(
@@ -2489,15 +2496,31 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
             inclusoesAutorizadas,
             uuidsFaixasMenoresDeUmAno,
             uuidFaixaEtaria,
+            categoriasIdsAlimentacaoEDieta,
           );
         }
       } else if (nomeCategoria.includes("DIETA")) {
-        return validacoesTabelasDietasCEI(
+        const erroDieta = validacoesTabelasDietasCEI(
           rowName,
           dia,
           idCategoria,
           allValues,
           uuidFaixaEtaria,
+        );
+        if (erroDieta) {
+          return erroDieta;
+        }
+        return validacoesKitLanchePasseioCEI(
+          rowName,
+          dia,
+          idCategoria,
+          nomeCategoria,
+          allValues,
+          kitLanchesAutorizadas,
+          inclusoesAutorizadas,
+          uuidsFaixasMenoresDeUmAno,
+          uuidFaixaEtaria,
+          categoriasIdsAlimentacaoEDieta,
         );
       }
     };
@@ -2668,9 +2691,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
         kitLanchesAutorizadas,
         column.dia,
       );
+      const dietaAutorizadaParaFaixa =
+        categoria.nome.includes("DIETA") &&
+        Number(
+          formValuesAtualizados[
+            `dietas_autorizadas__faixa_${row.uuid}__dia_${column.dia}__categoria_${categoria.id}`
+          ],
+        ) > 0;
       const liberadoPorKitLanchePasseio =
         row.name === "frequencia" &&
-        categoria.nome === "ALIMENTAÇÃO" &&
+        (categoria.nome === "ALIMENTAÇÃO" || dietaAutorizadaParaFaixa) &&
         temKitLanchePasseioNoDia &&
         !ehFaixaMenorDeUmAno(row.uuid);
 

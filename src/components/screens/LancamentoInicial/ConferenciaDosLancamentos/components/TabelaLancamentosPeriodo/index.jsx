@@ -906,11 +906,32 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
       : false;
   };
 
-  const exibeTooltipKitLanchePasseio = (row, column, categoria) =>
-    categoria.nome === "ALIMENTAÇÃO" &&
-    row.name === "frequencia" &&
-    diasComApontamentoKitLanchePasseio.has(String(column.dia)) &&
-    faixaEtariaMaiorDeUmAno(row.uuid);
+  const exibeTooltipKitLanchePasseio = (row, column, categoria) => {
+    if (
+      row.name !== "frequencia" ||
+      !faixaEtariaMaiorDeUmAno(row.uuid) ||
+      !diasComApontamentoKitLanchePasseio.has(String(column.dia))
+    ) {
+      return false;
+    }
+
+    if (categoria.nome === "ALIMENTAÇÃO") {
+      return true;
+    }
+
+    if (!categoria.nome.includes("DIETA")) {
+      return false;
+    }
+
+    return (valoresLancamentos || []).some(
+      (valor) =>
+        valor.nome_campo === "frequencia" &&
+        String(valor.categoria_medicao) === String(categoria.id) &&
+        String(valor.faixa_etaria) === String(row.uuid) &&
+        String(valor.dia) === String(column.dia) &&
+        Number(valor.valor) > 0,
+    );
+  };
 
   const carregarInclusoesAutorizadasKitLanchePasseio = async () => {
     const params = {

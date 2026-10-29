@@ -6,9 +6,18 @@ import {
 } from "../PeriodoLancamentoMedicaoInicial/helper";
 import {
   WARNING_LANCHE_EMERGENCIAL_AUTORIZADO,
-  calcularSomaKitLanches,
   campoLancheEmergencialAutorizadoTipoAlimentacaoComApontamentoSemObservacao,
 } from "../PeriodoLancamentoMedicaoInicial/validacoes";
+
+const calcularSomaAlunosKitLanches = (kitLanchesAutorizadas, dia) =>
+  (kitLanchesAutorizadas || [])
+    .filter((kitLanche) => Number(kitLanche.dia) === Number(dia))
+    .reduce(
+      (total, kitLanche) =>
+        total +
+        (Number(kitLanche.quantidade_alunos ?? kitLanche.numero_alunos) || 0),
+      0,
+    );
 
 /**
  * Verifica se deve exibir um tooltip de alerta quando há frequência de dieta registrada
@@ -431,11 +440,17 @@ export const calcularSomaFrequenciaFaixasNoDia = (
   categoria,
   uuidsFaixasIgnoradas = [],
 ) => {
-  const sufixo = `__dia_${dia}__categoria_${categoria}`;
+  const categorias = Array.isArray(categoria) ? categoria : [categoria];
+  const sufixos = categorias.map(
+    (categoriaId) => `__dia_${dia}__categoria_${categoriaId}`,
+  );
   const faixasIgnoradas = new Set(uuidsFaixasIgnoradas.map(String));
 
   return Object.entries(values || {}).reduce((total, [chave, valor]) => {
-    if (!chave.startsWith("frequencia__faixa_") || !chave.endsWith(sufixo)) {
+    if (
+      !chave.startsWith("frequencia__faixa_") ||
+      !sufixos.some((sufixo) => chave.endsWith(sufixo))
+    ) {
       return total;
     }
     const faixaEhIgnorada = [...faixasIgnoradas].some((uuid) =>
@@ -459,8 +474,11 @@ export const validacoesKitLanchePasseioCEI = (
   inclusoesAutorizadas,
   uuidsFaixasMenoresDeUmAno = [],
   uuidFaixaEtaria = null,
+  categoriasIds = [],
 ) => {
-  if (rowName !== "frequencia" || nomeCategoria !== "ALIMENTAÇÃO") {
+  const categoriaAlimentacaoOuDieta =
+    nomeCategoria === "ALIMENTAÇÃO" || nomeCategoria.includes("DIETA");
+  if (rowName !== "frequencia" || !categoriaAlimentacaoOuDieta) {
     return undefined;
   }
 
@@ -471,6 +489,17 @@ export const validacoesKitLanchePasseioCEI = (
     return undefined;
   }
 
+  const dietaAutorizadaNaFaixa =
+    !nomeCategoria.includes("DIETA") ||
+    Number(
+      allValues[
+        `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ],
+    ) > 0;
+  if (!dietaAutorizadaNaFaixa) {
+    return undefined;
+  }
+
   const temInclusaoAlimentacaoNoDia = inclusoesAutorizadas?.some(
     (inclusao) => Number(inclusao.dia) === Number(dia),
   );
@@ -478,7 +507,7 @@ export const validacoesKitLanchePasseioCEI = (
     return undefined;
   }
 
-  const totalAutorizadoKitLanche = calcularSomaKitLanches(
+  const totalAutorizadoKitLanche = calcularSomaAlunosKitLanches(
     kitLanchesAutorizadas,
     dia,
   );
@@ -486,10 +515,13 @@ export const validacoesKitLanchePasseioCEI = (
     return undefined;
   }
 
+  const categoriasConsideradas = categoriasIds.length
+    ? categoriasIds
+    : [categoria];
   const totalApontado = calcularSomaFrequenciaFaixasNoDia(
     allValues,
     dia,
-    categoria,
+    categoriasConsideradas,
     uuidsFaixasMenoresDeUmAno,
   );
   if (totalApontado > totalAutorizadoKitLanche) {
@@ -507,12 +539,15 @@ export const existeQuantidadeKitLanchePasseioExcedida = (
   inclusoesAutorizadas,
   uuidsFaixasMenoresDeUmAno = [],
 ) => {
-  const categoriaAlimentacao = categoriasDeMedicao?.find(
-    (categoria) => categoria.nome === "ALIMENTAÇÃO",
-  );
+  const categoriasConsideradas = (categoriasDeMedicao || [])
+    .filter(
+      (categoria) =>
+        categoria.nome === "ALIMENTAÇÃO" || categoria.nome.includes("DIETA"),
+    )
+    .map((categoria) => categoria.id);
   if (
     !values ||
-    !categoriaAlimentacao ||
+    !categoriasConsideradas.length ||
     !kitLanchesAutorizadas?.length ||
     !weekColumns?.length
   ) {
@@ -527,7 +562,7 @@ export const existeQuantidadeKitLanchePasseioExcedida = (
       return false;
     }
 
-    const totalAutorizadoKitLanche = calcularSomaKitLanches(
+    const totalAutorizadoKitLanche = calcularSomaAlunosKitLanches(
       kitLanchesAutorizadas,
       column.dia,
     );
@@ -538,7 +573,7 @@ export const existeQuantidadeKitLanchePasseioExcedida = (
     const totalApontado = calcularSomaFrequenciaFaixasNoDia(
       values,
       column.dia,
-      categoriaAlimentacao.id,
+      categoriasConsideradas,
       uuidsFaixasMenoresDeUmAno,
     );
     return totalApontado > totalAutorizadoKitLanche;
