@@ -553,6 +553,20 @@ describe("desabilitarField CEI/CEMEI", () => {
       return a;
     };
 
+    const argsKitLancheDieta = ({
+      ehFaixaMenorDeUmAno = false,
+      dietaAutorizada = "2",
+    } = {}) => {
+      const a = argsKitLanche({ ehFaixaMenorDeUmAno });
+      a.nomeCategoria = "DIETA ESPECIAL - TIPO A";
+      a.categoria = 4;
+      a.values = {
+        dietas_autorizadas__faixa_1__dia_18__categoria_4: dietaAutorizada,
+        frequencia__faixa_1__dia_18__categoria_4: "",
+      };
+      return a;
+    };
+
     it("libera a frequência em dia sem atendimento regular quando há kit lanche autorizado", () => {
       const a = argsKitLanche();
 
@@ -575,6 +589,24 @@ describe("desabilitarField CEI/CEMEI", () => {
     it("não libera por kit lanche quando existe inclusão de alimentação na data", () => {
       const a = argsKitLanche();
       a.inclusoesAutorizadas = [{ dia: "18" }];
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("libera a frequência de dieta especial autorizada para faixa maior de 1 ano", () => {
+      const a = argsKitLancheDieta();
+
+      expect(call(a)).toBe(false);
+    });
+
+    it("mantém a frequência de dieta especial bloqueada para menor de 1 ano", () => {
+      const a = argsKitLancheDieta({ ehFaixaMenorDeUmAno: true });
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("não libera frequência de dieta sem autorização para a faixa", () => {
+      const a = argsKitLancheDieta({ dietaAutorizada: "0" });
 
       expect(call(a)).toBe(true);
     });

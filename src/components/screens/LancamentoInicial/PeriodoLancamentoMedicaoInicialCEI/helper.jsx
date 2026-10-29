@@ -305,8 +305,16 @@ const desabilitarDietaSemLogAlimentacao = (
   ehRecreioNasFerias,
   ehProgramasEProjetosLocation,
   ehEmeiDaCemeiLocation,
+  kitLanchesAutorizadas,
 ) => {
   if (!(nomeCategoria.includes("DIETA") && rowName !== "dietas_autorizadas")) {
+    return null;
+  }
+  if (
+    kitLanchesAutorizadas?.some(
+      (kitLanche) => Number(kitLanche.dia) === Number(dia),
+    )
+  ) {
     return null;
   }
   const categoriaAlimentacao = categoriasDeMedicao.find(
@@ -1239,6 +1247,7 @@ export const desabilitarField = (
     ehRecreioNasFerias,
     ehProgramasEProjetosLocation,
     ehEmeiDaCemeiLocation,
+    kitLanchesAutorizadas,
   );
   if (desabilitadoDietaSemLog !== null) {
     return desabilitadoDietaSemLog;
@@ -1327,9 +1336,16 @@ export const desabilitarField = (
   const temInclusaoAlimentacaoNoDia = inclusoesAutorizadas?.some(
     (inclusao) => Number(inclusao.dia) === Number(dia),
   );
+  const dietaAutorizadaParaFaixa =
+    nomeCategoria.includes("DIETA") &&
+    Number(
+      values[
+        `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ],
+    ) > 0;
   const liberadoPorKitLanchePasseio =
     rowName === "frequencia" &&
-    nomeCategoria === "ALIMENTAÇÃO" &&
+    (nomeCategoria === "ALIMENTAÇÃO" || dietaAutorizadaParaFaixa) &&
     temKitLanchePasseioNoDia &&
     !temInclusaoAlimentacaoNoDia &&
     !ehEmeiDaCemeiLocation &&

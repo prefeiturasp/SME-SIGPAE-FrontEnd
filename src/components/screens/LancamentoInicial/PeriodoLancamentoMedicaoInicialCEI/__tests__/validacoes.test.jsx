@@ -160,7 +160,9 @@ describe("Validações de Kit Lanche Passeio na CEI Integral", () => {
   const dia = "18";
   const categoria = 1;
   const categoriaMedicao = [{ id: 1, nome: "ALIMENTAÇÃO" }];
-  const kitLanchesAutorizadas = [{ dia, numero_alunos: 40 }];
+  const kitLanchesAutorizadas = [
+    { dia, numero_alunos: 80, quantidade_alunos: 40 },
+  ];
   const inclusoesAutorizadas = [];
 
   const valuesComTotal = (valores) => {
@@ -251,6 +253,93 @@ describe("Validações de Kit Lanche Passeio na CEI Integral", () => {
         kitLanchesAutorizadas,
         [{ dia }],
         categoriaMedicao,
+        inclusoesAutorizadas,
+      ),
+    ).toBe(true);
+  });
+
+  it("considera a soma de alimentação e dietas especiais no limite do kit", () => {
+    const values = {
+      frequencia__faixa_1__dia_18__categoria_1: "20",
+      frequencia__faixa_1__dia_18__categoria_2: "21",
+    };
+
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "frequencia",
+        dia,
+        categoria,
+        "ALIMENTAÇÃO",
+        values,
+        kitLanchesAutorizadas,
+        inclusoesAutorizadas,
+        [],
+        null,
+        [1, 2],
+      ),
+    ).toBe(MENSAGEM_ERRO);
+  });
+
+  it("permite a soma de alimentação e dietas especiais igual ao limite do kit", () => {
+    const values = {
+      frequencia__faixa_1__dia_18__categoria_1: "20",
+      frequencia__faixa_1__dia_18__categoria_2: "20",
+    };
+
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "frequencia",
+        dia,
+        categoria,
+        "ALIMENTAÇÃO",
+        values,
+        kitLanchesAutorizadas,
+        inclusoesAutorizadas,
+        [],
+        null,
+        [1, 2],
+      ),
+    ).toBeUndefined();
+  });
+
+  it("exibe o erro na dieta somente quando há dieta autorizada para a faixa", () => {
+    const values = {
+      frequencia__faixa_1__dia_18__categoria_1: "20",
+      frequencia__faixa_1__dia_18__categoria_2: "21",
+      dietas_autorizadas__faixa_1__dia_18__categoria_2: "2",
+    };
+
+    expect(
+      validacoesKitLanchePasseioCEI(
+        "frequencia",
+        dia,
+        2,
+        "DIETA ESPECIAL - TIPO A",
+        values,
+        kitLanchesAutorizadas,
+        inclusoesAutorizadas,
+        [],
+        "1",
+        [1, 2],
+      ),
+    ).toBe(MENSAGEM_ERRO);
+  });
+
+  it("detecta inconsistência somando alimentação e dietas na semana", () => {
+    const values = {
+      frequencia__faixa_1__dia_18__categoria_1: "20",
+      frequencia__faixa_1__dia_18__categoria_2: "21",
+    };
+
+    expect(
+      existeQuantidadeKitLanchePasseioExcedida(
+        values,
+        kitLanchesAutorizadas,
+        [{ dia }],
+        [
+          { id: 1, nome: "ALIMENTAÇÃO" },
+          { id: 2, nome: "DIETA ESPECIAL - TIPO A" },
+        ],
         inclusoesAutorizadas,
       ),
     ).toBe(true);

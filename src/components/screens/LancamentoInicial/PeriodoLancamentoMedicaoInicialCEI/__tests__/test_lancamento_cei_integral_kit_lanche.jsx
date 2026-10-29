@@ -173,7 +173,8 @@ describe("PeriodoLancamentoMedicaoInicialCEI - Kit Lanche Passeio no Integral", 
           results: [
             {
               dia: DIA_KIT_LANCHE,
-              numero_alunos: 40,
+              numero_alunos: 80,
+              quantidade_alunos: 40,
               kit_lanche_id_externo: "ABC12",
             },
           ],
