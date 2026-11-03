@@ -19,6 +19,7 @@ export const Select = (props) => {
     onChange,
     options,
     tooltipText,
+    iconeTooltip,
     required,
     width,
     usarDirty,
@@ -41,7 +42,13 @@ export const Select = (props) => {
         >
           {label}
         </label>,
-        tooltipText && <TooltipIcone key={2} tooltipText={tooltipText} />,
+        tooltipText && (
+          <TooltipIcone
+            key={2}
+            tooltipText={tooltipText}
+            icone={iconeTooltip}
+          />
+        ),
       ]}
       <select
         {...input}
@@ -97,6 +104,8 @@ Select.propTypes = {
     }),
   ),
   name: PropTypes.string,
+  tooltipText: PropTypes.string,
+  iconeTooltip: PropTypes.string,
 };
 
 export default Select;

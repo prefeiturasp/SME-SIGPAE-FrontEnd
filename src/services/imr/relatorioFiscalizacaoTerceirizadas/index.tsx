@@ -3,6 +3,8 @@ import { API_URL } from "src/constants/config";
 import { ErrorHandlerFunction } from "../../service-helpers";
 import { NovoRelatorioVisitasFormInterface } from "src/interfaces/imr.interface";
 import {
+  RespostaListagemOcorrenciasDiretorInterface,
+  RespostaOcorrenciaDiretorEdicaoInterface,
   ResponseEquipamentoInterface,
   ResponseExportarPDFAssincronoInterface,
   ResponseFormularioSupervisaoTiposOcorrenciasInterface,
@@ -26,7 +28,7 @@ export const getPeriodosVisita = async () => {
 };
 
 export const createRascunhoFormularioSupervisao = async (
-  params: NovoRelatorioVisitasFormInterface
+  params: NovoRelatorioVisitasFormInterface,
 ) => {
   const url = `${API_URL}/imr/rascunho-formulario-supervisao/`;
   const response = await axios.post(url, params).catch(ErrorHandlerFunction);
@@ -37,7 +39,7 @@ export const createRascunhoFormularioSupervisao = async (
 };
 
 export const updateRascunhoFormularioSupervisao = async (
-  params: NovoRelatorioVisitasFormInterface
+  params: NovoRelatorioVisitasFormInterface,
 ) => {
   const url = `${API_URL}/imr/rascunho-formulario-supervisao/${params.uuid}/`;
   const response = await axios.put(url, params).catch(ErrorHandlerFunction);
@@ -48,7 +50,7 @@ export const updateRascunhoFormularioSupervisao = async (
 };
 
 export const createFormularioSupervisao = async (
-  params: NovoRelatorioVisitasFormInterface
+  params: NovoRelatorioVisitasFormInterface,
 ) => {
   const url = `${API_URL}/imr/formulario-supervisao/`;
   const response = await axios.post(url, params).catch(ErrorHandlerFunction);
@@ -59,7 +61,7 @@ export const createFormularioSupervisao = async (
 };
 
 export const updateFormularioSupervisao = async (
-  params: NovoRelatorioVisitasFormInterface
+  params: NovoRelatorioVisitasFormInterface,
 ) => {
   const url = `${API_URL}/imr/formulario-supervisao/${params.uuid}/`;
   const response = await axios.put(url, params).catch(ErrorHandlerFunction);
@@ -97,7 +99,7 @@ export const getRespostasFormularioSupervisao = async (uuid: string) => {
 };
 
 export const getRespostasNaoSeAplicaFormularioSupervisao = async (
-  uuid: string
+  uuid: string,
 ) => {
   const url = `${API_URL}/imr/formulario-supervisao/${uuid}/respostas_nao_se_aplica/`;
   const response = await axios.get(url).catch(ErrorHandlerFunction);
@@ -108,13 +110,87 @@ export const getRespostasNaoSeAplicaFormularioSupervisao = async (
 };
 
 export const createFormularioDiretor = async (
-  params: NovoRelatorioVisitasFormInterface
+  params: NovoRelatorioVisitasFormInterface,
 ) => {
   const url = `${API_URL}/imr/formulario-diretor/`;
   const response = await axios.post(url, params).catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
+  }
+};
+
+export const buscarOcorrenciasDiretor = async (parametros: {
+  solicitacao_medicao_inicial: string;
+  page?: number;
+  page_size?: number;
+}): Promise<RespostaListagemOcorrenciasDiretorInterface | undefined> => {
+  const url = `${API_URL}/imr/formulario-diretor/`;
+  const resposta: RespostaListagemOcorrenciasDiretorInterface = await axios
+    .get(url, { params: parametros })
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
+export const buscarOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+}): Promise<RespostaOcorrenciaDiretorEdicaoInterface | undefined> => {
+  const url = `${API_URL}/imr/formulario-diretor/${parametros.uuid}/`;
+  const resposta: RespostaOcorrenciaDiretorEdicaoInterface = await axios
+    .get(url, {
+      params: {
+        tipo_ocorrencia: parametros.tipo_ocorrencia,
+        grupo: parametros.grupo,
+      },
+    })
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
+export const atualizarOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+  data: string;
+  ocorrencias: Array<{
+    parametrizacao: string;
+    grupo: number;
+    resposta: unknown;
+    tipoOcorrencia?: string;
+  }>;
+}): Promise<RespostaOcorrenciaDiretorEdicaoInterface | undefined> => {
+  const { uuid, ...dados } = parametros;
+  const url = `${API_URL}/imr/formulario-diretor/${uuid}/`;
+  const resposta: RespostaOcorrenciaDiretorEdicaoInterface = await axios
+    .put(url, dados)
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
+  }
+};
+
+export const excluirOcorrenciaDiretor = async (parametros: {
+  uuid: string;
+  tipo_ocorrencia: string;
+  grupo: number;
+}): Promise<{ data: unknown; status: number } | undefined> => {
+  const url = `${API_URL}/imr/formulario-diretor/${parametros.uuid}/`;
+  const resposta: { data: unknown; status: number } = await axios
+    .delete(url, {
+      params: {
+        tipo_ocorrencia: parametros.tipo_ocorrencia,
+        grupo: parametros.grupo,
+      },
+    })
+    .catch(ErrorHandlerFunction);
+  if (resposta) {
+    return { data: resposta.data, status: resposta.status };
   }
 };
 

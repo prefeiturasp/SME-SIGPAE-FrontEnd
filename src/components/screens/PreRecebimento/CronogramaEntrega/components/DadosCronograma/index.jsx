@@ -13,7 +13,7 @@ export default ({
   esconderInformacoesAdicionais,
   solicitacaoAlteracaoCronograma,
 }) => {
-  const ehFLVPontoAPonto = cronograma.ficha_tecnica?.ponto_a_ponto;
+  const ehPontoAPonto = cronograma.ficha_tecnica?.ponto_a_ponto;
 
   const enderecoFormatado = (armazem) =>
     armazem?.endereco
@@ -150,13 +150,13 @@ export default ({
             <p className="head-green">
               {solicitacaoAlteracaoCronograma
                 ? "Dados do Produto"
-                : ehFLVPontoAPonto
+                : ehPontoAPonto
                   ? "Dados do Produto e Data de Entrega"
                   : "Dados do produto e datas das entregas"}
             </p>
           </div>
 
-          {!ehFLVPontoAPonto ? (
+          {!ehPontoAPonto ? (
             <>
               <div className="row mb-4">
                 <div className="col-4">
@@ -280,28 +280,28 @@ export default ({
 
           <div className="row mb-4">
             <div className="col">
-              {ehFLVPontoAPonto ? (
+              {ehPontoAPonto ? (
                 <p className="head-green mb-3">
                   <b>Tabela de Distribuição de Etapas</b>
                 </p>
               ) : null}
               <table className="table tabela-dados-cronograma">
                 <thead className="head-crono">
-                  {!ehFLVPontoAPonto && (
+                  {!ehPontoAPonto && (
                     <th className="borda-crono text-center">N° do Empenho</th>
                   )}
-                  {!ehFLVPontoAPonto && (
+                  {!ehPontoAPonto && (
                     <th className="borda-crono text-center">
                       Qtde. Total do Empenho
                     </th>
                   )}
                   <th className="borda-crono text-center">Etapa</th>
-                  {!ehFLVPontoAPonto && (
+                  {!ehPontoAPonto && (
                     <th className="borda-crono text-center">Parte</th>
                   )}
                   <th className="borda-crono text-center">Data Programada</th>
                   <th className="borda-crono text-center">Quantidade</th>
-                  {!ehFLVPontoAPonto && (
+                  {!ehPontoAPonto && (
                     <th className="borda-crono text-center">
                       Total de Embalagens
                     </th>
@@ -315,29 +315,27 @@ export default ({
                     return etapas.map((etapa, key) => {
                       return (
                         <tr key={key}>
-                          {!ehFLVPontoAPonto && (
+                          {!ehPontoAPonto && (
                             <td className="borda-crono text-center">
                               {etapa.numero_empenho}
                             </td>
                           )}
-                          {!ehFLVPontoAPonto && (
+                          {!ehPontoAPonto && (
                             <td className="borda-crono text-center">
                               {formataMilharDecimal(etapa.qtd_total_empenho)}{" "}
                               {cronograma.unidade_medida?.abreviacao}
                             </td>
                           )}
                           <td className="borda-crono text-center">
-                            {ehFLVPontoAPonto
-                              ? `Etapa ${key + 1}`
-                              : etapa.etapa}
+                            {ehPontoAPonto ? `Etapa ${key + 1}` : etapa.etapa}
                           </td>
-                          {!ehFLVPontoAPonto && (
+                          {!ehPontoAPonto && (
                             <td className="borda-crono text-center">
                               {etapa.parte}
                             </td>
                           )}
                           <td className="borda-crono text-center">
-                            {ehFLVPontoAPonto
+                            {ehPontoAPonto
                               ? formatarDataFLV(etapa.data_programada)
                               : etapa.data_programada}
                           </td>
@@ -345,7 +343,7 @@ export default ({
                             {formataMilharDecimal(etapa.quantidade)}{" "}
                             {cronograma.unidade_medida?.abreviacao}
                           </td>
-                          {!ehFLVPontoAPonto && (
+                          {!ehPontoAPonto && (
                             <td className="borda-crono text-center">
                               {formataMilharDecimal(etapa.total_embalagens)}{" "}
                               {cronograma.tipo_embalagem_secundaria?.abreviacao}
@@ -362,7 +360,7 @@ export default ({
 
           <hr />
 
-          {!ehFLVPontoAPonto && (
+          {!ehPontoAPonto && (
             <>
               <div className="row head-green my-3">
                 <div className="col">Armazém</div>
@@ -409,7 +407,7 @@ export default ({
                         </div>
                       </td>
                       <td className="borda-crono text-center">
-                        {ehFLVPontoAPonto
+                        {ehPontoAPonto
                           ? formatarDataFLV(etapa.data_programada)
                           : etapa.data_programada}
                       </td>

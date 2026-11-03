@@ -2,6 +2,7 @@ import React from "react";
 import "./style.scss";
 import { NavLink } from "react-router-dom";
 import { Tooltip } from "antd";
+import { ehFLV } from "src/helpers/preRecebimento";
 
 export const CardCronograma = ({
   cardTitle,
@@ -17,7 +18,7 @@ export const CardCronograma = ({
     solicitation.tipo_entrega === "PONTO_A_PONTO";
 
   const ehFichaTecnicaFlv = (solicitation) =>
-    Boolean(solicitation.eh_ficha_tecnica_flv);
+    Boolean(solicitation.eh_ficha_tecnica_flv) || ehFLV(solicitation.categoria);
 
   const getClasseSolicitacao = (solicitation) => {
     const classes = ["data"];

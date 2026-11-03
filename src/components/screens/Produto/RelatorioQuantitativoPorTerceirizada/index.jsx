@@ -87,6 +87,9 @@ const TabelaQuantitativoPorTerceirizada = ({ dadosRelatorio }) => {
   );
 };
 
+const extrairNomesFantasia = (resposta) =>
+  resposta.data.results.map((el) => el.nome_fantasia);
+
 const RelatorioQuantitativoPorTerdeirizada = () => {
   const [dadosRelatorio, setDadosRelatorio] = useState(null);
   const [terceirizadas, setTerceirizadas] = useState([]);
@@ -105,7 +108,7 @@ const RelatorioQuantitativoPorTerdeirizada = () => {
   useEffect(() => {
     async function fetchData() {
       getNomesTerceirizadas().then((response) => {
-        const results = response.data.results.map((el) => el.nome_fantasia);
+        const results = extrairNomesFantasia(response);
         setTerceirizadas(results);
         setTerceirizadasFiltrado(results);
       });

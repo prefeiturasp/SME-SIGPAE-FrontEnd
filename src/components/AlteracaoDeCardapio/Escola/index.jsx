@@ -36,7 +36,7 @@ import {
   escolaIniciarSolicitacaoDeAlteracaoDeCardapio,
   getRascunhosAlteracaoTipoAlimentacao,
 } from "src/services/alteracaoDeCardapio";
-import { formataValues } from "./helper";
+import { formataValues, obterTipoAlimentacaoSelecionado } from "./helper";
 import { AlterarDiaOuPeriodo } from "./components/AlterarDiaOuPeriodoFields";
 import { PeriodosFields } from "./components/PeriodosFields";
 import { Rascunhos } from "./components/Rascunhos";
@@ -72,49 +72,61 @@ export const AlteracaoCardapio = ({ ...props }) => {
     }
   };
 
+  const salvarSolicitacao = async (dados) => {
+    if (dados.uuid) {
+      const resposta = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
+        dados.uuid,
+        dados,
+        TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+      );
+
+      return { resposta, statusEsperado: HTTP_STATUS.OK };
+    }
+
+    const resposta = await escolaCriarSolicitacaoDeAlteracaoCardapio(
+      dados,
+      TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
+    );
+
+    return { resposta, statusEsperado: HTTP_STATUS.CREATED };
+  };
+
   const onSubmit = async (values, form) => {
-    let values_ = deepCopy(values);
-    const status = values_.status;
-    delete values_.status;
-    const erros = validateSubmit(values_, meusDados);
-    if (!erros) {
-      values_ = formataValues(values_);
-      if (!values_.uuid) {
-        const response = await escolaCriarSolicitacaoDeAlteracaoCardapio(
-          values_,
-          TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        );
-        if (response.status === HTTP_STATUS.CREATED) {
-          if (status === STATUS_DRE_A_VALIDAR) {
-            await enviaAlteracaoCardapio(response.data.uuid, form);
-          } else {
-            toastSuccess("Alteração do Tipo de Alimentação salva com sucesso");
-            getRascunhosAsync();
-            resetForm(form);
-          }
-        } else {
-          toastError(getError(response.data));
-        }
-      } else {
-        const response = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
-          values_.uuid,
-          values_,
-          TIPO_SOLICITACAO.SOLICITACAO_NORMAL,
-        );
-        if (response.status === HTTP_STATUS.OK) {
-          if (status === STATUS_DRE_A_VALIDAR) {
-            await enviaAlteracaoCardapio(response.data.uuid, form);
-            getRascunhosAsync();
-          } else {
-            toastSuccess("Alteração do Tipo de Alimentação salva com sucesso");
-            getRascunhosAsync();
-          }
-        } else {
-          toastError(getError(response.data));
-        }
-      }
-    } else {
+    const dados = deepCopy(values);
+    const status = dados.status;
+    delete dados.status;
+
+    const erros = validateSubmit(dados, meusDados);
+
+    if (erros) {
       toastError(erros);
+      return;
+    }
+
+    const dadosFormatados = formataValues(dados);
+    const { resposta, statusEsperado } =
+      await salvarSolicitacao(dadosFormatados);
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
+    }
+
+    if (status === STATUS_DRE_A_VALIDAR) {
+      await enviaAlteracaoCardapio(resposta.data.uuid, form);
+
+      if (dadosFormatados.uuid) {
+        getRascunhosAsync();
+      }
+
+      return;
+    }
+
+    toastSuccess("Alteração do Tipo de Alimentação salva com sucesso");
+    getRascunhosAsync();
+
+    if (!dadosFormatados.uuid) {
+      resetForm(form);
     }
   };
 
@@ -136,10 +148,15 @@ export const AlteracaoCardapio = ({ ...props }) => {
         (subs) => subs.nome === substituicao.periodo_escolar.nome,
       );
       substituicaoValue.check = true;
-      substituicaoValue.tipos_alimentacao_de_selecionados =
-        substituicao.tipos_alimentacao_de.map((tp) => tp.uuid);
-      substituicaoValue.tipos_alimentacao_para_selecionados =
-        substituicao.tipos_alimentacao_para.map((tp) => tp.uuid);
+      substituicaoValue.tipos_alimentacao_de = obterTipoAlimentacaoSelecionado(
+        substituicao.tipos_alimentacao_de,
+        substituicaoValue.tipos_alimentacao,
+      );
+      substituicaoValue.tipos_alimentacao_para =
+        obterTipoAlimentacaoSelecionado(
+          substituicao.tipos_alimentacao_para,
+          substituicaoValue.tipos_alimentacao,
+        );
       substituicaoValue.qtd_alunos = substituicao.qtd_alunos;
     }
 

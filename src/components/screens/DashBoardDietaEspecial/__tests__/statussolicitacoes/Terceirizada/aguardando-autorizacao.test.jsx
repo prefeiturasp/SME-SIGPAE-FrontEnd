@@ -17,7 +17,7 @@ describe("Teste StatusSolicitacoes - Terceirizada - Aguardando Autorização", (
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosTerceirizada);
     mock
       .onGet("/codae-solicitacoes/pendentes-autorizacao-dieta/")
-      .replyOnce(200, mockDietasAutorizadas);
+      .reply(200, mockDietasAutorizadas);
     mock
       .onGet("/lotes/meus-lotes-vinculados/")
       .reply(200, mockMeusLotesVinculados);

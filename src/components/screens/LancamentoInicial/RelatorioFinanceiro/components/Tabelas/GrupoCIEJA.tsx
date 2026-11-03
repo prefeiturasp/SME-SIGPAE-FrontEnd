@@ -56,6 +56,7 @@ export default ({
         totaisConsumo={totaisConsumo}
         ordem="A"
         unidade="CIEJA"
+        possuiReajuste={relatorioConsolidado.possui_reajuste}
       />
       <TabelaDietas
         ref={refDietaA}

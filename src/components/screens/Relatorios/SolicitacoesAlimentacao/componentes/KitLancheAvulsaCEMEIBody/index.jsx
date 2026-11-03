@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
-export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
-  const { solicitacao, item, index, filtros, labelData } = props;
-  const log = solicitacao.logs[solicitacao.logs.length - 1];
-  const [showDetail, setShowDetail] = useState(false);
-
+const calcularTotais = (solicitacao) => {
   const total_CEI = solicitacao.solicitacao_cei
     ? solicitacao.solicitacao_cei.faixas_quantidades.reduce(function (acc, v) {
         return acc + (v.quantidade || v.quantidade_alunos);
@@ -33,8 +29,20 @@ export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
     solicitacao.solicitacao_emei && solicitacao.solicitacao_emei.kits
       ? solicitacao.solicitacao_emei.kits.length
       : 0;
-  const numero_total_kits =
-    numeroKitsCEI * total_CEI + numeroKitsEMEI * total_EMEI;
+
+  return {
+    total_CEI,
+    total_EMEI,
+    total_matriculados_CEI,
+    total_matriculados_EMEI,
+    numero_total_kits: numeroKitsCEI * total_CEI + numeroKitsEMEI * total_EMEI,
+  };
+};
+
+export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
+  const { solicitacao, item, index, filtros, labelData } = props;
+  const log = solicitacao.logs[solicitacao.logs.length - 1];
+  const [showDetail, setShowDetail] = useState(false);
 
   return [
     <tr className="table-body-items" key={index}>
@@ -69,52 +77,155 @@ export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
         />
       </td>
     </tr>,
-    showDetail && (
-      <tr key={item.uuid}>
-        <td colSpan={6}>
-          <div className="container-fluid">
+    showDetail &&
+      renderDetalhesDaSolicitacao(
+        solicitacao,
+        item,
+        log,
+        labelData,
+        calcularTotais(solicitacao),
+      ),
+  ];
+};
+
+const renderDetalhesDaSolicitacao = (
+  solicitacao,
+  item,
+  log,
+  labelData,
+  totais,
+) => {
+  const {
+    total_CEI,
+    total_EMEI,
+    total_matriculados_CEI,
+    total_matriculados_EMEI,
+    numero_total_kits,
+  } = totais;
+  return (
+    <tr key={item.uuid}>
+      <td colSpan={6}>
+        <div className="container-fluid">
+          <div className="row mt-3">
+            <div className="col-2">
+              <p>ID da Solicitação:</p>
+              <p>
+                <b># {solicitacao.id_externo}</b>
+              </p>
+            </div>
+            <div className="col-3">
+              <p>Local do Passeio:</p>
+              <p>
+                <b>{solicitacao.local}</b>
+              </p>
+            </div>
+            <div className="col-3">
+              <p>Evento/Passeio:</p>
+              <p>
+                <b>{solicitacao.evento || "- -"}</b>
+              </p>
+            </div>
+            <div className="col-2">
+              <p>No Total de Kits:</p>
+              <p>
+                <b>{numero_total_kits}</b>
+              </p>
+            </div>
+            <div className="col-2">
+              <p>{labelData}</p>
+              <p>
+                <b>{log && log.criado_em.split(" ")[0]}</b>
+              </p>
+            </div>
+          </div>
+          {solicitacao.solicitacao_cei ? (
             <div className="row mt-3">
-              <div className="col-2">
-                <p>ID da Solicitação:</p>
-                <p>
-                  <b># {solicitacao.id_externo}</b>
-                </p>
+              <div className="col-12">
+                <label className="label-periodo-cei-cemei">Alunos CEI</label>
               </div>
-              <div className="col-3">
-                <p>Local do Passeio:</p>
-                <p>
-                  <b>{solicitacao.local}</b>
-                </p>
-              </div>
-              <div className="col-3">
-                <p>Evento/Passeio:</p>
-                <p>
-                  <b>{solicitacao.evento || "- -"}</b>
-                </p>
-              </div>
-              <div className="col-2">
-                <p>No Total de Kits:</p>
-                <p>
-                  <b>{numero_total_kits}</b>
-                </p>
-              </div>
-              <div className="col-2">
-                <p>{labelData}</p>
-                <p>
-                  <b>{log && log.criado_em.split(" ")[0]}</b>
-                </p>
+              <div className="container-fluid">
+                <div className="row mt-3">
+                  <div className="col-12">
+                    <p>
+                      Número de alunos:<b> {total_CEI}</b>
+                    </p>
+                  </div>
+                  <div className="col-6">
+                    <p>
+                      Tempo previsto de passeio:
+                      <b>
+                        {" "}
+                        {solicitacao.solicitacao_cei.tempo_passeio_explicacao}
+                      </b>
+                    </p>
+                  </div>
+                  <div className="col-6">
+                    <p>
+                      Opção desejada:{" "}
+                      <b>
+                        {solicitacao.solicitacao_cei.kits
+                          .map((kit) => kit.nome)
+                          .join(", ")}
+                      </b>
+                    </p>
+                  </div>
+                </div>
+                <div className="row mt-3">
+                  <div className="col-12">
+                    <table className="table table-bordered table-items">
+                      <thead>
+                        <tr className="table-head-items">
+                          <th className="col-8">Faixa Etária</th>
+                          <th className="col-2 text-center">
+                            Alunos Matriculados
+                          </th>
+                          <th className="col-2 text-center">Quantidade</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {solicitacao.solicitacao_cei.faixas_quantidades.map(
+                          (faixa, idxFaixa) => {
+                            return (
+                              <tr className="table-body-items" key={idxFaixa}>
+                                <td>{faixa.faixa_etaria.__str__}</td>
+                                <td className="text-center">
+                                  {faixa.matriculados_quando_criado}
+                                </td>
+                                <td className="text-center">
+                                  {faixa.quantidade_alunos}
+                                </td>
+                              </tr>
+                            );
+                          },
+                        )}
+                        <tr className="table-head-items">
+                          <td>Total</td>
+                          <td className="text-center">
+                            {total_matriculados_CEI}
+                          </td>
+                          <td className="text-center">{total_CEI}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
               </div>
             </div>
-            {solicitacao.solicitacao_cei ? (
-              <div className="row mt-3">
-                <div className="col-12">
-                  <label className="label-periodo-cei-cemei">Alunos CEI</label>
-                </div>
+          ) : (
+            <></>
+          )}
+          {solicitacao.solicitacao_emei ? (
+            <div className="row mt-3">
+              <div className="col-12">
+                <label className="label-periodo-cei-cemei">Alunos EMEI</label>
+              </div>
+              <div className="col-12">
                 <div className="container-fluid">
                   <div className="row mt-3">
                     <div className="col-12">
                       <p>
-                        Número de alunos:<b> {total_CEI}</b>
+                        Número de alunos:
+                        <b> {solicitacao.solicitacao_emei.quantidade_alunos}</b>
                       </p>
                     </div>
                     <div className="col-6">
@@ -122,7 +233,10 @@ export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
                         Tempo previsto de passeio:
                         <b>
                           {" "}
-                          {solicitacao.solicitacao_cei.tempo_passeio_explicacao}
+                          {
+                            solicitacao.solicitacao_emei
+                              .tempo_passeio_explicacao
+                          }
                         </b>
                       </p>
                     </div>
@@ -130,7 +244,7 @@ export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
                       <p>
                         Opção desejada:{" "}
                         <b>
-                          {solicitacao.solicitacao_cei.kits
+                          {solicitacao.solicitacao_emei.kits
                             .map((kit) => kit.nome)
                             .join(", ")}
                         </b>
@@ -142,126 +256,41 @@ export const KitLancheAvulsaCEMEIBody = ({ ...props }) => {
                       <table className="table table-bordered table-items">
                         <thead>
                           <tr className="table-head-items">
-                            <th className="col-8">Faixa Etária</th>
-                            <th className="col-2 text-center">
-                              Alunos Matriculados
+                            <th className="col-8">
+                              Alunos Matriculados: {total_matriculados_EMEI}
                             </th>
-                            <th className="col-2 text-center">Quantidade</th>
+                            <th className="col-4 text-center">
+                              Quantidade: {total_EMEI}
+                            </th>
                           </tr>
                         </thead>
-                        <tbody>
-                          {solicitacao.solicitacao_cei.faixas_quantidades.map(
-                            (faixa, idxFaixa) => {
-                              return (
-                                <tr className="table-body-items" key={idxFaixa}>
-                                  <td>{faixa.faixa_etaria.__str__}</td>
-                                  <td className="text-center">
-                                    {faixa.matriculados_quando_criado}
-                                  </td>
-                                  <td className="text-center">
-                                    {faixa.quantidade_alunos}
-                                  </td>
-                                </tr>
-                              );
-                            },
-                          )}
-                          <tr className="table-head-items">
-                            <td>Total</td>
-                            <td className="text-center">
-                              {total_matriculados_CEI}
-                            </td>
-                            <td className="text-center">{total_CEI}</td>
-                          </tr>
-                        </tbody>
+                        <tbody />
                       </table>
                     </div>
                   </div>
                 </div>
               </div>
-            ) : (
-              <></>
-            )}
-            {solicitacao.solicitacao_emei ? (
-              <div className="row mt-3">
-                <div className="col-12">
-                  <label className="label-periodo-cei-cemei">Alunos EMEI</label>
-                </div>
-                <div className="col-12">
-                  <div className="container-fluid">
-                    <div className="row mt-3">
-                      <div className="col-12">
-                        <p>
-                          Número de alunos:
-                          <b>
-                            {" "}
-                            {solicitacao.solicitacao_emei.quantidade_alunos}
-                          </b>
-                        </p>
-                      </div>
-                      <div className="col-6">
-                        <p>
-                          Tempo previsto de passeio:
-                          <b>
-                            {" "}
-                            {
-                              solicitacao.solicitacao_emei
-                                .tempo_passeio_explicacao
-                            }
-                          </b>
-                        </p>
-                      </div>
-                      <div className="col-6">
-                        <p>
-                          Opção desejada:{" "}
-                          <b>
-                            {solicitacao.solicitacao_emei.kits
-                              .map((kit) => kit.nome)
-                              .join(", ")}
-                          </b>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="row mt-3">
-                      <div className="col-12">
-                        <table className="table table-bordered table-items">
-                          <thead>
-                            <tr className="table-head-items">
-                              <th className="col-8">
-                                Alunos Matriculados: {total_matriculados_EMEI}
-                              </th>
-                              <th className="col-4 text-center">
-                                Quantidade: {total_EMEI}
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody />
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            </div>
+          ) : (
+            <></>
+          )}
+          {solicitacao.observacao && solicitacao.observacao !== "<p></p>" && (
+            <div className="row">
+              <div className="col-12">
+                <p>Observação:</p>
+                <b>
+                  <p
+                    className="observacao-negrito"
+                    dangerouslySetInnerHTML={{
+                      __html: solicitacao.observacao,
+                    }}
+                  />
+                </b>
               </div>
-            ) : (
-              <></>
-            )}
-            {solicitacao.observacao && solicitacao.observacao !== "<p></p>" && (
-              <div className="row">
-                <div className="col-12">
-                  <p>Observação:</p>
-                  <b>
-                    <p
-                      className="observacao-negrito"
-                      dangerouslySetInnerHTML={{
-                        __html: solicitacao.observacao,
-                      }}
-                    />
-                  </b>
-                </div>
-              </div>
-            )}
-          </div>
-        </td>
-      </tr>
-    ),
-  ];
+            </div>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
 };

@@ -80,6 +80,26 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
     tipo: undefined,
   };
 
+  const validaCampoObrigatorio = (value) =>
+    value ? undefined : "Campo obrigatório";
+  const paraOpcaoEdital = (edital) => ({
+    label: edital.numero,
+    value: edital.uuid,
+  });
+  const paraOpcaoTipoUnidade = (tipoUnidade) => ({
+    label: tipoUnidade.iniciais,
+    value: tipoUnidade.uuid,
+  });
+  const criarOnChangeMultiselect = (form, name, campo) => (values_) => {
+    form.change(`${name}.${campo}`, values_);
+  };
+  const criarRemoverCadastro = (form, values, index) => () => {
+    form.change(
+      "cadastros_calendario",
+      values["cadastros_calendario"].filter((_, i) => i !== index),
+    );
+  };
+
   return (
     <Modal
       dialogClassName="modal-cadastrar-sobremesa modal-50w"
@@ -137,9 +157,7 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                                 ...tiposSobremesaDoce,
                               ]}
                               required
-                              validate={(value) =>
-                                !value ? "Campo obrigatório" : undefined
-                              }
+                              validate={validaCampoObrigatorio}
                             />
                           </div>
                         )}
@@ -152,13 +170,12 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                                 values.cadastros_calendario[index].editais) ||
                               []
                             }
-                            options={editais.map((edital) => ({
-                              label: edital.numero,
-                              value: edital.uuid,
-                            }))}
-                            onSelectedChange={(values_) => {
-                              form.change(`${name}.editais`, values_);
-                            }}
+                            options={editais.map(paraOpcaoEdital)}
+                            onSelectedChange={criarOnChangeMultiselect(
+                              form,
+                              name,
+                              "editais",
+                            )}
                             overrideStrings={{
                               selectSomeItems: "Selecionar editais",
                               allItemsAreSelected:
@@ -178,13 +195,12 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                                   .tipo_unidades) ||
                               []
                             }
-                            options={tiposUnidades.map((tipoUnidade) => ({
-                              label: tipoUnidade.iniciais,
-                              value: tipoUnidade.uuid,
-                            }))}
-                            onSelectedChange={(values_) => {
-                              form.change(`${name}.tipo_unidades`, values_);
-                            }}
+                            options={tiposUnidades.map(paraOpcaoTipoUnidade)}
+                            onSelectedChange={criarOnChangeMultiselect(
+                              form,
+                              name,
+                              "tipo_unidades",
+                            )}
                             overrideStrings={{
                               selectSomeItems: "Selecionar unidades",
                               allItemsAreSelected:
@@ -205,14 +221,11 @@ export const ModalCadastrarNoCalendario = ({ ...props }) => {
                           {(cadastrosSalvosNoDia.length > 0 || index > 0) && (
                             <Botao
                               texto="Remover"
-                              onClick={() =>
-                                form.change(
-                                  "cadastros_calendario",
-                                  values["cadastros_calendario"].filter(
-                                    (_, i) => i !== index,
-                                  ),
-                                )
-                              }
+                              onClick={criarRemoverCadastro(
+                                form,
+                                values,
+                                index,
+                              )}
                               type={BUTTON_TYPE.BUTTON}
                               icon={BUTTON_ICON.TRASH}
                               style={BUTTON_STYLE.RED_OUTLINE}

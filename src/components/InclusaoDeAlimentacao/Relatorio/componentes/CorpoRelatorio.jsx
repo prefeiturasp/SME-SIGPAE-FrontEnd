@@ -42,110 +42,107 @@ const renderParteAvulsa = (
   };
 
   return (
-    <>
-      <table className="table-reasons-inclusao">
-        <tbody>
-          {Object.entries(diasMotivosFormatados).map((dadosMotivo, key) => {
-            const [motivo, datas] = dadosMotivo;
-            return (
-              <Fragment key={key}>
-                <tr className="row">
-                  <th className="col-2">Motivo</th>
-                  <th className="col-10">Dia(s) de inclusão</th>
-                </tr>
-                <tr className="row">
-                  <td className="col-2">{motivo}</td>
-                  {datas.map((dia, key) => {
-                    return (
-                      <td
-                        key={key}
-                        className={`col-2 ${
-                          getDia(dia).cancelado ||
-                          inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU"
-                            ? `cancelado`
-                            : ""
-                        }`}
-                      >
-                        <span>{dia}</span>
-                        {(getDia(dia).cancelado ||
-                          inclusaoDeAlimentacao.status ===
-                            "ESCOLA_CANCELOU") && (
-                          <div className="dark-red">
-                            <strong>justificativa:</strong>{" "}
-                            {getDia(dia).cancelado_justificativa ||
-                              inclusaoDeAlimentacao.logs[
-                                inclusaoDeAlimentacao.logs.length - 1
-                              ].justificativa}
-                          </div>
-                        )}
-                      </td>
-                    );
-                  })}
-                </tr>
-                <hr />
-              </Fragment>
-            );
+    <table className="table-reasons-inclusao">
+      <tbody>
+        {Object.entries(diasMotivosFormatados).map((dadosMotivo, key) => {
+          const [motivo, datas] = dadosMotivo;
+          return (
+            <Fragment key={key}>
+              <tr className="row">
+                <th className="col-2">Motivo</th>
+                <th className="col-10">Dia(s) de inclusão</th>
+              </tr>
+              <tr className="row">
+                <td className="col-2">{motivo}</td>
+                {datas.map((dia, key) => {
+                  return (
+                    <td
+                      key={key}
+                      className={`col-2 ${
+                        getDia(dia).cancelado ||
+                        inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU"
+                          ? `cancelado`
+                          : ""
+                      }`}
+                    >
+                      <span>{dia}</span>
+                      {(getDia(dia).cancelado ||
+                        inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU") && (
+                        <div className="dark-red">
+                          <strong>justificativa:</strong>{" "}
+                          {getDia(dia).cancelado_justificativa ||
+                            inclusaoDeAlimentacao.logs[
+                              inclusaoDeAlimentacao.logs.length - 1
+                            ].justificativa}
+                        </div>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+              <hr />
+            </Fragment>
+          );
+        })}
+        {inclusaoDeAlimentacao[
+          !ehInclusaoCei(tipoSolicitacao)
+            ? "inclusoes"
+            : "dias_motivos_da_inclusao_cei"
+        ]
+          .filter(
+            (inclusao) =>
+              inclusao.motivo.nome.includes("Outro") ||
+              inclusao.motivo.nome.includes("Evento Específico"),
+          )
+          .map((inclusao, key) => {
+            return [
+              <tr className="row" key={key}>
+                <th className="col-2">Motivo</th>
+                <th className="col-10">Dia de inclusão</th>
+              </tr>,
+              <tr className="row" key={key}>
+                <td className="col-2">{inclusao.motivo.nome}</td>
+                <td
+                  key={key}
+                  className={`col-2 ${
+                    inclusao.cancelado ||
+                    inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU"
+                      ? `cancelado`
+                      : ""
+                  }`}
+                >
+                  <span>{inclusao.data}</span>
+                  {(inclusao.cancelado ||
+                    inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU") && (
+                    <div className="dark-red">
+                      <strong>justificativa:</strong>{" "}
+                      {inclusao.cancelado_justificativa ||
+                        inclusaoDeAlimentacao.logs[
+                          inclusaoDeAlimentacao.logs.length - 1
+                        ].justificativa}
+                    </div>
+                  )}
+                </td>
+              </tr>,
+              <tr className="row" key={key}>
+                <th className="col-12">
+                  {inclusao.motivo.nome.includes("Evento Específico")
+                    ? "Descrição do Evento"
+                    : "Qual o motivo?"}
+                </th>
+              </tr>,
+              <tr className="row" key={key}>
+                <td className="col-12">
+                  {inclusao.motivo.nome.includes("Evento Específico")
+                    ? inclusao.evento
+                    : inclusao.outro_motivo}
+                </td>
+              </tr>,
+              <hr key={key} />,
+            ];
           })}
-          {inclusaoDeAlimentacao[
-            !ehInclusaoCei(tipoSolicitacao)
-              ? "inclusoes"
-              : "dias_motivos_da_inclusao_cei"
-          ]
-            .filter(
-              (inclusao) =>
-                inclusao.motivo.nome.includes("Outro") ||
-                inclusao.motivo.nome.includes("Evento Específico"),
-            )
-            .map((inclusao, key) => {
-              return [
-                <tr className="row" key={key}>
-                  <th className="col-2">Motivo</th>
-                  <th className="col-10">Dia de inclusão</th>
-                </tr>,
-                <tr className="row" key={key}>
-                  <td className="col-2">{inclusao.motivo.nome}</td>
-                  <td
-                    key={key}
-                    className={`col-2 ${
-                      inclusao.cancelado ||
-                      inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU"
-                        ? `cancelado`
-                        : ""
-                    }`}
-                  >
-                    <span>{inclusao.data}</span>
-                    {(inclusao.cancelado ||
-                      inclusaoDeAlimentacao.status === "ESCOLA_CANCELOU") && (
-                      <div className="dark-red">
-                        <strong>justificativa:</strong>{" "}
-                        {inclusao.cancelado_justificativa ||
-                          inclusaoDeAlimentacao.logs[
-                            inclusaoDeAlimentacao.logs.length - 1
-                          ].justificativa}
-                      </div>
-                    )}
-                  </td>
-                </tr>,
-                <tr className="row" key={key}>
-                  <th className="col-12">
-                    {inclusao.motivo.nome.includes("Evento Específico")
-                      ? "Descrição do Evento"
-                      : "Qual o motivo?"}
-                  </th>
-                </tr>,
-                <tr className="row" key={key}>
-                  <td className="col-12">
-                    {inclusao.motivo.nome.includes("Evento Específico")
-                      ? inclusao.evento
-                      : inclusao.outro_motivo}
-                  </td>
-                </tr>,
-                <hr key={key} />,
-              ];
-            })}
-        </tbody>
-      </table>
-    </>
+      </tbody>
+    </table>
   );
 };
 

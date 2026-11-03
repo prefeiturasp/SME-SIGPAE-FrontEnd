@@ -146,39 +146,45 @@ export const InversaoDeDiaDeCardapio = ({ ...props }) => {
     }
   };
 
+  const salvarInversao = async (dados) => {
+    if (!dados.uuid) {
+      const resposta = await criarInversaoDeDiaDeCardapio(dados);
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.CREATED,
+        mensagem: "Inversão de dia de Cardápio salvo com sucesso!",
+      };
+    }
+
+    const resposta = await atualizarInversaoDeDiaDeCardapio(dados.uuid, dados);
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.OK,
+      mensagem: "Inversão de dia de Cardápio atualizado com sucesso!",
+    };
+  };
+
   const onSubmit = async (values, form) => {
     values["alunos_da_cemei"] = prepararAlunosCemei(values["alunos_da_cemei"]);
     values["alunos_da_cemei_2"] = prepararAlunosCemei(
       values["alunos_da_cemei_2"],
     );
     values.escola = meusDados.vinculo_atual.instituicao.uuid;
-    if (!values.uuid) {
-      const response = await criarInversaoDeDiaDeCardapio(values);
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Inversão de dia de Cardápio salvo com sucesso!");
-          refresh(form);
-        }
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const { resposta, statusEsperado, mensagem } = await salvarInversao(values);
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
+    }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(resposta.data.uuid, form);
     } else {
-      const response = await atualizarInversaoDeDiaDeCardapio(
-        values.uuid,
-        values,
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Inversão de dia de Cardápio atualizado com sucesso!");
-          refresh(form);
-        }
-      } else {
-        toastError(getError(response.data));
-      }
+      toastSuccess(mensagem);
+      refresh(form);
     }
   };
 

@@ -12,3 +12,10 @@ export interface RegistrarNovaOcorrenciaFormInterface {
   ocorrencias: Array<OcorrenciaFormInterface>;
   solicitacao_medicao_inicial: string;
 }
+
+export interface AtualizarOcorrenciaFormInterface {
+  tipo_ocorrencia: string;
+  grupo: number;
+  data: string;
+  ocorrencias: Array<OcorrenciaFormInterface>;
+}

@@ -131,6 +131,7 @@ export const DadosEmpresa = ({ ehDistribuidor }) => {
               placeholder="Digite o CNPJ da Empresa"
               required
               validate={composeValidators(required, tamanhoCnpjMascara)}
+              dataTestId="cnpj-input"
             />
           </div>
         </div>

@@ -27,7 +27,7 @@ export default ({
 }) => {
   const handleInput = (e) => {
     e.target.value = apenasNumeros
-      ? e.target.value.replace(/\D/g, "")
+      ? e.target.value.replaceAll(/\D/g, "")
       : e.target.value;
 
     e.target.value = proibeLetras

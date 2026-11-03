@@ -1,8 +1,11 @@
 import {
+  agruparRefeicaoESobremesa,
   backgroundLabelPeriodo,
   formatarPayload,
+  normalizarTiposAlimentacao,
   validaQuantidadeFaixaCEI,
 } from "src/components/AlteracaoDeCardapioCEMEI/helpers";
+import { REFEICAO_E_SOBREMESA } from "src/components/AlteracaoDeCardapio/Escola/helper";
 
 describe("helpers - backgroundLabelPeriodo", () => {
   it("aplica cor de fundo e borda por período", () => {
@@ -127,5 +130,103 @@ describe("helpers - formatarPayload", () => {
       payload.substituicoes_cemei_cei_periodo_escolar[0].tipos_alimentacao_de,
     ).toEqual(["ta"]);
     expect(payload.substituicoes_cemei_emei_periodo_escolar).toHaveLength(0);
+  });
+
+  it("normaliza os tipos do CEI e EMEI como arrays", () => {
+    const meusDados = {
+      vinculo_atual: { instituicao: { uuid: "escola-uuid" } },
+    };
+    const vinculos = [
+      {
+        tipo_unidade_escolar: { iniciais: "EMEI" },
+        periodo_escolar: { uuid: "p1" },
+        tipos_alimentacao: [
+          { nome: "Refeição", uuid: "uuid-refeicao" },
+          { nome: "Sobremesa", uuid: "uuid-sobremesa" },
+        ],
+      },
+    ];
+    const values = {
+      motivo: "motivo-uuid",
+      alunos_cei_e_ou_emei: "EMEI",
+      substituicoes: [
+        {
+          checked: true,
+          periodo_uuid: "p1",
+          emei: {
+            tipos_alimentacao_de: "uuid-refeicao",
+            tipos_alimentacao_para: REFEICAO_E_SOBREMESA,
+            quantidade_alunos: 1,
+          },
+        },
+      ],
+    };
+
+    const payload = formatarPayload(values, meusDados, vinculos);
+
+    expect(
+      payload.substituicoes_cemei_emei_periodo_escolar[0].tipos_alimentacao_de,
+    ).toEqual(["uuid-refeicao"]);
+    expect(
+      payload.substituicoes_cemei_emei_periodo_escolar[0]
+        .tipos_alimentacao_para,
+    ).toEqual(["uuid-refeicao", "uuid-sobremesa"]);
+  });
+});
+
+describe("helpers - agruparRefeicaoESobremesa", () => {
+  it("substitui Sobremesa por Refeição e Sobremesa quando há ambos", () => {
+    const opcoes = agruparRefeicaoESobremesa([
+      { nome: "Refeição", uuid: "uuid-refeicao" },
+      { nome: "Sobremesa", uuid: "uuid-sobremesa" },
+    ]);
+    expect(opcoes.map((opcao) => opcao.nome)).toEqual([
+      "Refeição",
+      "Refeição e Sobremesa",
+    ]);
+  });
+
+  it("não altera a lista quando falta Refeição ou Sobremesa", () => {
+    const opcoes = agruparRefeicaoESobremesa([
+      { nome: "Lanche", uuid: "uuid-lanche" },
+    ]);
+    expect(opcoes).toHaveLength(1);
+  });
+});
+
+describe("helpers - normalizarTiposAlimentacao", () => {
+  const vinculos = [
+    {
+      tipo_unidade_escolar: { iniciais: "EMEI" },
+      periodo_escolar: { uuid: "p1" },
+      tipos_alimentacao: [
+        { nome: "Refeição", uuid: "uuid-refeicao" },
+        { nome: "Sobremesa", uuid: "uuid-sobremesa" },
+      ],
+    },
+  ];
+
+  it("retorna undefined quando não há seleção", () => {
+    expect(normalizarTiposAlimentacao(undefined, vinculos, "EMEI", "p1")).toBe(
+      undefined,
+    );
+  });
+
+  it("envolve um uuid simples em array", () => {
+    expect(
+      normalizarTiposAlimentacao("uuid-lanche", vinculos, "EMEI", "p1"),
+    ).toEqual(["uuid-lanche"]);
+  });
+
+  it("expande Refeição e Sobremesa para os uuids correspondentes", () => {
+    expect(
+      normalizarTiposAlimentacao(REFEICAO_E_SOBREMESA, vinculos, "EMEI", "p1"),
+    ).toEqual(["uuid-refeicao", "uuid-sobremesa"]);
+  });
+
+  it("mantém arrays existentes", () => {
+    expect(
+      normalizarTiposAlimentacao(["a", "b"], vinculos, "EMEI", "p1"),
+    ).toEqual(["a", "b"]);
   });
 });

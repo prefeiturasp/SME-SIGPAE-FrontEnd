@@ -231,6 +231,118 @@ export const AcompanhamentoDeLancamentos = () => {
     }
   };
 
+  const montaParamsComFiltros = (
+    params,
+    mesAnoFiltro,
+    recreioNasFeriasFiltro,
+  ) => {
+    let paramsComFiltros = params;
+    if (diretoriaRegional && mesAnoFiltro)
+      paramsComFiltros = {
+        ...paramsComFiltros,
+        dre: diretoriaRegional,
+        mes_ano: mesAnoFiltro,
+      };
+    else if (mesAnoFiltro) {
+      paramsComFiltros = {
+        ...paramsComFiltros,
+        mes_ano: mesAnoFiltro,
+      };
+    }
+
+    if (recreioNasFeriasFiltro) {
+      paramsComFiltros = {
+        ...paramsComFiltros,
+        recreio_nas_ferias: recreioNasFeriasFiltro,
+      };
+    } else {
+      delete paramsComFiltros.recreio_nas_ferias;
+    }
+
+    if (!["true", "false"].includes(paramsComFiltros.ocorrencias))
+      delete paramsComFiltros.ocorrencias;
+
+    return paramsComFiltros;
+  };
+
+  const deveCarregarDashboard = () =>
+    !dadosDashboard ||
+    mudancaDre ||
+    mudancaMesAno ||
+    (diretoriaRegional && mesAno) ||
+    (usuarioEhDRE() && mesAno);
+
+  const deveExibirTotalizadores = () =>
+    (!usuarioEhMedicao() &&
+      !usuarioEhCODAENutriManifestacao() &&
+      !usuarioEhQualquerCODAE() &&
+      !usuarioEhDinutreDiretoria() &&
+      !usuarioEhCODAEGabinete()) ||
+    (diretoriaRegional && mesAno);
+
+  const filtraDashboardResultsPorPerfil = (dashboardResults) => {
+    let NovoDashboardResults = [...dashboardResults];
+
+    if (
+      usuarioEhMedicao() ||
+      usuarioEhCODAENutriManifestacao() ||
+      usuarioEhQualquerCODAE() ||
+      usuarioEhDinutreDiretoria() ||
+      usuarioEhCODAEGabinete()
+    ) {
+      NovoDashboardResults = NovoDashboardResults.filter(
+        (medicoes) => !STATUS_RELACAO_DRE_UE.includes(medicoes.status),
+      );
+    }
+
+    if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+      NovoDashboardResults = NovoDashboardResults.filter(
+        (medicoes) => medicoes.status !== "TODOS_OS_LANCAMENTOS",
+      );
+    }
+
+    return NovoDashboardResults;
+  };
+
+  const processaTotalizadoresDashboard = (responseDre) => {
+    if (responseDre.status !== HTTP_STATUS.OK) {
+      setErroAPI(
+        "Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde.",
+      );
+      return;
+    }
+    if (deveExibirTotalizadores()) {
+      setDadosDashboard(
+        filtraDashboardResultsPorPerfil(responseDre.data.results),
+      );
+    }
+  };
+
+  const carregaDadosDashboard = async (
+    mesAnoFiltro,
+    recreioNasFeriasFiltro,
+  ) => {
+    if (!deveCarregarDashboard()) return;
+
+    const filtrosDashboard = {
+      mes_ano: mesAnoFiltro,
+    };
+
+    if (diretoriaRegional) {
+      filtrosDashboard.dre = diretoriaRegional;
+    }
+
+    if (recreioNasFeriasFiltro) {
+      filtrosDashboard.recreio_nas_ferias = recreioNasFeriasFiltro;
+    }
+
+    await getTotalUnidadesDREAsync(mesAnoFiltro, recreioNasFeriasFiltro);
+
+    const responseDre =
+      await getDashboardMedicaoInicialTotalizadores(filtrosDashboard);
+    processaTotalizadoresDashboard(responseDre);
+  };
+
   const getDashboardMedicaoInicialAsync = async (params = {}) => {
     if (Object.keys(params).length === 0) {
       params = initialValues;
@@ -243,92 +355,13 @@ export const AcompanhamentoDeLancamentos = () => {
       params.recreio_nas_ferias || recreioDoValor || recreioNasFerias;
 
     setLoadingComFiltros(true);
-    if (diretoriaRegional && mesAnoFiltro)
-      params = {
-        ...params,
-        dre: diretoriaRegional,
-        mes_ano: mesAnoFiltro,
-      };
-    else if (mesAnoFiltro) {
-      params = {
-        ...params,
-        mes_ano: mesAnoFiltro,
-      };
-    }
+    params = montaParamsComFiltros(
+      params,
+      mesAnoFiltro,
+      recreioNasFeriasFiltro,
+    );
 
-    if (recreioNasFeriasFiltro) {
-      params = {
-        ...params,
-        recreio_nas_ferias: recreioNasFeriasFiltro,
-      };
-    } else {
-      delete params.recreio_nas_ferias;
-    }
-
-    if (!["true", "false"].includes(params.ocorrencias))
-      delete params.ocorrencias;
-
-    if (
-      !dadosDashboard ||
-      mudancaDre ||
-      mudancaMesAno ||
-      (diretoriaRegional && mesAno) ||
-      (usuarioEhDRE() && mesAno)
-    ) {
-      const filtrosDashboard = {
-        mes_ano: mesAnoFiltro,
-      };
-
-      if (diretoriaRegional) {
-        filtrosDashboard.dre = diretoriaRegional;
-      }
-
-      if (recreioNasFeriasFiltro) {
-        filtrosDashboard.recreio_nas_ferias = recreioNasFeriasFiltro;
-      }
-
-      await getTotalUnidadesDREAsync(mesAnoFiltro, recreioNasFeriasFiltro);
-
-      const responseDre =
-        await getDashboardMedicaoInicialTotalizadores(filtrosDashboard);
-      if (responseDre.status !== HTTP_STATUS.OK) {
-        setErroAPI(
-          "Erro ao carregados dashboard de medição inicial. Tente novamente mais tarde.",
-        );
-      } else {
-        const dashboardResults = responseDre.data.results;
-        if (
-          (!usuarioEhMedicao() &&
-            !usuarioEhCODAENutriManifestacao() &&
-            !usuarioEhQualquerCODAE() &&
-            !usuarioEhDinutreDiretoria() &&
-            !usuarioEhCODAEGabinete()) ||
-          (diretoriaRegional && mesAno)
-        ) {
-          let NovoDashboardResults = [...dashboardResults];
-
-          if (
-            usuarioEhMedicao() ||
-            usuarioEhCODAENutriManifestacao() ||
-            usuarioEhQualquerCODAE() ||
-            usuarioEhDinutreDiretoria() ||
-            usuarioEhCODAEGabinete()
-          ) {
-            NovoDashboardResults = NovoDashboardResults.filter(
-              (medicoes) => !STATUS_RELACAO_DRE_UE.includes(medicoes.status),
-            );
-          }
-
-          if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-            NovoDashboardResults = NovoDashboardResults.filter(
-              (medicoes) => medicoes.status !== "TODOS_OS_LANCAMENTOS",
-            );
-          }
-
-          setDadosDashboard(NovoDashboardResults);
-        }
-      }
-    }
+    await carregaDadosDashboard(mesAnoFiltro, recreioNasFeriasFiltro);
 
     const response = await getDashboardMedicaoInicialResultados(params);
     if (response.status === HTTP_STATUS.OK) {

@@ -70,6 +70,7 @@ import AlterarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/Alter
 import AnalisarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AnalisarFichaTecnicaPage";
 import AtualizarFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/AtualizarFichaTecnicaPage";
 import CadastroFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CadastroFichaTecnicaPage";
+import CriarCopiaFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/CriarCopiaFichaTecnicaPage";
 import DetalharFichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/DetalharFichaTecnicaPage";
 import FichaTecnicaPage from "src/pages/PreRecebimento/FichaTecnica/FichaTecnicaPage";
 import LayoutEmbalagemPage from "src/pages/PreRecebimento/LayoutEmbalagemPage";
@@ -282,6 +283,11 @@ export const rotasPreRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.PRE_RECEBIMENTO}/${constants.CADASTRAR_FICHA_TECNICA}`,
     component: CadastroFichaTecnicaPage,
+    tipoUsuario: usuarioEhEmpresaFornecedor(),
+  },
+  {
+    path: `/${constants.PRE_RECEBIMENTO}/${constants.CRIAR_COPIA_FICHA_TECNICA}`,
+    component: CriarCopiaFichaTecnicaPage,
     tipoUsuario: usuarioEhEmpresaFornecedor(),
   },
   {

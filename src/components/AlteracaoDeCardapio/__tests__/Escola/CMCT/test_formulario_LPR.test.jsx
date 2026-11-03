@@ -1,9 +1,7 @@
 import "@testing-library/jest-dom";
 import {
   act,
-  findByText,
   fireEvent,
-  getByText,
   render,
   screen,
   waitFor,
@@ -133,18 +131,13 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CMCT", () => {
     });
   };
 
-  const keyDownEvent = {
-    key: "ArrowDown",
-  };
-
   const selectOption = async (container, optionText) => {
-    const placeholder = getByText(container, "Selecione tipos de alimentação");
+    const select = container.querySelector("select");
+    const option = Array.from(select.options).find(
+      (opt) => opt.text === optionText,
+    );
     await act(async () => {
-      fireEvent.keyDown(placeholder, keyDownEvent);
-    });
-    await findByText(container, optionText);
-    await act(async () => {
-      fireEvent.click(getByText(container, optionText));
+      fireEvent.change(select, { target: { value: option.value } });
     });
   };
 

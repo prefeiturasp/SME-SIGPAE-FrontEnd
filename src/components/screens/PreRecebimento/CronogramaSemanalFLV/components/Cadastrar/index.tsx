@@ -85,6 +85,15 @@ interface CadastrarCronogramaSemanalProps {
   uuid?: string;
 }
 
+const criarHandlerRemoverProgramacao = (fields, index) => () => {
+  fields.remove(index);
+};
+
+const criarHandlerLimparPeriodoProgramacao = (form, name) => () => {
+  form.change(`${name}.data_inicio` as keyof FormValues, "");
+  form.change(`${name}.data_fim` as keyof FormValues, "");
+};
+
 const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
   uuid,
 }) => {
@@ -717,7 +726,10 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                             style={BUTTON_STYLE.GREEN_OUTLINE}
                                             icon="fas fa-trash"
                                             className="float-end ms-3"
-                                            onClick={() => fields.remove(index)}
+                                            onClick={criarHandlerRemoverProgramacao(
+                                              fields,
+                                              index,
+                                            )}
                                             tooltipExterno="Remover Programação"
                                           />
                                         </div>
@@ -737,16 +749,10 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
                                         label="Mês Programado"
                                         required
                                         validate={required}
-                                        onChange={() => {
-                                          form.change(
-                                            `${name}.data_inicio` as keyof FormValues,
-                                            "",
-                                          );
-                                          form.change(
-                                            `${name}.data_fim` as keyof FormValues,
-                                            "",
-                                          );
-                                        }}
+                                        onChange={criarHandlerLimparPeriodoProgramacao(
+                                          form,
+                                          name,
+                                        )}
                                       />
                                     </div>
 

@@ -43,53 +43,51 @@ export const DataInclusaoNormal = ({ ...props }) => {
   } = props;
 
   return (
-    <>
-      <div className="col-6">
-        <div className="row">
-          <div className={`col-${index > 0 ? "9" : "12"}`}>
-            <Field
-              component={InputComData}
-              name={`${name}.data`}
-              minDate={proximosDoisDiasUteis}
-              maxDate={fimDoCalendario()}
-              label="Dia"
-              required
-              usarDirty
-              validate={composeValidators(
-                required,
-                dataDuplicada(nameFieldArray || "inclusoes"),
-              )}
-              inputOnChange={(value) => {
-                if (value) {
-                  onDataChanged(value);
-                }
-              }}
-              dataTestId={`data-motivo-normal-${index}`}
+    <div className="col-6">
+      <div className="row">
+        <div className={`col-${index > 0 ? "9" : "12"}`}>
+          <Field
+            component={InputComData}
+            name={`${name}.data`}
+            minDate={proximosDoisDiasUteis}
+            maxDate={fimDoCalendario()}
+            label="Dia"
+            required
+            usarDirty
+            validate={composeValidators(
+              required,
+              dataDuplicada(nameFieldArray || "inclusoes"),
+            )}
+            inputOnChange={(value) => {
+              if (value) {
+                onDataChanged(value);
+              }
+            }}
+            dataTestId={`data-motivo-normal-${index}`}
+          />
+        </div>
+        {index > 0 && (
+          <div className="col-3">
+            <Botao
+              texto="Remover dia"
+              type={BUTTON_TYPE.BUTTON}
+              onClick={() =>
+                form.change(
+                  nameFieldArray || "inclusoes",
+                  values[nameFieldArray || "inclusoes"].filter(
+                    (_, i) => i !== index,
+                  ),
+                )
+              }
+              style={BUTTON_STYLE.BLUE_OUTLINE}
+              icon={BUTTON_ICON.TRASH}
+              className="botao-remover-dia"
+              dataTestId={`botao-remover-dia-${index}`}
             />
           </div>
-          {index > 0 && (
-            <div className="col-3">
-              <Botao
-                texto="Remover dia"
-                type={BUTTON_TYPE.BUTTON}
-                onClick={() =>
-                  form.change(
-                    nameFieldArray || "inclusoes",
-                    values[nameFieldArray || "inclusoes"].filter(
-                      (_, i) => i !== index,
-                    ),
-                  )
-                }
-                style={BUTTON_STYLE.BLUE_OUTLINE}
-                icon={BUTTON_ICON.TRASH}
-                className="botao-remover-dia"
-                dataTestId={`botao-remover-dia-${index}`}
-              />
-            </div>
-          )}
-        </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 

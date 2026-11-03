@@ -166,6 +166,11 @@ export default () => {
   const voltarPagina = () =>
     navigate(`/${PRE_RECEBIMENTO}/${LAYOUT_EMBALAGEM}`);
 
+  const buscarFichaPorValor = (value) => {
+    const numero = value?.split("-")[0].trim();
+    return fichasTecnicas.find((f) => f.numero === numero);
+  };
+
   useEffect(() => {
     setCarregando(true);
 
@@ -215,10 +220,7 @@ export default () => {
                           showSearch
                           onChange={(value) => {
                             input.onChange(value);
-                            const numero = value?.split("-")[0].trim();
-                            const ficha = fichasTecnicas.find(
-                              (f) => f.numero === numero,
-                            );
+                            const ficha = buscarFichaPorValor(value);
                             values.ficha_tecnica = value;
                             fichaTecnicaSelecionada.current = ficha?.uuid;
                             form.change(

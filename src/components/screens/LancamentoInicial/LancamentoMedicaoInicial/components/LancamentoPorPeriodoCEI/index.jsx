@@ -50,6 +50,54 @@ import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";
 import { CardLancamentoCEI } from "./CardLancamentoCEI";
 import { ehEmeiDaCemei, tiposAlimentacaoRecreio } from "./helpers";
 
+const temAlunosNoPeriodo = (periodoComAlunos, periodo, periodoNormalizado) =>
+  periodoComAlunos.some(
+    (p) => p.nome === periodo || p.nome === periodoNormalizado,
+  );
+
+const agruparPeriodosComAlunos = (matriculados) =>
+  matriculados.reduce((acc, item) => {
+    const jaAdicionado = acc.find(
+      (p) =>
+        p.nome === item.periodo_escolar.nome &&
+        p.cei_ou_emei === item.cei_ou_emei,
+    );
+
+    if (item.quantidade_alunos > 0 && !jaAdicionado) {
+      acc.push({
+        nome: item.periodo_escolar.nome,
+        posicao: item.periodo_escolar.posicao,
+        cei_ou_emei: item.cei_ou_emei,
+        quantidade_alunos: item.quantidade_alunos,
+      });
+    }
+    return acc;
+  }, []);
+
+const filtrarPeriodosCemei = (periodos, periodoComAlunos) =>
+  periodos.filter((periodo) => {
+    if (periodo.includes("PARCIAL")) return true;
+
+    if (periodo.includes("INTEGRAL")) {
+      const integralComAlunos = periodoComAlunos.filter(
+        (p) => p.nome === "INTEGRAL" && p.quantidade_alunos > 0,
+      );
+
+      if (periodo === "Infantil INTEGRAL") {
+        return integralComAlunos.some((p) => p.cei_ou_emei === "EMEI");
+      }
+
+      if (periodo === "INTEGRAL") {
+        return integralComAlunos.some((p) => p.cei_ou_emei === "CEI");
+      }
+
+      return false;
+    }
+
+    const periodoNormalizado = periodo.replace(/^Infantil\s+/i, "");
+    return temAlunosNoPeriodo(periodoComAlunos, periodo, periodoNormalizado);
+  });
+
 export const LancamentoPorPeriodoCEI = ({
   mes,
   ano,
@@ -122,11 +170,6 @@ export const LancamentoPorPeriodoCEI = ({
     }
   };
 
-  const temAlunosNoPeriodo = (periodoComAlunos, periodo, periodoNormalizado) =>
-    periodoComAlunos.some(
-      (p) => p.nome === periodo || p.nome === periodoNormalizado,
-    );
-
   useEffect(() => {
     const fetchPeriodoMensal = async () => {
       const params_matriculados = {
@@ -138,25 +181,8 @@ export const LancamentoPorPeriodoCEI = ({
 
       const response_matriculados =
         await getMatriculadosPeriodo(params_matriculados);
-      const periodoComAlunos = response_matriculados.data.reduce(
-        (acc, item) => {
-          const jaAdicionado = acc.find(
-            (p) =>
-              p.nome === item.periodo_escolar.nome &&
-              p.cei_ou_emei === item.cei_ou_emei,
-          );
-
-          if (item.quantidade_alunos > 0 && !jaAdicionado) {
-            acc.push({
-              nome: item.periodo_escolar.nome,
-              posicao: item.periodo_escolar.posicao,
-              cei_ou_emei: item.cei_ou_emei,
-              quantidade_alunos: item.quantidade_alunos,
-            });
-          }
-          return acc;
-        },
-        [],
+      const periodoComAlunos = agruparPeriodosComAlunos(
+        response_matriculados.data,
       );
 
       let periodos = [
@@ -181,32 +207,7 @@ export const LancamentoPorPeriodoCEI = ({
           .filter((periodo) => !["MANHA", "TARDE"].includes(periodo))
           .concat(periodosEscolaCemeiComAlunosEmei);
 
-        periodos = periodos.filter((periodo) => {
-          if (periodo.includes("PARCIAL")) return true;
-
-          if (periodo.includes("INTEGRAL")) {
-            const integralComAlunos = periodoComAlunos.filter(
-              (p) => p.nome === "INTEGRAL" && p.quantidade_alunos > 0,
-            );
-
-            if (periodo === "Infantil INTEGRAL") {
-              return integralComAlunos.some((p) => p.cei_ou_emei === "EMEI");
-            }
-
-            if (periodo === "INTEGRAL") {
-              return integralComAlunos.some((p) => p.cei_ou_emei === "CEI");
-            }
-
-            return false;
-          }
-
-          const periodoNormalizado = periodo.replace(/^Infantil\s+/i, "");
-          return temAlunosNoPeriodo(
-            periodoComAlunos,
-            periodo,
-            periodoNormalizado,
-          );
-        });
+        periodos = filtrarPeriodosCemei(periodos, periodoComAlunos);
       }
 
       setPeriodosComAlunos(periodos, periodosEscolaCemeiComAlunosEmei);
@@ -546,6 +547,9 @@ export const LancamentoPorPeriodoCEI = ({
               <BlocoOcorrencias
                 comOcorrencias={comOcorrencias}
                 setComOcorrencias={setComOcorrencias}
+                desabilitarAvaliacao={Boolean(
+                  solicitacaoMedicaoInicial?.com_ocorrencias,
+                )}
                 errosAoSalvar={errosAoSalvar}
                 setErrosAoSalvar={setErrosAoSalvar}
                 mes={mes}

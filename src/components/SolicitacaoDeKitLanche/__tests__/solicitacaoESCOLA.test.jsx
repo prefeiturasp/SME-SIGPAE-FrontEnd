@@ -182,7 +182,7 @@ describe("Teste de Solicitação de Kit Lanche", () => {
       within(cardSolicitacao).getAllByText(/Local do passeio/i),
     ).toHaveLength(1);
     expect(
-      within(cardSolicitacao).getAllByText(/Número de alunos/i),
+      within(cardSolicitacao).getAllByText(/^Número de alunos$/i),
     ).toHaveLength(1);
     expect(
       within(cardSolicitacao).getAllByText("Evento/Atividade"),
@@ -244,6 +244,28 @@ describe("Teste de Solicitação de Kit Lanche", () => {
 
     await usuario.clear(campoInput);
     expect(campoInput).toHaveValue("");
+  });
+
+  it("Testa inserção de vírgula ou sinais no número de alunos", async () => {
+    const usuario = userEvent.setup();
+    const campoInput = screen.getByTestId("numero-alunos");
+    expect(campoInput).toHaveValue("");
+
+    // ponto separador: 1.167 deve virar 1167
+    await usuario.type(campoInput, "1.167");
+    expect(campoInput).toHaveValue("1167");
+
+    await usuario.clear(campoInput);
+
+    // vírgula separadora: 1,167 deve virar 1167
+    await usuario.type(campoInput, "1,167");
+    expect(campoInput).toHaveValue("1167");
+
+    await usuario.clear(campoInput);
+
+    // sinal negativo e letras são descartados
+    await usuario.type(campoInput, "-12a3");
+    expect(campoInput).toHaveValue("123");
   });
 
   it("Testa o input número de alunos quando número de alunos for maior que o permitido", async () => {

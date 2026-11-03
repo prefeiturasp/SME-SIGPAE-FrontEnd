@@ -16,9 +16,34 @@ export const buildPayload = (values: any) => {
       lote: u.loteUuid,
       unidade_educacional: u.unidadeEducacionalUuid,
       tipos_alimentacao: u.tiposAlimentacaoParticipantesUuids || [],
+      num_participantes: Number(u.num_participantes),
     })),
   };
 };
+
+export const mapApiToForm = (data: any) => ({
+  periodo_realizacao_de: formatarData(data?.data_inicial),
+  periodo_realizacao_ate: formatarData(data?.data_final),
+  recorrencias: {
+    dias_semana: data?.dias_semana || [],
+  },
+  unidades_participantes: (data?.unidades_participantes || []).map(
+    (u: any) => ({
+      id: u.uuid,
+      loteUuid: u.lote,
+      unidadeEducacionalUuid: u.unidade_educacional,
+      tiposAlimentacaoParticipantesUuids: (u.tipos_alimentacao || []).map(
+        (t: any) => t.uuid,
+      ),
+      dreLoteNome: u.lote_nome,
+      unidadeEducacional: u.unidade_educacional_nome,
+      alimentacaoParticipantes: (u.tipos_alimentacao || [])
+        .map((t: any) => t.nome)
+        .join(", "),
+      num_participantes: u.num_participantes ?? undefined,
+    }),
+  ),
+});
 
 export const resetFormState = (form) => {
   form.setConfig("keepDirtyOnReinitialize", false);
@@ -51,3 +76,47 @@ export const validateForm = (values: any) => {
     ? { unidades_participantes: unidadesErrors }
     : {};
 };
+
+export const isPeriodoEditavel = (
+  dataInicioStr: string,
+  dataFimStr: string,
+) => {
+  const parseDate = (str: string) => {
+    if (!str) return null;
+    const [dia, mes, ano] = str.split("/").map(Number);
+    return new Date(ano, mes - 1, dia);
+  };
+
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  const dataInicio = parseDate(dataInicioStr);
+  const dataFim = parseDate(dataFimStr);
+
+  if (!dataInicio || !dataFim) return false;
+
+  return hoje <= dataFim;
+};
+
+const DIAS_SEMANA: Record<string, string> = {
+  "0": "Segunda-feira",
+  "1": "Terça-feira",
+  "2": "Quarta-feira",
+  "3": "Quinta-feira",
+  "4": "Sexta-feira",
+  "5": "Sábado",
+  "6": "Domingo",
+};
+
+export const formatarDias = (dias: string[] = []) =>
+  [...dias]
+    .sort((a, b) => Number(a) - Number(b))
+    .map((d) => DIAS_SEMANA[String(d)] ?? d)
+    .join(", ");
+
+export const contarUnidades = (escolaAberta: any) =>
+  new Set(
+    (escolaAberta.unidades_participantes || []).map(
+      (u: any) => u.unidade_educacional,
+    ),
+  ).size;

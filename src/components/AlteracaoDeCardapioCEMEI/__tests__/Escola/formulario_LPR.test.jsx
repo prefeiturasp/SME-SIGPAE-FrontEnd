@@ -5,7 +5,6 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -144,30 +143,23 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
     });
   };
 
-  const selecionaTipoAlimentacaoDeLanche = () => {
-    const selectAlterarAlimentacaoDeCEI = screen.getByTestId(
-      "select-alterar-alimentacao-de-CEI",
+  const selecionaTipoAlimentacao = (testId, nomeOpcao) => {
+    const select = screen.getByTestId(testId).querySelector("select");
+    const option = Array.from(select.options).find(
+      (opt) => opt.text === nomeOpcao,
     );
-    const selectControlDe = within(selectAlterarAlimentacaoDeCEI).getByRole(
-      "combobox",
-    );
-    fireEvent.mouseDown(selectControlDe);
+    fireEvent.change(select, { target: { value: option.value } });
+  };
 
-    const optionDe = screen.getByText("Lanche");
-    fireEvent.click(optionDe);
+  const selecionaTipoAlimentacaoDeLanche = () => {
+    selecionaTipoAlimentacao("select-alterar-alimentacao-de-CEI", "Lanche");
   };
 
   const selecionaTipoAlimentacaoParaRefeicaoDaTarde = () => {
-    const selectAlterarAlimentacaoParaCEI = screen.getByTestId(
+    selecionaTipoAlimentacao(
       "select-alterar-alimentacao-para-CEI",
+      "Refeição da tarde",
     );
-    const selectControlPara = within(selectAlterarAlimentacaoParaCEI).getByRole(
-      "combobox",
-    );
-    fireEvent.mouseDown(selectControlPara);
-
-    const optionPara = screen.getByText("Refeição da tarde");
-    fireEvent.click(optionPara);
   };
 
   it("Testa Alteração - Motivo LPR", async () => {
@@ -212,27 +204,11 @@ describe("Teste Formulário Alteração de Cardápio - LPR - CEMEI", () => {
 
     expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
 
-    const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-de-EMEI",
-    );
-    const selectControlDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
-      "combobox",
-    );
-    fireEvent.mouseDown(selectControlDe);
-
-    const optionDe = screen.getAllByText("Lanche")[1];
-    fireEvent.click(optionDe);
-
-    const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
+    selecionaTipoAlimentacao("select-alterar-alimentacao-de-EMEI", "Lanche");
+    selecionaTipoAlimentacao(
       "select-alterar-alimentacao-para-EMEI",
+      "Sobremesa",
     );
-    const selectControlPara = within(
-      selectAlterarAlimentacaoParaEMEI,
-    ).getByRole("combobox");
-    fireEvent.mouseDown(selectControlPara);
-
-    const optionPara = screen.getByText("Sobremesa");
-    fireEvent.click(optionPara);
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
       `substituicoes[0][emei][quantidade_alunos]`,

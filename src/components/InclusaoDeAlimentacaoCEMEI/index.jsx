@@ -292,41 +292,54 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     }
   };
 
+  const salvarInclusaoNormal = async (dados, vinculosAlimentacao) => {
+    if (!dados.uuid_) {
+      const resposta = await createInclusaoAlimentacaoCEMEI(
+        formataInclusaoCEMEI(dados, vinculosAlimentacao),
+      );
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.CREATED,
+        mensagem: "Solicitação Rascunho criada com sucesso!",
+      };
+    }
+
+    const resposta = await updateInclusaoAlimentacaoCEMEI(
+      dados.uuid_,
+      formataInclusaoCEMEI(dados, vinculosAlimentacao),
+    );
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.OK,
+      mensagem: "Rascunho atualizado com sucesso",
+    };
+  };
+
   const fluxoInclusaoNormal = async (values, form) => {
     let vinculosAlimentacao = vinculos;
     if (motivoEspecifico) {
       vinculosAlimentacao = vinculosMotivoEspecifico;
     }
-    if (!values.uuid_) {
-      const response = await createInclusaoAlimentacaoCEMEI(
-        formataInclusaoCEMEI(values, vinculosAlimentacao),
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Solicitação Rascunho criada com sucesso!");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
-    } else {
-      const response = await updateInclusaoAlimentacaoCEMEI(
-        values.uuid_,
-        formataInclusaoCEMEI(values, vinculosAlimentacao),
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(values.uuid_, form);
-        } else {
-          toastSuccess("Rascunho atualizado com sucesso");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const { resposta, statusEsperado, mensagem } = await salvarInclusaoNormal(
+      values,
+      vinculosAlimentacao,
+    );
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
     }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(values.uuid_ || resposta.data.uuid, form);
+    } else {
+      toastSuccess(mensagem);
+    }
+
+    refresh(form);
   };
 
   const fluxoInclusaoContinua = async (values, form) => {
@@ -417,6 +430,36 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
         .find((motivo) => motivo.uuid === values.inclusoes[0].motivo)
         ?.nome.includes("Específico")
     );
+  };
+
+  const obterOpcoesMotivo = (values) => {
+    if (values.inclusoes.length <= 1) {
+      return agregarDefault(motivosSimples).concat(motivosContinuos);
+    }
+    if (motivoEspecifico) {
+      return agregarDefault(motivosSimples).filter(
+        (motivo) =>
+          motivo.nome.includes("Selecione") ||
+          motivo.nome.includes("Específico"),
+      );
+    }
+    return agregarDefault(motivosSimples).filter(
+      (motivo) => !motivo.nome.includes("Específico"),
+    );
+  };
+
+  const criarOnChangeMotivo = (form) => (e) => {
+    const value = e.target.value;
+    const values_ = form.getState().values;
+    if (value && motivosSimples.find((motivo) => motivo.uuid === value)) {
+      form.change("quantidades_periodo", undefined);
+      checaMotivoInclusaoEspecifico(values_, form);
+      form.change("reload", !values_.reload);
+    }
+    if (value && motivosContinuos.find((motivo) => motivo.uuid === value)) {
+      form.change("quantidades_periodo", undefined);
+      form.change("reload", !values_.reload);
+    }
   };
 
   const checaMotivoInclusaoEspecifico = (values, form) => {
@@ -512,48 +555,11 @@ export const InclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                               dataTestId={`select-motivo-${index}`}
                               name={`${name}.motivo`}
                               label="Motivo"
-                              options={
-                                values.inclusoes.length > 1
-                                  ? motivoEspecifico
-                                    ? agregarDefault(motivosSimples).filter(
-                                        (motivo) =>
-                                          motivo.nome.includes("Selecione") ||
-                                          motivo.nome.includes("Específico"),
-                                      )
-                                    : agregarDefault(motivosSimples).filter(
-                                        (motivo) =>
-                                          !motivo.nome.includes("Específico"),
-                                      )
-                                  : agregarDefault(motivosSimples).concat(
-                                      motivosContinuos,
-                                    )
-                              }
+                              options={obterOpcoesMotivo(values)}
                               required
                               validate={required}
                               naoDesabilitarPrimeiraOpcao
-                              onChangeEffect={async (e) => {
-                                const value = e.target.value;
-                                const values_ = form.getState().values;
-                                if (
-                                  value &&
-                                  motivosSimples.find(
-                                    (motivo) => motivo.uuid === value,
-                                  )
-                                ) {
-                                  form.change("quantidades_periodo", undefined);
-                                  checaMotivoInclusaoEspecifico(values_, form);
-                                  form.change("reload", !values_.reload);
-                                }
-                                if (
-                                  value &&
-                                  motivosContinuos.find(
-                                    (motivo) => motivo.uuid === value,
-                                  )
-                                ) {
-                                  form.change("quantidades_periodo", undefined);
-                                  form.change("reload", !values_.reload);
-                                }
-                              }}
+                              onChangeEffect={criarOnChangeMotivo(form)}
                             />
                           </div>
                           {motivoSimplesSelecionado(values) && (

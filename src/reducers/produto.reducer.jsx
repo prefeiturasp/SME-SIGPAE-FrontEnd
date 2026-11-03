@@ -1,41 +1,36 @@
 const LOAD_PRODUTO = "LOAD_PRODUTO";
 
+const formatarEspecificacoes = (especificacoes) => {
+  if (!especificacoes || especificacoes.length === 0) {
+    return [{}];
+  }
+  return especificacoes.map((especificacao) => {
+    return {
+      volume: especificacao.volume,
+      unidade_de_medida: especificacao.unidade_de_medida.uuid,
+      embalagem_produto: especificacao.embalagem_produto.uuid,
+    };
+  });
+};
+
+const formatarDadosDoProduto = (data) => {
+  if (data === null) {
+    return;
+  }
+  data.eh_para_alunos_com_dieta = data.eh_para_alunos_com_dieta ? "1" : "0";
+  data.tem_aditivos_alergenicos = data.tem_aditivos_alergenicos ? "1" : "0";
+  if (![null, undefined].includes(data.tem_gluten)) {
+    data.tem_gluten = data.tem_gluten ? "1" : "0";
+  }
+  data.marca = data.marca !== null ? data.marca.nome : "";
+  data.fabricante = data.fabricante !== null ? data.fabricante.nome : "";
+  data.especificacoes = formatarEspecificacoes(data.especificacoes);
+};
+
 export default function reducer(state = {}, action) {
   switch (action.type) {
     case LOAD_PRODUTO:
-      if (action.data !== null) {
-        action.data.eh_para_alunos_com_dieta = action.data
-          .eh_para_alunos_com_dieta
-          ? "1"
-          : "0";
-        action.data.tem_aditivos_alergenicos = action.data
-          .tem_aditivos_alergenicos
-          ? "1"
-          : "0";
-        if (![null, undefined].includes(action.data.tem_gluten)) {
-          action.data.tem_gluten = action.data.tem_gluten ? "1" : "0";
-        }
-        action.data.marca =
-          action.data.marca !== null ? action.data.marca.nome : "";
-        action.data.fabricante =
-          action.data.fabricante !== null ? action.data.fabricante.nome : "";
-        if (
-          action.data.especificacoes &&
-          action.data.especificacoes.length > 0
-        ) {
-          action.data.especificacoes = action.data.especificacoes.map(
-            (especificacao) => {
-              return {
-                volume: especificacao.volume,
-                unidade_de_medida: especificacao.unidade_de_medida.uuid,
-                embalagem_produto: especificacao.embalagem_produto.uuid,
-              };
-            }
-          );
-        } else {
-          action.data.especificacoes = [{}];
-        }
-      }
+      formatarDadosDoProduto(action.data);
       return {
         data: {
           ...action.data,

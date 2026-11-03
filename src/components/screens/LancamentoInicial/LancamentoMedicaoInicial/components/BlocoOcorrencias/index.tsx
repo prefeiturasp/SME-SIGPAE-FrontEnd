@@ -20,9 +20,10 @@ import { EscolaSimplesInterface } from "src/interfaces/escola.interface";
 type BlocoOcorrenciasType = {
   comOcorrencias: string;
   setComOcorrencias: (_comOcorrencias: string) => void;
+  desabilitarAvaliacao?: boolean;
   errosAoSalvar: Array<{ erro: string; periodo_escolar: string }>;
   setErrosAoSalvar: (
-    _errosAoSalvar: Array<{ erro: string; periodo_escolar: string }>
+    _errosAoSalvar: Array<{ erro: string; periodo_escolar: string }>,
   ) => void;
   ano: string;
   mes: string;
@@ -34,6 +35,7 @@ export const BlocoOcorrencias = ({ ...props }: BlocoOcorrenciasType) => {
   const {
     comOcorrencias,
     setComOcorrencias,
+    desabilitarAvaliacao,
     errosAoSalvar,
     setErrosAoSalvar,
     ano,
@@ -61,17 +63,19 @@ export const BlocoOcorrencias = ({ ...props }: BlocoOcorrenciasType) => {
           <span className="me-3">Avaliação do Serviço: </span>
           <input
             name="com_ocorrencias"
-            onClick={() => {
+            checked={comOcorrencias === "false"}
+            onChange={() => {
               setComOcorrencias("false");
               setErrosAoSalvar(
                 errosAoSalvar.filter(
-                  (obj) => obj.periodo_escolar !== "OCORRENCIAS"
-                )
+                  (obj) => obj.periodo_escolar !== "OCORRENCIAS",
+                ),
               );
             }}
             type="radio"
             value="false"
             id="false"
+            disabled={desabilitarAvaliacao}
             required
           />
           <label className="ms-1" htmlFor="false">
@@ -80,17 +84,19 @@ export const BlocoOcorrencias = ({ ...props }: BlocoOcorrenciasType) => {
           <input
             name="com_ocorrencias"
             className="ms-3"
-            onClick={() => {
+            checked={comOcorrencias === "true"}
+            onChange={() => {
               setComOcorrencias("true");
               setErrosAoSalvar(
                 errosAoSalvar.filter(
-                  (obj) => obj.periodo_escolar !== "OCORRENCIAS"
-                )
+                  (obj) => obj.periodo_escolar !== "OCORRENCIAS",
+                ),
               );
             }}
             type="radio"
             value="true"
             id="true"
+            disabled={desabilitarAvaliacao}
             required
           />
           <label className="ms-1" htmlFor="true">
@@ -121,7 +127,7 @@ export const BlocoOcorrencias = ({ ...props }: BlocoOcorrenciasType) => {
                       ano,
                       mes,
                       editalUuid: escolaSimples.lote.contratos_do_lote.find(
-                        (contrato) => !contrato.encerrado
+                        (contrato) => !contrato.encerrado,
                       ).edital,
                       solicitacaoMedicaoInicialUuid,
                     }).toString(),

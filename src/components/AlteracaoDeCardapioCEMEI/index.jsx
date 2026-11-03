@@ -34,7 +34,10 @@ import {
   iniciaFluxoAlteracaoAlimentacaoCEMEI,
   updateAlteracaoCardapioCEMEI,
 } from "src/services/alteracaoDeCardapio/escola.service";
-import { formataValues } from "../AlteracaoDeCardapio/Escola/helper";
+import {
+  formataValues,
+  obterTipoAlimentacaoSelecionado,
+} from "../AlteracaoDeCardapio/Escola/helper";
 import { ModalLancheEmergencial } from "./componentes/ModalLancheEmergencial";
 import { Rascunhos } from "./componentes/Rascunhos";
 import { TabelaFaixasCEMEI } from "./componentes/TabelaFaixasCEMEI";
@@ -109,55 +112,53 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     }
   };
 
-  const ehMotivoRPL = (values) => {
-    return (
-      motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE",
-      ) &&
-      motivos.find(
-        (motivo) => motivo.nome.toUpperCase() === "RPL - REFEIÇÃO POR LANCHE",
-      ).uuid === values.motivo
-    );
+  const salvarSolicitacao = async (dados) => {
+    if (uuid) {
+      const resposta = await updateAlteracaoCardapioCEMEI(uuid, dados);
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.OK,
+        mensagem: "Rascunho atualizado com sucesso",
+      };
+    }
+
+    const resposta = await createAlteracaoCardapioCEMEI(dados);
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.CREATED,
+      mensagem: "Solicitação Rascunho criada com sucesso!",
+    };
   };
 
   const onSubmit = async (values, form) => {
-    const values_ = deepCopy(values);
-    const erro = validarSubmit(values_);
+    const dados = deepCopy(values);
+    const erro = validarSubmit(dados);
+
     if (erro) {
       toastError(erro);
       return;
     }
-    const formatedValues = formatarPayload(values_, meusDados);
-    if (!uuid) {
-      const response = await createAlteracaoCardapioCEMEI(
-        formataValues(formatedValues),
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Solicitação Rascunho criada com sucesso!");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
-    } else {
-      const response = await updateAlteracaoCardapioCEMEI(
-        uuid,
-        formataValues(formatedValues),
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(uuid, form);
-        } else {
-          toastSuccess("Rascunho atualizado com sucesso");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const dadosFormatados = formataValues(
+      formatarPayload(dados, meusDados, vinculos),
+    );
+    const { resposta, statusEsperado, mensagem } =
+      await salvarSolicitacao(dadosFormatados);
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
     }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(uuid || resposta.data.uuid, form);
+    } else {
+      toastSuccess(mensagem);
+    }
+
+    refresh(form);
   };
 
   const modificarOpcoesAlimentos = async (motivo) => {
@@ -282,6 +283,21 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
     setSubstitutosEMEI(_substitutosEMEI);
   };
 
+  const montarFaixasEtariasCEI = (subsCEI, periodo, faixasEtarias) => {
+    periodo.CEI.forEach((faixa, faixaIndice) => {
+      faixasEtarias[faixaIndice] = {};
+      const faixaRascunho = subsCEI.faixas_etarias.find(
+        (f) => f.faixa_etaria.__str__ === faixa.faixa,
+      );
+      if (faixaRascunho) {
+        faixasEtarias[faixaIndice] = {
+          faixa_uuid: faixaRascunho.faixa_etaria.uuid,
+          quantidade_alunos: faixaRascunho.quantidade,
+        };
+      }
+    });
+  };
+
   const buildSubstituicoes = async (periodos_, alteracao_) => {
     let substituicoes = [];
     periodos_.forEach((periodo, periodoIndice) => {
@@ -297,28 +313,21 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
         substituicoes[periodoIndice]["periodo_uuid"] =
           subsCEI.periodo_escolar.uuid;
         substituicoes[periodoIndice]["cei"] = {
-          tipos_alimentacao_de: subsCEI.tipos_alimentacao_de.map(
-            (ta) => ta.uuid,
+          tipos_alimentacao_de: obterTipoAlimentacaoSelecionado(
+            subsCEI.tipos_alimentacao_de,
+            subsCEI.tipos_alimentacao_de,
           ),
-          tipos_alimentacao_para: subsCEI.tipos_alimentacao_para.map(
-            (ta) => ta.uuid,
+          tipos_alimentacao_para: obterTipoAlimentacaoSelecionado(
+            subsCEI.tipos_alimentacao_para,
+            subsCEI.tipos_alimentacao_para,
           ),
           faixas_etarias: [],
         };
-        periodo.CEI.forEach((faixa, faixaIndice) => {
-          substituicoes[periodoIndice]["cei"]["faixas_etarias"][faixaIndice] =
-            {};
-          const faixaRascunho = subsCEI.faixas_etarias.find(
-            (f) => f.faixa_etaria.__str__ === faixa.faixa,
-          );
-          if (faixaRascunho) {
-            substituicoes[periodoIndice]["cei"]["faixas_etarias"][faixaIndice] =
-              {
-                faixa_uuid: faixaRascunho.faixa_etaria.uuid,
-                quantidade_alunos: faixaRascunho.quantidade,
-              };
-          }
-        });
+        montarFaixasEtariasCEI(
+          subsCEI,
+          periodo,
+          substituicoes[periodoIndice]["cei"]["faixas_etarias"],
+        );
       }
       if (subsEMEI) {
         substituicoes[periodoIndice]["checked"] = true;
@@ -326,9 +335,15 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           subsEMEI.periodo_escolar.uuid;
         substituicoes[periodoIndice]["emei"] = {};
         substituicoes[periodoIndice]["emei"]["tipos_alimentacao_de"] =
-          subsEMEI.tipos_alimentacao_de.map((ta) => ta.uuid);
+          obterTipoAlimentacaoSelecionado(
+            subsEMEI.tipos_alimentacao_de,
+            subsEMEI.tipos_alimentacao_de,
+          );
         substituicoes[periodoIndice]["emei"]["tipos_alimentacao_para"] =
-          subsEMEI.tipos_alimentacao_para.map((ta) => ta.uuid);
+          obterTipoAlimentacaoSelecionado(
+            subsEMEI.tipos_alimentacao_para,
+            subsEMEI.tipos_alimentacao_para,
+          );
         substituicoes[periodoIndice]["emei"]["quantidade_alunos"] =
           subsEMEI.qtd_alunos;
       }
@@ -627,7 +642,6 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       alimentosEMEI={alimentosEMEI}
                       substitutosCEI={substitutosCEI}
                       substitutosEMEI={substitutosEMEI}
-                      ehMotivoRPL={ehMotivoRPL}
                     />
                   );
                 })}

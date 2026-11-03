@@ -213,6 +213,16 @@ export default () => {
     }
   };
 
+  const baixarAnexoAssinado = (event, arquivo) => {
+    event.preventDefault();
+    setBaixando(true);
+    downloadImagemAssinada(
+      objeto.uuid,
+      arquivo.uuid,
+      arquivo.nome || "download",
+    ).finally(() => setBaixando(false));
+  };
+
   const botoesArquivosAnexos = (arquivos) =>
     arquivos.map((e) => {
       const aprovado = objeto.status === "Aprovado";
@@ -221,17 +231,7 @@ export default () => {
           <BotaoAnexo
             urlAnexo={e.arquivo}
             onClick={
-              aprovado
-                ? (event) => {
-                    event.preventDefault();
-                    setBaixando(true);
-                    downloadImagemAssinada(
-                      objeto.uuid,
-                      e.uuid,
-                      e.nome || "download",
-                    ).finally(() => setBaixando(false));
-                  }
-                : undefined
+              aprovado ? (event) => baixarAnexoAssinado(event, e) : undefined
             }
           />
         </div>

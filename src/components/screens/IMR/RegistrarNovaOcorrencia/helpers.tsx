@@ -1,5 +1,11 @@
+import {
+  LANCAMENTO_INICIAL,
+  LANCAMENTO_MEDICAO_INICIAL,
+  REGISTRAR_OCORRENCIAS,
+} from "src/configs/constants";
 import { deepCopy } from "src/helpers/utilities";
 import {
+  AtualizarOcorrenciaFormInterface,
   OcorrenciaFormInterface,
   RegistrarNovaOcorrenciaFormInterface,
 } from "./interfaces";
@@ -44,6 +50,47 @@ export const formataPayload = (
   values_.ocorrencias = formatOcorrencias(values_);
 
   return values_;
+};
+
+export const formataPayloadEdicao = (
+  values: RegistrarNovaOcorrenciaFormInterface,
+  tipoOcorrenciaUuid: string,
+  grupo: number,
+): AtualizarOcorrenciaFormInterface => ({
+  tipo_ocorrencia: tipoOcorrenciaUuid,
+  grupo,
+  data: values.datas[0],
+  ocorrencias: formatOcorrencias(values).map((ocorrencia) => ({
+    ...ocorrencia,
+    grupo,
+  })),
+});
+
+export const getUrlListaOcorrencias = (parametros: {
+  ano?: string;
+  mes?: string;
+  editalUuid?: string;
+  solicitacaoMedicaoInicialUuid?: string;
+}) => {
+  const searchParams = new URLSearchParams();
+
+  if (parametros.ano) searchParams.set("ano", parametros.ano);
+  if (parametros.mes) searchParams.set("mes", parametros.mes);
+  if (parametros.editalUuid) {
+    searchParams.set("editalUuid", parametros.editalUuid);
+  }
+  if (parametros.solicitacaoMedicaoInicialUuid) {
+    searchParams.set(
+      "solicitacaoMedicaoInicialUuid",
+      parametros.solicitacaoMedicaoInicialUuid,
+    );
+  }
+
+  const queryString = searchParams.toString();
+
+  return `/${LANCAMENTO_INICIAL}/${LANCAMENTO_MEDICAO_INICIAL}/${REGISTRAR_OCORRENCIAS}${
+    queryString ? `?${queryString}` : ""
+  }`;
 };
 
 export const getIntervaloMes = (

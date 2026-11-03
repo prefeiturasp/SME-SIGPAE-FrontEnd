@@ -1,4 +1,9 @@
-import { formataPayload, getIntervaloMes } from "../helpers";
+import {
+  formataPayload,
+  formataPayloadEdicao,
+  getIntervaloMes,
+  getUrlListaOcorrencias,
+} from "../helpers";
 
 describe("Helpers formataPayload - Registrar Nova Corrência", () => {
   it("deve formatar o payload corretamente com ocorrências e solicitacao_medicao_inicial", () => {
@@ -121,6 +126,60 @@ describe("Helpers formataPayload - Registrar Nova Corrência", () => {
 
     expect(values).toEqual(valuesOriginal);
     expect(values.solicitacao_medicao_inicial).toBeUndefined();
+  });
+});
+
+describe("Helpers formataPayloadEdicao - Editar Ocorrência", () => {
+  it("formata o payload de edição mantendo o grupo original da ocorrência", () => {
+    const values = {
+      categoria: "categoria_teste",
+      tipo_ocorrencia: "tipo_teste",
+      datas: ["10/09/2026"],
+      ocorrencias: [],
+      grupos: [
+        {
+          tipoocorrencia_uuidTipo1_parametrizacao_uuidParam1_uuid_undefined:
+            "Avental",
+        },
+      ],
+    };
+
+    expect(formataPayloadEdicao(values, "uuid-tipo", 2)).toEqual({
+      tipo_ocorrencia: "uuid-tipo",
+      grupo: 2,
+      data: "10/09/2026",
+      ocorrencias: [
+        {
+          tipoOcorrencia: "uuidTipo1",
+          parametrizacao: "uuidParam1",
+          resposta: "Avental",
+          grupo: 2,
+        },
+      ],
+    });
+  });
+});
+
+describe("Helpers getUrlListaOcorrencias - Editar Ocorrência", () => {
+  it("monta a URL da listagem com os parâmetros da medição", () => {
+    const url = getUrlListaOcorrencias({
+      ano: "2026",
+      mes: "9",
+      editalUuid: "edital-uuid",
+      solicitacaoMedicaoInicialUuid: "solicitacao-uuid",
+    });
+
+    expect(url).toBe(
+      "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias" +
+        "?ano=2026&mes=9&editalUuid=edital-uuid" +
+        "&solicitacaoMedicaoInicialUuid=solicitacao-uuid",
+    );
+  });
+
+  it("monta a URL sem query string quando não há parâmetros", () => {
+    expect(getUrlListaOcorrencias({})).toBe(
+      "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias",
+    );
   });
 });
 

@@ -10,10 +10,16 @@ type SeletorCategoriaType = {
     SetStateAction<TipoOcorrenciaInterface[]>
   >;
   tiposOcorrencia: Array<TipoOcorrenciaInterface>;
+  disabled?: boolean;
 };
 
 export const SeletorCategoria = ({ ...props }: SeletorCategoriaType) => {
-  const { categorias, setTiposOcorrenciaDaCategoria, tiposOcorrencia } = props;
+  const {
+    categorias,
+    setTiposOcorrenciaDaCategoria,
+    tiposOcorrencia,
+    disabled,
+  } = props;
 
   return (
     <Field
@@ -31,9 +37,10 @@ export const SeletorCategoria = ({ ...props }: SeletorCategoriaType) => {
                 nome: tipoOcorrencia.titulo,
                 ...tipoOcorrencia,
               };
-            })
+            }),
         );
       }}
+      disabled={disabled}
       required
       validate={required}
     />

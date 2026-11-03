@@ -5,7 +5,6 @@ import {
   render,
   screen,
   waitFor,
-  within,
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -149,44 +148,26 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     });
   };
 
-  const selecionaTipoAlimentacaoDeRefeicaoDaTarde = () => {
-    const selectAlterarAlimentacaoDeDiv = screen.getByTestId(
-      "div-alterar-alimentacao-de",
+  const selecionaTipoAlimentacao = (testId, nomeOpcao) => {
+    const select = screen.getByTestId(testId).querySelector("select");
+    const option = Array.from(select.options).find(
+      (opt) => opt.text === nomeOpcao,
     );
-    const selectElementAlterarAlimentacaoDe =
-      selectAlterarAlimentacaoDeDiv.querySelector("select");
-    const uuidRefeicaoDaTarde =
-      mockGetVinculosTipoAlimentacaoPorEscolaCEMEI.results
-        .find(
-          (v) =>
-            v.periodo_escolar.nome === "INTEGRAL" &&
-            v.tipo_unidade_escolar.iniciais === "CEI DIRET",
-        )
-        .tipos_alimentacao.find((ta) => ta.nome === "Refeição da tarde").uuid;
-    fireEvent.change(selectElementAlterarAlimentacaoDe, {
-      target: { value: uuidRefeicaoDaTarde },
-    });
+    fireEvent.change(select, { target: { value: option.value } });
+  };
+
+  const selecionaTipoAlimentacaoDeRefeicaoDaTarde = () => {
+    selecionaTipoAlimentacao(
+      "select-alterar-alimentacao-de-CEI",
+      "Refeição da tarde",
+    );
   };
 
   const selecionaTipoAlimentacaoParaLanche = () => {
-    const selectAlterarAlimentacaoParaDiv = screen.getByTestId(
-      "div-alterar-alimentacao-para",
-    );
-    const selectElementAlterarAlimentacaoPara =
-      selectAlterarAlimentacaoParaDiv.querySelector("select");
-    const uuidLanche = mockGetVinculosTipoAlimentacaoPorEscolaCEMEI.results
-      .find(
-        (v) =>
-          v.periodo_escolar.nome === "INTEGRAL" &&
-          v.tipo_unidade_escolar.iniciais === "CEI DIRET",
-      )
-      .tipos_alimentacao.find((ta) => ta.nome === "Lanche").uuid;
-    fireEvent.change(selectElementAlterarAlimentacaoPara, {
-      target: { value: uuidLanche },
-    });
+    selecionaTipoAlimentacao("select-alterar-alimentacao-para-CEI", "Lanche");
   };
 
-  const preencherFormularioRPL = async () => {
+  const preencherFormularioRPL = async (tipoAlimentacaoDeEMEI = "Refeição") => {
     selecionaAlunosTodos();
     selecionaMotivoRPL();
 
@@ -218,23 +199,11 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       target: { value: "1" },
     });
 
-    const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
+    selecionaTipoAlimentacao(
       "select-alterar-alimentacao-de-EMEI",
+      tipoAlimentacaoDeEMEI,
     );
-    const selectControlDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
-      "combobox",
-    );
-    fireEvent.mouseDown(selectControlDe);
-    fireEvent.click(screen.getByText("Sobremesa"));
-
-    const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-para-EMEI",
-    );
-    const selectControlPara = within(
-      selectAlterarAlimentacaoParaEMEI,
-    ).getByRole("combobox");
-    fireEvent.mouseDown(selectControlPara);
-    fireEvent.click(screen.getAllByText("Lanche")[1]);
+    selecionaTipoAlimentacao("select-alterar-alimentacao-para-EMEI", "Lanche");
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
       `substituicoes[0][emei][quantidade_alunos]`,
@@ -244,11 +213,110 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
     });
   };
 
+  const marcarPeriodoIntegralERenderizarAlimentacoes = () => {
+    selecionaAlunosTodos();
+    selecionaMotivoRPL();
+    fireEvent.change(
+      screen.getByTestId("div-input-alterar-dia").querySelector("input"),
+      { target: { value: "30/01/2025" } },
+    );
+    fireEvent.click(
+      screen
+        .getByTestId("div-checkbox-INTEGRAL")
+        .querySelector("span")
+        .querySelector("input"),
+    );
+  };
+
+  it("renderiza single select sem a opção Todos e com Refeição e Sobremesa no EMEI", () => {
+    marcarPeriodoIntegralERenderizarAlimentacoes();
+
+    const selectDeEMEI = screen
+      .getByTestId("select-alterar-alimentacao-de-EMEI")
+      .querySelector("select");
+    const selectParaEMEI = screen
+      .getByTestId("select-alterar-alimentacao-para-EMEI")
+      .querySelector("select");
+
+    const opcoesDeEMEI = Array.from(selectDeEMEI.options).map(
+      (option) => option.text,
+    );
+    const opcoesParaEMEI = Array.from(selectParaEMEI.options).map(
+      (option) => option.text,
+    );
+
+    expect(selectDeEMEI.tagName).toBe("SELECT");
+    expect(selectParaEMEI.tagName).toBe("SELECT");
+    expect(opcoesDeEMEI).toContain("Refeição e Sobremesa");
+    expect(opcoesDeEMEI).toContain("Refeição");
+    expect(opcoesDeEMEI).not.toContain("Sobremesa");
+    expect(opcoesDeEMEI).not.toContain("Todos");
+    expect(opcoesParaEMEI).not.toContain("Todos");
+  });
+
+  it("carrega rascunho preenchendo os selects de alimentação CEI e EMEI", async () => {
+    const botaoCarregarRascunho = screen.getByTestId(
+      "botao-carregar-rascunho-BEFB9",
+    );
+    await act(async () => {
+      fireEvent.click(botaoCarregarRascunho);
+    });
+
+    expect(
+      screen
+        .getByTestId("select-alterar-alimentacao-de-CEI")
+        .querySelector("select").value,
+    ).toBe("7990ca99-55b7-4fc7-b5cc-8a51b23d0102");
+    expect(
+      screen
+        .getByTestId("select-alterar-alimentacao-para-CEI")
+        .querySelector("select").value,
+    ).toBe("5d1304c8-77a8-4c96-badb-dd2e8c1b76d5");
+    expect(
+      screen
+        .getByTestId("select-alterar-alimentacao-para-EMEI")
+        .querySelector("select").value,
+    ).toBe("5d1304c8-77a8-4c96-badb-dd2e8c1b76d5");
+
+    const selectDeEMEI = screen
+      .getByTestId("select-alterar-alimentacao-de-EMEI")
+      .querySelector("select");
+    expect(
+      Array.from(selectDeEMEI.options).map((option) => option.text),
+    ).not.toContain("Sobremesa");
+  });
+
+  it("expande Refeição e Sobremesa nos uuids de Refeição e Sobremesa ao salvar", async () => {
+    mock.resetHistory();
+    await preencherFormularioRPL("Refeição e Sobremesa");
+
+    const botaoSalvarRascunho = screen
+      .getByText("Salvar rascunho")
+      .closest("button");
+    await act(async () => {
+      fireEvent.click(botaoSalvarRascunho);
+    });
+
+    await waitFor(() => {
+      expect(mock.history.post.length).toBeGreaterThan(0);
+    });
+    const payload = JSON.parse(mock.history.post[0].data);
+    const substituicaoEMEI =
+      payload.substituicoes_cemei_emei_periodo_escolar[0];
+
+    expect(substituicaoEMEI.tipos_alimentacao_de).toEqual([
+      "65f11f11-630b-4629-bb17-07c875c548f1",
+      "5aa2c32b-1df2-46b6-b2e7-514b885fa9a4",
+    ]);
+    expect(substituicaoEMEI.tipos_alimentacao_para).toEqual([
+      "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5",
+    ]);
+  });
+
   it("renderiza modal para dia selecionado ser menor que 5 dias úteis", async () => {
     selecionaMotivoRPL();
     const divInputAlterarDia = screen.getByTestId("div-input-alterar-dia");
     const inputElement = divInputAlterarDia.querySelector("input");
-
     expect(screen.queryByText("Atenção")).not.toBeInTheDocument();
     expect(
       screen.queryByText(
@@ -310,27 +378,8 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
 
     expect(screen.getByText("Alunos EMEI")).toBeInTheDocument();
 
-    const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-de-EMEI",
-    );
-    const selectControlDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
-      "combobox",
-    );
-    fireEvent.mouseDown(selectControlDe);
-
-    const optionDe = screen.getByText("Sobremesa");
-    fireEvent.click(optionDe);
-
-    const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
-      "select-alterar-alimentacao-para-EMEI",
-    );
-    const selectControlPara = within(
-      selectAlterarAlimentacaoParaEMEI,
-    ).getByRole("combobox");
-    fireEvent.mouseDown(selectControlPara);
-
-    const optionPara = screen.getAllByText("Lanche")[1];
-    fireEvent.click(optionPara);
+    selecionaTipoAlimentacao("select-alterar-alimentacao-de-EMEI", "Refeição");
+    selecionaTipoAlimentacao("select-alterar-alimentacao-para-EMEI", "Lanche");
 
     const inputElementNumeroAlunosEMEI = screen.getByTestId(
       `substituicoes[0][emei][quantidade_alunos]`,
@@ -439,12 +488,14 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       .querySelector("span");
     fireEvent.click(span.querySelector("input"));
     fireEvent.change(
-      screen.getByTestId("div-alterar-alimentacao-de").querySelector("select"),
+      screen
+        .getByTestId("select-alterar-alimentacao-de-CEI")
+        .querySelector("select"),
       { target: { value: "5bd9ad5c-e0ab-4812-b2b6-336fc89886b1" } },
     );
     fireEvent.change(
       screen
-        .getByTestId("div-alterar-alimentacao-para")
+        .getByTestId("select-alterar-alimentacao-para-CEI")
         .querySelector("select"),
       { target: { value: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5" } },
     );
@@ -461,11 +512,13 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       { target: { value: "1" } },
     );
     const de = screen.getByTestId("select-alterar-alimentacao-de-EMEI");
-    fireEvent.mouseDown(within(de).getByRole("combobox"));
-    fireEvent.click(screen.getByText("Sobremesa"));
+    fireEvent.change(de.querySelector("select"), {
+      target: { value: "65f11f11-630b-4629-bb17-07c875c548f1" },
+    });
     const para = screen.getByTestId("select-alterar-alimentacao-para-EMEI");
-    fireEvent.mouseDown(within(para).getByRole("combobox"));
-    fireEvent.click(screen.getAllByText("Lanche")[1]);
+    fireEvent.change(para.querySelector("select"), {
+      target: { value: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5" },
+    });
     fireEvent.change(
       screen.getByTestId("substituicoes[0][emei][quantidade_alunos]"),
       { target: { value: "1" } },
@@ -505,12 +558,14 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       .querySelector("span");
     fireEvent.click(span.querySelector("input"));
     fireEvent.change(
-      screen.getByTestId("div-alterar-alimentacao-de").querySelector("select"),
+      screen
+        .getByTestId("select-alterar-alimentacao-de-CEI")
+        .querySelector("select"),
       { target: { value: "5bd9ad5c-e0ab-4812-b2b6-336fc89886b1" } },
     );
     fireEvent.change(
       screen
-        .getByTestId("div-alterar-alimentacao-para")
+        .getByTestId("select-alterar-alimentacao-para-CEI")
         .querySelector("select"),
       { target: { value: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5" } },
     );
@@ -527,11 +582,13 @@ describe("Teste Formulário Alteração de Cardápio - RPL - CEMEI", () => {
       { target: { value: "1" } },
     );
     const de = screen.getByTestId("select-alterar-alimentacao-de-EMEI");
-    fireEvent.mouseDown(within(de).getByRole("combobox"));
-    fireEvent.click(screen.getByText("Sobremesa"));
+    fireEvent.change(de.querySelector("select"), {
+      target: { value: "65f11f11-630b-4629-bb17-07c875c548f1" },
+    });
     const para = screen.getByTestId("select-alterar-alimentacao-para-EMEI");
-    fireEvent.mouseDown(within(para).getByRole("combobox"));
-    fireEvent.click(screen.getAllByText("Lanche")[1]);
+    fireEvent.change(para.querySelector("select"), {
+      target: { value: "5d1304c8-77a8-4c96-badb-dd2e8c1b76d5" },
+    });
     fireEvent.change(
       screen.getByTestId("substituicoes[0][emei][quantidade_alunos]"),
       { target: { value: "1" } },

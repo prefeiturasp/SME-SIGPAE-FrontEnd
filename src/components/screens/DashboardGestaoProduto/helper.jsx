@@ -40,94 +40,134 @@ const {
   TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO,
 } = ENDPOINT_HOMOLOGACOES_PRODUTO_STATUS;
 
+const usuarioPodeConsultarReclamacao = () =>
+  usuarioEhCogestorDRE() ||
+  usuarioEhCODAEGestaoAlimentacao() ||
+  usuarioEhCODAENutriManifestacao() ||
+  usuarioEhOrgaoFiscalizador() ||
+  usuarioEhCODAEGabinete() ||
+  usuarioEhEmpresaTerceirizada() ||
+  usuarioEhNutricionistaSupervisao() ||
+  usuarioEhDinutreDiretoria();
+
+const ehStatusDeProdutoComCopia = (item) =>
+  usuarioEhEmpresaTerceirizada() &&
+  (item.tem_copia || item.produto_eh_copia) &&
+  [
+    CODAE_HOMOLOGADO,
+    CODAE_SUSPENDEU,
+    CODAE_NAO_HOMOLOGADO,
+    CODAE_AUTORIZOU_RECLAMACAO,
+    TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO,
+  ].includes(item.status.toLowerCase());
+
+const ehStatusEditavelPelaTerceirizada = (item) =>
+  usuarioEhEmpresaTerceirizada() &&
+  [
+    CODAE_HOMOLOGADO,
+    CODAE_SUSPENDEU,
+    CODAE_NAO_HOMOLOGADO,
+    CODAE_QUESTIONADO,
+    CODAE_AUTORIZOU_RECLAMACAO,
+    TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO,
+  ].includes(item.status.toLowerCase());
+
+const ehEscolaQueRespondeQuestionamento = (item, titulo) =>
+  (usuarioEhEscolaTerceirizadaDiretor() ||
+    usuarioEhEscolaTerceirizada() ||
+    usuarioEhEmpresaTerceirizada()) &&
+  item.status.toLowerCase() === CODAE_QUESTIONOU_UE &&
+  CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo === titulo;
+
+const ehEscolaQueReclamaProduto = (titulo) =>
+  CARD_AGUARDANDO_ANALISE_RECLAMACAO.titulo === titulo &&
+  (usuarioEhEscolaTerceirizadaDiretor() || usuarioEhEscolaTerceirizada());
+
+const REGRAS_DE_LINK_DO_ITEM = [
+  {
+    atende: (item, titulo) =>
+      usuarioPodeConsultarReclamacao() &&
+      [
+        CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo,
+        CARD_AGUARDANDO_ANALISE_RECLAMACAO.titulo,
+      ].includes(titulo),
+    link: (item) =>
+      `/${GESTAO_PRODUTO}/responder-reclamacao/consulta?uuid=${item.uuid}`,
+  },
+  {
+    atende: (item) =>
+      item.status.toLowerCase() === CODAE_PEDIU_ANALISE_RECLAMACAO &&
+      usuarioEhEmpresaTerceirizada(),
+    link: (item) =>
+      `/${GESTAO_PRODUTO}/responder-reclamacao/consulta?uuid=${item.uuid}`,
+  },
+  {
+    atende: (item) =>
+      item.status.toLowerCase() === CODAE_PEDIU_ANALISE_SENSORIAL &&
+      usuarioEhEmpresaTerceirizada(),
+    link: (item) =>
+      `/${PESQUISA_DESENVOLVIMENTO}/relatorio-analise-sensorial?uuid=${item.uuid}`,
+  },
+  {
+    atende: (item, titulo) =>
+      usuarioEhCODAEGestaoProduto() &&
+      CARD_AGUARDANDO_ANALISE_RECLAMACAO.titulo === titulo,
+    link: (
+      item,
+    ) => `/${GESTAO_PRODUTO}/avaliar-reclamacao-produto?uuid=${item.uuid}
+      `,
+  },
+  {
+    atende: (item) =>
+      usuarioEhCODAEGestaoProduto() &&
+      item.status.toLowerCase() === CODAE_SUSPENDEU,
+    link: (item) =>
+      `/${GESTAO_PRODUTO}/${ATIVACAO_DE_PRODUTO}/detalhe?id=${item.uuid}`,
+  },
+  {
+    atende: (item) =>
+      usuarioEhCODAEGestaoProduto() &&
+      (item.status === "CODAE_HOMOLOGADO" ||
+        item.status === "CODAE_AUTORIZOU_RECLAMACAO") &&
+      item.data_edital_suspenso_mais_recente,
+    link: (item) =>
+      `/${GESTAO_PRODUTO}/${RELATORIO}?uuid=${
+        item.uuid
+      }&card_suspensos=${true}`,
+  },
+  {
+    atende: (item) => ehStatusDeProdutoComCopia(item),
+    link: (item) => `/${GESTAO_PRODUTO}/${RELATORIO}?uuid=${item.uuid}`,
+  },
+  {
+    atende: (item) => ehStatusEditavelPelaTerceirizada(item),
+    link: (item) => `/${GESTAO_PRODUTO}/${EDITAR}?uuid=${item.uuid}`,
+  },
+  {
+    atende: (item, titulo) => ehEscolaQueRespondeQuestionamento(item, titulo),
+    link: (item) =>
+      `/${GESTAO_PRODUTO}/responder-questionamento-ue/?nome_produto=${item.nome_produto}`,
+  },
+  {
+    atende: (item, titulo) => ehEscolaQueReclamaProduto(titulo),
+    link: (item) =>
+      `/${GESTAO_PRODUTO}/nova-reclamacao-de-produto?nome_produto=${item.nome_produto}&marca_produto=${item.marca_produto}&fabricante_produto=${item.fabricante_produto}`,
+  },
+  {
+    atende: (item, titulo) =>
+      usuarioEhNutricionistaSupervisao() &&
+      CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo === titulo,
+    link: (item) =>
+      `/${GESTAO_PRODUTO}/responder-questionamento-nutrisupervisor/?nome_produto=${item.nome_produto}`,
+  },
+];
+
 const gerarLinkDoItem = (item, apontaParaEdicao, titulo) => {
-  if (
-    (usuarioEhCogestorDRE() ||
-      usuarioEhCODAEGestaoAlimentacao() ||
-      usuarioEhCODAENutriManifestacao() ||
-      usuarioEhOrgaoFiscalizador() ||
-      usuarioEhCODAEGabinete() ||
-      usuarioEhEmpresaTerceirizada() ||
-      usuarioEhNutricionistaSupervisao() ||
-      usuarioEhDinutreDiretoria()) &&
-    [
-      CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo,
-      CARD_AGUARDANDO_ANALISE_RECLAMACAO.titulo,
-    ].includes(titulo)
-  ) {
-    return `/${GESTAO_PRODUTO}/responder-reclamacao/consulta?uuid=${item.uuid}`;
-  } else if (
-    item.status.toLowerCase() === CODAE_PEDIU_ANALISE_RECLAMACAO &&
-    usuarioEhEmpresaTerceirizada()
-  ) {
-    return `/${GESTAO_PRODUTO}/responder-reclamacao/consulta?uuid=${item.uuid}`;
-  } else if (
-    item.status.toLowerCase() === CODAE_PEDIU_ANALISE_SENSORIAL &&
-    usuarioEhEmpresaTerceirizada()
-  ) {
-    return `/${PESQUISA_DESENVOLVIMENTO}/relatorio-analise-sensorial?uuid=${item.uuid}`;
-  } else if (
-    usuarioEhCODAEGestaoProduto() &&
-    CARD_AGUARDANDO_ANALISE_RECLAMACAO.titulo === titulo
-  ) {
-    return `/${GESTAO_PRODUTO}/avaliar-reclamacao-produto?uuid=${item.uuid}
-      `;
-  } else if (
-    usuarioEhCODAEGestaoProduto() &&
-    item.status.toLowerCase() === CODAE_SUSPENDEU
-  ) {
-    return `/${GESTAO_PRODUTO}/${ATIVACAO_DE_PRODUTO}/detalhe?id=${item.uuid}`;
-  } else if (
-    usuarioEhCODAEGestaoProduto() &&
-    (item.status === "CODAE_HOMOLOGADO" ||
-      item.status === "CODAE_AUTORIZOU_RECLAMACAO") &&
-    item.data_edital_suspenso_mais_recente
-  ) {
-    return `/${GESTAO_PRODUTO}/${RELATORIO}?uuid=${
-      item.uuid
-    }&card_suspensos=${true}`;
-  } else if (
-    usuarioEhEmpresaTerceirizada() &&
-    (item.tem_copia || item.produto_eh_copia) &&
-    [
-      CODAE_HOMOLOGADO,
-      CODAE_SUSPENDEU,
-      CODAE_NAO_HOMOLOGADO,
-      CODAE_AUTORIZOU_RECLAMACAO,
-      TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO,
-    ].includes(item.status.toLowerCase())
-  ) {
-    return `/${GESTAO_PRODUTO}/${RELATORIO}?uuid=${item.uuid}`;
-  } else if (
-    usuarioEhEmpresaTerceirizada() &&
-    [
-      CODAE_HOMOLOGADO,
-      CODAE_SUSPENDEU,
-      CODAE_NAO_HOMOLOGADO,
-      CODAE_QUESTIONADO,
-      CODAE_AUTORIZOU_RECLAMACAO,
-      TERCEIRIZADA_CANCELOU_SOLICITACAO_HOMOLOGACAO,
-    ].includes(item.status.toLowerCase())
-  ) {
-    return `/${GESTAO_PRODUTO}/${EDITAR}?uuid=${item.uuid}`;
-  } else if (
-    (usuarioEhEscolaTerceirizadaDiretor() ||
-      usuarioEhEscolaTerceirizada() ||
-      usuarioEhEmpresaTerceirizada()) &&
-    item.status.toLowerCase() === CODAE_QUESTIONOU_UE &&
-    CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo === titulo
-  ) {
-    return `/${GESTAO_PRODUTO}/responder-questionamento-ue/?nome_produto=${item.nome_produto}`;
-  } else if (
-    CARD_AGUARDANDO_ANALISE_RECLAMACAO.titulo === titulo &&
-    (usuarioEhEscolaTerceirizadaDiretor() || usuarioEhEscolaTerceirizada())
-  ) {
-    return `/${GESTAO_PRODUTO}/nova-reclamacao-de-produto?nome_produto=${item.nome_produto}&marca_produto=${item.marca_produto}&fabricante_produto=${item.fabricante_produto}`;
-  } else if (
-    usuarioEhNutricionistaSupervisao() &&
-    CARD_RESPONDER_QUESTIONAMENTOS_DA_CODAE.titulo === titulo
-  ) {
-    return `/${GESTAO_PRODUTO}/responder-questionamento-nutrisupervisor/?nome_produto=${item.nome_produto}`;
+  const regra = REGRAS_DE_LINK_DO_ITEM.find((regraDeLink) =>
+    regraDeLink.atende(item, titulo),
+  );
+  if (regra) {
+    return regra.link(item);
   }
   return apontaParaEdicao
     ? `/${GESTAO_PRODUTO}/${EDITAR}?uuid=${item.uuid}`

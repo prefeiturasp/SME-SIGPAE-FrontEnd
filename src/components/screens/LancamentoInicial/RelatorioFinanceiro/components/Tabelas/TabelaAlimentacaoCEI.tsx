@@ -1,124 +1,182 @@
+import { useMemo, forwardRef, useImperativeHandle } from "react";
 import {
   FaixaEtaria,
   TabelaParametrizacao,
-  ValorTabela,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
-import { stringDecimalToNumber } from "src/helpers/parsers";
-import { formataMilharDecimal } from "src/helpers/utilities";
-import { forwardRef, useImperativeHandle } from "react";
+import { formataMilhar, formataMilharDecimal } from "src/helpers/utilities";
 import { TabelaAlimentacaoHandle } from "../../types";
+import { obterValorFaixa } from "../../helpers";
 
 type Props = {
   tabelas: TabelaParametrizacao[];
   faixasEtarias: FaixaEtaria[];
   totaisConsumo?: any;
   ordem?: string;
+  possuiReajuste?: boolean;
 };
 
-const _PERIODOS = [
+type PeriodoFaixa = {
+  value: string;
+  label: string;
+};
+
+type LinhaFaixa = {
+  chave: string;
+  periodo: string;
+  faixa: string;
+  numeroAtendimentos: number;
+  valorUnitario: number;
+  valorTotalUnitario: number;
+  valorReajuste: number;
+  valorTotalReajuste: number;
+  valorUnitarioReajustado: number;
+  valorTotal: number;
+};
+
+const _PERIODOS: PeriodoFaixa[] = [
   { value: "INTEGRAL", label: "Período Integral" },
   { value: "PARCIAL", label: "Período Parcial" },
 ];
 
-export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
-  ({ tabelas, faixasEtarias, totaisConsumo, ordem }, ref) => {
-    let totalAtendimentosGeral = 0;
-    let valorTotalGeral = 0;
+const moeda = (valor: number) => `R$ ${formataMilharDecimal(valor)}`;
 
-    useImperativeHandle(ref, () => ({
-      getTotais() {
-        return {
-          totalAtendimentosGeral,
-          valorTotalGeral,
-        };
-      },
-    }));
+export const TabelaAlimentacaoCEI = forwardRef<TabelaAlimentacaoHandle, Props>(
+  ({ tabelas, faixasEtarias, totaisConsumo, ordem, possuiReajuste }, ref) => {
+    const exibeReajuste = possuiReajuste !== false;
+
+    const linhas = useMemo<LinhaFaixa[]>(
+      () =>
+        _PERIODOS.flatMap((periodo) => {
+          const tabela = tabelas.find(
+            (item) =>
+              item.nome === "Preço das Alimentações" &&
+              item.periodo_escolar === periodo.value,
+          );
+
+          return faixasEtarias.map((faixa) => {
+            const valorUnitario = obterValorFaixa(
+              tabela,
+              faixa.uuid,
+              "UNITARIO",
+            );
+            const valorReajuste = obterValorFaixa(
+              tabela,
+              faixa.uuid,
+              "REAJUSTE",
+            );
+            const numeroAtendimentos =
+              totaisConsumo?.[`ALIMENTAÇÃO - ${periodo.value}`]?.[
+                faixa.__str__
+              ] ?? 0;
+            const valorTotalUnitario = valorUnitario * numeroAtendimentos;
+            const valorUnitarioReajustado = valorUnitario + valorReajuste;
+
+            return {
+              chave: `${faixa.uuid}-${periodo.value}`,
+              periodo: periodo.label,
+              faixa: faixa.__str__,
+              numeroAtendimentos,
+              valorUnitario,
+              valorTotalUnitario,
+              valorReajuste,
+              valorTotalReajuste: valorReajuste * numeroAtendimentos,
+              valorUnitarioReajustado,
+              valorTotal: exibeReajuste
+                ? valorUnitarioReajustado * numeroAtendimentos
+                : valorTotalUnitario,
+            };
+          });
+        }),
+      [tabelas, faixasEtarias, totaisConsumo, exibeReajuste],
+    );
+
+    const totais = useMemo(
+      () => ({
+        totalAtendimentosGeral: linhas.reduce(
+          (soma, linha) => soma + linha.numeroAtendimentos,
+          0,
+        ),
+        valorTotalGeral: linhas.reduce(
+          (soma, linha) => soma + linha.valorTotal,
+          0,
+        ),
+      }),
+      [linhas],
+    );
+
+    useImperativeHandle(ref, () => ({ getTotais: () => totais }), [totais]);
 
     return (
-      <table className="tabela-relatorio">
-        <thead>
-          <tr>
-            <th className="col-faixa">
-              ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS
-            </th>
-            <th className="col-unitario">VALOR UNITÁRIO</th>
-            <th className="col-reajuste">VALOR DO REAJUSTE</th>
-            <th className="col-total-unitario">VALOR UNITÁRIO TOTAL</th>
-            <th className="col-atendimentos">NÚMERO DE ATENDIMENTO</th>
-            <th className="col-valor-total">VALOR TOTAL</th>
-          </tr>
-        </thead>
-        <tbody>
-          {_PERIODOS.map((periodo) =>
-            faixasEtarias.map((faixa) => {
-              const tabela = tabelas.find(
-                (t) =>
-                  t.nome === "Preço das Alimentações" &&
-                  t.periodo_escolar === periodo.value,
-              );
-
-              const valorUnitario = stringDecimalToNumber(
-                tabela?.valores.find(
-                  (v: ValorTabela) =>
-                    v.faixa_etaria.uuid === faixa.uuid &&
-                    v.tipo_valor === "UNITARIO",
-                )?.valor ?? "0",
-              );
-
-              const valorReajuste = stringDecimalToNumber(
-                tabela?.valores.find(
-                  (v: ValorTabela) =>
-                    v.faixa_etaria.uuid === faixa.uuid &&
-                    v.tipo_valor === "REAJUSTE",
-                )?.valor ?? "0",
-              );
-
-              const numeroAtendimentos =
-                totaisConsumo?.[`ALIMENTAÇÃO - ${periodo.value}`]?.[
-                  faixa.__str__
-                ] ?? 0;
-
-              const totalUnitario = valorUnitario + valorReajuste;
-
-              const valorTotal = totalUnitario * numeroAtendimentos;
-
-              totalAtendimentosGeral += numeroAtendimentos;
-              valorTotalGeral += valorTotal;
-
-              return (
-                <tr key={`${faixa.uuid}-${periodo.value}`}>
-                  <td className="col-faixa">
-                    {periodo.label} <b>- {faixa.__str__}</b>
-                  </td>
-                  <td className="col-unitario">
-                    R$ {formataMilharDecimal(valorUnitario)}
-                  </td>
-                  <td className="col-reajuste">
-                    R$ {formataMilharDecimal(valorReajuste)}
-                  </td>
-                  <td className="col-total-unitario">
-                    R$ {formataMilharDecimal(totalUnitario)}
-                  </td>
-                  <td className="col-atendimentos">{numeroAtendimentos}</td>
-                  <td className="col-valor-total">
-                    R$ {formataMilharDecimal(valorTotal)}
-                  </td>
-                </tr>
-              );
-            }),
-          )}
-          <tr key={`total_${ordem}`} className="linha-total">
-            <td className="col-faixa">TOTAL ({ordem})</td>
-            <td className="col-unitario"></td>
-            <td className="col-reajuste"></td>
-            <td className="col-total-unitario"></td>
-            <td className="col-atendimentos">{totalAtendimentosGeral}</td>
-            <td className="col-valor-total">
-              R$ {formataMilharDecimal(valorTotalGeral)}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="tabela-relatorio-responsiva">
+        <table
+          className={`tabela-relatorio tabela-detalhada tabela-detalhada-alimentacao${
+            exibeReajuste ? "" : " sem-reajuste"
+          }`}
+        >
+          <thead>
+            <tr>
+              <th scope="col" className="col-descricao">
+                ALIMENTAÇÕES FAIXAS ETÁRIAS - SEM DIETAS
+              </th>
+              <th scope="col" className="col-numero">
+                NÚMERO DE ATEND.
+              </th>
+              <th scope="col">VALOR UNITÁRIO</th>
+              <th scope="col">VALOR TOTAL UNITÁRIO</th>
+              {exibeReajuste && (
+                <>
+                  <th scope="col">VALOR DO REAJUSTE</th>
+                  <th scope="col">VALOR TOTAL DO REAJUSTE</th>
+                  <th scope="col">VALOR UNITÁRIO REAJUSTADO</th>
+                </>
+              )}
+              <th scope="col" className="col-valor-total">
+                VALOR TOTAL
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {linhas.map((linha) => (
+              <tr key={linha.chave}>
+                <td className="col-descricao">
+                  {linha.periodo} <b>- {linha.faixa}</b>
+                </td>
+                <td className="col-numero">
+                  {formataMilhar(linha.numeroAtendimentos)}
+                </td>
+                <td>{moeda(linha.valorUnitario)}</td>
+                <td>{moeda(linha.valorTotalUnitario)}</td>
+                {exibeReajuste && (
+                  <>
+                    <td>{moeda(linha.valorReajuste)}</td>
+                    <td>{moeda(linha.valorTotalReajuste)}</td>
+                    <td>{moeda(linha.valorUnitarioReajustado)}</td>
+                  </>
+                )}
+                <td className="col-valor-total">{moeda(linha.valorTotal)}</td>
+              </tr>
+            ))}
+            <tr className="linha-total">
+              <td>TOTAL ({ordem})</td>
+              <td className="col-numero">
+                {formataMilhar(totais.totalAtendimentosGeral)}
+              </td>
+              <td />
+              <td />
+              {exibeReajuste && (
+                <>
+                  <td />
+                  <td />
+                  <td />
+                </>
+              )}
+              <td className="col-valor-total">
+                {moeda(totais.valorTotalGeral)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     );
   },
 );

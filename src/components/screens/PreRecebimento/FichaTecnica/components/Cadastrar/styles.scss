@@ -77,6 +77,34 @@
     }
   }
 
+  .aviso-ajuda-ficha-tecnica {
+    margin-bottom: 24px;
+
+    .alert {
+      background-color: $white;
+      border: 1px solid #ff7f00;
+      color: #d85e00;
+      font-size: 13px;
+      margin-bottom: 0;
+      padding: 8px 12px;
+    }
+
+    i {
+      color: #ff7f00;
+      font-size: 14px;
+    }
+
+    .texto-ajuda-destaque {
+      color: #d85e00;
+      text-decoration: underline;
+
+      &:hover,
+      &:focus {
+        color: #d85e00;
+      }
+    }
+  }
+
   .label-input {
     font-size: 12px;
   }

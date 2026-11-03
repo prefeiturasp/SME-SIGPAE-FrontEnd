@@ -13,6 +13,7 @@ import Botao from "src/components/Shareable/Botao";
 import {
   carregaListaCompletaInformacoesNutricionais,
   carregarDadosAnalisarDetalhar,
+  ehFLV,
   exibirBlocoFabricante,
   exibirNumeroRegistro,
   imprimirFicha,
@@ -41,6 +42,7 @@ import {
   PAINEL_FICHAS_TECNICAS,
   FICHA_TECNICA,
   ATUALIZAR_FICHA_TECNICA,
+  CRIAR_COPIA_FICHA_TECNICA,
 } from "src/configs/constants";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
@@ -60,6 +62,8 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
   const location = useLocation();
   const [carregando, setCarregando] = useState<boolean>(true);
   const [showModalCancelar, setShowModalCancelar] = useState<boolean>(false);
+  const [showModalCriarCopia, setShowModalCriarCopia] =
+    useState<boolean>(false);
   const [collapse, setCollapse] = useState<CollapseControl>({});
   const [ficha, setFicha] = useState<FichaTecnicaDetalhadaComAnalise>(
     {} as FichaTecnicaDetalhadaComAnalise,
@@ -213,13 +217,13 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
     navigate(link);
   };
 
-  const validaForm = (ehNaoPerecivel: boolean, ehFLV: boolean) => {
+  const validaForm = (ehNaoPerecivel: boolean, ehFichaFLV: boolean) => {
     let conferidosFiltrados = conferidos;
     if (ehNaoPerecivel) {
       delete conferidos.temperatura_e_transporte;
     }
 
-    if (ehFLV) {
+    if (ehFichaFLV) {
       delete conferidos.armazenamento;
       delete conferidos.conservacao;
       delete conferidos.embalagem_e_rotulagem;
@@ -278,12 +282,9 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
             render={({ handleSubmit, values }) => {
               const ehPerecivel = values["categoria"] === "Perecíveis";
               const ehNaoPerecivel = values["categoria"] === "Não Perecíveis";
-              const ehFLV =
-                values["categoria"] === "FLV (Frutas, Legumes e Verduras)" &&
-                values["tipo_entrega"] === "Ponto a Ponto";
+              const ehFichaFLV = ehFLV(values["categoria"]);
               const mostrarNumeroRegistro = exibirNumeroRegistro({
                 categoria: ficha.categoria,
-                tipo_entrega: ficha.tipo_entrega,
                 numero_registro: ficha.numero_registro,
               });
               const collapseConfigsFLV = [
@@ -396,7 +397,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                 },
               ];
 
-              const collapseConfigs = ehFLV
+              const collapseConfigs = ehFichaFLV
                 ? collapseConfigsFLV
                 : collapseConfigsPadrao;
 
@@ -484,7 +485,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
 
                   <hr />
 
-                  {!ehFLV && (
+                  {!ehFichaFLV && (
                     <CollapsesPadrao
                       idCollapse={idCollapse}
                       collapse={collapse}
@@ -508,7 +509,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     />
                   )}
 
-                  {ehFLV && (
+                  {ehFichaFLV && (
                     <CollapsesFLV
                       idCollapse={idCollapse}
                       collapse={collapse}
@@ -531,17 +532,26 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                       <>
                         {ficha.status === "Aprovada" &&
                           usuarioEhEmpresaFornecedor() && (
-                            <Botao
-                              texto="Atualizar Ficha Técnica"
-                              type={BUTTON_TYPE.BUTTON}
-                              style={BUTTON_STYLE.GREEN_OUTLINE}
-                              className="float-end ms-3"
-                              onClick={() =>
-                                navigate(
-                                  `/${PRE_RECEBIMENTO}/${ATUALIZAR_FICHA_TECNICA}?uuid=${ficha.uuid}`,
-                                )
-                              }
-                            />
+                            <>
+                              <Botao
+                                texto="Criar Cópia"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                                className="float-end ms-3"
+                                onClick={() => setShowModalCriarCopia(true)}
+                              />
+                              <Botao
+                                texto="Atualizar Ficha Técnica"
+                                type={BUTTON_TYPE.BUTTON}
+                                style={BUTTON_STYLE.GREEN_OUTLINE}
+                                className="float-end ms-3"
+                                onClick={() =>
+                                  navigate(
+                                    `/${PRE_RECEBIMENTO}/${ATUALIZAR_FICHA_TECNICA}?uuid=${ficha.uuid}`,
+                                  )
+                                }
+                              />
+                            </>
                           )}
                         {["Enviada para Análise", "Aprovada"].includes(
                           ficha.status,
@@ -565,7 +575,7 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                           style={BUTTON_STYLE.GREEN}
                           className="float-end ms-3"
                           onClick={() => salvarAnalise(values)}
-                          disabled={validaForm(ehNaoPerecivel, ehFLV)}
+                          disabled={validaForm(ehNaoPerecivel, ehFichaFLV)}
                         />
                         <Botao
                           texto="Salvar Rascunho"
@@ -598,6 +608,27 @@ export default ({ somenteLeitura = false }: AnalisarProps) => {
                     loading={carregando}
                     titulo={<>Cancelar Análise da Ficha Técnica</>}
                     texto={<>Deseja cancelar a Análise da Ficha Técnica?</>}
+                  />
+
+                  <ModalGenerico
+                    show={showModalCriarCopia}
+                    handleSim={() => {
+                      navigate(
+                        `/${PRE_RECEBIMENTO}/${CRIAR_COPIA_FICHA_TECNICA}?uuid=${ficha.uuid}`,
+                      );
+                    }}
+                    handleClose={() => {
+                      setShowModalCriarCopia(false);
+                    }}
+                    loading={carregando}
+                    titulo={<>Copiar Ficha Técnica</>}
+                    texto={
+                      <>
+                        Você realmente deseja criar uma Cópia da Ficha Técnica?
+                      </>
+                    }
+                    textoBotaoClose="Não"
+                    textoBotaoSim="Sim, Criar Cópia"
                   />
                 </form>
               );

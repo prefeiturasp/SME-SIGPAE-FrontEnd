@@ -34,6 +34,7 @@ import {
   getError,
 } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
+import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { Field, Form } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
@@ -113,46 +114,56 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const salvarSolicitacao = async (values) => {
+    if (!values.uuid) {
+      const resposta = await escolaCriarSolicitacaoDeAlteracaoCardapio(
+        formataPayload(values),
+        SOLICITACAO_CEI,
+      );
+
+      return {
+        resposta,
+        statusEsperado: HTTP_STATUS.CREATED,
+        mensagem: "Alteração do tipo de alimentação criada com sucesso!",
+      };
+    }
+
+    const resposta = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
+      values.uuid,
+      formataPayload(values),
+      SOLICITACAO_CEI,
+    );
+
+    return {
+      resposta,
+      statusEsperado: HTTP_STATUS.OK,
+      mensagem: "Alteração do tipo de alimentação alterada com sucesso!",
+    };
+  };
+
   const onSubmit = async (values, form) => {
     const erro = validaForm(values);
+
     if (erro) {
       toastError(erro);
       return;
     }
-    if (!values.uuid) {
-      const response = await escolaCriarSolicitacaoDeAlteracaoCardapio(
-        formataPayload(values),
-        SOLICITACAO_CEI,
-      );
-      if (response.status === HTTP_STATUS.CREATED) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess("Alteração do tipo de alimentação criada com sucesso!");
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
-    } else {
-      const response = await escolaAlterarSolicitacaoDeAlteracaoCardapio(
-        values.uuid,
-        formataPayload(values),
-        SOLICITACAO_CEI,
-      );
-      if (response.status === HTTP_STATUS.OK) {
-        if (values.status === STATUS_DRE_A_VALIDAR) {
-          iniciarPedido(response.data.uuid, form);
-        } else {
-          toastSuccess(
-            "Alteração do tipo de alimentação alterada com sucesso!",
-          );
-        }
-        refresh(form);
-      } else {
-        toastError(getError(response.data));
-      }
+
+    const { resposta, statusEsperado, mensagem } =
+      await salvarSolicitacao(values);
+
+    if (resposta.status !== statusEsperado) {
+      toastError(getError(resposta.data));
+      return;
     }
+
+    if (values.status === STATUS_DRE_A_VALIDAR) {
+      iniciarPedido(resposta.data.uuid, form);
+    } else {
+      toastSuccess(mensagem);
+    }
+
+    refresh(form);
   };
 
   const getPeriodo = (values, indice) => {
@@ -370,6 +381,24 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
     }
   };
 
+  const criarOnClickPeriodo = (form, name, indice, values) => () => {
+    handlePeriodoOnClick(form, name, indice, values);
+  };
+
+  const criarOnKeyDownPeriodo = (form, name, indice, values) => (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handlePeriodoOnClick(form, name, indice, values);
+    }
+  };
+
+  const criarOnSelectedChanged = (form, indice) => (values_) => {
+    form.change(
+      `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
+      values_.map((value_) => value_.value),
+    );
+  };
+
   const handlePeriodoOnClick = async (form, name, indice, values) => {
     await form.change(
       `${name}.checked`,
@@ -397,6 +426,26 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       );
     }
   };
+
+  const renderLinhasFaixasEtarias = (values, indice, name) =>
+    values.substituicoes[indice].faixas_etarias.map((faixa, key) => (
+      <tr key={key} className="row">
+        <td className="col-8">{faixa.faixa_etaria.__str__}</td>
+        <td className="col-2 text-center">{faixa.count}</td>
+        <td className="col-2 text-center">
+          <Field
+            component={InputText}
+            type="number"
+            dataTestIdDiv={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
+            name={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
+            validate={
+              getPeriodo(values, indice).checked &&
+              composeValidators(naoPodeSerZero, maxValue(faixa.count))
+            }
+          />
+        </td>
+      </tr>
+    ));
 
   return (
     <>
@@ -534,34 +583,24 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                         <span
                                           role="checkbox"
                                           tabIndex={0}
-                                          onKeyDown={(e) => {
-                                            if (
-                                              e.key === "Enter" ||
-                                              e.key === " "
-                                            ) {
-                                              e.preventDefault();
-                                              handlePeriodoOnClick(
-                                                form,
-                                                name,
-                                                indice,
-                                                values,
-                                              );
-                                            }
-                                          }}
+                                          onKeyDown={criarOnKeyDownPeriodo(
+                                            form,
+                                            name,
+                                            indice,
+                                            values,
+                                          )}
                                           aria-checked={
                                             values.substituicoes[indice].checked
                                           }
                                           aria-disabled={
                                             !getPeriodo(values, indice).checked
                                           }
-                                          onClick={async () => {
-                                            handlePeriodoOnClick(
-                                              form,
-                                              name,
-                                              indice,
-                                              values,
-                                            );
-                                          }}
+                                          onClick={criarOnClickPeriodo(
+                                            form,
+                                            name,
+                                            indice,
+                                            values,
+                                          )}
                                           className="checkbox-custom"
                                           data-cy={`checkbox-${
                                             getPeriodo(values, indice).nome
@@ -603,14 +642,10 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           []
                                         }
                                         options={getTiposAlimentacaoDe(values)}
-                                        onSelectedChanged={(values_) => {
-                                          form.change(
-                                            `substituicoes[${indice}].tipos_alimentacao_de_selecionados`,
-                                            values_.map(
-                                              (value_) => value_.value,
-                                            ),
-                                          );
-                                        }}
+                                        onSelectedChanged={criarOnSelectedChanged(
+                                          form,
+                                          indice,
+                                        )}
                                         placeholder="Selecione tipos de alimentação"
                                       />
                                     </div>
@@ -665,36 +700,11 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
                                           .faixas_etarias &&
                                           !values.substituicoes[indice]
                                             .loading_faixas &&
-                                          values.substituicoes[
-                                            indice
-                                          ].faixas_etarias.map((faixa, key) => {
-                                            return (
-                                              <tr key={key} className="row">
-                                                <td className="col-8">
-                                                  {faixa.faixa_etaria.__str__}
-                                                </td>
-                                                <td className="col-2 text-center">
-                                                  {faixa.count}
-                                                </td>
-                                                <td className="col-2 text-center">
-                                                  <Field
-                                                    component={InputText}
-                                                    type="number"
-                                                    dataTestIdDiv={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
-                                                    name={`${name}.faixas.${faixa.faixa_etaria.uuid}`}
-                                                    validate={
-                                                      getPeriodo(values, indice)
-                                                        .checked &&
-                                                      composeValidators(
-                                                        naoPodeSerZero,
-                                                        maxValue(faixa.count),
-                                                      )
-                                                    }
-                                                  />
-                                                </td>
-                                              </tr>
-                                            );
-                                          })}
+                                          renderLinhasFaixasEtarias(
+                                            values,
+                                            indice,
+                                            name,
+                                          )}
                                         <tr className="row">
                                           <td className="col-8 fw-bold">
                                             Total
@@ -780,4 +790,42 @@ export const AlteracaoDoTipoDeAlimentacaoCEI = ({ ...props }) => {
       )}
     </>
   );
+};
+
+AlteracaoDoTipoDeAlimentacaoCEI.propTypes = {
+  meusDados: PropTypes.shape({
+    vinculo_atual: PropTypes.shape({
+      instituicao: PropTypes.shape({
+        uuid: PropTypes.string.isRequired,
+        quantidade_alunos: PropTypes.number,
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
+  motivos: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      nome: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  periodos: PropTypes.arrayOf(
+    PropTypes.shape({
+      uuid: PropTypes.string.isRequired,
+      nome: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  proximosCincoDiasUteis: PropTypes.instanceOf(Date).isRequired,
+  proximosDoisDiasUteis: PropTypes.instanceOf(Date).isRequired,
+  vinculos: PropTypes.arrayOf(
+    PropTypes.shape({
+      periodo_escolar: PropTypes.shape({
+        nome: PropTypes.string.isRequired,
+      }).isRequired,
+      tipos_alimentacao: PropTypes.arrayOf(
+        PropTypes.shape({
+          uuid: PropTypes.string.isRequired,
+          nome: PropTypes.string.isRequired,
+        }),
+      ).isRequired,
+    }),
+  ).isRequired,
 };

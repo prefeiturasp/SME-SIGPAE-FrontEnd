@@ -41,7 +41,7 @@ export const ModalCancelaSuspensao = ({ ...props }) => {
     const values_ = deepCopy(values);
     if (values.datas) {
       values_.datas = values_.datas.map((data) =>
-        data.split("/").reverse().join("-")
+        data.split("/").reverse().join("-"),
       );
     }
     const resp = await escolaCancelaSuspensao(uuid, values_);
@@ -53,11 +53,11 @@ export const ModalCancelaSuspensao = ({ ...props }) => {
         dias_motivos.length
       ) {
         toastSuccess(
-          "A solicitação de Suspensão de Alimentação foi cancelada parcialmente com sucesso!"
+          "A solicitação de Suspensão de Alimentação foi cancelada parcialmente com sucesso!",
         );
       } else {
         toastSuccess(
-          "A solicitação de Suspensão de Alimentação foi cancelada com sucesso!"
+          "A solicitação de Suspensão de Alimentação foi cancelada com sucesso!",
         );
       }
       if (loadSolicitacao) loadSolicitacao(uuid, tipoSolicitacao);
@@ -65,6 +65,11 @@ export const ModalCancelaSuspensao = ({ ...props }) => {
       closeModal();
       toastError(getError(resp.data));
     }
+  };
+
+  const estaCanceladoOuVencido = (dia) => {
+    const diaMotivo = dias_motivos.find((i) => i.data === dia);
+    return diaMotivo.cancelado || moment(dia, "DD/MM/YYYY") <= moment();
   };
 
   return (
@@ -90,7 +95,7 @@ export const ModalCancelaSuspensao = ({ ...props }) => {
                 <>
                   <p>Selecione a(s) data(s) para solicitar o cancelamento:</p>
                   {Object.entries(
-                    formataMotivosDiasComOutros(dias_motivos)
+                    formataMotivosDiasComOutros(dias_motivos),
                   ).map((dadosMotivo, key) => {
                     const [motivo, datas] = dadosMotivo;
                     return (
@@ -104,11 +109,7 @@ export const ModalCancelaSuspensao = ({ ...props }) => {
                               <Field
                                 name="datas"
                                 component="input"
-                                disabled={
-                                  dias_motivos.find((i) => i.data === dia)
-                                    .cancelado ||
-                                  moment(dia, "DD/MM/YYYY") <= moment()
-                                }
+                                disabled={estaCanceladoOuVencido(dia)}
                                 type="checkbox"
                                 value={dia}
                               />{" "}

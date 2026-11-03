@@ -14,7 +14,7 @@ import { UsuarioResponsavel } from "./components/Form/UsuarioResponsavel";
 import { ContratosFormSet } from "./components/Form/ContratosFormSet";
 import { ContatoFormSet } from "./components/Form/ContatoFormSet";
 import { PERFIL } from "src/constants/shared";
-import { formataJsonParaEnvio } from "./helper";
+import { formataJsonParaEnvio, mensagemErroCnpj } from "./helper";
 import {
   createTerceirizada,
   createNaoTerceirizada,
@@ -300,6 +300,19 @@ export const CadastroEmpresa = () => {
     setExibirModal(false);
   };
 
+  const exibirErroEnvio = (response, prefixo) => {
+    const data = response?.data ?? response;
+    const mensagemCnpj = mensagemErroCnpj(data);
+
+    if (mensagemCnpj) {
+      toastError(mensagemCnpj);
+    } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
+      toastError(`${prefixo}: ${getError(data)}`);
+    } else {
+      toastError(prefixo);
+    }
+  };
+
   const atualizarEmpresa = (uuid, dados, ehDistribuidor) => {
     const service = ehDistribuidor ? updateNaoTerceirizada : updateTerceirizada;
 
@@ -308,12 +321,8 @@ export const CadastroEmpresa = () => {
         if (response?.status === HTTP_STATUS.OK) {
           toastSuccess("Empresa atualizada com sucesso!");
           navigate("/configuracoes/cadastros/empresas-cadastradas");
-        } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(
-            `Erro ao atualizar cadastro de empresa: ${getError(response.data)}`,
-          );
         } else {
-          toastError(`Erro ao atualizar cadastro de empresa`);
+          exibirErroEnvio(response, "Erro ao atualizar cadastro de empresa");
         }
       })
       .catch(() => {
@@ -329,10 +338,8 @@ export const CadastroEmpresa = () => {
         if (response?.status === HTTP_STATUS.CREATED) {
           toastSuccess("Empresa cadastrada com sucesso!");
           navigate("/configuracoes/cadastros/empresas-cadastradas");
-        } else if (response?.status === HTTP_STATUS.BAD_REQUEST) {
-          toastError(`Erro ao cadastrar empresa: ${getError(response.data)}`);
         } else {
-          toastError(`Erro ao cadastrar empresa`);
+          exibirErroEnvio(response, "Erro ao cadastrar empresa");
         }
       })
       .catch(() => {

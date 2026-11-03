@@ -44,6 +44,8 @@ function reducer(state, { type: actionType, payload }) {
   }
 }
 
+const extrairNomes = (resposta) => resposta.data.results.map((el) => el.nome);
+
 const FormBuscaProduto = ({ onSubmit, exibirStatus = true, initialValues }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -59,9 +61,9 @@ const FormBuscaProduto = ({ onSubmit, exibirStatus = true, initialValues }) => {
         dispatch({
           type: "popularDados",
           payload: {
-            produtos: produtos.data.results.map((el) => el.nome),
-            marcas: marcas.data.results.map((el) => el.nome),
-            fabricantes: fabricantes.data.results.map((el) => el.nome),
+            produtos: extrairNomes(produtos),
+            marcas: extrairNomes(marcas),
+            fabricantes: extrairNomes(fabricantes),
           },
         });
       });

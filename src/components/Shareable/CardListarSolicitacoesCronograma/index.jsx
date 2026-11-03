@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import "./style.scss";
 import { Tooltip } from "antd";
+import { ehFLV } from "src/helpers/preRecebimento";
 
 export default ({
   tipo,
@@ -26,7 +27,8 @@ export default ({
                 const ehPontoAPontoOuFlv =
                   Boolean(value.ponto_a_ponto) ||
                   value.tipo_entrega === "PONTO_A_PONTO" ||
-                  value.eh_ficha_tecnica_flv;
+                  Boolean(value.eh_ficha_tecnica_flv) ||
+                  ehFLV(value.categoria);
 
                 const classeDestaque = ehPontoAPontoOuFlv
                   ? "categoria-na-cor-verde"

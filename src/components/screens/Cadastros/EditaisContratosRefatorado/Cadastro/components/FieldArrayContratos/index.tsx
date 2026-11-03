@@ -97,6 +97,10 @@ export const FieldArrayContratos = ({
     );
   };
 
+  const criarOnKeyDownRemoverContrato =
+    (index_contratos: number) => (e: React.KeyboardEvent) =>
+      acionaComEnterOuEspaco(e, () => removeContrato(index_contratos));
+
   const exibeBotaoRemoverVigencia = (
     indexVigencia: number,
     index_contratos: number,
@@ -125,6 +129,10 @@ export const FieldArrayContratos = ({
       ),
     );
   };
+
+  const criarOnClickRemoverVigencia =
+    (index_contratos: number, indexVigencia: number) => () =>
+      removeVigencia(index_contratos, indexVigencia);
 
   const exibeAvisoVigenciaVencida = (
     indexVigencia: number,
@@ -255,11 +263,7 @@ export const FieldArrayContratos = ({
                       onClick={() => {
                         removeContrato(index_contratos);
                       }}
-                      onKeyDown={(e) =>
-                        acionaComEnterOuEspaco(e, () =>
-                          removeContrato(index_contratos),
-                        )
-                      }
+                      onKeyDown={criarOnKeyDownRemoverContrato(index_contratos)}
                       className="remover float-end"
                     >
                       <i className="fas fa-trash" /> Remover contrato
@@ -303,9 +307,10 @@ export const FieldArrayContratos = ({
                   validate={required}
                 />
               </div>
-              <FieldArray name={`${name_contratos}.vigencias`}>
-                {({ fields }) =>
-                  fields.map((name_vigencias, indexVigencia) => (
+              {values.contratos[index_contratos].vigencias.map(
+                (_vigencia, indexVigencia) => {
+                  const name_vigencias = `${name_contratos}.vigencias[${indexVigencia}]`;
+                  return (
                     <>
                       <div className={`col-4`}>
                         <Field
@@ -363,9 +368,10 @@ export const FieldArrayContratos = ({
                           <Botao
                             texto="Remover"
                             type={BUTTON_TYPE.BUTTON}
-                            onClick={() =>
-                              removeVigencia(index_contratos, indexVigencia)
-                            }
+                            onClick={criarOnClickRemoverVigencia(
+                              index_contratos,
+                              indexVigencia,
+                            )}
                             style={BUTTON_STYLE.RED_OUTLINE}
                           />
                         </div>
@@ -407,9 +413,9 @@ export const FieldArrayContratos = ({
                         </div>
                       )}
                     </>
-                  ))
-                }
-              </FieldArray>
+                  );
+                },
+              )}
             </div>
 
             {!values.contratos[index_contratos].encerrado && (

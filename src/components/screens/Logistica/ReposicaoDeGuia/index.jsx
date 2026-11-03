@@ -215,101 +215,109 @@ export default () => {
     else return false;
   };
 
+  const separaEmbalagensPorTipo = (embalagensAlimento) => {
+    const primeira = embalagensAlimento[0];
+    const alternativa = embalagensAlimento[1] || {};
+    return {
+      fechada: primeira.tipo_embalagem === "Fechada" ? primeira : alternativa,
+      fracionada:
+        primeira.tipo_embalagem === "Fracionada" ? primeira : alternativa,
+    };
+  };
+
+  const calculaFlagsDeRecebimento = (
+    recebidos_fechada,
+    recebidos_fracionada,
+    fechada,
+    fracionada,
+  ) => {
+    const alimentoParcial =
+      recebidos_fechada < fechada.qtd_a_receber ||
+      recebidos_fracionada < fracionada.qtd_a_receber;
+    const embalagensCompletas =
+      fechada.tipo_embalagem === "Fechada" &&
+      fracionada.tipo_embalagem === "Fracionada";
+    const alimentoFaltante = embalagensCompletas
+      ? recebidos_fechada === 0 && recebidos_fracionada === 0
+      : recebidos_fechada === 0 || recebidos_fracionada === 0;
+    return { alimentoParcial, alimentoFaltante };
+  };
+
+  const registraOcorrenciasPorStatus = (values, index, statusRecebido) => {
+    if (statusRecebido) {
+      values[`status_${index}`] = "Recebido";
+      if (
+        values[`ocorrencias_${index}`] &&
+        values[`ocorrencias_${index}`].length
+      ) {
+        let oldOcorrenciasApagadas = ocorrenciasApagadas[index]
+          ? ocorrenciasApagadas[index]
+          : [];
+        ocorrenciasApagadas[index] = [
+          ...oldOcorrenciasApagadas,
+          ...values[`ocorrencias_${index}`],
+        ];
+      }
+
+      values[`ocorrencias_${index}`] = [];
+    } else if (
+      ocorrenciasApagadas[index] &&
+      ocorrenciasApagadas[index].length
+    ) {
+      values[`ocorrencias_${index}`] = ocorrenciasApagadas[index];
+      ocorrenciasApagadas[index] = [];
+    }
+  };
+
+  const processaStatusDoAlimento = (values, index) => {
+    let recebidos_fechada = parseInt(values[`recebidos_fechada_${index}`]);
+    let recebidos_fracionada = parseInt(
+      values[`recebidos_fracionada_${index}`],
+    );
+    let dataEhDepois = comparaDataEntrega(values.data_entrega_real);
+    let embalagensAlimento = guia.alimentos[index].embalagens;
+    const { fechada, fracionada } = separaEmbalagensPorTipo(embalagensAlimento);
+
+    if (guia.status === "Insucesso de entrega") dataEhDepois = false;
+
+    const { alimentoParcial, alimentoFaltante } = calculaFlagsDeRecebimento(
+      recebidos_fechada,
+      recebidos_fracionada,
+      fechada,
+      fracionada,
+    );
+
+    let newFlagAlimento = flagAlimento;
+    newFlagAlimento[index] = alimentoFaltante || alimentoParcial;
+    setFlagAlimento(newFlagAlimento);
+    setFlagAtraso(dataEhDepois);
+
+    if (alimentoParcial) values[`status_${index}`] = "Parcial";
+
+    if (alimentoFaltante) values[`status_${index}`] = "Não Recebido";
+
+    const statusRecebido =
+      values.data_entrega_real &&
+      !alimentoParcial &&
+      !alimentoFaltante &&
+      (!isNaN(recebidos_fechada) || !isNaN(recebidos_fracionada));
+    registraOcorrenciasPorStatus(values, index, statusRecebido);
+
+    if (
+      values[`recebidos_fechada_${index}`] === undefined &&
+      values[`recebidos_fracionada_${index}`] === undefined
+    )
+      values[`status_${index}`] = undefined;
+
+    if (!values.data_entrega_real) {
+      values[`status_${index}`] = undefined;
+    }
+  };
+
   const validaStatus = (values) => {
     if (guia.alimentos)
       guia.alimentos.forEach((item, index) => {
-        let recebidos_fechada = parseInt(values[`recebidos_fechada_${index}`]);
-        let recebidos_fracionada = parseInt(
-          values[`recebidos_fracionada_${index}`],
-        );
-        let dataEhDepois = comparaDataEntrega(values.data_entrega_real);
-        let embalagensAlimento = guia.alimentos[index].embalagens;
-        let fechada;
-        let fracionada;
-        let alimentoFaltante;
-        if (embalagensAlimento.length > 1) {
-          fechada =
-            embalagensAlimento[0].tipo_embalagem === "Fechada"
-              ? embalagensAlimento[0]
-              : embalagensAlimento[1];
-          fracionada =
-            embalagensAlimento[0].tipo_embalagem === "Fracionada"
-              ? embalagensAlimento[0]
-              : embalagensAlimento[1];
-        } else {
-          fechada =
-            embalagensAlimento[0].tipo_embalagem === "Fechada"
-              ? embalagensAlimento[0]
-              : {};
-          fracionada =
-            embalagensAlimento[0].tipo_embalagem === "Fracionada"
-              ? embalagensAlimento[0]
-              : {};
-        }
-
-        if (guia.status === "Insucesso de entrega") dataEhDepois = false;
-
-        let alimentoParcial =
-          recebidos_fechada < fechada.qtd_a_receber ||
-          recebidos_fracionada < fracionada.qtd_a_receber;
-        if (
-          fechada.tipo_embalagem === "Fechada" &&
-          fracionada.tipo_embalagem === "Fracionada"
-        ) {
-          alimentoFaltante =
-            recebidos_fechada === 0 && recebidos_fracionada === 0;
-        } else {
-          alimentoFaltante =
-            recebidos_fechada === 0 || recebidos_fracionada === 0;
-        }
-
-        let newFlagAlimento = flagAlimento;
-        newFlagAlimento[index] = alimentoFaltante || alimentoParcial;
-        setFlagAlimento(newFlagAlimento);
-        setFlagAtraso(dataEhDepois);
-
-        if (alimentoParcial) values[`status_${index}`] = "Parcial";
-
-        if (alimentoFaltante) values[`status_${index}`] = "Não Recebido";
-
-        if (
-          values.data_entrega_real &&
-          !alimentoParcial &&
-          !alimentoFaltante &&
-          (!isNaN(recebidos_fechada) || !isNaN(recebidos_fracionada))
-        ) {
-          values[`status_${index}`] = "Recebido";
-          if (
-            values[`ocorrencias_${index}`] &&
-            values[`ocorrencias_${index}`].length
-          ) {
-            let oldOcorrenciasApagadas = ocorrenciasApagadas[index]
-              ? ocorrenciasApagadas[index]
-              : [];
-            ocorrenciasApagadas[index] = [
-              ...oldOcorrenciasApagadas,
-              ...values[`ocorrencias_${index}`],
-            ];
-          }
-
-          values[`ocorrencias_${index}`] = [];
-        } else if (
-          ocorrenciasApagadas[index] &&
-          ocorrenciasApagadas[index].length
-        ) {
-          values[`ocorrencias_${index}`] = ocorrenciasApagadas[index];
-          ocorrenciasApagadas[index] = [];
-        }
-
-        if (
-          values[`recebidos_fechada_${index}`] === undefined &&
-          values[`recebidos_fracionada_${index}`] === undefined
-        )
-          values[`status_${index}`] = undefined;
-
-        if (!values.data_entrega_real) {
-          values[`status_${index}`] = undefined;
-        }
+        processaStatusDoAlimento(values, index);
       });
   };
 

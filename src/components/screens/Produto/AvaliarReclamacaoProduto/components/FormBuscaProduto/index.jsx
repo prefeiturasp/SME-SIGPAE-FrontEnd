@@ -49,6 +49,8 @@ function reducer(state, { type: actionType, payload }) {
   }
 }
 
+const extrairNomes = (resposta) => resposta.data.results.map((el) => el.nome);
+
 export const FormBuscaProduto = ({
   onSubmit,
   exibirBotaoVoltar,
@@ -67,9 +69,9 @@ export const FormBuscaProduto = ({
         dispatch({
           type: "popularDados",
           payload: {
-            produtos: produtos.data.results.map((el) => el.nome),
-            marcas: marcas.data.results.map((el) => el.nome),
-            fabricantes: fabricantes.data.results.map((el) => el.nome),
+            produtos: extrairNomes(produtos),
+            marcas: extrairNomes(marcas),
+            fabricantes: extrairNomes(fabricantes),
             status: STATUS_RECLAMACAO_PRODUTO,
           },
         });

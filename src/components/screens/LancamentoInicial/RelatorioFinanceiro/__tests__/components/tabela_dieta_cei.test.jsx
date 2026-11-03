@@ -107,7 +107,16 @@ describe("Teste de comportamentos componente - TabelaDietasCEI", () => {
       />,
     );
 
-    expect(screen.getByText("DIETA ESPECIAL - TIPO A")).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("columnheader").map((th) => th.textContent),
+    ).toEqual([
+      "DIETA ESPECIAL - TIPO A",
+      "NÚMERO DE ATEND. TIPO A",
+      "VALOR UNITÁRIO",
+      "% DE ACRÉSCIMO",
+      "VALOR UNITÁRIO TOTAL",
+      "VALOR TOTAL",
+    ]);
 
     expect(
       screen.getAllByText((_, el) =>
@@ -123,8 +132,8 @@ describe("Teste de comportamentos componente - TabelaDietasCEI", () => {
     expect(screen.getAllByText("R$ 10,00").length).toBeGreaterThan(0);
     expect(screen.getAllByText("R$ 20,00").length).toBeGreaterThan(0);
 
-    expect(screen.getAllByText("% 20,00").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("% 50,00").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("20%").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("50%").length).toBeGreaterThan(0);
 
     expect(screen.getAllByText("R$ 12,00").length).toBeGreaterThan(0);
     expect(screen.getAllByText("R$ 30,00").length).toBeGreaterThan(0);

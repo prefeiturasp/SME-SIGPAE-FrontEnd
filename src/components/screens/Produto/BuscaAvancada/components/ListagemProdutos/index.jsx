@@ -5,6 +5,14 @@ import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 import "./styles.scss";
 
 const ListagemProdutos = ({ produtos, ativos, setAtivos }) => {
+  const alternarAtivo = (uuid) => {
+    if (ativos && ativos.includes(uuid)) {
+      setAtivos(ativos.filter((el) => el !== uuid));
+    } else {
+      setAtivos(ativos ? [...ativos, uuid] : [uuid]);
+    }
+  };
+
   return (
     <section className="resultado-busca-produto-avancada">
       <header>Resultado da Pesquisa</header>
@@ -46,25 +54,11 @@ const ListagemProdutos = ({ produtos, ativos, setAtivos }) => {
                     aria-expanded={Boolean(
                       ativos && ativos.includes(produto.uuid),
                     )}
-                    onClick={() => {
-                      ativos && ativos.includes(produto.uuid)
-                        ? setAtivos(ativos.filter((el) => el !== produto.uuid))
-                        : setAtivos(
-                            ativos ? [...ativos, produto.uuid] : [produto.uuid],
-                          );
-                    }}
+                    onClick={() => alternarAtivo(produto.uuid)}
                     onKeyDown={(e) =>
-                      acionaComEnterOuEspaco(e, () => {
-                        ativos && ativos.includes(produto.uuid)
-                          ? setAtivos(
-                              ativos.filter((el) => el !== produto.uuid),
-                            )
-                          : setAtivos(
-                              ativos
-                                ? [...ativos, produto.uuid]
-                                : [produto.uuid],
-                            );
-                      })
+                      acionaComEnterOuEspaco(e, () =>
+                        alternarAtivo(produto.uuid),
+                      )
                     }
                   />
                 </div>

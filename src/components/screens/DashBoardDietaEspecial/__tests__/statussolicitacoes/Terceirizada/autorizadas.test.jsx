@@ -24,7 +24,7 @@ describe("Teste StatusSolicitacoes - Terceirizada - Autorizadas", () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCODAEGA);
     mock
       .onGet("/codae-solicitacoes/autorizados-dieta/")
-      .replyOnce(200, mockDietasAutorizadas);
+      .reply(200, mockDietasAutorizadas);
     mock
       .onGet("/lotes/meus-lotes-vinculados/")
       .reply(200, mockMeusLotesVinculados);

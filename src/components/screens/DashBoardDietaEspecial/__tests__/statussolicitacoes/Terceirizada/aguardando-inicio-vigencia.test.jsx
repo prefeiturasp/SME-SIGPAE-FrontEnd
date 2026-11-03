@@ -21,7 +21,7 @@ describe("Teste StatusSolicitacoes - Aguardando início da vigência - Terceiriz
       .onGet(
         `/terceirizada-solicitacoes/aguardando-vigencia-dieta/${terceirizadaUuid}/`,
       )
-      .replyOnce(200, mockDietasAutorizadas);
+      .reply(200, mockDietasAutorizadas);
 
     Object.defineProperty(global, "localStorage", { value: localStorageMock });
     localStorage.setItem(

@@ -47,6 +47,7 @@ export interface RelatorioFinanceiroConsolidado {
   tabelas: TabelaParametrizacao[];
   grupo_unidade_escolar: GrupoUnidadeEscolar;
   mes_ano: string;
+  possui_reajuste?: boolean;
 }
 
 type Edital = {

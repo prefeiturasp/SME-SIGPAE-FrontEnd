@@ -38,6 +38,37 @@ import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinatura
 import moment from "moment";
 import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
 
+const labelOcorrencia = (id) =>
+  TIPOS_OCORRENCIAS_OPTIONS.find((x) => x.value === id).label;
+
+const formatarOcorrenciasDaGuia = (guia) => {
+  guia.conferencias.forEach((conferencia) => {
+    conferencia.conferencia_dos_alimentos.forEach((conferenciaAlimento) => {
+      if (conferenciaAlimento.ocorrencia) {
+        conferenciaAlimento.ocorrencia = conferenciaAlimento.ocorrencia
+          .map(labelOcorrencia)
+          .join(", ");
+      }
+    });
+  });
+};
+
+const registrarOcorrenciasDosAlimentos = (conferencias, guia, ocorrencias) => {
+  conferencias.forEach((c) =>
+    c.conferencia_dos_alimentos.forEach((conf) => {
+      conf.ocorrencia.forEach((ocorrencia) => {
+        if (ocorrencias[ocorrencia]) {
+          if (!ocorrencias[ocorrencia].includes(guia)) {
+            ocorrencias[ocorrencia].push(guia);
+          }
+        } else {
+          ocorrencias[ocorrencia] = [guia];
+        }
+      });
+    }),
+  );
+};
+
 export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState(false);
@@ -87,25 +118,9 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
   }, []);
 
   const abriModalGuia = (guia) => {
-    guia.conferencias.map((conferencia) => {
-      conferencia.conferencia_dos_alimentos.map((conferenciaAlimento) => {
-        if (conferenciaAlimento.ocorrencia) {
-          conferenciaAlimento.ocorrencia =
-            conferenciaAlimento.ocorrencia.reduce(
-              (texto, ocorrencia, index) => {
-                let virgula = index === 0 ? "" : ", ";
-                return texto + virgula + labelOcorrencia(ocorrencia);
-              },
-              "",
-            );
-        }
-      });
-    });
+    formatarOcorrenciasDaGuia(guia);
     setGuiaModal(guia);
   };
-
-  const labelOcorrencia = (id) =>
-    TIPOS_OCORRENCIAS_OPTIONS.find((x) => x.value === id).label;
 
   const getPrevisoesContratuais = (previsoes, ocorrencias) => {
     let values = {};
@@ -119,25 +134,13 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
   };
 
   const organizaOcorrencias = (notificacao) => {
-    let guias = notificacao.guias_notificadas;
+    const guias = notificacao.guias_notificadas;
 
-    let ocorrencias = {};
+    const ocorrencias = {};
 
-    guias.forEach((guia) => {
-      guia.conferencias.map((c) =>
-        c.conferencia_dos_alimentos.forEach((conf) => {
-          conf.ocorrencia.forEach((ocorrencia) => {
-            if (ocorrencias[ocorrencia]) {
-              if (!ocorrencias[ocorrencia].includes(guia)) {
-                ocorrencias[ocorrencia].push(guia);
-              }
-            } else {
-              ocorrencias[ocorrencia] = [guia];
-            }
-          });
-        }),
-      );
-    });
+    guias.forEach((guia) =>
+      registrarOcorrenciasDosAlimentos(guia.conferencias, guia, ocorrencias),
+    );
 
     notificacao.lista_ocorrencias = ocorrencias;
 

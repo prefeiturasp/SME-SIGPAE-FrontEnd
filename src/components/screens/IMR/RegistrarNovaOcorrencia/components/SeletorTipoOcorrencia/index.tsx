@@ -12,6 +12,7 @@ type SeletorTipoOcorrenciaType = {
   tiposOcorrenciaDaCategoria: Array<TipoOcorrenciaInterface>;
   values: RegistrarNovaOcorrenciaFormInterface;
   form: FormApi;
+  disabled?: boolean;
 };
 
 export const SeletorTipoOcorrencia = ({
@@ -23,6 +24,7 @@ export const SeletorTipoOcorrencia = ({
     tiposOcorrencia,
     values,
     form,
+    disabled,
   } = props;
 
   return (
@@ -39,14 +41,14 @@ export const SeletorTipoOcorrencia = ({
       ]}
       required
       validate={required}
-      disabled={!values.categoria}
+      disabled={disabled || !values.categoria}
       naoDesabilitarPrimeiraOpcao
       onChangeEffect={async (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         await setTipoOcorrencia(
           tiposOcorrencia.find(
-            (tipoOcorrencia) => tipoOcorrencia.uuid === value
-          )
+            (tipoOcorrencia) => tipoOcorrencia.uuid === value,
+          ),
         );
         await form.change("grupos", [{}]);
       }}

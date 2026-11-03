@@ -477,7 +477,7 @@ class FoodSuspensionEditor extends Component {
   }
 
   enviaSuspensaoDeAlimentacao(uuid) {
-    enviarSuspensaoDeAlimentacao(uuid).then(
+    return enviarSuspensaoDeAlimentacao(uuid).then(
       (res) => {
         if (res.status === HTTP_STATUS.OK) {
           this.refresh();

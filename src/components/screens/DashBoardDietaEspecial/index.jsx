@@ -75,6 +75,95 @@ export const DashboardDietaEspecial = ({ ...props }) => {
     usuarioEscolaEhGestaoDireta() ||
     usuarioEscolaEhGestaoParceira();
 
+  const carregarPendenteAutorizacao = (response) => {
+    if (response.status === HTTP_STATUS.OK) {
+      setAguardandoAutorizacao(
+        ajustarFormatoLog(response.data.results, "pendentes-aut"),
+      );
+      setCountRecebidas(response.data.count);
+    } else {
+      setErro("Erro ao carregar solicitações aguardando autorização.");
+    }
+  };
+
+  const carregarAutorizadas = (response) => {
+    if (response.status === HTTP_STATUS.OK) {
+      setAutorizadas(ajustarFormatoLog(response.data.results, "autorizadas"));
+      setCountAutorizadas(response.data.count);
+    } else {
+      setErro("Erro ao carregar solicitações autorizadas.");
+    }
+  };
+
+  const carregarNegadas = (response) => {
+    if (response.status === HTTP_STATUS.OK) {
+      setNegadas(ajustarFormatoLog(response.data.results, "negadas"));
+    } else {
+      setErro("Erro ao carregar solicitações negadas.");
+    }
+  };
+
+  const carregarCanceladas = (response) => {
+    if (response.status === HTTP_STATUS.OK) {
+      setCanceladas(ajustarFormatoLog(response.data.results, "canceladas"));
+    } else {
+      setErro("Erro ao carregar solicitações canceladas.");
+    }
+  };
+
+  const carregarInativas = (response) => {
+    if (response.status === HTTP_STATUS.OK) {
+      setInativas(ajustarFormatoLog(response.data.results, "inativas"));
+    } else {
+      setErro("Erro ao carregar solicitações inativas.");
+    }
+  };
+
+  const carregarInativasTemporariamente = (response) => {
+    if (response.status === HTTP_STATUS.OK) {
+      setInativasTemporariamente(
+        ajustarFormatoLog(response.data.results, "inativas-temp"),
+      );
+    } else {
+      setErro("Erro ao carregar solicitações inativas temporariamente.");
+    }
+  };
+
+  const carregarAutorizadasTemporariamente = (response) => {
+    if (response.status === HTTP_STATUS.OK) {
+      setAutorizadasTemporariamente(
+        ajustarFormatoLog(response.data.results, "autorizadas-temp"),
+      );
+    } else {
+      setErro("Erro ao carregar solicitações autorizadas temporariamente.");
+    }
+  };
+
+  const carregarAguardandoVigencia = async (params) => {
+    if (
+      usuarioEhEscolaTerceirizada() ||
+      usuarioEhEscolaTerceirizadaDiretor() ||
+      usuarioEhEmpresaTerceirizada()
+    ) {
+      const response = await getDietaEspecialAguardandoVigencia(
+        instituicao?.uuid,
+        params,
+      );
+      if (response.status === HTTP_STATUS.OK) {
+        setAguardandoVigencia(
+          ajustarFormatoLog(
+            response.data.results,
+            "aguardando-inicio-vigencia",
+          ),
+        );
+      } else {
+        setErro("Erro ao carregar solicitações aguardando início de vigência.");
+      }
+    } else {
+      setAguardandoVigencia([]);
+    }
+  };
+
   const getSolicitacoesAsync = async (params = null) => {
     setLoading(true);
 
@@ -96,89 +185,14 @@ export const DashboardDietaEspecial = ({ ...props }) => {
       getDietaEspecialAutorizadasTemporariamente(instituicao?.uuid, params),
     ]);
 
-    if (responsePendenteAutorizacao.status === HTTP_STATUS.OK) {
-      setAguardandoAutorizacao(
-        ajustarFormatoLog(
-          responsePendenteAutorizacao.data.results,
-          "pendentes-aut",
-        ),
-      );
-      setCountRecebidas(responsePendenteAutorizacao.data.count);
-    } else {
-      setErro("Erro ao carregar solicitações aguardando autorização.");
-    }
-
-    if (responseAutorizadas.status === HTTP_STATUS.OK) {
-      setAutorizadas(
-        ajustarFormatoLog(responseAutorizadas.data.results, "autorizadas"),
-      );
-      setCountAutorizadas(responseAutorizadas.data.count);
-    } else {
-      setErro("Erro ao carregar solicitações autorizadas.");
-    }
-
-    if (responseNegadas.status === HTTP_STATUS.OK) {
-      setNegadas(ajustarFormatoLog(responseNegadas.data.results, "negadas"));
-    } else {
-      setErro("Erro ao carregar solicitações negadas.");
-    }
-
-    if (responseCanceladas.status === HTTP_STATUS.OK) {
-      setCanceladas(
-        ajustarFormatoLog(responseCanceladas.data.results, "canceladas"),
-      );
-    } else {
-      setErro("Erro ao carregar solicitações canceladas.");
-    }
-
-    if (responseInativas.status === HTTP_STATUS.OK) {
-      setInativas(ajustarFormatoLog(responseInativas.data.results, "inativas"));
-    } else {
-      setErro("Erro ao carregar solicitações inativas.");
-    }
-
-    if (responseInativasTemporariamente.status === HTTP_STATUS.OK) {
-      setInativasTemporariamente(
-        ajustarFormatoLog(
-          responseInativasTemporariamente.data.results,
-          "inativas-temp",
-        ),
-      );
-    } else {
-      setErro("Erro ao carregar solicitações inativas temporariamente.");
-    }
-
-    if (responseAutorizadasTemporariamente.status === HTTP_STATUS.OK) {
-      setAutorizadasTemporariamente(
-        ajustarFormatoLog(
-          responseAutorizadasTemporariamente.data.results,
-          "autorizadas-temp",
-        ),
-      );
-    } else {
-      setErro("Erro ao carregar solicitações autorizadas temporariamente.");
-    }
-
-    if (
-      usuarioEhEscolaTerceirizada() ||
-      usuarioEhEscolaTerceirizadaDiretor() ||
-      usuarioEhEmpresaTerceirizada()
-    ) {
-      const responseAguardandoVigencia =
-        await getDietaEspecialAguardandoVigencia(instituicao?.uuid, params);
-      if (responseAguardandoVigencia.status === HTTP_STATUS.OK) {
-        setAguardandoVigencia(
-          ajustarFormatoLog(
-            responseAguardandoVigencia.data.results,
-            "aguardando-inicio-vigencia",
-          ),
-        );
-      } else {
-        setErro("Erro ao carregar solicitações aguardando início de vigência.");
-      }
-    } else {
-      setAguardandoVigencia([]);
-    }
+    carregarPendenteAutorizacao(responsePendenteAutorizacao);
+    carregarAutorizadas(responseAutorizadas);
+    carregarNegadas(responseNegadas);
+    carregarCanceladas(responseCanceladas);
+    carregarInativas(responseInativas);
+    carregarInativasTemporariamente(responseInativasTemporariamente);
+    carregarAutorizadasTemporariamente(responseAutorizadasTemporariamente);
+    await carregarAguardandoVigencia(params);
     setLoading(false);
   };
 

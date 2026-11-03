@@ -43,7 +43,7 @@ export const updateVinculosTipoAlimentacaoPorTipoUnidadeEscolar = async (
       },
     );
     let json = await response.json();
-    const status = await response.status;
+    const status = response.status;
     json.status = status;
     return json;
   } catch (err) {
@@ -85,7 +85,7 @@ export const alteraVinculosTipoAlimentacao = async (uuid, values) => {
       },
     );
     let json = await response.json();
-    const status = await response.status;
+    const status = response.status;
     json.status = status;
     return json;
   } catch (err) {
@@ -216,7 +216,7 @@ export const putHorariosCombosPorEscola = async (payload, uuid) => {
       },
     );
     let json = await response.json();
-    const status = await response.status;
+    const status = response.status;
     json.status = status;
     return json;
   } catch (err) {
@@ -235,7 +235,7 @@ export const atualizaQuantidadeDeAlunos = async (payload, uuid) => {
       },
     );
     let json = await response.json();
-    const status = await response.status;
+    const status = response.status;
     json.status = status;
     return json;
   } catch (err) {

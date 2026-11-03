@@ -57,9 +57,9 @@ export const TabelaUnidades = ({
             >
               Tipos de Alimentações
             </th>
-            <th
-              className={`${editable ? "col-1" : ""} action-column text-center`}
-            ></th>
+            {editable && (
+              <th className={`col-1 action-column text-center`}></th>
+            )}
           </tr>
         </thead>
 

@@ -142,6 +142,32 @@ import {
 import { getListaDiasSuspensaoAtividades } from "src/services/cadastroDiasSuspensaoAtividades.service";
 import { listDiasLetivosCalendario } from "src/services/diasLetivos";
 
+const obterQuantidadeAminoacidos = (logs, dia) =>
+  logs.find(
+    (log) =>
+      dia === log.dia &&
+      log.classificacao.toUpperCase().includes("AMINOÁCIDOS"),
+  )?.quantidade || 0;
+
+const filtrarObservacoesDoDia = (valores, categoriaId, dia) =>
+  valores.filter(
+    (valor) =>
+      valor.nome_campo === "observacoes" &&
+      valor.categoria_medicao === categoriaId &&
+      valor.dia === dia,
+  );
+
+const filtrarInclusoesPorAlimentacao = (inclusoes, nomeAlimentacao) =>
+  inclusoes.filter((inclusao) =>
+    inclusao.alimentacoes.split(", ").includes(nomeAlimentacao),
+  );
+
+const filtrarInclusoesPorDia = (inclusoes, dia) =>
+  inclusoes.filter((each) => each.dia === dia);
+
+const somarNumeroDeAlunos = (inclusoes) =>
+  inclusoes.reduce((total, obj) => obj.numero_alunos + total, 0);
+
 export default () => {
   const initialStateWeekColumns = [
     { position: 0, dia: "29" },
@@ -547,6 +573,638 @@ export default () => {
     );
   };
 
+  const selecionarPeriodoInicial = (urlParams, periodos_escolares) => {
+    let periodo = periodos_escolares[0];
+    const ehPeriodoEspecifico = urlParams.get("ehPeriodoEspecifico") === "true";
+    if (ehPeriodoEspecifico) {
+      periodo = location.state
+        ? location.state.periodoEspecifico
+        : periodos_escolares[0];
+      if (!periodo) {
+        periodo = periodos_escolares.find(
+          (periodo_) =>
+            periodo_.periodo_escolar.nome === location.state.periodo,
+        );
+      }
+    } else {
+      periodo =
+        periodos_escolares.find(
+          (periodo) =>
+            periodo.periodo_escolar.nome ===
+            (location.state?.periodo || "INTEGRAL"),
+        ) || periodos_escolares[0];
+    }
+    return periodo;
+  };
+
+  const carregarInclusoesAutorizadas = async (escola, mes, ano, periodo) => {
+    const response_inclusoes_autorizadas =
+      await getSolicitacoesInclusaoAutorizadasAsync(
+        escola.uuid,
+        mes,
+        ano,
+        location && location.state && location.state.periodosInclusaoContinua
+          ? Object.keys(location.state.periodosInclusaoContinua)
+          : [periodo.periodo_escolar.nome],
+        location,
+      );
+    setInclusoesAutorizadas(response_inclusoes_autorizadas);
+    return response_inclusoes_autorizadas;
+  };
+
+  const montarTiposAlimentacaoFormatadas = (tipos_alimentacao) => {
+    const cloneTiposAlimentacao = deepCopy(tipos_alimentacao).map(
+      (alimentacao) => {
+        if (typeof alimentacao === "string") {
+          return { nome: alimentacao };
+        }
+
+        return {
+          ...alimentacao,
+          nome: alimentacao?.nome ?? alimentacao?.name ?? "",
+        };
+      },
+    );
+
+    const tiposAlimentacaoFormatadas = cloneTiposAlimentacao
+      .filter((alimentacao) => alimentacao.nome !== "Lanche Emergencial")
+      .map((alimentacao) => {
+        return {
+          ...alimentacao,
+          name: formatarParaSlug(alimentacao.nome),
+        };
+      });
+    return { cloneTiposAlimentacao, tiposAlimentacaoFormatadas };
+  };
+
+  const inserirRepeticoesTiposAlimentacao = (tiposAlimentacaoFormatadas) => {
+    const indexRefeicao = tiposAlimentacaoFormatadas.findIndex(
+      (ali) => ali.nome === "Refeição",
+    );
+    if (indexRefeicao !== -1) {
+      tiposAlimentacaoFormatadas[indexRefeicao].nome = "Refeição 1ª Oferta";
+      tiposAlimentacaoFormatadas.splice(indexRefeicao + 1, 0, {
+        nome: "Repetição Refeição",
+        name: "repeticao_refeicao",
+        uuid: null,
+      });
+    }
+
+    const indexSobremesa = tiposAlimentacaoFormatadas.findIndex(
+      (ali) => ali.nome === "Sobremesa",
+    );
+    if (indexSobremesa !== -1) {
+      tiposAlimentacaoFormatadas[indexSobremesa].nome = "Sobremesa 1º Oferta";
+      tiposAlimentacaoFormatadas.splice(indexSobremesa + 1, 0, {
+        nome: "Repetição Sobremesa",
+        name: "repeticao_sobremesa",
+        uuid: null,
+      });
+    }
+  };
+
+  const montarLinhasAlimentacaoCompletas = (
+    tiposAlimentacaoFormatadas,
+    tiposAlimentacaoInclusaoContinua,
+    response_get_tipos_alimentacao,
+  ) => {
+    const tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares =
+      deepCopy(tiposAlimentacaoFormatadas);
+
+    if (
+      tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
+      !tiposAlimentacaoFormatadas.find((taf) => taf.nome === "Lanche 4h")
+    ) {
+      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.push({
+        nome: "Lanche 4h",
+        name: "lanche_4h",
+        uuid: response_get_tipos_alimentacao.data.results.find((tp) =>
+          tp.nome.includes("4h"),
+        ).uuid,
+      });
+    }
+
+    tiposAlimentacaoFormatadas.unshift(
+      {
+        nome: ehRecreioNasFerias() ? "Participantes" : "Matriculados",
+        name: ehRecreioNasFerias() ? "participantes" : "matriculados",
+        uuid: null,
+      },
+      {
+        nome: "Frequência",
+        name: "frequencia",
+        uuid: null,
+      },
+    );
+
+    tiposAlimentacaoFormatadas.push({
+      nome: "Observações",
+      name: "observacoes",
+      uuid: null,
+    });
+
+    setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+
+    tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.unshift(
+      {
+        nome: "Número de Alunos",
+        name: "numero_de_alunos",
+        uuid: null,
+      },
+      {
+        nome: "Frequência",
+        name: "frequencia",
+        uuid: null,
+      },
+    );
+
+    tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.push({
+      nome: "Observações",
+      name: "observacoes",
+      uuid: null,
+    });
+
+    setTabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows(
+      trataTabelaAlimentacaoEscolaSemAlunosRegulares(
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
+        tiposAlimentacaoInclusaoContinua,
+      ),
+    );
+
+    return tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares;
+  };
+
+  const montarRowsDietas = (
+    cloneTiposAlimentacao,
+    tiposAlimentacaoInclusaoContinua,
+    tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
+    urlParams,
+  ) => {
+    const rowsDietas = [];
+    rowsDietas.push(
+      {
+        nome: "Dietas Autorizadas",
+        name: "dietas_autorizadas",
+        uuid: null,
+      },
+      {
+        nome: "Frequência",
+        name: "frequencia",
+        uuid: null,
+      },
+    );
+
+    if (
+      grupoLocation === "Programas e Projetos" ||
+      urlParams.get("ehPeriodoEspecifico") === "true"
+    ) {
+      if (tiposAlimentacaoInclusaoContinua.includes("lanche_4h")) {
+        rowsDietas.push({
+          nome: "Lanche 4h",
+          name: "lanche_4h",
+          uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
+            (tp) => tp.nome.includes("4h"),
+          ).uuid,
+        });
+      }
+    } else {
+      const indexLanche4h = cloneTiposAlimentacao.findIndex((ali) =>
+        ali.nome.includes("4h"),
+      );
+      if (indexLanche4h !== -1) {
+        rowsDietas.push({
+          nome: cloneTiposAlimentacao[indexLanche4h].nome,
+          name: formatarParaSlug(cloneTiposAlimentacao[indexLanche4h].nome),
+          uuid: cloneTiposAlimentacao[indexLanche4h].uuid,
+        });
+      }
+    }
+
+    const indexLanche = cloneTiposAlimentacao.findIndex(
+      (ali) => ali.nome === "Lanche",
+    );
+    if (
+      indexLanche !== -1 &&
+      grupoLocation !== "Programas e Projetos" &&
+      urlParams.get("ehPeriodoEspecifico") !== "true"
+    ) {
+      rowsDietas.push({
+        nome: "Lanche",
+        name: formatarParaSlug("Lanche"),
+        uuid: cloneTiposAlimentacao[indexLanche].uuid,
+      });
+    }
+
+    if (
+      grupoLocation === "Programas e Projetos" ||
+      urlParams.get("ehPeriodoEspecifico") === "true"
+    ) {
+      if (tiposAlimentacaoInclusaoContinua.includes("lanche")) {
+        rowsDietas.push({
+          nome: "Lanche",
+          name: formatarParaSlug("Lanche"),
+          uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
+            (tp) => tp.nome === "Lanche",
+          ).uuid,
+        });
+      }
+    }
+
+    rowsDietas.push({
+      nome: "Observações",
+      name: "observacoes",
+      uuid: null,
+    });
+    if (ehRecreioNasFerias()) {
+      rowsDietas.sort(
+        (a, b) =>
+          (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+          (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+      );
+    }
+    setTabelaDietaRows(rowsDietas);
+    return rowsDietas;
+  };
+
+  const montarLinhasDietasEnteralESolicitacoes = (
+    rowsDietas,
+    cloneTiposAlimentacao,
+    tiposAlimentacaoInclusaoContinua,
+    urlParams,
+  ) => {
+    const cloneRowsDietas = deepCopy(rowsDietas);
+    const indexRefeicaoDieta = cloneTiposAlimentacao.findIndex(
+      (ali) => ali.nome === "Refeição",
+    );
+    if (
+      (indexRefeicaoDieta !== -1 &&
+        (grupoLocation !== "Programas e Projetos" ||
+          tiposAlimentacaoInclusaoContinua.includes("refeicao"))) ||
+      (indexRefeicaoDieta !== -1 &&
+        (urlParams.get("ehPeriodoEspecifico") !== "true" ||
+          tiposAlimentacaoInclusaoContinua.includes("refeicao")))
+    ) {
+      cloneRowsDietas.splice(cloneRowsDietas.length - 1, 0, {
+        nome: "Refeição",
+        name: "refeicao",
+        uuid: cloneTiposAlimentacao[indexRefeicaoDieta].uuid,
+      });
+    }
+    if (ehRecreioNasFerias()) {
+      cloneRowsDietas.sort(
+        (a, b) =>
+          (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
+          (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+      );
+    }
+    setTabelaDietaEnteralRows(cloneRowsDietas);
+
+    const rowsSolicitacoesAlimentacao = [];
+    rowsSolicitacoesAlimentacao.push({
+      nome: "Lanche Emergencial",
+      name: "lanche_emergencial",
+      uuid: null,
+    });
+    if (grupoLocation !== "Solicitações de Alimentação Extraordinárias") {
+      rowsSolicitacoesAlimentacao.push({
+        nome: "Kit Lanche",
+        name: "kit_lanche",
+        uuid: null,
+      });
+    }
+    rowsSolicitacoesAlimentacao.push({
+      nome: "Observações",
+      name: "observacoes",
+      uuid: null,
+    });
+
+    setTabelaSolicitacoesAlimentacaoRows(rowsSolicitacoesAlimentacao);
+    return rowsSolicitacoesAlimentacao;
+  };
+
+  const montarLinhasEtec = () => {
+    const tiposAlimentacaoEtec = tiposAlimentacaoETEC();
+    const cloneTiposAlimentacaoEtec = deepCopy(tiposAlimentacaoEtec);
+    let tiposAlimentacaoEtecFormatadas = cloneTiposAlimentacaoEtec
+      .filter((alimentacao) => alimentacao !== "Lanche Emergencial")
+      .map((alimentacao) => {
+        return {
+          nome: alimentacao,
+          name: formatarParaSlug(alimentacao),
+          uuid: null,
+        };
+      });
+
+    const indexRefeicaoEtec = tiposAlimentacaoEtecFormatadas.findIndex(
+      (ali) => ali.nome === "Refeição",
+    );
+    if (indexRefeicaoEtec !== -1) {
+      tiposAlimentacaoEtecFormatadas[indexRefeicaoEtec].nome =
+        "Refeição 1ª Oferta";
+      tiposAlimentacaoEtecFormatadas.splice(indexRefeicaoEtec + 1, 0, {
+        nome: "Repetição Refeição",
+        name: "repeticao_refeicao",
+        uuid: null,
+      });
+    }
+
+    const indexSobremesaEtec = tiposAlimentacaoEtecFormatadas.findIndex(
+      (ali) => ali.nome === "Sobremesa",
+    );
+    if (indexSobremesaEtec !== -1) {
+      tiposAlimentacaoEtecFormatadas[indexSobremesaEtec].nome =
+        "Sobremesa 1º Oferta";
+      tiposAlimentacaoEtecFormatadas.splice(indexSobremesaEtec + 1, 0, {
+        nome: "Repetição Sobremesa",
+        name: "repeticao_sobremesa",
+        uuid: null,
+      });
+    }
+
+    const indexLancheEmergencialEtec = tiposAlimentacaoEtecFormatadas.findIndex(
+      (ali) => ali.nome === "Lanche Emergencial",
+    );
+    if (indexLancheEmergencialEtec !== -1) {
+      tiposAlimentacaoEtecFormatadas[indexLancheEmergencialEtec].nome =
+        "Lanche Emergencial";
+    }
+
+    tiposAlimentacaoEtecFormatadas.unshift(
+      {
+        nome: "Número de Alunos",
+        name: "numero_de_alunos",
+        uuid: null,
+      },
+      {
+        nome: "Frequência",
+        name: "frequencia",
+        uuid: null,
+      },
+    );
+
+    tiposAlimentacaoEtecFormatadas.push({
+      nome: "Observações",
+      name: "observacoes",
+      uuid: null,
+    });
+
+    setTabelaEtecAlimentacaoRows(tiposAlimentacaoEtecFormatadas);
+    return tiposAlimentacaoEtecFormatadas;
+  };
+
+  const carregarCategoriasDeMedicaoAsync = async (
+    mes,
+    ano,
+    periodo,
+    escola,
+  ) => {
+    const response_categorias_medicao = await getCategoriasDeMedicao();
+    const params_dietas_autorizadas = parametrosBuscaDietaEspecial(
+      mes,
+      ano,
+      periodo,
+      escola,
+    );
+    const response_log_dietas_autorizadas = await obterLogsDietasEspeciais(
+      params_dietas_autorizadas,
+    );
+    return { response_categorias_medicao, response_log_dietas_autorizadas };
+  };
+
+  const montarCategoriasDietasParaDeletar = (
+    response_categorias_medicao,
+    response_log_dietas_autorizadas,
+  ) => {
+    const categoriasDietasParaDeletar = [];
+    for (const categoria of response_categorias_medicao) {
+      if (
+        categoria.nome === "DIETA ESPECIAL - TIPO A" &&
+        (!response_log_dietas_autorizadas.data.filter(
+          (dieta) => dieta.classificacao.toUpperCase() === "TIPO A",
+        ).length ||
+          !response_log_dietas_autorizadas.data.filter(
+            (dieta) =>
+              dieta.classificacao.toUpperCase() === "TIPO A" &&
+              Number(dieta.quantidade) !== 0,
+          ).length)
+      ) {
+        categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO A");
+      } else if (
+        categoria.nome.includes("ENTERAL") &&
+        (!response_log_dietas_autorizadas.data.filter((dieta) =>
+          dieta.classificacao.toUpperCase().includes("ENTERAL"),
+        ).length ||
+          !response_log_dietas_autorizadas.data.filter(
+            (dieta) =>
+              dieta.classificacao.toUpperCase().includes("ENTERAL") &&
+              Number(dieta.quantidade) !== 0,
+          ).length) &&
+        categoria.nome.includes("AMINOÁCIDOS") &&
+        (!response_log_dietas_autorizadas.data.filter((dieta) =>
+          dieta.classificacao.toUpperCase().includes("AMINOÁCIDOS"),
+        ).length ||
+          !response_log_dietas_autorizadas.data.filter(
+            (dieta) =>
+              dieta.classificacao.toUpperCase().includes("AMINOÁCIDOS") &&
+              Number(dieta.quantidade) !== 0,
+          ).length)
+      ) {
+        categoriasDietasParaDeletar.push(
+          "DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS",
+        );
+      } else if (
+        categoria.nome.includes("TIPO B") &&
+        (!response_log_dietas_autorizadas.data.filter((dieta) =>
+          dieta.classificacao.toUpperCase().includes("TIPO B"),
+        ).length ||
+          !response_log_dietas_autorizadas.data.filter(
+            (dieta) =>
+              dieta.classificacao.toUpperCase().includes("TIPO B") &&
+              Number(dieta.quantidade) !== 0,
+          ).length)
+      ) {
+        categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO B");
+      }
+    }
+    return categoriasDietasParaDeletar;
+  };
+
+  const filtrarCategoriasComDietas = (
+    response_categorias_medicao,
+    response_log_dietas_autorizadas,
+    tiposAlimentacaoFormatadas,
+    tiposAlimentacaoInclusaoContinua,
+  ) => {
+    response_categorias_medicao = response_categorias_medicao.data.filter(
+      (categoria) => {
+        return !categoria.nome.includes("SOLICITAÇÕES");
+      },
+    );
+    if (response_log_dietas_autorizadas?.data?.length) {
+      const categoriasDietasParaDeletar = montarCategoriasDietasParaDeletar(
+        response_categorias_medicao,
+        response_log_dietas_autorizadas,
+      );
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return !categoriasDietasParaDeletar.includes(categoria.nome);
+        },
+      );
+    } else {
+      response_categorias_medicao = response_categorias_medicao.filter(
+        (categoria) => {
+          return !categoria.nome.includes("DIETA");
+        },
+      );
+    }
+    setLogQtdDietasAutorizadas(response_log_dietas_autorizadas.data);
+    if (ehRecreioNasFerias()) {
+      setCategoriasDeMedicao(
+        trataCategoriasMedicaoRecreio(
+          response_categorias_medicao,
+          tiposAlimentacaoFormatadas,
+        ),
+      );
+    } else {
+      setCategoriasDeMedicao(
+        trataCategoriasMedicaoEscolaSemAlunosRegulares(
+          response_categorias_medicao,
+          tiposAlimentacaoInclusaoContinua,
+        ),
+      );
+    }
+    return response_categorias_medicao;
+  };
+
+  const carregarCategoriasFiltradas = (
+    response_categorias_medicao,
+    response_log_dietas_autorizadas,
+    tiposAlimentacaoFormatadas,
+    tiposAlimentacaoInclusaoContinua,
+  ) => {
+    if (ehGrupoSolicitacoesDeAlimentacaoUrlParam) {
+      response_categorias_medicao = response_categorias_medicao.data.filter(
+        (categoria) => {
+          return categoria.nome.includes("SOLICITAÇÕES");
+        },
+      );
+      setCategoriasDeMedicao(response_categorias_medicao);
+    } else if (ehGrupoETECUrlParam) {
+      response_categorias_medicao = response_categorias_medicao.data.filter(
+        (categoria) => {
+          return categoria.nome === "ALIMENTAÇÃO";
+        },
+      );
+      setCategoriasDeMedicao(response_categorias_medicao);
+    } else {
+      response_categorias_medicao = filtrarCategoriasComDietas(
+        response_categorias_medicao,
+        response_log_dietas_autorizadas,
+        tiposAlimentacaoFormatadas,
+        tiposAlimentacaoInclusaoContinua,
+      );
+    }
+    return response_categorias_medicao;
+  };
+
+  const montarLancamentosEspeciaisNaTabela = (
+    tiposAlimentacaoFormatadas,
+    ehPeriodoSimples,
+    response_permissoes_lancamentos_especiais_mes_ano_por_periodo,
+  ) => {
+    if (!ehPeriodoSimples) {
+      return;
+    }
+    setPermissoesLancamentosEspeciaisPorDia(
+      response_permissoes_lancamentos_especiais_mes_ano_por_periodo.permissoes_por_dia,
+    );
+    setAlimentacoesLancamentosEspeciais(
+      response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais?.map(
+        (ali) => ali.name,
+      ),
+    );
+    setDataInicioPermissoes(
+      response_permissoes_lancamentos_especiais_mes_ano_por_periodo.data_inicio_permissoes,
+    );
+
+    const alimentacoesLancamentosEspeciais =
+      response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais;
+    const indexLanche = tiposAlimentacaoFormatadas.findIndex(
+      (ali) => ali.nome === "Lanche",
+    );
+    const indexLanche4h = tiposAlimentacaoFormatadas.findIndex(
+      (ali) => ali.nome === "Lanche 4h",
+    );
+    const cloneAlimentacoesLancamentosEspeciais = deepCopy(
+      alimentacoesLancamentosEspeciais,
+    );
+    const lanchesLancamentosEspeciais =
+      cloneAlimentacoesLancamentosEspeciais.filter((alimentacao) =>
+        alimentacao.name.includes("lanche"),
+      );
+    const lancamentosEspeciaisSemLanches =
+      cloneAlimentacoesLancamentosEspeciais.filter(
+        (alimentacao) => !alimentacao.name.includes("lanche"),
+      );
+    for (
+      let index = 0;
+      index <= lanchesLancamentosEspeciais.length - 1;
+      index++
+    ) {
+      tiposAlimentacaoFormatadas.splice(
+        Math.max(indexLanche, indexLanche4h) + 1 + index,
+        0,
+        lanchesLancamentosEspeciais[index],
+      );
+    }
+    const indexObservacoes = tiposAlimentacaoFormatadas.findIndex(
+      (ali) => ali.nome === "Observações",
+    );
+    for (
+      let index = 0;
+      index <= lancamentosEspeciaisSemLanches.length - 1;
+      index++
+    ) {
+      tiposAlimentacaoFormatadas.splice(
+        indexObservacoes + index,
+        0,
+        lancamentosEspeciaisSemLanches[index],
+      );
+    }
+    setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
+  };
+
+  const montarParamsValoresPeriodos = (uuid, grupoMedicao, periodo) => {
+    let params = {
+      uuid_solicitacao_medicao: uuid,
+      nome_grupo: grupoMedicao,
+    };
+    const gruposExcluidos = ["Programas e Projetos"];
+    if (
+      !ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
+      !ehGrupoETECUrlParam &&
+      !gruposExcluidos.includes(grupoMedicao) &&
+      !ehRecreioNasFerias()
+    ) {
+      params = {
+        ...params,
+        nome_periodo_escolar: periodo.periodo_escolar.nome,
+      };
+    }
+    return params;
+  };
+
+  const carregarDiasFrequenciaZerada = async (grupoMedicao, uuid) => {
+    if (grupoMedicao === "Programas e Projetos") {
+      const response_dias = await getDiasFrequenciaZerada({
+        uuid_solicitacao: uuid,
+      });
+      if (response_dias.status === HTTP_STATUS.OK) {
+        setDiasFrequenciaZeradas(response_dias.data);
+      }
+    }
+  };
+
   useEffect(() => {
     const mesAnoSelecionado = location.state
       ? typeof location.state.mesAnoSelecionado === "string"
@@ -600,27 +1258,7 @@ export default () => {
         .includes(location.state.periodo);
       setEhPeriodoEscolarSimples(ehPeriodoSimples);
 
-      let periodo = periodos_escolares[0];
-      const ehPeriodoEspecifico =
-        urlParams.get("ehPeriodoEspecifico") === "true";
-      if (ehPeriodoEspecifico) {
-        periodo = location.state
-          ? location.state.periodoEspecifico
-          : periodos_escolares[0];
-        if (!periodo) {
-          periodo = periodos_escolares.find(
-            (periodo_) =>
-              periodo_.periodo_escolar.nome === location.state.periodo,
-          );
-        }
-      } else {
-        periodo =
-          periodos_escolares.find(
-            (periodo) =>
-              periodo.periodo_escolar.nome ===
-              (location.state?.periodo || "INTEGRAL"),
-          ) || periodos_escolares[0];
-      }
+      const periodo = selecionarPeriodoInicial(urlParams, periodos_escolares);
 
       const mes = format(mesAnoSelecionado, "MM");
       const ano = getYear(mesAnoSelecionado);
@@ -634,18 +1272,12 @@ export default () => {
               "recreio_nas_ferias",
             );
 
-      let response_inclusoes_autorizadas = [];
-      response_inclusoes_autorizadas =
-        await getSolicitacoesInclusaoAutorizadasAsync(
-          escola.uuid,
-          mes,
-          ano,
-          location && location.state && location.state.periodosInclusaoContinua
-            ? Object.keys(location.state.periodosInclusaoContinua)
-            : [periodo.periodo_escolar.nome],
-          location,
-        );
-      setInclusoesAutorizadas(response_inclusoes_autorizadas);
+      const response_inclusoes_autorizadas = await carregarInclusoesAutorizadas(
+        escola,
+        mes,
+        ano,
+        periodo,
+      );
 
       let tipos_alimentacao = [];
       if (ehRecreioNasFerias()) {
@@ -656,445 +1288,49 @@ export default () => {
 
       const tiposAlimentacaoInclusaoContinua =
         getTiposAlimentacaoInclusoesContinuas(response_inclusoes_autorizadas);
-      const cloneTiposAlimentacao = deepCopy(tipos_alimentacao).map(
-        (alimentacao) => {
-          if (typeof alimentacao === "string") {
-            return { nome: alimentacao };
-          }
+      const { cloneTiposAlimentacao, tiposAlimentacaoFormatadas } =
+        montarTiposAlimentacaoFormatadas(tipos_alimentacao);
 
-          return {
-            ...alimentacao,
-            nome: alimentacao?.nome ?? alimentacao?.name ?? "",
-          };
-        },
-      );
-
-      const tiposAlimentacaoFormatadas = cloneTiposAlimentacao
-        .filter((alimentacao) => alimentacao.nome !== "Lanche Emergencial")
-        .map((alimentacao) => {
-          return {
-            ...alimentacao,
-            name: formatarParaSlug(alimentacao.nome),
-          };
-        });
-
-      const indexRefeicao = tiposAlimentacaoFormatadas.findIndex(
-        (ali) => ali.nome === "Refeição",
-      );
-      if (indexRefeicao !== -1) {
-        tiposAlimentacaoFormatadas[indexRefeicao].nome = "Refeição 1ª Oferta";
-        tiposAlimentacaoFormatadas.splice(indexRefeicao + 1, 0, {
-          nome: "Repetição Refeição",
-          name: "repeticao_refeicao",
-          uuid: null,
-        });
-      }
-
-      const indexSobremesa = tiposAlimentacaoFormatadas.findIndex(
-        (ali) => ali.nome === "Sobremesa",
-      );
-      if (indexSobremesa !== -1) {
-        tiposAlimentacaoFormatadas[indexSobremesa].nome = "Sobremesa 1º Oferta";
-        tiposAlimentacaoFormatadas.splice(indexSobremesa + 1, 0, {
-          nome: "Repetição Sobremesa",
-          name: "repeticao_sobremesa",
-          uuid: null,
-        });
-      }
+      inserirRepeticoesTiposAlimentacao(tiposAlimentacaoFormatadas);
 
       const tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares =
-        deepCopy(tiposAlimentacaoFormatadas);
-
-      if (
-        tiposAlimentacaoInclusaoContinua.includes("lanche_4h") &&
-        !tiposAlimentacaoFormatadas.find((taf) => taf.nome === "Lanche 4h")
-      ) {
-        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.push({
-          nome: "Lanche 4h",
-          name: "lanche_4h",
-          uuid: response_get_tipos_alimentacao.data.results.find((tp) =>
-            tp.nome.includes("4h"),
-          ).uuid,
-        });
-      }
-
-      tiposAlimentacaoFormatadas.unshift(
-        {
-          nome: ehRecreioNasFerias() ? "Participantes" : "Matriculados",
-          name: ehRecreioNasFerias() ? "participantes" : "matriculados",
-          uuid: null,
-        },
-        {
-          nome: "Frequência",
-          name: "frequencia",
-          uuid: null,
-        },
-      );
-
-      tiposAlimentacaoFormatadas.push({
-        nome: "Observações",
-        name: "observacoes",
-        uuid: null,
-      });
-
-      setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
-
-      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.unshift(
-        {
-          nome: "Número de Alunos",
-          name: "numero_de_alunos",
-          uuid: null,
-        },
-        {
-          nome: "Frequência",
-          name: "frequencia",
-          uuid: null,
-        },
-      );
-
-      tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.push({
-        nome: "Observações",
-        name: "observacoes",
-        uuid: null,
-      });
-
-      setTabelaAlimentacaoProgramasProjetosOuEscolaSemAlunosRegularesRows(
-        trataTabelaAlimentacaoEscolaSemAlunosRegulares(
-          tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
+        montarLinhasAlimentacaoCompletas(
+          tiposAlimentacaoFormatadas,
           tiposAlimentacaoInclusaoContinua,
-        ),
-      );
-
-      const rowsDietas = [];
-      const rowsSolicitacoesAlimentacao = [];
-      rowsDietas.push(
-        {
-          nome: "Dietas Autorizadas",
-          name: "dietas_autorizadas",
-          uuid: null,
-        },
-        {
-          nome: "Frequência",
-          name: "frequencia",
-          uuid: null,
-        },
-      );
-
-      if (
-        grupoLocation === "Programas e Projetos" ||
-        urlParams.get("ehPeriodoEspecifico") === "true"
-      ) {
-        if (tiposAlimentacaoInclusaoContinua.includes("lanche_4h")) {
-          rowsDietas.push({
-            nome: "Lanche 4h",
-            name: "lanche_4h",
-            uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
-              (tp) => tp.nome.includes("4h"),
-            ).uuid,
-          });
-        }
-      } else {
-        const indexLanche4h = cloneTiposAlimentacao.findIndex((ali) =>
-          ali.nome.includes("4h"),
+          response_get_tipos_alimentacao,
         );
-        if (indexLanche4h !== -1) {
-          rowsDietas.push({
-            nome: cloneTiposAlimentacao[indexLanche4h].nome,
-            name: formatarParaSlug(cloneTiposAlimentacao[indexLanche4h].nome),
-            uuid: cloneTiposAlimentacao[indexLanche4h].uuid,
-          });
-        }
-      }
 
-      const indexLanche = cloneTiposAlimentacao.findIndex(
-        (ali) => ali.nome === "Lanche",
+      const rowsDietas = montarRowsDietas(
+        cloneTiposAlimentacao,
+        tiposAlimentacaoInclusaoContinua,
+        tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares,
+        urlParams,
       );
-      if (
-        indexLanche !== -1 &&
-        grupoLocation !== "Programas e Projetos" &&
-        urlParams.get("ehPeriodoEspecifico") !== "true"
-      ) {
-        rowsDietas.push({
-          nome: "Lanche",
-          name: formatarParaSlug("Lanche"),
-          uuid: cloneTiposAlimentacao[indexLanche].uuid,
-        });
-      }
 
-      if (
-        grupoLocation === "Programas e Projetos" ||
-        urlParams.get("ehPeriodoEspecifico") === "true"
-      ) {
-        if (tiposAlimentacaoInclusaoContinua.includes("lanche")) {
-          rowsDietas.push({
-            nome: "Lanche",
-            name: formatarParaSlug("Lanche"),
-            uuid: tiposAlimentacaoProgramasProjetosOuEscolaSemAlunosRegulares.find(
-              (tp) => tp.nome === "Lanche",
-            ).uuid,
-          });
-        }
-      }
-
-      rowsDietas.push({
-        nome: "Observações",
-        name: "observacoes",
-        uuid: null,
-      });
-      if (ehRecreioNasFerias()) {
-        rowsDietas.sort(
-          (a, b) =>
-            (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
-            (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
+      const rowsSolicitacoesAlimentacao =
+        montarLinhasDietasEnteralESolicitacoes(
+          rowsDietas,
+          cloneTiposAlimentacao,
+          tiposAlimentacaoInclusaoContinua,
+          urlParams,
         );
-      }
-      setTabelaDietaRows(rowsDietas);
 
-      const cloneRowsDietas = deepCopy(rowsDietas);
-      const indexRefeicaoDieta = cloneTiposAlimentacao.findIndex(
-        (ali) => ali.nome === "Refeição",
+      const tiposAlimentacaoEtecFormatadas = montarLinhasEtec();
+
+      const {
+        response_categorias_medicao: respostaCategoriasMedicao,
+        response_log_dietas_autorizadas,
+      } = await carregarCategoriasDeMedicaoAsync(mes, ano, periodo, escola);
+
+      const response_categorias_medicao = carregarCategoriasFiltradas(
+        respostaCategoriasMedicao,
+        response_log_dietas_autorizadas,
+        tiposAlimentacaoFormatadas,
+        tiposAlimentacaoInclusaoContinua,
       );
-      if (
-        (indexRefeicaoDieta !== -1 &&
-          (grupoLocation !== "Programas e Projetos" ||
-            tiposAlimentacaoInclusaoContinua.includes("refeicao"))) ||
-        (indexRefeicaoDieta !== -1 &&
-          (urlParams.get("ehPeriodoEspecifico") !== "true" ||
-            tiposAlimentacaoInclusaoContinua.includes("refeicao")))
-      ) {
-        cloneRowsDietas.splice(cloneRowsDietas.length - 1, 0, {
-          nome: "Refeição",
-          name: "refeicao",
-          uuid: cloneTiposAlimentacao[indexRefeicaoDieta].uuid,
-        });
-      }
-      if (ehRecreioNasFerias()) {
-        cloneRowsDietas.sort(
-          (a, b) =>
-            (ORDEM_CAMPOS_DIETAS_RECREIO[a.nome] ?? 999) -
-            (ORDEM_CAMPOS_DIETAS_RECREIO[b.nome] ?? 999),
-        );
-      }
-      setTabelaDietaEnteralRows(cloneRowsDietas);
-
-      rowsSolicitacoesAlimentacao.push({
-        nome: "Lanche Emergencial",
-        name: "lanche_emergencial",
-        uuid: null,
-      });
-      if (grupoLocation !== "Solicitações de Alimentação Extraordinárias") {
-        rowsSolicitacoesAlimentacao.push({
-          nome: "Kit Lanche",
-          name: "kit_lanche",
-          uuid: null,
-        });
-      }
-      rowsSolicitacoesAlimentacao.push({
-        nome: "Observações",
-        name: "observacoes",
-        uuid: null,
-      });
-
-      setTabelaSolicitacoesAlimentacaoRows(rowsSolicitacoesAlimentacao);
-
-      const tiposAlimentacaoEtec = tiposAlimentacaoETEC();
-      const cloneTiposAlimentacaoEtec = deepCopy(tiposAlimentacaoEtec);
-      let tiposAlimentacaoEtecFormatadas = cloneTiposAlimentacaoEtec
-        .filter((alimentacao) => alimentacao !== "Lanche Emergencial")
-        .map((alimentacao) => {
-          return {
-            nome: alimentacao,
-            name: formatarParaSlug(alimentacao),
-            uuid: null,
-          };
-        });
-
-      const indexRefeicaoEtec = tiposAlimentacaoEtecFormatadas.findIndex(
-        (ali) => ali.nome === "Refeição",
-      );
-      if (indexRefeicaoEtec !== -1) {
-        tiposAlimentacaoEtecFormatadas[indexRefeicaoEtec].nome =
-          "Refeição 1ª Oferta";
-        tiposAlimentacaoEtecFormatadas.splice(indexRefeicaoEtec + 1, 0, {
-          nome: "Repetição Refeição",
-          name: "repeticao_refeicao",
-          uuid: null,
-        });
-      }
-
-      const indexSobremesaEtec = tiposAlimentacaoEtecFormatadas.findIndex(
-        (ali) => ali.nome === "Sobremesa",
-      );
-      if (indexSobremesaEtec !== -1) {
-        tiposAlimentacaoEtecFormatadas[indexSobremesaEtec].nome =
-          "Sobremesa 1º Oferta";
-        tiposAlimentacaoEtecFormatadas.splice(indexSobremesaEtec + 1, 0, {
-          nome: "Repetição Sobremesa",
-          name: "repeticao_sobremesa",
-          uuid: null,
-        });
-      }
-
-      const indexLancheEmergencialEtec =
-        tiposAlimentacaoEtecFormatadas.findIndex(
-          (ali) => ali.nome === "Lanche Emergencial",
-        );
-      if (indexLancheEmergencialEtec !== -1) {
-        tiposAlimentacaoEtecFormatadas[indexLancheEmergencialEtec].nome =
-          "Lanche Emergencial";
-      }
-
-      tiposAlimentacaoEtecFormatadas.unshift(
-        {
-          nome: "Número de Alunos",
-          name: "numero_de_alunos",
-          uuid: null,
-        },
-        {
-          nome: "Frequência",
-          name: "frequencia",
-          uuid: null,
-        },
-      );
-
-      tiposAlimentacaoEtecFormatadas.push({
-        nome: "Observações",
-        name: "observacoes",
-        uuid: null,
-      });
-
-      setTabelaEtecAlimentacaoRows(tiposAlimentacaoEtecFormatadas);
-
-      let response_categorias_medicao = await getCategoriasDeMedicao();
-      let params_dietas_autorizadas = parametrosBuscaDietaEspecial(
-        mes,
-        ano,
-        periodo,
-        escola,
-      );
-      let response_log_dietas_autorizadas = await obterLogsDietasEspeciais(
-        params_dietas_autorizadas,
-      );
-
-      if (ehGrupoSolicitacoesDeAlimentacaoUrlParam) {
-        response_categorias_medicao = response_categorias_medicao.data.filter(
-          (categoria) => {
-            return categoria.nome.includes("SOLICITAÇÕES");
-          },
-        );
-        setCategoriasDeMedicao(response_categorias_medicao);
-      } else if (ehGrupoETECUrlParam) {
-        response_categorias_medicao = response_categorias_medicao.data.filter(
-          (categoria) => {
-            return categoria.nome === "ALIMENTAÇÃO";
-          },
-        );
-        setCategoriasDeMedicao(response_categorias_medicao);
-      } else {
-        response_categorias_medicao = response_categorias_medicao.data.filter(
-          (categoria) => {
-            return !categoria.nome.includes("SOLICITAÇÕES");
-          },
-        );
-        if (response_log_dietas_autorizadas?.data?.length) {
-          let categoriasDietasParaDeletar = [];
-          for (const categoria of response_categorias_medicao) {
-            if (
-              categoria.nome === "DIETA ESPECIAL - TIPO A" &&
-              (!response_log_dietas_autorizadas.data.filter(
-                (dieta) => dieta.classificacao.toUpperCase() === "TIPO A",
-              ).length ||
-                !response_log_dietas_autorizadas.data.filter(
-                  (dieta) =>
-                    dieta.classificacao.toUpperCase() === "TIPO A" &&
-                    Number(dieta.quantidade) !== 0,
-                ).length)
-            ) {
-              categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO A");
-            } else if (
-              categoria.nome.includes("ENTERAL") &&
-              (!response_log_dietas_autorizadas.data.filter((dieta) =>
-                dieta.classificacao.toUpperCase().includes("ENTERAL"),
-              ).length ||
-                !response_log_dietas_autorizadas.data.filter(
-                  (dieta) =>
-                    dieta.classificacao.toUpperCase().includes("ENTERAL") &&
-                    Number(dieta.quantidade) !== 0,
-                ).length) &&
-              categoria.nome.includes("AMINOÁCIDOS") &&
-              (!response_log_dietas_autorizadas.data.filter((dieta) =>
-                dieta.classificacao.toUpperCase().includes("AMINOÁCIDOS"),
-              ).length ||
-                !response_log_dietas_autorizadas.data.filter(
-                  (dieta) =>
-                    dieta.classificacao.toUpperCase().includes("AMINOÁCIDOS") &&
-                    Number(dieta.quantidade) !== 0,
-                ).length)
-            ) {
-              categoriasDietasParaDeletar.push(
-                "DIETA ESPECIAL - TIPO A - ENTERAL / RESTRIÇÃO DE AMINOÁCIDOS",
-              );
-            } else if (
-              categoria.nome.includes("TIPO B") &&
-              (!response_log_dietas_autorizadas.data.filter((dieta) =>
-                dieta.classificacao.toUpperCase().includes("TIPO B"),
-              ).length ||
-                !response_log_dietas_autorizadas.data.filter(
-                  (dieta) =>
-                    dieta.classificacao.toUpperCase().includes("TIPO B") &&
-                    Number(dieta.quantidade) !== 0,
-                ).length)
-            ) {
-              categoriasDietasParaDeletar.push("DIETA ESPECIAL - TIPO B");
-            }
-          }
-          response_categorias_medicao = response_categorias_medicao.filter(
-            (categoria) => {
-              return !categoriasDietasParaDeletar.includes(categoria.nome);
-            },
-          );
-        } else {
-          response_categorias_medicao = response_categorias_medicao.filter(
-            (categoria) => {
-              return !categoria.nome.includes("DIETA");
-            },
-          );
-        }
-        setLogQtdDietasAutorizadas(response_log_dietas_autorizadas.data);
-        if (ehRecreioNasFerias()) {
-          setCategoriasDeMedicao(
-            trataCategoriasMedicaoRecreio(
-              response_categorias_medicao,
-              tiposAlimentacaoFormatadas,
-            ),
-          );
-        } else {
-          setCategoriasDeMedicao(
-            trataCategoriasMedicaoEscolaSemAlunosRegulares(
-              response_categorias_medicao,
-              tiposAlimentacaoInclusaoContinua,
-            ),
-          );
-        }
-      }
 
       let grupoMedicao = location.state.grupo;
-      let params = {
-        uuid_solicitacao_medicao: uuid,
-        nome_grupo: grupoMedicao,
-      };
-      const gruposExcluidos = ["Programas e Projetos"];
-      if (
-        !ehGrupoSolicitacoesDeAlimentacaoUrlParam &&
-        !ehGrupoETECUrlParam &&
-        !gruposExcluidos.includes(grupoMedicao) &&
-        !ehRecreioNasFerias()
-      ) {
-        params = {
-          ...params,
-          nome_periodo_escolar: periodo.periodo_escolar.nome,
-        };
-      }
+      const params = montarParamsValoresPeriodos(uuid, grupoMedicao, periodo);
       const response_valores_periodos =
         await getValoresPeriodosLancamentos(params);
       setValoresPeriodosLancamentos(response_valores_periodos.data);
@@ -1176,63 +1412,11 @@ export default () => {
               ano,
               periodo.periodo_escolar.nome,
             );
-          setPermissoesLancamentosEspeciaisPorDia(
-            response_permissoes_lancamentos_especiais_mes_ano_por_periodo.permissoes_por_dia,
+          montarLancamentosEspeciaisNaTabela(
+            tiposAlimentacaoFormatadas,
+            ehPeriodoSimples,
+            response_permissoes_lancamentos_especiais_mes_ano_por_periodo,
           );
-          setAlimentacoesLancamentosEspeciais(
-            response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais?.map(
-              (ali) => ali.name,
-            ),
-          );
-          setDataInicioPermissoes(
-            response_permissoes_lancamentos_especiais_mes_ano_por_periodo.data_inicio_permissoes,
-          );
-
-          const alimentacoesLancamentosEspeciais =
-            response_permissoes_lancamentos_especiais_mes_ano_por_periodo.alimentacoes_lancamentos_especiais;
-          const indexLanche = tiposAlimentacaoFormatadas.findIndex(
-            (ali) => ali.nome === "Lanche",
-          );
-          const indexLanche4h = tiposAlimentacaoFormatadas.findIndex(
-            (ali) => ali.nome === "Lanche 4h",
-          );
-          const cloneAlimentacoesLancamentosEspeciais = deepCopy(
-            alimentacoesLancamentosEspeciais,
-          );
-          const lanchesLancamentosEspeciais =
-            cloneAlimentacoesLancamentosEspeciais.filter((alimentacao) =>
-              alimentacao.name.includes("lanche"),
-            );
-          const lancamentosEspeciaisSemLanches =
-            cloneAlimentacoesLancamentosEspeciais.filter(
-              (alimentacao) => !alimentacao.name.includes("lanche"),
-            );
-          for (
-            let index = 0;
-            index <= lanchesLancamentosEspeciais.length - 1;
-            index++
-          ) {
-            tiposAlimentacaoFormatadas.splice(
-              Math.max(indexLanche, indexLanche4h) + 1 + index,
-              0,
-              lanchesLancamentosEspeciais[index],
-            );
-          }
-          const indexObservacoes = tiposAlimentacaoFormatadas.findIndex(
-            (ali) => ali.nome === "Observações",
-          );
-          for (
-            let index = 0;
-            index <= lancamentosEspeciaisSemLanches.length - 1;
-            index++
-          ) {
-            tiposAlimentacaoFormatadas.splice(
-              indexObservacoes + index,
-              0,
-              lancamentosEspeciaisSemLanches[index],
-            );
-          }
-          setTabelaAlimentacaoRows(tiposAlimentacaoFormatadas);
         }
       }
 
@@ -1280,14 +1464,7 @@ export default () => {
 
       setFeriadosNoMes(response_feriados_no_mes.data.results);
 
-      if (grupoMedicao === "Programas e Projetos") {
-        const response_dias = await getDiasFrequenciaZerada({
-          uuid_solicitacao: uuid,
-        });
-        if (response_dias.status === HTTP_STATUS.OK) {
-          setDiasFrequenciaZeradas(response_dias.data);
-        }
-      }
+      await carregarDiasFrequenciaZerada(grupoMedicao, uuid);
 
       await formatarDadosValoresMedicao(
         mesAnoFormatado,
@@ -1470,11 +1647,10 @@ export default () => {
                     `dietas_autorizadas__dia_${logFiltrado.dia}__categoria_${categoria.id}`
                   ] = `${
                     logFiltrado.quantidade +
-                    (logQtdDietasAutorizadas.find(
-                      (log) =>
-                        logFiltrado.dia === log.dia &&
-                        log.classificacao.toUpperCase().includes("AMINOÁCIDOS"),
-                    )?.quantidade || 0)
+                    obterQuantidadeAminoacidos(
+                      logQtdDietasAutorizadas,
+                      logFiltrado.dia,
+                    )
                   }`),
               );
 
@@ -1500,12 +1676,8 @@ export default () => {
           kitLanchesAutorizadas.forEach((kit) => {
             categoria.nome.includes("SOLICITAÇÕES") &&
               (!ultimaAtualizacaoMedicao ||
-                valoresMedicao.filter(
-                  (valor) =>
-                    valor.nome_campo === "observacoes" &&
-                    valor.categoria_medicao === categoria.id &&
-                    valor.dia === kit.dia,
-                ).length === 0) &&
+                filtrarObservacoesDoDia(valoresMedicao, categoria.id, kit.dia)
+                  .length === 0) &&
               (dadosValoresKitLanchesAutorizadas[
                 `kit_lanche__dia_${kit.dia}__categoria_${categoria.id}`
               ] = dadosValoresKitLanchesAutorizadas[
@@ -1566,15 +1738,16 @@ export default () => {
                 categoria.nome.includes("DIETA")) &&
               solInclusoesAutorizadas
             ) {
-              const inclusoesFiltradas = solInclusoesAutorizadas.filter(
-                (inclusao) =>
-                  inclusao.alimentacoes.split(", ").includes(alimentacao.name),
+              const inclusoesFiltradas = filtrarInclusoesPorAlimentacao(
+                solInclusoesAutorizadas,
+                alimentacao.name,
               );
               for (let i = 1; i <= 31; i++) {
                 const dia =
                   String(i).length === 1 ? "0" + String(i) : String(i);
-                const incFiltradasPorDia = inclusoesFiltradas.filter(
-                  (each) => each.dia === dia,
+                const incFiltradasPorDia = filtrarInclusoesPorDia(
+                  inclusoesFiltradas,
+                  dia,
                 );
                 if (
                   incFiltradasPorDia.length &&
@@ -1584,10 +1757,7 @@ export default () => {
                 ) {
                   dadosValoresInclusoesAutorizadas[
                     `${alimentacao.name}__dia_${dia}__categoria_${categoria.id}`
-                  ] = `${incFiltradasPorDia.reduce(
-                    (total, obj) => obj.numero_alunos + total,
-                    0,
-                  )}`;
+                  ] = `${somarNumeroDeAlunos(incFiltradasPorDia)}`;
                 }
               }
             }
@@ -3501,6 +3671,381 @@ export default () => {
     return params_dietas_autorizadas;
   };
 
+  const renderizarCelulaAlimentacao = (column, row, categoria, index, form) => {
+    const campoDesabilitado = desabilitarField(
+      column.dia,
+      row.name,
+      categoria.id,
+      categoria.nome,
+      formValuesAtualizados,
+      mesAnoConsiderado,
+      mesAnoDefault,
+      dadosValoresInclusoesAutorizadasState,
+      validacaoDiaLetivo,
+      validacaoDiaLetivoCalendario,
+      validacaoDiaLetivoLancheEmergencial,
+      validacaoSemana,
+      location,
+      ehGrupoETECUrlParam,
+      dadosValoresInclusoesEtecAutorizadasState,
+      inclusoesEtecAutorizadas,
+      grupoLocation,
+      valoresPeriodosLancamentos,
+      feriadosNoMes,
+      inclusoesAutorizadas,
+      categoriasDeMedicao,
+      kitLanchesAutorizadas,
+      alteracoesAlimentacaoAutorizadas,
+      diasLancheEmergencialDiarioAtivo,
+      diasParaCorrecao,
+      ehPeriodoEscolarSimples,
+      permissoesLancamentosEspeciaisPorDia,
+      alimentacoesLancamentosEspeciais,
+      escolaEhEMEBS(),
+      alunosTabSelecionada,
+      ehUltimoDiaLetivoDoAno,
+    );
+
+    return (
+      <div
+        key={column.dia}
+        className={`${
+          colunaDesabilitada(column)
+            ? "input-desabilitado"
+            : row.name === "observacoes"
+              ? "input-habilitado-observacoes"
+              : "input-habilitado"
+        }${
+          alimentacoesLancamentosEspeciais?.includes(row.name)
+            ? " input-alimentacao-permissao-lancamento-especial"
+            : ""
+        }`}
+      >
+        {row.name === "observacoes" ? (
+          !colunaDesabilitada(column) &&
+          exibeBotaoAdicionarObservacao(column.dia, categoria.id) && (
+            <Botao
+              texto={textoBotaoObservacao(
+                formValuesAtualizados[
+                  `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+                ],
+                valoresObservacoes,
+                column.dia,
+                categoria.id,
+                escolaEhEMEBS(),
+                alunosTabSelecionada,
+                formValuesAtualizados,
+              )}
+              dataTestId={`botao-observacao__dia_${column.dia}__categoria_${categoria.id}`}
+              disabled={desabilitarBotaoColunaObservacoes(
+                location,
+                valoresPeriodosLancamentos,
+                column,
+                categoria,
+                formValuesAtualizados,
+                row,
+                valoresObservacoes,
+                column.dia,
+                diasParaCorrecao,
+              )}
+              type={BUTTON_TYPE.BUTTON}
+              style={
+                !ehGrupoSolicitacoesExtraordinarias &&
+                botaoAdicionarObrigatorioTabelaAlimentacao(
+                  formValuesAtualizados,
+                  column.dia,
+                  categoria,
+                  diasSobremesaDoce,
+                  location,
+                  row,
+                  dadosValoresInclusoesAutorizadasState,
+                  validacaoDiaLetivo,
+                  column,
+                  suspensoesAutorizadas,
+                  alteracoesAlimentacaoAutorizadas,
+                  alteracoesLancheEmergencialAutorizadas,
+                  permissoesLancamentosEspeciaisPorDia,
+                  kitLanchesAutorizadas,
+                  inclusoesEtecAutorizadas,
+                  ehGrupoETECUrlParam,
+                  feriadosNoMes,
+                  diasFrequenciaZerada,
+                  escolaEhEMEBS(),
+                  alunosTabSelecionada,
+                  diasSobremesaAF,
+                )
+                  ? textoBotaoObservacao(
+                      formValuesAtualizados[
+                        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+                      ],
+                      valoresObservacoes,
+                      column.dia,
+                      categoria.id,
+                      escolaEhEMEBS(),
+                      alunosTabSelecionada,
+                      formValuesAtualizados,
+                    ) === "Visualizar"
+                    ? BUTTON_STYLE.RED
+                    : BUTTON_STYLE.RED_OUTLINE
+                  : textoBotaoObservacao(
+                        formValuesAtualizados[
+                          `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+                        ],
+                        valoresObservacoes,
+                        column.dia,
+                        categoria.id,
+                        escolaEhEMEBS(),
+                        alunosTabSelecionada,
+                        formValuesAtualizados,
+                      ) === "Visualizar"
+                    ? BUTTON_STYLE.GREEN
+                    : BUTTON_STYLE.GREEN_OUTLINE_WHITE
+              }
+              onClick={() => onClickBotaoObservacao(column.dia, categoria.id)}
+            />
+          )
+        ) : (
+          <div className="field-values-input">
+            <Field
+              className={`m-2 ${classNameFieldTabelaAlimentacao(
+                row,
+                column,
+                categoria,
+                kitLanchesAutorizadas,
+                alteracoesAlimentacaoAutorizadas,
+                valoresPeriodosLancamentos,
+                diasParaCorrecao,
+              )}`}
+              component={InputValueMedicao}
+              classNameToNextInput={getClassNameToNextInput(
+                row,
+                column,
+                categoria,
+                index,
+              )}
+              classNameToPrevInput={getClassNameToPrevInput(
+                row,
+                column,
+                categoria,
+                index,
+              )}
+              apenasNumeros
+              name={`${row.name}__dia_${column.dia}__categoria_${categoria.id}`}
+              disabled={campoDesabilitado}
+              exibeTooltipPadraoRepeticaoDiasSobremesaDoce={exibirTooltipPadraoRepeticaoDiasSobremesaDoce(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                diasSobremesaDoce,
+                location,
+              )}
+              exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero={exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                diasSobremesaDoce,
+                location,
+              )}
+              exibeTooltipSobremesaAFDeveSerZero={exibirTooltipSobremesaAFDeveSerZero(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                diasSobremesaAF,
+                location,
+              )}
+              exibeTooltipSobremesaAFDiferenteZero={exibirTooltipSobremesaAFDiferenteZero(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                diasSobremesaAF,
+                location,
+              )}
+              exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo={
+                `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
+                  dadosValoresInclusoesAutorizadasState &&
+                !validacaoDiaLetivo(column.dia) &&
+                !formValuesAtualizados[
+                  `observacoes__dia_${column.dia}__categoria_${categoria.id}`
+                ] &&
+                !existeAlteracaoRPL(
+                  alteracoesAlimentacaoAutorizadas,
+                  column.dia,
+                ) &&
+                !existeAlteracaoLPR(
+                  alteracoesAlimentacaoAutorizadas,
+                  column.dia,
+                )
+              }
+              exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                suspensoesAutorizadas,
+              )}
+              exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                alteracoesAlimentacaoAutorizadas,
+              )}
+              exibeTooltipLPRAutorizadas={exibirTooltipLPRAutorizadas(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                alteracoesAlimentacaoAutorizadas,
+              )}
+              exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                alteracoesLancheEmergencialAutorizadas,
+                permissoesLancamentosEspeciaisPorDia,
+              )}
+              exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                kitLanchesAutorizadas,
+              )}
+              exibeTooltipKitLancheSolAlimentacoes={exibirTooltipKitLancheSolAlimentacoes(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                kitLanchesAutorizadas,
+              )}
+              exibeTooltipLancheEmergencialNaoAutorizado={
+                grupoLocation !==
+                  "Solicitações de Alimentação Extraordinárias" &&
+                exibirTooltipLancheEmergencialNaoAutorizado(
+                  formValuesAtualizados,
+                  row,
+                  column,
+                  categoria,
+                  alteracoesAlimentacaoAutorizadas,
+                  diasLancheEmergencialDiarioAtivo,
+                )
+              }
+              exibeTooltipLancheEmergencialAutorizado={
+                grupoLocation !==
+                  "Solicitações de Alimentação Extraordinárias" &&
+                exibirTooltipLancheEmergencialAutorizado(
+                  formValuesAtualizados,
+                  row,
+                  column,
+                  categoria,
+                  alteracoesAlimentacaoAutorizadas,
+                )
+              }
+              exibeTooltipLancheEmergencialZeroAutorizado={exibirTooltipLancheEmergencialZeroAutorizado(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                alteracoesAlimentacaoAutorizadas,
+                validacaoDiaLetivo,
+              )}
+              exibeTooltipLancheEmergencialZeroAutorizadoJustificado={exibirTooltipLancheEmergencialZeroAutorizadoJustificado(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                alteracoesAlimentacaoAutorizadas,
+                validacaoDiaLetivo,
+              )}
+              exibeTooltipFrequenciaZeroTabelaEtec={exibirTooltipFrequenciaZeroTabelaEtec(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                ehGrupoETECUrlParam,
+              )}
+              exibeTooltipLancheEmergTabelaEtec={exibirTooltipLancheEmergTabelaEtec(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                ehGrupoETECUrlParam,
+                inclusoesEtecAutorizadas,
+              )}
+              exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
+                row.name,
+                column.dia,
+                categoria,
+                formValuesAtualizados,
+                diasFrequenciaZerada,
+                location.state.grupo,
+                escolaEhEMEBS(),
+                alunosTabSelecionada,
+              )}
+              exibirTooltipRefeicaoSimultanea={exibirTooltipRefeicaoSimultanea(
+                formValuesAtualizados,
+                row,
+                column,
+                categoria,
+                usuarioEhEscolaCIEJA(),
+                location.state.periodo,
+              )}
+              ehGrupoETECUrlParam={ehGrupoETECUrlParam}
+              ehProgramasEProjetos={ehProgramasEProjetos}
+              exibirTooltipFeriado={verificaFeriadoProgramasProjetos(
+                row,
+                column,
+                categoria,
+                campoDesabilitado,
+                ehProgramasEProjetos,
+                validacaoDiaLetivo,
+                formValuesAtualizados,
+              )}
+              numeroDeInclusoesAutorizadas={
+                dadosValoresInclusoesAutorizadasState[
+                  `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
+                ]
+              }
+              defaultValue={defaultValue(column, row)}
+              validate={fieldValidationsTabelaAlimentacao(
+                row.name,
+                column.dia,
+                categoria.id,
+                categoria.nome,
+              )}
+              inputOnChange={(e) => {
+                const value = e.target.value;
+
+                onChangeInput(
+                  value,
+                  previousValue,
+                  form.getState().errors,
+                  form.getState().values,
+                  column.dia,
+                  categoria,
+                  row.name,
+                  form,
+                  column,
+                  row,
+                );
+
+                setPreviousValue(value);
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const paraCelulasDaLinha = (row, categoria, index, form) => (column) =>
+    renderizarCelulaAlimentacao(column, row, categoria, index, form);
+
   return (
     <>
       <div className="text-end botao-voltar-lancamento-medicao">
@@ -3963,420 +4508,14 @@ export default () => {
                                                     {row.nome}
                                                   </b>
                                                 </div>
-                                                {weekColumns.map((column) => {
-                                                  const campoDesabilitado =
-                                                    desabilitarField(
-                                                      column.dia,
-                                                      row.name,
-                                                      categoria.id,
-                                                      categoria.nome,
-                                                      formValuesAtualizados,
-                                                      mesAnoConsiderado,
-                                                      mesAnoDefault,
-                                                      dadosValoresInclusoesAutorizadasState,
-                                                      validacaoDiaLetivo,
-                                                      validacaoDiaLetivoCalendario,
-                                                      validacaoDiaLetivoLancheEmergencial,
-                                                      validacaoSemana,
-                                                      location,
-                                                      ehGrupoETECUrlParam,
-                                                      dadosValoresInclusoesEtecAutorizadasState,
-                                                      inclusoesEtecAutorizadas,
-                                                      grupoLocation,
-                                                      valoresPeriodosLancamentos,
-                                                      feriadosNoMes,
-                                                      inclusoesAutorizadas,
-                                                      categoriasDeMedicao,
-                                                      kitLanchesAutorizadas,
-                                                      alteracoesAlimentacaoAutorizadas,
-                                                      diasLancheEmergencialDiarioAtivo,
-                                                      diasParaCorrecao,
-                                                      ehPeriodoEscolarSimples,
-                                                      permissoesLancamentosEspeciaisPorDia,
-                                                      alimentacoesLancamentosEspeciais,
-                                                      escolaEhEMEBS(),
-                                                      alunosTabSelecionada,
-                                                      ehUltimoDiaLetivoDoAno,
-                                                    );
-
-                                                  return (
-                                                    <div
-                                                      key={column.dia}
-                                                      className={`${
-                                                        colunaDesabilitada(
-                                                          column,
-                                                        )
-                                                          ? "input-desabilitado"
-                                                          : row.name ===
-                                                              "observacoes"
-                                                            ? "input-habilitado-observacoes"
-                                                            : "input-habilitado"
-                                                      }${
-                                                        alimentacoesLancamentosEspeciais?.includes(
-                                                          row.name,
-                                                        )
-                                                          ? " input-alimentacao-permissao-lancamento-especial"
-                                                          : ""
-                                                      }`}
-                                                    >
-                                                      {row.name ===
-                                                      "observacoes" ? (
-                                                        !colunaDesabilitada(
-                                                          column,
-                                                        ) &&
-                                                        exibeBotaoAdicionarObservacao(
-                                                          column.dia,
-                                                          categoria.id,
-                                                        ) && (
-                                                          <Botao
-                                                            texto={textoBotaoObservacao(
-                                                              formValuesAtualizados[
-                                                                `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-                                                              ],
-                                                              valoresObservacoes,
-                                                              column.dia,
-                                                              categoria.id,
-                                                              escolaEhEMEBS(),
-                                                              alunosTabSelecionada,
-                                                              formValuesAtualizados,
-                                                            )}
-                                                            dataTestId={`botao-observacao__dia_${column.dia}__categoria_${categoria.id}`}
-                                                            disabled={desabilitarBotaoColunaObservacoes(
-                                                              location,
-                                                              valoresPeriodosLancamentos,
-                                                              column,
-                                                              categoria,
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              valoresObservacoes,
-                                                              column.dia,
-                                                              diasParaCorrecao,
-                                                            )}
-                                                            type={
-                                                              BUTTON_TYPE.BUTTON
-                                                            }
-                                                            style={
-                                                              !ehGrupoSolicitacoesExtraordinarias &&
-                                                              botaoAdicionarObrigatorioTabelaAlimentacao(
-                                                                formValuesAtualizados,
-                                                                column.dia,
-                                                                categoria,
-                                                                diasSobremesaDoce,
-                                                                location,
-                                                                row,
-                                                                dadosValoresInclusoesAutorizadasState,
-                                                                validacaoDiaLetivo,
-                                                                column,
-                                                                suspensoesAutorizadas,
-                                                                alteracoesAlimentacaoAutorizadas,
-                                                                alteracoesLancheEmergencialAutorizadas,
-                                                                permissoesLancamentosEspeciaisPorDia,
-                                                                kitLanchesAutorizadas,
-                                                                inclusoesEtecAutorizadas,
-                                                                ehGrupoETECUrlParam,
-                                                                feriadosNoMes,
-                                                                diasFrequenciaZerada,
-                                                                escolaEhEMEBS(),
-                                                                alunosTabSelecionada,
-                                                                diasSobremesaAF,
-                                                              )
-                                                                ? textoBotaoObservacao(
-                                                                    formValuesAtualizados[
-                                                                      `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-                                                                    ],
-                                                                    valoresObservacoes,
-                                                                    column.dia,
-                                                                    categoria.id,
-                                                                    escolaEhEMEBS(),
-                                                                    alunosTabSelecionada,
-                                                                    formValuesAtualizados,
-                                                                  ) ===
-                                                                  "Visualizar"
-                                                                  ? BUTTON_STYLE.RED
-                                                                  : BUTTON_STYLE.RED_OUTLINE
-                                                                : textoBotaoObservacao(
-                                                                      formValuesAtualizados[
-                                                                        `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-                                                                      ],
-                                                                      valoresObservacoes,
-                                                                      column.dia,
-                                                                      categoria.id,
-                                                                      escolaEhEMEBS(),
-                                                                      alunosTabSelecionada,
-                                                                      formValuesAtualizados,
-                                                                    ) ===
-                                                                    "Visualizar"
-                                                                  ? BUTTON_STYLE.GREEN
-                                                                  : BUTTON_STYLE.GREEN_OUTLINE_WHITE
-                                                            }
-                                                            onClick={() =>
-                                                              onClickBotaoObservacao(
-                                                                column.dia,
-                                                                categoria.id,
-                                                              )
-                                                            }
-                                                          />
-                                                        )
-                                                      ) : (
-                                                        <div className="field-values-input">
-                                                          <Field
-                                                            className={`m-2 ${classNameFieldTabelaAlimentacao(
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              kitLanchesAutorizadas,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                              valoresPeriodosLancamentos,
-                                                              diasParaCorrecao,
-                                                            )}`}
-                                                            component={
-                                                              InputValueMedicao
-                                                            }
-                                                            classNameToNextInput={getClassNameToNextInput(
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              index,
-                                                            )}
-                                                            classNameToPrevInput={getClassNameToPrevInput(
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              index,
-                                                            )}
-                                                            apenasNumeros
-                                                            name={`${row.name}__dia_${column.dia}__categoria_${categoria.id}`}
-                                                            disabled={
-                                                              campoDesabilitado
-                                                            }
-                                                            exibeTooltipPadraoRepeticaoDiasSobremesaDoce={exibirTooltipPadraoRepeticaoDiasSobremesaDoce(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              diasSobremesaDoce,
-                                                              location,
-                                                            )}
-                                                            exibeTooltipRepeticaoDiasSobremesaDoceDiferenteZero={exibirTooltipRepeticaoDiasSobremesaDoceDiferenteZero(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              diasSobremesaDoce,
-                                                              location,
-                                                            )}
-                                                            exibeTooltipSobremesaAFDeveSerZero={exibirTooltipSobremesaAFDeveSerZero(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              diasSobremesaAF,
-                                                              location,
-                                                            )}
-                                                            exibeTooltipSobremesaAFDiferenteZero={exibirTooltipSobremesaAFDiferenteZero(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              diasSobremesaAF,
-                                                              location,
-                                                            )}
-                                                            exibeTooltipAlimentacoesAutorizadasDiaNaoLetivo={
-                                                              `${row.name}__dia_${column.dia}__categoria_${categoria.id}` in
-                                                                dadosValoresInclusoesAutorizadasState &&
-                                                              !validacaoDiaLetivo(
-                                                                column.dia,
-                                                              ) &&
-                                                              !formValuesAtualizados[
-                                                                `observacoes__dia_${column.dia}__categoria_${categoria.id}`
-                                                              ] &&
-                                                              !existeAlteracaoRPL(
-                                                                alteracoesAlimentacaoAutorizadas,
-                                                                column.dia,
-                                                              ) &&
-                                                              !existeAlteracaoLPR(
-                                                                alteracoesAlimentacaoAutorizadas,
-                                                                column.dia,
-                                                              )
-                                                            }
-                                                            exibeTooltipSuspensoesAutorizadas={exibirTooltipSuspensoesAutorizadas(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              suspensoesAutorizadas,
-                                                            )}
-                                                            exibeTooltipRPLAutorizadas={exibirTooltipRPLAutorizadas(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                            )}
-                                                            exibeTooltipLPRAutorizadas={exibirTooltipLPRAutorizadas(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                            )}
-                                                            exibeTooltipLancheEmergencialAutorizadoTipoAlimentacao={exibirTooltipLancheEmergencialAutorizadoTipoAlimentacao(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesLancheEmergencialAutorizadas,
-                                                              permissoesLancamentosEspeciaisPorDia,
-                                                            )}
-                                                            exibeTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas={exibirTooltipQtdKitLancheMenorSolAlimentacoesAutorizadas(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              kitLanchesAutorizadas,
-                                                            )}
-                                                            exibeTooltipKitLancheSolAlimentacoes={exibirTooltipKitLancheSolAlimentacoes(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              kitLanchesAutorizadas,
-                                                            )}
-                                                            exibeTooltipLancheEmergencialNaoAutorizado={
-                                                              grupoLocation !==
-                                                                "Solicitações de Alimentação Extraordinárias" &&
-                                                              exibirTooltipLancheEmergencialNaoAutorizado(
-                                                                formValuesAtualizados,
-                                                                row,
-                                                                column,
-                                                                categoria,
-                                                                alteracoesAlimentacaoAutorizadas,
-                                                                diasLancheEmergencialDiarioAtivo,
-                                                              )
-                                                            }
-                                                            exibeTooltipLancheEmergencialAutorizado={
-                                                              grupoLocation !==
-                                                                "Solicitações de Alimentação Extraordinárias" &&
-                                                              exibirTooltipLancheEmergencialAutorizado(
-                                                                formValuesAtualizados,
-                                                                row,
-                                                                column,
-                                                                categoria,
-                                                                alteracoesAlimentacaoAutorizadas,
-                                                              )
-                                                            }
-                                                            exibeTooltipLancheEmergencialZeroAutorizado={exibirTooltipLancheEmergencialZeroAutorizado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                              validacaoDiaLetivo,
-                                                            )}
-                                                            exibeTooltipLancheEmergencialZeroAutorizadoJustificado={exibirTooltipLancheEmergencialZeroAutorizadoJustificado(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              alteracoesAlimentacaoAutorizadas,
-                                                              validacaoDiaLetivo,
-                                                            )}
-                                                            exibeTooltipFrequenciaZeroTabelaEtec={exibirTooltipFrequenciaZeroTabelaEtec(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              ehGrupoETECUrlParam,
-                                                            )}
-                                                            exibeTooltipLancheEmergTabelaEtec={exibirTooltipLancheEmergTabelaEtec(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              ehGrupoETECUrlParam,
-                                                              inclusoesEtecAutorizadas,
-                                                            )}
-                                                            exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
-                                                              row.name,
-                                                              column.dia,
-                                                              categoria,
-                                                              formValuesAtualizados,
-                                                              diasFrequenciaZerada,
-                                                              location.state
-                                                                .grupo,
-                                                              escolaEhEMEBS(),
-                                                              alunosTabSelecionada,
-                                                            )}
-                                                            exibirTooltipRefeicaoSimultanea={exibirTooltipRefeicaoSimultanea(
-                                                              formValuesAtualizados,
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              usuarioEhEscolaCIEJA(),
-                                                              location.state
-                                                                .periodo,
-                                                            )}
-                                                            ehGrupoETECUrlParam={
-                                                              ehGrupoETECUrlParam
-                                                            }
-                                                            ehProgramasEProjetos={
-                                                              ehProgramasEProjetos
-                                                            }
-                                                            exibirTooltipFeriado={verificaFeriadoProgramasProjetos(
-                                                              row,
-                                                              column,
-                                                              categoria,
-                                                              campoDesabilitado,
-                                                              ehProgramasEProjetos,
-                                                              validacaoDiaLetivo,
-                                                              formValuesAtualizados,
-                                                            )}
-                                                            numeroDeInclusoesAutorizadas={
-                                                              dadosValoresInclusoesAutorizadasState[
-                                                                `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
-                                                              ]
-                                                            }
-                                                            defaultValue={defaultValue(
-                                                              column,
-                                                              row,
-                                                            )}
-                                                            validate={fieldValidationsTabelaAlimentacao(
-                                                              row.name,
-                                                              column.dia,
-                                                              categoria.id,
-                                                              categoria.nome,
-                                                            )}
-                                                            inputOnChange={(
-                                                              e,
-                                                            ) => {
-                                                              const value =
-                                                                e.target.value;
-
-                                                              onChangeInput(
-                                                                value,
-                                                                previousValue,
-                                                                form.getState()
-                                                                  .errors,
-                                                                form.getState()
-                                                                  .values,
-                                                                column.dia,
-                                                                categoria,
-                                                                row.name,
-                                                                form,
-                                                                column,
-                                                                row,
-                                                              );
-
-                                                              setPreviousValue(
-                                                                value,
-                                                              );
-                                                            }}
-                                                          />
-                                                        </div>
-                                                      )}
-                                                    </div>
-                                                  );
-                                                })}
+                                                {weekColumns.map(
+                                                  paraCelulasDaLinha(
+                                                    row,
+                                                    categoria,
+                                                    index,
+                                                    form,
+                                                  ),
+                                                )}
                                               </div>
                                             </Fragment>
                                           );

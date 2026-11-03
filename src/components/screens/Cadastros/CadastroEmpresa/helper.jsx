@@ -130,6 +130,12 @@ export const retornArrayTerceirizadas = (response) => {
   return listaTerceirizadas;
 };
 
+export const mensagemErroCnpj = (data) => {
+  const mensagens = data?.cnpj;
+  if (Array.isArray(mensagens)) return mensagens[0] || null;
+  return mensagens || null;
+};
+
 export const formataJsonParaEnvio = (valoresForm, valoresState) => {
   if (valoresState.ehDistribuidor) {
     const contatosEmpresa = valoresState.contatosPessoaEmpresa.map((item) => {

@@ -87,24 +87,25 @@ export default () => {
     }
   }, [filtros]);
 
+  const carregarProdutos = async () => {
+    const response = await getListaCompletaProdutosLogistica();
+    setListaProdutos(response.data.results);
+  };
+
+  const carregarFornecedores = async () => {
+    const response = await getEmpresasCronograma();
+    setFornecedores(
+      response.data.results.map((fornecedor) => ({
+        value: fornecedor.uuid,
+        label: fornecedor.nome_fantasia,
+      })),
+    );
+  };
+
   useEffect(() => {
     (async () => {
       setCarregando(true);
-      await Promise.all([
-        (async () => {
-          const response = await getListaCompletaProdutosLogistica();
-          setListaProdutos(response.data.results);
-        })(),
-        (async () => {
-          const response = await getEmpresasCronograma();
-          setFornecedores(
-            response.data.results.map((fornecedor) => ({
-              value: fornecedor.uuid,
-              label: fornecedor.nome_fantasia,
-            })),
-          );
-        })(),
-      ]);
+      await Promise.all([carregarProdutos(), carregarFornecedores()]);
       setCarregando(false);
     })();
   }, []);

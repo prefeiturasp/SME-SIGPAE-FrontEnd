@@ -41,6 +41,30 @@ import {
 } from "./interfaces";
 import { ModalExcluirDiaLetivo } from "../components/ModalExcluirDiaLetivo";
 
+const criarHandlerPeriodosEscolares =
+  (form, name) => (values_: OpcaoMultiselectInterface[]) => {
+    form.change(
+      `${name}.periodos_escolares` as keyof DiasLetivosFormInterface,
+      values_.map((v) => v.value),
+    );
+  };
+
+const criarHandlerDiasSemana =
+  (form, name, values, index) => (value: string) => {
+    const dias = values.recorrencias?.[index]?.dias_semana || [];
+    const atualizado = dias.includes(value)
+      ? dias.filter((d) => d !== value)
+      : [...dias, value];
+    form.change(
+      `${name}.dias_semana` as keyof DiasLetivosFormInterface,
+      atualizado,
+    );
+  };
+
+const criarHandlerRemoverRecorrencia = (fields, index) => () => {
+  fields.remove(index);
+};
+
 export const EditarDiasLetivosSIGPAE = () => {
   const [searchParams] = useSearchParams();
   const uuid = searchParams.get("uuid");
@@ -429,14 +453,10 @@ export const EditarDiasLetivosSIGPAE = () => {
                                       values.recorrencias?.[index]
                                         ?.periodos_escolares || []
                                     }
-                                    onSelectedChanged={(
-                                      values_: OpcaoMultiselectInterface[],
-                                    ) => {
-                                      form.change(
-                                        `${name}.periodos_escolares` as keyof DiasLetivosFormInterface,
-                                        values_.map((v) => v.value),
-                                      );
-                                    }}
+                                    onSelectedChanged={criarHandlerPeriodosEscolares(
+                                      form,
+                                      name,
+                                    )}
                                     placeholder="Selecione os períodos"
                                     required
                                     validate={requiredMultiselect}
@@ -460,25 +480,22 @@ export const EditarDiasLetivosSIGPAE = () => {
                                       values.recorrencias?.[index]
                                         ?.dias_semana || []
                                     }
-                                    handleWeekly={async (value: string) => {
-                                      const dias =
-                                        values.recorrencias?.[index]
-                                          ?.dias_semana || [];
-                                      const atualizado = dias.includes(value)
-                                        ? dias.filter((d) => d !== value)
-                                        : [...dias, value];
-                                      form.change(
-                                        `${name}.dias_semana` as keyof DiasLetivosFormInterface,
-                                        atualizado,
-                                      );
-                                    }}
+                                    handleWeekly={criarHandlerDiasSemana(
+                                      form,
+                                      name,
+                                      values,
+                                      index,
+                                    )}
                                   />
                                 </div>
                                 {index > 0 && (
                                   <div className="col-1 d-flex align-items-end pb-1">
                                     <Botao
                                       dataTestId={`btn-remover-recorrencia-${index}`}
-                                      onClick={() => fields.remove(index)}
+                                      onClick={criarHandlerRemoverRecorrencia(
+                                        fields,
+                                        index,
+                                      )}
                                       icon={BUTTON_ICON.TRASH}
                                       type={BUTTON_TYPE.BUTTON}
                                       style={BUTTON_STYLE.GREEN_OUTLINE}

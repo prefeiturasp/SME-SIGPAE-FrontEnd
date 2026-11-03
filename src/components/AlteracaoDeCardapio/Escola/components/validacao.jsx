@@ -8,10 +8,6 @@ export const validateSubmit = (values) => {
   values.substituicoes = values.substituicoes.filter((sub) => sub.check);
   for (const substituicao of values.substituicoes) {
     substituicao.periodo_escolar = substituicao.uuid;
-    substituicao.tipos_alimentacao_de =
-      substituicao.tipos_alimentacao_de_selecionados;
-    substituicao.tipos_alimentacao_para =
-      substituicao.tipos_alimentacao_para_selecionados;
   }
 
   if (values["alterar_dia"]) {

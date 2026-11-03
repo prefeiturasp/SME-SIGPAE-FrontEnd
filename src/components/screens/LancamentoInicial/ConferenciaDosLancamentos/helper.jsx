@@ -1,3 +1,30 @@
+export const calcularDiasComApontamentoKitLanchePasseio = (
+  valoresLancamentos,
+  kitLanchesAutorizados,
+  inclusoesAutorizadas,
+) => {
+  const diasComFrequencia = new Set(
+    (valoresLancamentos || [])
+      .filter(
+        (valor) =>
+          valor.nome_campo === "frequencia" &&
+          valor.dia !== null &&
+          valor.dia !== undefined &&
+          Number(valor.valor) > 0,
+      )
+      .map((valor) => String(valor.dia)),
+  );
+  const diasComInclusao = new Set(
+    (inclusoesAutorizadas || []).map((inclusao) => String(inclusao.dia)),
+  );
+
+  return new Set(
+    (kitLanchesAutorizados || [])
+      .map((kitLanche) => String(kitLanche.dia))
+      .filter((dia) => diasComFrequencia.has(dia) && !diasComInclusao.has(dia)),
+  );
+};
+
 export const formatarNomePeriodo = (nomePeriodo) => {
   switch (nomePeriodo) {
     case "MANHA":

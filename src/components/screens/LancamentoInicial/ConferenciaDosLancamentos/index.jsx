@@ -387,32 +387,80 @@ export const ConferenciaDosLancamentos = () => {
     }
   };
 
+  const montaDadosIniciais = (response) => {
+    const mes = response.data.mes;
+    const ano = response.data.ano;
+    const data = new Date(`${mes}/01/${ano}`);
+    let mesString = format(data, "LLLL", {
+      locale: ptBR,
+    }).toString();
+    mesString = mesString.charAt(0).toUpperCase() + mesString.slice(1);
+    const recreioNasFeriasTitulo =
+      typeof response.data.recreio_nas_ferias === "string"
+        ? response.data.recreio_nas_ferias
+        : response.data.recreio_nas_ferias?.titulo;
+    return {
+      mes,
+      ano,
+      dados_iniciais: {
+        mes_lancamento: recreioNasFeriasTitulo || `${mesString} / ${ano}`,
+        unidade_educacional: response.data.escola,
+      },
+    };
+  };
+
+  const ehSolicitacaoDeCorrecao = (logOcorrencia, logOcorrenciaCODAE) =>
+    (usuarioEhDRE() &&
+      logOcorrencia &&
+      logOcorrencia.status_evento_explicacao === "Correção solicitada") ||
+    (usuarioMedicaoOuManifestacaoTemPermissao &&
+      logOcorrenciaCODAE &&
+      logOcorrenciaCODAE.status_evento_explicacao ===
+        "Correção solicitada pela CODAE");
+
+  const processaOcorrenciaDaSolicitacao = (response) => {
+    const arquivoPdfOcorrencia = response.data.ocorrencia;
+    const logOcorrencia = arquivoPdfOcorrencia.logs.find((log) =>
+      ["Correção solicitada", "Aprovado pela DRE"].includes(
+        log.status_evento_explicacao,
+      ),
+    );
+    const logOcorrenciaCODAE = arquivoPdfOcorrencia.logs.find((log) =>
+      ["Correção solicitada pela CODAE", "Aprovado pela CODAE"].includes(
+        log.status_evento_explicacao,
+      ),
+    );
+    setOcorrencia(arquivoPdfOcorrencia);
+    setLogCorrecaoOcorrencia(logOcorrencia);
+    setLogCorrecaoOcorrenciaCODAE(logOcorrenciaCODAE);
+    if (logOcorrencia) {
+      setTextoOcorrencia(
+        ehSolicitacaoDeCorrecao(logOcorrencia, logOcorrenciaCODAE)
+          ? "Solicitação de correção no Formulário de Ocorrências realizada em"
+          : "Formulário de Ocorrências aprovado em",
+      );
+    }
+  };
+
+  const processaOcorrenciasDaSolicitacao = (response) => {
+    if (
+      response.data.com_ocorrencias ||
+      response.data.ocorrencia?.status === "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" ||
+      (!response.data.com_ocorrencias && response.data.ocorrencia !== null)
+    ) {
+      processaOcorrenciaDaSolicitacao(response);
+    }
+  };
+
   const getSolMedInicialAsync = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const uuid = urlParams.get("uuid");
     const response = await retrieveSolicitacaoMedicaoInicial(uuid);
     let dados_iniciais;
     let mes;
-    let mesString;
     let ano;
-    let escola;
     if (response.status === HTTP_STATUS.OK) {
-      mes = response.data.mes;
-      ano = response.data.ano;
-      const data = new Date(`${mes}/01/${ano}`);
-      mesString = format(data, "LLLL", {
-        locale: ptBR,
-      }).toString();
-      mesString = mesString.charAt(0).toUpperCase() + mesString.slice(1);
-      const recreioNasFeriasTitulo =
-        typeof response.data.recreio_nas_ferias === "string"
-          ? response.data.recreio_nas_ferias
-          : response.data.recreio_nas_ferias?.titulo;
-      escola = response.data.escola;
-      dados_iniciais = {
-        mes_lancamento: recreioNasFeriasTitulo || `${mesString} / ${ano}`,
-        unidade_educacional: escola,
-      };
+      ({ mes, ano, dados_iniciais } = montaDadosIniciais(response));
 
       getDiasLetivosSIGPAE(mes, ano);
       getDiasSuspensaoAtividades(mes, ano);
@@ -420,41 +468,7 @@ export const ConferenciaDosLancamentos = () => {
       setHistorico(response.data.ocorrencia && response.data.ocorrencia.logs);
       setMesSolicitacao(mes);
       setAnoSolicitacao(ano);
-      if (
-        response.data.com_ocorrencias ||
-        response.data.ocorrencia?.status ===
-          "OCORRENCIA_EXCLUIDA_PELA_ESCOLA" ||
-        (!response.data.com_ocorrencias && response.data.ocorrencia !== null)
-      ) {
-        const arquivoPdfOcorrencia = response.data.ocorrencia;
-        const logOcorrencia = arquivoPdfOcorrencia.logs.find((log) =>
-          ["Correção solicitada", "Aprovado pela DRE"].includes(
-            log.status_evento_explicacao,
-          ),
-        );
-        const logOcorrenciaCODAE = arquivoPdfOcorrencia.logs.find((log) =>
-          ["Correção solicitada pela CODAE", "Aprovado pela CODAE"].includes(
-            log.status_evento_explicacao,
-          ),
-        );
-        setOcorrencia(arquivoPdfOcorrencia);
-        setLogCorrecaoOcorrencia(logOcorrencia);
-        setLogCorrecaoOcorrenciaCODAE(logOcorrenciaCODAE);
-        if (logOcorrencia) {
-          setTextoOcorrencia(
-            (usuarioEhDRE() &&
-              logOcorrencia &&
-              logOcorrencia.status_evento_explicacao ===
-                "Correção solicitada") ||
-              (usuarioMedicaoOuManifestacaoTemPermissao &&
-                logOcorrenciaCODAE &&
-                logOcorrenciaCODAE.status_evento_explicacao ===
-                  "Correção solicitada pela CODAE")
-              ? "Solicitação de correção no Formulário de Ocorrências realizada em"
-              : "Formulário de Ocorrências aprovado em",
-          );
-        }
-      }
+      processaOcorrenciasDaSolicitacao(response);
     } else {
       setErroAPI("Erro ao carregar Medição Inicial.");
     }

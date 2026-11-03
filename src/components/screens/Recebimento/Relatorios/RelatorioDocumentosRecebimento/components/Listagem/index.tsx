@@ -11,6 +11,12 @@ interface Props {
 }
 
 const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
+  const alternarExpansao = (uuid: string) => {
+    ativos && ativos.includes(uuid)
+      ? setAtivos(ativos.filter((el: string) => el !== uuid))
+      : setAtivos(ativos ? [...ativos, uuid] : [uuid]);
+  };
+
   return (
     <div className="listagem-relatorio-documentos">
       <div className="titulo-verde mt-4 mb-3">Resultado da Pesquisa</div>
@@ -51,25 +57,11 @@ const Listagem: React.FC<Props> = ({ objetos, ativos, setAtivos }) => {
                     aria-expanded={Boolean(
                       ativos && ativos.includes(objeto.uuid),
                     )}
-                    onClick={() => {
-                      ativos && ativos.includes(objeto.uuid)
-                        ? setAtivos(
-                            ativos.filter((el: string) => el !== objeto.uuid),
-                          )
-                        : setAtivos(
-                            ativos ? [...ativos, objeto.uuid] : [objeto.uuid],
-                          );
-                    }}
+                    onClick={() => alternarExpansao(objeto.uuid)}
                     onKeyDown={(e) =>
-                      acionaComEnterOuEspaco(e, () => {
-                        ativos && ativos.includes(objeto.uuid)
-                          ? setAtivos(
-                              ativos.filter((el: string) => el !== objeto.uuid),
-                            )
-                          : setAtivos(
-                              ativos ? [...ativos, objeto.uuid] : [objeto.uuid],
-                            );
-                      })
+                      acionaComEnterOuEspaco(e, () =>
+                        alternarExpansao(objeto.uuid),
+                      )
                     }
                   />
                 </div>
