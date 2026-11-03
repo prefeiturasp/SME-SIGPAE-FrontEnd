@@ -101,7 +101,11 @@ const setup = async () => {
 describe("Teste Editar/Excluir Dia Letivo do SIGPAE", () => {
   beforeAll(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2000-01-01T00:00:00"));
+    jest.setSystemTime(new Date(2000, 0, 1, 0, 0, 0));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
   });
   beforeEach(async () => {
     jest.clearAllMocks();

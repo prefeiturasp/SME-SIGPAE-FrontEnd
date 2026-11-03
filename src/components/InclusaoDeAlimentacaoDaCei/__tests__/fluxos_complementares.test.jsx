@@ -25,7 +25,8 @@ import Container from "../Container";
 
 const escolaUuid =
   mockMeusDadosEscolaCEIcomMANHAeTARDE.vinculo_atual.instituicao.uuid;
-const hoje = new Date().toISOString().split("T")[0];
+const DATA_REFERENCIA_ALUNOS = new Date(2026, 10, 3, 22, 0, 0);
+const dataReferenciaAlunos = () => "2026-11-03";
 const rascunhoUuid =
   mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid;
 
@@ -73,7 +74,7 @@ const mocksBase = (meusDados = mockMeusDadosEscolaCEIcomMANHAeTARDE) => {
   periodosVinculos.forEach((vinculo, index) => {
     mock
       .onGet(
-        `/quantidade-alunos-por-periodo/${vinculo.periodo_escolar.uuid}/alunos-por-faixa-etaria/${hoje}/`,
+        `/quantidade-alunos-por-periodo/${vinculo.periodo_escolar.uuid}/alunos-por-faixa-etaria/${dataReferenciaAlunos()}/`,
       )
       .reply(200, mocksQuantidade[index]);
   });
@@ -152,6 +153,28 @@ const carregaRascunho = async () => {
 };
 
 describe("Fluxos complementares Inclusão de Alimentação - CEI", () => {
+  beforeEach(() => {
+    jest.useFakeTimers({
+      doNotFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "setImmediate",
+        "clearImmediate",
+        "nextTick",
+        "queueMicrotask",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+      ],
+    });
+    jest.setSystemTime(DATA_REFERENCIA_ALUNOS);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("Container sem meusDados exibe loader", async () => {
     setupLocalStorage();
     mock
@@ -545,7 +568,7 @@ describe("Fluxos complementares Inclusão de Alimentação - CEI", () => {
     ).periodo_escolar.uuid;
     mock
       .onGet(
-        `/quantidade-alunos-por-periodo/${manhaUuid}/alunos-por-faixa-etaria/${hoje}/`,
+        `/quantidade-alunos-por-periodo/${manhaUuid}/alunos-por-faixa-etaria/${dataReferenciaAlunos()}/`,
       )
       .reply(200, {
         count: 2,
@@ -581,7 +604,7 @@ describe("Fluxos complementares Inclusão de Alimentação - CEI", () => {
     ).periodo_escolar.uuid;
     mock
       .onGet(
-        `/quantidade-alunos-por-periodo/${manhaUuid}/alunos-por-faixa-etaria/${hoje}/`,
+        `/quantidade-alunos-por-periodo/${manhaUuid}/alunos-por-faixa-etaria/${dataReferenciaAlunos()}/`,
       )
       .reply(200, {
         count: 2,
@@ -621,7 +644,7 @@ describe("Fluxos complementares Inclusão de Alimentação - CEI", () => {
     ).periodo_escolar.uuid;
     mock
       .onGet(
-        `/quantidade-alunos-por-periodo/${integralUuid}/alunos-por-faixa-etaria/${hoje}/`,
+        `/quantidade-alunos-por-periodo/${integralUuid}/alunos-por-faixa-etaria/${dataReferenciaAlunos()}/`,
       )
       .reply(200, {
         count: 3,
@@ -672,7 +695,7 @@ describe("Fluxos complementares Inclusão de Alimentação - CEI", () => {
     ).periodo_escolar.uuid;
     mock
       .onGet(
-        `/quantidade-alunos-por-periodo/${tardeUuid}/alunos-por-faixa-etaria/${hoje}/`,
+        `/quantidade-alunos-por-periodo/${tardeUuid}/alunos-por-faixa-etaria/${dataReferenciaAlunos()}/`,
       )
       .reply(200, { count: 0, results: [] });
     await renderPage();

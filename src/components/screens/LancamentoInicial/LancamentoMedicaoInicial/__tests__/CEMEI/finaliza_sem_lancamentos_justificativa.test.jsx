@@ -139,7 +139,10 @@ describe("CEMEI - Validação de Limpeza de Justificativa", () => {
     window.history.pushState({}, "", "?mes=08&ano=2024");
   });
 
-  afterEach(() => cleanup());
+  afterEach(() => {
+    cleanup();
+    jest.useRealTimers();
+  });
 
   it("Renderiza página CEMEI sem erros", async () => {
     jest.useFakeTimers();
