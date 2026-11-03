@@ -80,9 +80,9 @@
       "datatables.net-bs4": "2.3.2"
     },
     "jest-watch-typeahead": "2.2.2",
-    "minimatch": {
-      "brace-expansion": "5.0.12"
-    },
+    "glob": "14.0.3",
+    "minimatch": "11.0.4",
+    "brace-expansion": "5.0.12",
     "js-yaml": "4.3.2",
     "postcss": "8.5.23",
     "fast-uri": "^3.1.9",
