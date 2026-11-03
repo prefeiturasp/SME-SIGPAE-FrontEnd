@@ -1,5 +1,8 @@
 import moment from "moment";
+import { formataMilharDecimal } from "src/helpers/utilities";
 import {
+  CronogramaMensalDetalhado,
+  CronogramaSemanalDetalhado,
   EtapaCronograma,
   EtapaMes,
 } from "src/interfaces/cronograma_semanal.interface";
@@ -78,5 +81,68 @@ export const calcularDiferenca = (
 
   return (
     Math.round((quantidadeEstimadaDisponivel - quantidadeEntregue) * 100) / 100
+  );
+};
+
+export const montarCamposCronograma = (data: CronogramaMensalDetalhado) => ({
+  produto: data.ficha_tecnica?.produto?.nome || "",
+  fornecedor: data.empresa?.nome_fantasia || "",
+  numero_contrato: data.contrato?.numero || "",
+  numero_processo_sei: data.contrato?.processo || "",
+  numero_chamada_publica_ou_ata: data.contrato?.numero_pregao
+    ? data.contrato?.ata || ""
+    : data.contrato?.numero_chamada_publica || "",
+  tipo_documento: data.contrato?.numero_pregao
+    ? "Nº da Ata"
+    : "Nº da Chamada Pública",
+  numero_empenho: data.numero_empenho || "",
+  qtd_total_empenho: formataMilharDecimal(data.qtd_total_empenho) || "",
+  custo_unitario_produto: `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
+});
+
+export const obterProgramacoesIniciais = (
+  cronogramaSemanalExistente: CronogramaSemanalDetalhado | undefined,
+  programacoesAtuais: any[] | undefined,
+  programacaoPadrao: any,
+) => {
+  if (cronogramaSemanalExistente?.programacoes) {
+    return cronogramaSemanalExistente.programacoes.map((p) => ({
+      mes_programado: p.mes_programado,
+      data_inicio: formataDataISOparaDDMMYYYY(p.data_inicio) || "",
+      data_fim: formataDataISOparaDDMMYYYY(p.data_fim) || "",
+      quantidade: formataMilharDecimal(p.quantidade),
+    }));
+  }
+  return programacoesAtuais && programacoesAtuais.length > 0
+    ? programacoesAtuais
+    : [programacaoPadrao];
+};
+
+export const agruparEtapasPorMes = (etapas: any[]): EtapaMes[] => {
+  const meses: {
+    [key: string]: {
+      quantidade_total: number;
+      quantidade_estimada_disponivel: number;
+    };
+  } = {};
+
+  for (const etapa of etapas) {
+    if (!etapa.data_programada) continue;
+    const mesAno = etapa.data_programada;
+    meses[mesAno] ??= {
+      quantidade_total: 0,
+      quantidade_estimada_disponivel: 0,
+    };
+    meses[mesAno].quantidade_total += etapa.quantidade || 0;
+    meses[mesAno].quantidade_estimada_disponivel =
+      etapa.quantidade_estimada_disponivel ?? 0;
+  }
+
+  return Object.entries(meses).map(
+    ([mes_ano, { quantidade_total, quantidade_estimada_disponivel }]) => ({
+      mes_ano,
+      quantidade_total,
+      quantidade_estimada_disponivel,
+    }),
   );
 };
