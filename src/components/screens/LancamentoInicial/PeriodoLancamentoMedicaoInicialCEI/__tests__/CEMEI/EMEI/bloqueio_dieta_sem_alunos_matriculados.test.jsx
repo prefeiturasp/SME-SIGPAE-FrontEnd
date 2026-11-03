@@ -31,6 +31,22 @@ describe("Bloqueio de dietas sem log de matriculados - EMEI da CEMEI", () => {
     }));
 
   beforeEach(async () => {
+    jest.useFakeTimers({
+      doNotFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "setImmediate",
+        "clearImmediate",
+        "nextTick",
+        "queueMicrotask",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+      ],
+    });
+    jest.setSystemTime(new Date(2025, 11, 10, 12, 0, 0));
+
     mock.onGet("/dias-letivos/calendario/").reply(200, []);
     mock.onGet("/dias-suspensao-atividades/lista-dias/").reply(200, []);
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
@@ -115,6 +131,10 @@ describe("Bloqueio de dietas sem log de matriculados - EMEI da CEMEI", () => {
 
     const search = `?uuid=64c527a2-d724-4b8e-a3bf-c3815ff078b9`;
     window.history.pushState({}, "", search);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   describe("Testa conteúdo básico da tela", () => {
