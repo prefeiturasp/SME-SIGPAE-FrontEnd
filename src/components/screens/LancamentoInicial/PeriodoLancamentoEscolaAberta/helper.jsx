@@ -136,7 +136,7 @@ export const obterTextoForaDoMes = (diaInfo, mesAno) => {
   return dataDia < startOfMonth(mesAno) ? "Mês anterior" : "Mês posterior";
 };
 
-export const dataHabilitada = (diaInfo, mesAno, cadastro) => {
+export const dataNoPeriodo = (diaInfo, mesAno, cadastro) => {
   if (!cadastro) {
     return false;
   }
@@ -159,6 +159,30 @@ export const dataHabilitada = (diaInfo, mesAno, cadastro) => {
     isWithinInterval(data, { start: dataInicial, end: dataFinal }) &&
     diasSemanaCadastrados.includes(diaSemana)
   );
+};
+
+export const dataHabilitada = (
+  diaInfo,
+  mesAno,
+  cadastro,
+  dataReferencia = new Date(),
+) => {
+  if (!dataNoPeriodo(diaInfo, mesAno, cadastro)) {
+    return false;
+  }
+
+  const data = new Date(
+    Number(diaInfo.ano),
+    Number(diaInfo.mes) - 1,
+    Number(diaInfo.dia),
+  );
+  const hoje = new Date(
+    dataReferencia.getFullYear(),
+    dataReferencia.getMonth(),
+    dataReferencia.getDate(),
+  );
+
+  return data < hoje;
 };
 
 export const validarValor = (nomeCampo, valor, numParticipantes) => {
@@ -250,7 +274,7 @@ export const montarValoresIniciais = ({
       ano: format(mesAno, "yyyy"),
     };
 
-    if (dataHabilitada(diaInfo, mesAno, cadastro)) {
+    if (dataNoPeriodo(diaInfo, mesAno, cadastro)) {
       valores[`participantes__dia_${diaInfo.dia}__categoria_${categoriaId}`] =
         String(cadastro.num_participantes ?? "");
     }

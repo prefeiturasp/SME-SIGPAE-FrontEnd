@@ -443,9 +443,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
                         <div
                           key={`participantes-${coluna.mes}-${coluna.dia}`}
                           className={
-                            coluna.habilitado
-                              ? "input-habilitado"
-                              : "input-desabilitado"
+                            coluna.foraDoMes
+                              ? "input-desabilitado"
+                              : "input-habilitado"
                           }
                         >
                           {coluna.foraDoMes ? (
@@ -480,9 +480,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
                           <div
                             key={`${linha.name}-${coluna.mes}-${coluna.dia}`}
                             className={
-                              coluna.habilitado
-                                ? "input-habilitado"
-                                : "input-desabilitado"
+                              coluna.foraDoMes
+                                ? "input-desabilitado"
+                                : "input-habilitado"
                             }
                           >
                             {coluna.foraDoMes ? (
@@ -526,9 +526,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
                           <div
                             key={`observacoes-${coluna.mes}-${coluna.dia}`}
                             className={
-                              coluna.habilitado
-                                ? "input-habilitado-observacoes"
-                                : "input-desabilitado"
+                              coluna.foraDoMes
+                                ? "input-desabilitado"
+                                : "input-habilitado-observacoes"
                             }
                           >
                             {!coluna.foraDoMes && coluna.habilitado && (
