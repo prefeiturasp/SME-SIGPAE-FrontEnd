@@ -2,11 +2,13 @@ import {
   MENSAGEM_LANCAMENTO_MAIOR_QUE_PARTICIPANTES,
   MENSAGEM_VALOR_INVALIDO,
   dataHabilitada,
+  dataNoPeriodo,
   formatarMesAno,
   montarDiasDaSemana,
   montarLinhasTiposAlimentacao,
   montarPayload,
   montarSemanas,
+  montarValoresIniciais,
   validarValor,
 } from "../helper";
 
@@ -70,12 +72,95 @@ describe("PeriodoLancamentoEscolaAberta helper", () => {
     const segunda = { dia: "05", mes: "10", ano: "2026" };
     const terca = { dia: "06", mes: "10", ano: "2026" };
     const foraDoMes = { dia: "01", mes: "09", ano: "2026" };
+    const dataReferencia = new Date(2026, 9, 10);
 
-    expect(dataHabilitada(segunda, new Date(2026, 9, 1), cadastro)).toBe(true);
-    expect(dataHabilitada(terca, new Date(2026, 9, 1), cadastro)).toBe(false);
-    expect(dataHabilitada(foraDoMes, new Date(2026, 9, 1), cadastro)).toBe(
-      false,
-    );
+    expect(
+      dataHabilitada(segunda, new Date(2026, 9, 1), cadastro, dataReferencia),
+    ).toBe(true);
+    expect(
+      dataHabilitada(terca, new Date(2026, 9, 1), cadastro, dataReferencia),
+    ).toBe(false);
+    expect(
+      dataHabilitada(foraDoMes, new Date(2026, 9, 1), cadastro, dataReferencia),
+    ).toBe(false);
+  });
+
+  it("bloqueia datas de hoje e futuras, liberando apenas ontem e anteriores", () => {
+    const cadastroTodosOsDias = {
+      ...cadastro,
+      data_inicial: "01/11/2026",
+      data_final: "30/11/2026",
+      dias_semana: ["0", "1", "2", "3", "4", "5", "6"],
+    };
+    const dataReferencia = new Date(2026, 10, 5);
+
+    expect(
+      dataHabilitada(
+        { dia: "03", mes: "11", ano: "2026" },
+        new Date(2026, 10, 1),
+        cadastroTodosOsDias,
+        dataReferencia,
+      ),
+    ).toBe(true);
+    expect(
+      dataHabilitada(
+        { dia: "04", mes: "11", ano: "2026" },
+        new Date(2026, 10, 1),
+        cadastroTodosOsDias,
+        dataReferencia,
+      ),
+    ).toBe(true);
+    expect(
+      dataHabilitada(
+        { dia: "05", mes: "11", ano: "2026" },
+        new Date(2026, 10, 1),
+        cadastroTodosOsDias,
+        dataReferencia,
+      ),
+    ).toBe(false);
+    expect(
+      dataHabilitada(
+        { dia: "06", mes: "11", ano: "2026" },
+        new Date(2026, 10, 1),
+        cadastroTodosOsDias,
+        dataReferencia,
+      ),
+    ).toBe(false);
+
+    expect(
+      dataNoPeriodo(
+        { dia: "05", mes: "11", ano: "2026" },
+        new Date(2026, 10, 1),
+        cadastroTodosOsDias,
+      ),
+    ).toBe(true);
+    expect(
+      dataNoPeriodo(
+        { dia: "06", mes: "11", ano: "2026" },
+        new Date(2026, 10, 1),
+        cadastroTodosOsDias,
+      ),
+    ).toBe(true);
+  });
+
+  it("mantém o número de participantes visível em datas bloqueadas para lançamento", () => {
+    const cadastroTodosOsDias = {
+      ...cadastro,
+      data_inicial: "01/11/2026",
+      data_final: "30/11/2026",
+      dias_semana: ["0", "1", "2", "3", "4", "5", "6"],
+    };
+
+    const valores = montarValoresIniciais({
+      cadastro: cadastroTodosOsDias,
+      linhas: [],
+      categoriaId: 1,
+      mesAno: new Date(2026, 10, 1),
+      valoresSalvos: [],
+    });
+
+    expect(valores["participantes__dia_05__categoria_1"]).toBe("50");
+    expect(valores["participantes__dia_06__categoria_1"]).toBe("50");
   });
 
   it("valida limite de participantes apenas na primeira oferta", () => {
