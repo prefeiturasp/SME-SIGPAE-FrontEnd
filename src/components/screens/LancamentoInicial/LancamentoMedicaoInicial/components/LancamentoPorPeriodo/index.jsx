@@ -750,7 +750,7 @@ export const LancamentoPorPeriodo = ({
             <CardLancamento
               grupo="Escola Aberta"
               cor={COR_ESCOLA_ABERTA}
-              tipos_alimentacao={[]}
+              tipos_alimentacao={escolaAberta.tipos_alimentacao || []}
               periodoSelecionado={periodoSelecionado}
               solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
               objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
