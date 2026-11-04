@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -174,6 +181,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Bloco Escola Aberta
 
     expect(tituloBloco).toBeInTheDocument();
     expect(card).toHaveStyle({ color: "#3D9DAD" });
+    expect(within(card).getByText(/Lanche/)).toBeInTheDocument();
     expect(screen.queryByText("01/10/2026")).not.toBeInTheDocument();
     expect(screen.queryByText("31/10/2026")).not.toBeInTheDocument();
     expect(screen.queryByText("42")).not.toBeInTheDocument();
