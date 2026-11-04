@@ -102,82 +102,117 @@ const calcularTotaisFaixa = (dados: Record<string, any>) => {
   });
 };
 
+const CAMPOS_POR_TIPO = {
+  UNITARIO: "valor_unitario",
+  REAJUSTE: "valor_unitario_reajuste",
+  ACRESCIMO: "percentual_acrescimo",
+};
+
+const getCampo = (tipo: string): string => CAMPOS_POR_TIPO[tipo];
+
+const getSufixoEmebs = (grupoPendencia: string): string | undefined => {
+  if (grupoPendencia === "grupo 3") return "EMEBS Fundamental";
+  if (grupoPendencia === "grupo 4") return "EMEBS Infantil";
+  return undefined;
+};
+
+const getChavePrincipal = (
+  item: TabelaParametrizacao,
+  ehGrupo2: boolean,
+  ehGrupo5: boolean,
+  grupoPendencia?: string,
+): string | undefined => {
+  if (item.periodo_escolar) {
+    const periodo = capitalize(item.periodo_escolar);
+    return ehGrupo2
+      ? `${item.nome} - CEI - Período ${periodo}`
+      : `${item.nome} - Período ${periodo}`;
+  }
+  if (ehGrupo2 && grupoPendencia) {
+    return `${item.nome.replace("/Restrição de Aminoácidos", "")} - Turma Infantil - EMEI`;
+  }
+  if (ehGrupo5 && grupoPendencia) {
+    const sufixo = getSufixoEmebs(grupoPendencia);
+    return sufixo ? `${item.nome} - ${sufixo}` : undefined;
+  }
+  return item.nome;
+};
+
+const getTipoNomeGrupo4 = (
+  nomeCampo: string,
+  tipoNomeAtual: string,
+): string => {
+  const nome = nomeCampo
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  const ehEmef = /(^|[_,-])emefm?([_,]|$)/.test(nome);
+  const ehEnteral = nome.includes("dieta_enteral");
+  const ehEja = nome.includes("eja");
+
+  if (ehEmef) {
+    return ehEnteral
+      ? "Refeição - Dieta Enteral - CEU EMEF, CEU GESTÃO, EMEF, EMEFM"
+      : "Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM";
+  }
+  if (ehEja) {
+    return ehEnteral ? "Refeição - Dieta Enteral - EJA" : "Refeição - EJA";
+  }
+  return tipoNomeAtual;
+};
+
+const processarValor = (
+  destino: object,
+  valor: ValorTabela,
+  ehGrupo4: boolean,
+) => {
+  const campo = getCampo(valor.tipo_valor);
+
+  if (valor.faixa_etaria) {
+    const faixaNome = valor.faixa_etaria?.__str__;
+    destino[faixaNome] ||= {};
+    destino[faixaNome].faixa_etaria =
+      valor.faixa_etaria?.uuid || valor.faixa_etaria;
+    destino[faixaNome][campo] = valor.valor;
+  } else if (valor.tipo_alimentacao) {
+    let tipoNome = valor.tipo_alimentacao?.nome;
+    if (ehGrupo4) {
+      tipoNome = getTipoNomeGrupo4(valor.nome_campo, tipoNome);
+    }
+    destino[tipoNome] ||= {};
+    destino[tipoNome].tipo_alimentacao =
+      valor.tipo_alimentacao?.uuid || valor.tipo_alimentacao;
+    destino[tipoNome][campo] = valor.valor;
+  } else if (valor.nome_campo === "kit_lanche") {
+    destino["Kit Lanche"] ||= {};
+    destino["Kit Lanche"].tipo_alimentacao = "Kit Lanche";
+    destino["Kit Lanche"][campo] = valor.valor;
+  }
+};
+
 export const carregarValores = (
   tabelas: TabelaParametrizacao[],
   grupoSelecionado: string,
   grupoPendencia?: string,
 ) => {
-  const getCampo = (tipo: string): string => {
-    const campos = {
-      UNITARIO: "valor_unitario",
-      REAJUSTE: "valor_unitario_reajuste",
-      ACRESCIMO: "percentual_acrescimo",
-    };
-    return campos[tipo];
-  };
-
   const resultado: object = {};
-  const ehGrupo2 = grupoSelecionado.toLowerCase().includes("grupo 2");
-  const ehGrupo4 = grupoSelecionado.toLowerCase().includes("grupo 4");
-  const ehGrupo5 = grupoSelecionado.toLowerCase().includes("grupo 5");
+  const grupoLower = grupoSelecionado.toLowerCase();
+  const ehGrupo2 = grupoLower.includes("grupo 2");
+  const ehGrupo4 = grupoLower.includes("grupo 4");
+  const ehGrupo5 = grupoLower.includes("grupo 5");
+
   tabelas.forEach((item) => {
-    let chavePrincipal: string;
-    if (ehGrupo2 && item.periodo_escolar) {
-      chavePrincipal = `${item.nome} - CEI - Período ${capitalize(item.periodo_escolar)}`;
-    } else if (item.periodo_escolar) {
-      chavePrincipal = `${item.nome} - Período ${capitalize(item.periodo_escolar)}`;
-    } else if (ehGrupo2 && grupoPendencia) {
-      chavePrincipal = `${item.nome.replace("/Restrição de Aminoácidos", "")} - Turma Infantil - EMEI`;
-    } else if (ehGrupo5 && grupoPendencia) {
-      if (grupoPendencia === "grupo 3")
-        chavePrincipal = `${item.nome} - EMEBS Fundamental`;
-      else if (grupoPendencia === "grupo 4")
-        chavePrincipal = `${item.nome} - EMEBS Infantil`;
-    } else {
-      chavePrincipal = item.nome;
-    }
+    const chavePrincipal = getChavePrincipal(
+      item,
+      ehGrupo2,
+      ehGrupo5,
+      grupoPendencia,
+    );
     resultado[chavePrincipal] ||= {};
+
     item.valores.forEach((valor: ValorTabela) => {
-      if (valor.faixa_etaria) {
-        const faixaNome = valor.faixa_etaria?.__str__;
-        resultado[chavePrincipal][faixaNome] ||= {};
-        resultado[chavePrincipal][faixaNome].faixa_etaria =
-          valor.faixa_etaria?.uuid || valor.faixa_etaria;
-        resultado[chavePrincipal][faixaNome][getCampo(valor.tipo_valor)] =
-          valor.valor;
-      } else if (valor.tipo_alimentacao) {
-        let tipoNome = valor.tipo_alimentacao?.nome;
-        if (ehGrupo4) {
-          const nome = valor.nome_campo
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLowerCase();
-
-          const ehEmef = /(^|[_,-])emefm?([_,]|$)/.test(nome);
-          const ehEnteral = nome.includes("dieta_enteral");
-          const ehEja = nome.includes("eja");
-
-          if (ehEmef) {
-            tipoNome = ehEnteral
-              ? "Refeição - Dieta Enteral - CEU EMEF, CEU GESTÃO, EMEF, EMEFM"
-              : "Refeição - CEU EMEF, CEU GESTÃO, EMEF, EMEFM";
-          } else if (ehEja) {
-            tipoNome = ehEnteral
-              ? "Refeição - Dieta Enteral - EJA"
-              : "Refeição - EJA";
-          }
-        }
-        resultado[chavePrincipal][tipoNome] ||= {};
-        resultado[chavePrincipal][tipoNome].tipo_alimentacao =
-          valor.tipo_alimentacao?.uuid || valor.tipo_alimentacao;
-        resultado[chavePrincipal][tipoNome][getCampo(valor.tipo_valor)] =
-          valor.valor;
-      } else if (valor.nome_campo === "kit_lanche") {
-        resultado[chavePrincipal]["Kit Lanche"] ||= {};
-        resultado[chavePrincipal]["Kit Lanche"].tipo_alimentacao = "Kit Lanche";
-        resultado[chavePrincipal]["Kit Lanche"][getCampo(valor.tipo_valor)] =
-          valor.valor;
-      }
+      processarValor(resultado[chavePrincipal], valor, ehGrupo4);
     });
 
     calcularTotaisFaixa(resultado[chavePrincipal]);

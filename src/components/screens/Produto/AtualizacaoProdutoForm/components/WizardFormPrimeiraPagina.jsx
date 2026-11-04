@@ -28,6 +28,9 @@ import { ehUsuarioEmpresa } from "src/helpers/utilities";
 
 const maxLength5000 = maxLengthProduto(5000);
 const { Option } = Select;
+const montarOptions = (lista) =>
+  lista.map((item) => <Option key={`${item.uuid}`}>{item.nome}</Option>);
+const booleanoParaString = (valor) => (valor ? "1" : "0");
 
 class WizardFormPrimeiraPagina extends React.Component {
   constructor(props) {
@@ -85,6 +88,77 @@ class WizardFormPrimeiraPagina extends React.Component {
     this.carregarOpcoesDeCadastro();
   }
 
+  async carregarListasDeOpcoes() {
+    const responseNomeDeProdutosEdital = await getNomeDeProdutosEdital();
+    const responseMarcas = await getMarcasProdutos();
+    const responseFabricantes = await getFabricantesProdutos();
+
+    this.setState({
+      nomeDeProdutosEditalArray: montarOptions(
+        responseNomeDeProdutosEdital.data.results,
+      ),
+      marcasArray: montarOptions(responseMarcas.data.results),
+      fabricantesArray: montarOptions(responseFabricantes.data.results),
+      listNomesProdutos: responseNomeDeProdutosEdital.data.results,
+      listaMarcas: responseMarcas.data.results,
+      listaFabricantes: responseFabricantes.data.results,
+      loading: false,
+    });
+  }
+
+  atualizarRetificou(ehParaAlunosComDieta, retificou) {
+    if (ehParaAlunosComDieta && !retificou) {
+      this.setState({ checkDieta: true, retificou: true });
+    } else if (!retificou) {
+      this.setState({ retificou: true });
+    }
+  }
+
+  preencherCamposBooleanos(origem) {
+    const { change } = this.props;
+    change(
+      "eh_para_alunos_com_dieta",
+      booleanoParaString(origem.eh_para_alunos_com_dieta),
+    );
+    change(
+      "tem_aditivos_alergenicos",
+      booleanoParaString(origem.tem_aditivos_alergenicos),
+    );
+    change("tem_gluten", booleanoParaString(origem.tem_gluten));
+  }
+
+  preencherFormularioComProduto(produtoForm, protocolos, retificou) {
+    const { change } = this.props;
+
+    this.preencherCamposBooleanos(produtoForm);
+
+    change("protocolos", protocolos);
+    change("aditivos", produtoForm.aditivos);
+    change("nome", produtoForm.nome);
+    change("componentes", produtoForm.componentes);
+    change("marca", produtoForm.marca.uuid);
+    change("fabricante", produtoForm.fabricante.uuid);
+
+    this.atualizarRetificou(produtoForm.eh_para_alunos_com_dieta, retificou);
+  }
+
+  preencherFormularioPrimeiroStep(valoresPrimeiroForm, produtoForm, retificou) {
+    const { change } = this.props;
+
+    this.preencherCamposBooleanos(valoresPrimeiroForm);
+
+    change("protocolos", valoresPrimeiroForm.protocolos);
+    change("aditivos", valoresPrimeiroForm.aditivos);
+    change("nome", valoresPrimeiroForm.nome);
+    change("componentes", valoresPrimeiroForm.componentes);
+    change("marca", valoresPrimeiroForm.marca);
+    change("fabricante", valoresPrimeiroForm.fabricante);
+
+    this.atualizarRetificou(produtoForm.eh_para_alunos_com_dieta, retificou);
+
+    this.setState({ completo: true });
+  }
+
   async carregarOpcoesDeCadastro() {
     const {
       retificou,
@@ -95,113 +169,22 @@ class WizardFormPrimeiraPagina extends React.Component {
       loading,
     } = this.state;
 
-    const { change, protocolos, primeiroStep, valoresPrimeiroForm } =
-      this.props;
-
-    let listaNomeDeProdutosEdital = [];
-    let listaMarcas = [];
-    let listaFabricantes = [];
+    const { protocolos, primeiroStep, valoresPrimeiroForm } = this.props;
 
     if (marcasArray.length === 0 && loading && fabricantesArray.length === 0) {
-      const responseNomeDeProdutosEdital = await getNomeDeProdutosEdital();
-      const responseMarcas = await getMarcasProdutos();
-      const responseFabricantes = await getFabricantesProdutos();
-
-      responseNomeDeProdutosEdital.data.results.forEach((produtoEdital) => {
-        listaNomeDeProdutosEdital.push(
-          <Option key={`${produtoEdital.uuid}`}>{produtoEdital.nome}</Option>,
-        );
-      });
-
-      responseMarcas.data.results.forEach((marca) => {
-        listaMarcas.push(<Option key={`${marca.uuid}`}>{marca.nome}</Option>);
-      });
-
-      responseFabricantes.data.results.forEach((fabricante) => {
-        listaFabricantes.push(
-          <Option key={`${fabricante.uuid}`}>{fabricante.nome}</Option>,
-        );
-      });
-      this.setState({
-        nomeDeProdutosEditalArray: listaNomeDeProdutosEdital,
-        marcasArray: listaMarcas,
-        fabricantesArray: listaFabricantes,
-        listNomesProdutos: responseNomeDeProdutosEdital.data.results,
-        listaMarcas: responseMarcas.data.results,
-        listaFabricantes: responseFabricantes.data.results,
-        loading: false,
-      });
+      await this.carregarListasDeOpcoes();
     }
 
     if (produtoForm !== null && !retificou && !primeiroStep) {
-      if (produtoForm.eh_para_alunos_com_dieta) {
-        change("eh_para_alunos_com_dieta", "1");
-      } else {
-        change("eh_para_alunos_com_dieta", "0");
-      }
-
-      if (produtoForm.tem_aditivos_alergenicos) {
-        change("tem_aditivos_alergenicos", "1");
-      } else {
-        change("tem_aditivos_alergenicos", "0");
-      }
-
-      if (produtoForm.tem_gluten) {
-        change("tem_gluten", "1");
-      } else {
-        change("tem_gluten", "0");
-      }
-
-      if (!primeiroStep) {
-        change("protocolos", protocolos);
-      }
-      change("aditivos", produtoForm.aditivos);
-      change("nome", produtoForm.nome);
-      change("componentes", produtoForm.componentes);
-      change("marca", produtoForm.marca.uuid);
-      change("fabricante", produtoForm.fabricante.uuid);
-
-      if (produtoForm.eh_para_alunos_com_dieta && !retificou) {
-        this.setState({ checkDieta: true, retificou: true });
-      } else if (!retificou) {
-        this.setState({ retificou: true });
-      }
+      this.preencherFormularioComProduto(produtoForm, protocolos, retificou);
     }
 
     if (primeiroStep && !completo && valoresPrimeiroForm !== null) {
-      if (valoresPrimeiroForm.eh_para_alunos_com_dieta) {
-        change("eh_para_alunos_com_dieta", "1");
-      } else {
-        change("eh_para_alunos_com_dieta", "0");
-      }
-
-      if (valoresPrimeiroForm.tem_aditivos_alergenicos) {
-        change("tem_aditivos_alergenicos", "1");
-      } else {
-        change("tem_aditivos_alergenicos", "0");
-      }
-
-      if (valoresPrimeiroForm.tem_gluten) {
-        change("tem_gluten", "1");
-      } else {
-        change("tem_gluten", "0");
-      }
-
-      change("protocolos", valoresPrimeiroForm.protocolos);
-      change("aditivos", valoresPrimeiroForm.aditivos);
-
-      change("nome", valoresPrimeiroForm.nome);
-      change("componentes", valoresPrimeiroForm.componentes);
-      change("marca", valoresPrimeiroForm.marca);
-      change("fabricante", valoresPrimeiroForm.fabricante);
-
-      if (produtoForm.eh_para_alunos_com_dieta && !retificou) {
-        this.setState({ checkDieta: true, retificou: true });
-      } else if (!retificou) {
-        this.setState({ retificou: true });
-      }
-
-      this.setState({ completo: true });
+      this.preencherFormularioPrimeiroStep(
+        valoresPrimeiroForm,
+        produtoForm,
+        retificou,
+      );
     }
   }
 
