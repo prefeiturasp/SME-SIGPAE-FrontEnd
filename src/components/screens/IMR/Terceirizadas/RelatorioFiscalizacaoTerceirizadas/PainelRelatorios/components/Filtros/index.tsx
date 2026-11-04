@@ -209,7 +209,7 @@ export const Filtros: React.FC<Props> = ({
                     />
                   </div>
                 )}
-                <div className="col-6">
+                <div className={filtrosIniciais ? "col-12 col-md-6" : "col-6"}>
                   <Spin tip="Carregando..." spinning={loadingEscolas}>
                     <Field
                       component={AutoCompleteSelectField}
@@ -226,10 +226,10 @@ export const Filtros: React.FC<Props> = ({
                     />
                   </Spin>
                 </div>
-              </div>
-              <div className="row">
                 {(!perfilNutriSupervisao || filtrosIniciais) && (
-                  <div className="col-6">
+                  <div
+                    className={filtrosIniciais ? "col-12 col-md-6" : "col-6"}
+                  >
                     <Field
                       component={AutoCompleteSelectField}
                       options={optionsCampoNutricionista(values)}
@@ -239,7 +239,7 @@ export const Filtros: React.FC<Props> = ({
                     />
                   </div>
                 )}
-                <div className="col-6">
+                <div className={filtrosIniciais ? "col-12 col-md-6" : "col-6"}>
                   <div className="row">
                     <Label
                       content="Filtrar por Data da Visita"
