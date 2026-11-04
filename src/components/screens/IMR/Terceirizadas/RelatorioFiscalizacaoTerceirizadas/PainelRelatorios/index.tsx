@@ -177,10 +177,12 @@ export const PainelRelatorios = () => {
                   );
                 })}
               </div>
-              <div className="mt-3 text-center">
-                Selecione um dos status acima para visualizar a listagem de
-                relatórios
-              </div>
+              {!statusSelecionado && (
+                <div className="mt-3 text-center">
+                  Selecione um dos status acima para visualizar a listagem de
+                  relatórios
+                </div>
+              )}
               {statusSelecionado && (
                 <Filtros
                   filtros={filtros}
