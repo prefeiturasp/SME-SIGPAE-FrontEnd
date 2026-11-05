@@ -17,6 +17,10 @@ import {
 } from "src/services/imr/painelGerencial";
 import { PainelRelatorios } from "../index";
 
+jest.mock("src/constants/config", () => ({
+  ENVIRONMENT: "development",
+}));
+
 jest.mock("antd", () => {
   const React = require("react");
 
@@ -37,6 +41,7 @@ jest.mock("../components/CardPorStatus", () => {
   return {
     CardPorStatus: ({
       cardStatus,
+      filtrosIniciais,
       setConsultaRealizada,
       setFiltros,
       setPage,
@@ -52,10 +57,26 @@ jest.mock("../components/CardPorStatus", () => {
             setRelatoriosVisita([]);
             setConsultaRealizada(false);
             setStatusSelecionado(cardStatus.status);
-            setFiltros({ status: cardStatus.status });
+            setFiltros({ ...filtrosIniciais, status: cardStatus.status });
           },
         },
         cardStatus.label,
+      ),
+  };
+});
+
+jest.mock("../components/FiltrosIniciais", () => {
+  const React = require("react");
+
+  return {
+    FiltrosIniciais: ({ aoAlterarFiltros }) =>
+      React.createElement(
+        "button",
+        {
+          type: "button",
+          onClick: () => aoAlterarFiltros({ ...mockFiltrosIniciais }),
+        },
+        "Selecionar DRE e mês",
       ),
   };
 });
@@ -154,6 +175,12 @@ jest.mock("src/services/imr/painelGerencial", () => ({
 const UUID_RELATORIO_UM = "91c14677-0bef-4906-bbd6-77b64f6ebde7";
 const UUID_RELATORIO_DOIS = "d787deaf-e313-40f4-a1b6-5ecdc44a56bf";
 
+const mockFiltrosIniciais = {
+  diretoria_regional: "8f1da4a7-11b6-4a09-9eaa-6633d066f26b",
+  mes: 9,
+  ano: 2026,
+};
+
 const dashboard = [
   {
     label: "Enviados para CODAE",
@@ -197,6 +224,11 @@ const criarPromessaControlada = () => {
   return { promise, resolver };
 };
 
+const renderizarPainel = () => {
+  render(<PainelRelatorios />);
+  fireEvent.click(screen.getByRole("button", { name: "Selecionar DRE e mês" }));
+};
+
 const selecionarPrimeiroStatus = async () => {
   fireEvent.click(
     await screen.findByRole("button", {
@@ -229,13 +261,24 @@ describe("Painel de relatórios de fiscalização", () => {
     });
   });
 
+  it("aguarda selecionar os filtros iniciais para consultar o dashboard", () => {
+    render(<PainelRelatorios />);
+
+    expect(
+      screen.getByRole("button", { name: "Selecionar DRE e mês" }),
+    ).toBeInTheDocument();
+    expect(mockGetDashboardPainelGerencialSupervisao).not.toHaveBeenCalled();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("filtros")).not.toBeInTheDocument();
+  });
+
   it("exibe o carregamento enquanto busca o dashboard", async () => {
     const requisicao = criarPromessaControlada();
     mockGetDashboardPainelGerencialSupervisao.mockReturnValue(
       requisicao.promise,
     );
 
-    render(<PainelRelatorios />);
+    renderizarPainel();
 
     expect(screen.getByRole("status")).toHaveTextContent("Carregando...");
     expect(screen.queryByText("Em preenchimento")).not.toBeInTheDocument();
@@ -251,28 +294,30 @@ describe("Painel de relatórios de fiscalização", () => {
       await screen.findByRole("button", { name: "Em preenchimento" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
-    expect(mockGetDashboardPainelGerencialSupervisao).toHaveBeenCalledWith({});
+    expect(mockGetDashboardPainelGerencialSupervisao).toHaveBeenCalledWith(
+      mockFiltrosIniciais,
+    );
   });
 
-  it("mantém o carregamento quando a consulta do dashboard não retorna sucesso", async () => {
+  it("encerra o carregamento quando a consulta do dashboard não retorna sucesso", async () => {
     mockGetDashboardPainelGerencialSupervisao.mockResolvedValue({
       status: HTTP_STATUS.BAD_REQUEST,
       data: { results: dashboard },
     });
 
-    render(<PainelRelatorios />);
+    renderizarPainel();
 
     await waitFor(() => {
       expect(mockGetDashboardPainelGerencialSupervisao).toHaveBeenCalledTimes(
         1,
       );
+      expect(screen.queryByRole("status")).not.toBeInTheDocument();
     });
-    expect(screen.getByRole("status")).toBeInTheDocument();
     expect(screen.queryByText("Em preenchimento")).not.toBeInTheDocument();
   });
 
   it("adapta o card enviado para CODAE para usuários fora da supervisão", async () => {
-    render(<PainelRelatorios />);
+    renderizarPainel();
 
     expect(
       await screen.findByRole("button", {
@@ -285,24 +330,24 @@ describe("Painel de relatórios de fiscalização", () => {
     expect(screen.queryByTestId("filtros")).not.toBeInTheDocument();
   });
 
-  it("mantém o rótulo original para coordenador de supervisão", async () => {
+  it("exibe Enviados pela Supervisão também para o coordenador de supervisão", async () => {
     localStorage.setItem(
       "perfil",
       JSON.stringify("COORDENADOR_SUPERVISAO_NUTRICAO"),
     );
 
-    render(<PainelRelatorios />);
+    renderizarPainel();
 
     expect(
-      await screen.findByRole("button", { name: "Enviados para CODAE" }),
+      await screen.findByRole("button", { name: "Enviados pela Supervisão" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Enviados pela Supervisão" }),
+      screen.queryByRole("button", { name: "Enviados para CODAE" }),
     ).not.toBeInTheDocument();
   });
 
   it("exibe os filtros após selecionar um status", async () => {
-    render(<PainelRelatorios />);
+    renderizarPainel();
 
     await selecionarPrimeiroStatus();
 
@@ -319,13 +364,14 @@ describe("Painel de relatórios de fiscalização", () => {
   it("consulta e apresenta os relatórios encontrados", async () => {
     const requisicao = criarPromessaControlada();
     mockGetListRelatoriosVisitaSupervisao.mockReturnValue(requisicao.promise);
-    render(<PainelRelatorios />);
+    renderizarPainel();
     await selecionarPrimeiroStatus();
 
     fireEvent.click(screen.getByRole("button", { name: "Executar busca" }));
 
     expect(mockGerarParametrosConsulta).toHaveBeenCalledWith({
       page: 1,
+      ...mockFiltrosIniciais,
       status: "NUTRIMANIFESTACAO_A_VALIDAR",
     });
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -353,7 +399,7 @@ describe("Painel de relatórios de fiscalização", () => {
       status: HTTP_STATUS.OK,
       data: { results: [], count: 0 },
     });
-    render(<PainelRelatorios />);
+    renderizarPainel();
     await selecionarPrimeiroStatus();
 
     fireEvent.click(screen.getByRole("button", { name: "Executar busca" }));
@@ -370,7 +416,7 @@ describe("Painel de relatórios de fiscalização", () => {
       status: HTTP_STATUS.BAD_REQUEST,
       data: { results: relatorios, count: 1 },
     });
-    render(<PainelRelatorios />);
+    renderizarPainel();
     await selecionarPrimeiroStatus();
 
     fireEvent.click(screen.getByRole("button", { name: "Executar busca" }));
@@ -389,7 +435,7 @@ describe("Painel de relatórios de fiscalização", () => {
     mockGetListRelatoriosVisitaSupervisao.mockRejectedValue(
       new Error("Erro ao consultar relatórios"),
     );
-    render(<PainelRelatorios />);
+    renderizarPainel();
     await selecionarPrimeiroStatus();
 
     fireEvent.click(screen.getByRole("button", { name: "Executar busca" }));
@@ -413,7 +459,7 @@ describe("Painel de relatórios de fiscalização", () => {
           count: 12,
         },
       });
-    render(<PainelRelatorios />);
+    renderizarPainel();
     await selecionarPrimeiroStatus();
     fireEvent.click(screen.getByRole("button", { name: "Executar busca" }));
     await screen.findByText(UUID_RELATORIO_UM);
@@ -423,6 +469,7 @@ describe("Painel de relatórios de fiscalização", () => {
     await waitFor(() => {
       expect(mockGerarParametrosConsulta).toHaveBeenLastCalledWith({
         page: 2,
+        ...mockFiltrosIniciais,
         status: "NUTRIMANIFESTACAO_A_VALIDAR",
       });
       expect(screen.getByTestId("listagem")).toHaveTextContent(
@@ -434,8 +481,8 @@ describe("Painel de relatórios de fiscalização", () => {
     });
   });
 
-  it("atualiza o dashboard utilizando os filtros selecionados", async () => {
-    render(<PainelRelatorios />);
+  it("atualiza o dashboard mantendo os filtros iniciais sem restringir por status", async () => {
+    renderizarPainel();
     await selecionarPrimeiroStatus();
     fireEvent.click(screen.getByRole("button", { name: "Executar busca" }));
     await screen.findByTestId("listagem");
@@ -447,7 +494,7 @@ describe("Painel de relatórios de fiscalização", () => {
     await waitFor(() => {
       expect(
         mockGetDashboardPainelGerencialSupervisao,
-      ).toHaveBeenLastCalledWith({ status: "NUTRIMANIFESTACAO_A_VALIDAR" });
+      ).toHaveBeenLastCalledWith(mockFiltrosIniciais);
     });
   });
 });
