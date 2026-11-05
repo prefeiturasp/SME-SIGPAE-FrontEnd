@@ -32,6 +32,10 @@ jest.mock("react-toastify", () => ({
 }));
 
 describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     process.env.IS_TEST = true;
 

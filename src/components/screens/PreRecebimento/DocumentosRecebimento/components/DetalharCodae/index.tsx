@@ -5,6 +5,7 @@ import {
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PRE_RECEBIMENTO,
 } from "src/configs/constants";
+import { STATUS_DOCUMENTOS_DE_RECEBIMENTO } from "src/constants/shared";
 import { useNavigate } from "react-router-dom";
 import BotaoVoltar from "src/components/Shareable/Page/BotaoVoltar";
 import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
@@ -33,6 +34,7 @@ export default () => {
   );
   const [laudo, setLaudo] = useState<TiposDocumentos>({} as TiposDocumentos);
   const [aprovado, setAprovado] = useState(true);
+  const [reprovado, setReprovado] = useState(false);
 
   const voltarPaginaPainel = () =>
     navigate(`/${PRE_RECEBIMENTO}/${PAINEL_DOCUMENTOS_RECEBIMENTO}`);
@@ -53,7 +55,8 @@ export default () => {
     }
 
     setObjeto(objeto);
-    setAprovado(objeto.status === "Aprovado");
+    setAprovado(objeto.status === STATUS_DOCUMENTOS_DE_RECEBIMENTO.APROVADO);
+    setReprovado(objeto.status === STATUS_DOCUMENTOS_DE_RECEBIMENTO.REPROVADO);
   };
 
   useEffect(() => {
@@ -87,12 +90,19 @@ export default () => {
 
           <div className="flex-header">
             <div className="subtitulo">Dados Gerais</div>
-            {aprovado ? (
+            {aprovado && (
               <div className="status aprovado">
                 <i className="fas fa-check-circle" />
                 Documentos aprovados em {objeto?.logs?.slice(-1)[0].criado_em}
               </div>
-            ) : (
+            )}
+            {reprovado && (
+              <div className="status reprovado">
+                <i className="fas fa-times-circle" />
+                Documento reprovado em {objeto?.logs?.slice(-1)[0].criado_em}
+              </div>
+            )}
+            {!aprovado && !reprovado && (
               <div className="status correcao">
                 <i className="fas fa-exclamation-triangle" />
                 Solicitada Correção em {objeto?.logs?.slice(-1)[0].criado_em}
@@ -169,7 +179,7 @@ export default () => {
 
           <hr />
 
-          {aprovado === false && (
+          {!aprovado && !reprovado && (
             <>
               <div className="subtitulo laranja">Solicitação de Correção</div>
               <div className="row">
@@ -199,118 +209,142 @@ export default () => {
             </>
           )}
 
-          <div className="subtitulo">Dados do Laudo</div>
+          {!reprovado && (
+            <>
+              <div className="subtitulo">Dados do Laudo</div>
 
-          <div className="row">
-            <div className="col-6">
-              <InputText
-                label="Nome do Laboratório"
-                valorInicial={objeto.laboratorio?.nome}
-                disabled={true}
-              />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-4">
-              <InputText
-                label="Quantidade do Laudo"
-                valorInicial={
-                  objeto.quantidade_laudo !== null &&
-                  objeto.quantidade_laudo !== undefined
-                    ? formataMilharDecimal(objeto.quantidade_laudo.toString())
-                    : ""
-                }
-                disabled={true}
-              />
-            </div>
-            <div className="col-4">
-              <InputText
-                label="Unidade de Medida"
-                valorInicial={objeto.unidade_medida?.nome}
-                disabled={true}
-              />
-            </div>
-            <div className="col-4">
-              <InputText
-                label="Saldo do Laudo"
-                valorInicial={
-                  objeto.saldo_laudo !== null &&
-                  objeto.saldo_laudo !== undefined
-                    ? formataMilharDecimal(objeto.saldo_laudo.toString())
-                    : ""
-                }
-                disabled={true}
-              />
-            </div>
-
-            <div className="col-4">
-              <InputText
-                label="Data Final do Laudo"
-                valorInicial={objeto.data_final_lote}
-                disabled={true}
-              />
-            </div>
-
-            <div className="col-8">
-              <InputText
-                label="Nº do(s) Lote(s) do(s) Laudo(s)"
-                valorInicial={objeto.numero_lote_laudo}
-                disabled={true}
-              />
-            </div>
-
-            {objeto.datas_fabricacao_e_prazos?.map((prazo, index) => (
-              <div className="row" key={index}>
-                <div className="col">
+              <div className="row">
+                <div className="col-6">
                   <InputText
-                    label="Data de Fabricação"
-                    valorInicial={prazo.data_fabricacao}
+                    label="Nome do Laboratório"
+                    valorInicial={objeto.laboratorio?.nome}
                     disabled={true}
                   />
                 </div>
-                <div className="col">
-                  <InputText
-                    label="Data de Validade"
-                    valorInicial={prazo.data_validade}
-                    disabled={true}
-                  />
-                </div>
-                <div className="col">
-                  <InputText
-                    label="Prazo Máximo de Recebimento"
-                    valorInicial={prazo.prazo_maximo_recebimento}
-                    disabled={true}
-                  />
-                </div>
-
-                {prazo.prazo_maximo_recebimento !== "OUTRO" && (
-                  <div className="col">
-                    <InputText
-                      label="Data Máxima de Recebimento"
-                      valorInicial={prazo.data_maxima_recebimento}
-                      disabled={true}
-                    />
-                  </div>
-                )}
-
-                {prazo.prazo_maximo_recebimento === "OUTRO" && (
-                  <div className="col-12">
-                    <InputText
-                      label="Justifique Outro prazo máximo para Recebimento"
-                      valorInicial={prazo.justificativa}
-                      disabled={true}
-                    />
-                  </div>
-                )}
               </div>
-            ))}
-          </div>
+              <div className="row">
+                <div className="col-4">
+                  <InputText
+                    label="Quantidade do Laudo"
+                    valorInicial={
+                      objeto.quantidade_laudo !== null &&
+                      objeto.quantidade_laudo !== undefined
+                        ? formataMilharDecimal(
+                            objeto.quantidade_laudo.toString(),
+                          )
+                        : ""
+                    }
+                    disabled={true}
+                  />
+                </div>
+                <div className="col-4">
+                  <InputText
+                    label="Unidade de Medida"
+                    valorInicial={objeto.unidade_medida?.nome}
+                    disabled={true}
+                  />
+                </div>
+                <div className="col-4">
+                  <InputText
+                    label="Saldo do Laudo"
+                    valorInicial={
+                      objeto.saldo_laudo !== null &&
+                      objeto.saldo_laudo !== undefined
+                        ? formataMilharDecimal(objeto.saldo_laudo.toString())
+                        : ""
+                    }
+                    disabled={true}
+                  />
+                </div>
 
-          <hr />
+                <div className="col-4">
+                  <InputText
+                    label="Data Final do Laudo"
+                    valorInicial={objeto.data_final_lote}
+                    disabled={true}
+                  />
+                </div>
+
+                <div className="col-8">
+                  <InputText
+                    label="Nº do(s) Lote(s) do(s) Laudo(s)"
+                    valorInicial={objeto.numero_lote_laudo}
+                    disabled={true}
+                  />
+                </div>
+
+                {objeto.datas_fabricacao_e_prazos?.map((prazo, index) => (
+                  <div className="row" key={index}>
+                    <div className="col">
+                      <InputText
+                        label="Data de Fabricação"
+                        valorInicial={prazo.data_fabricacao}
+                        disabled={true}
+                      />
+                    </div>
+                    <div className="col">
+                      <InputText
+                        label="Data de Validade"
+                        valorInicial={prazo.data_validade}
+                        disabled={true}
+                      />
+                    </div>
+                    <div className="col">
+                      <InputText
+                        label="Prazo Máximo de Recebimento"
+                        valorInicial={prazo.prazo_maximo_recebimento}
+                        disabled={true}
+                      />
+                    </div>
+
+                    {prazo.prazo_maximo_recebimento !== "OUTRO" && (
+                      <div className="col">
+                        <InputText
+                          label="Data Máxima de Recebimento"
+                          valorInicial={prazo.data_maxima_recebimento}
+                          disabled={true}
+                        />
+                      </div>
+                    )}
+
+                    {prazo.prazo_maximo_recebimento === "OUTRO" && (
+                      <div className="col-12">
+                        <InputText
+                          label="Justifique Outro prazo máximo para Recebimento"
+                          valorInicial={prazo.justificativa}
+                          disabled={true}
+                        />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <hr />
+            </>
+          )}
 
           <OutrosDocumentos documento={objeto} />
 
           <hr />
+
+          {reprovado && (
+            <>
+              <div className="subtitulo">
+                Documento(s) de Recebimento Reprovado(s)
+              </div>
+              <div className="row">
+                <div className="col-12">
+                  <TextArea
+                    label="Justificativa da Reprovação"
+                    valorInicial={objeto?.logs?.slice(-1)[0]?.justificativa}
+                    disabled={true}
+                  />
+                </div>
+              </div>
+              <hr />
+            </>
+          )}
 
           <BotaoVoltar onClick={voltarPaginaPainel} />
         </div>

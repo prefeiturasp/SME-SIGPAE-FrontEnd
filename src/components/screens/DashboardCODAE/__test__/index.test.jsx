@@ -155,6 +155,10 @@ const awaitServices = async () => {
 };
 
 describe("Dashboard CODAE - Gestão Alimentação", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     getSolicitacoesPendentesAutorizacaoCodaeSemFiltro.mockResolvedValue({
       data: { results: [] },
