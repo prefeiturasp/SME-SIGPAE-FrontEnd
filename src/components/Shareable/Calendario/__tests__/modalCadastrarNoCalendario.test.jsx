@@ -28,7 +28,11 @@ jest.mock("src/components/Shareable/Botao", () => ({
 
 jest.mock("src/helpers/utilities", () => ({
   getDDMMYYYfromDate: (date) => date.toLocaleDateString("pt-BR"),
-  getYYYYMMDDfromDate: (date) => date.toISOString().split("T")[0],
+  getYYYYMMDDfromDate: (date) => {
+    const mes = String(date.getMonth() + 1).padStart(2, "0");
+    const dia = String(date.getDate()).padStart(2, "0");
+    return `${date.getFullYear()}-${mes}-${dia}`;
+  },
   getError: (data) => data?.message || "Erro",
 }));
 

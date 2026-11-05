@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -32,6 +33,10 @@ jest.mock("react-toastify", () => ({
 }));
 
 describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     process.env.IS_TEST = true;
 
@@ -157,6 +162,44 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     });
   };
 
+  const selecionaTipoAlimentacaoDe = async (optionText) => {
+    const container = screen.getByTestId("select-tipos-alimentacao-de-MANHA");
+    const combobox = within(container).getByRole("combobox");
+    await act(async () => {
+      fireEvent.mouseDown(combobox);
+    });
+    await act(async () => {
+      fireEvent.click(within(container).getByText(optionText));
+    });
+  };
+
+  it("permite múltipla escolha em 'Alterar alimentação de' no motivo Lanche Emergencial", async () => {
+    await selecionaMotivoLancheEmergencial();
+
+    await act(async () => {
+      fireEvent.click(
+        screen.getByTestId("div-checkbox-MANHA").querySelector("span"),
+      );
+    });
+
+    const containerDe = screen.getByTestId("select-tipos-alimentacao-de-MANHA");
+    const containerPara = screen.getByTestId(
+      "select-tipos-alimentacao-para-MANHA",
+    );
+
+    expect(containerDe.querySelector("select")).not.toBeInTheDocument();
+    const comboboxDe = within(containerDe).getByRole("combobox");
+    await act(async () => {
+      fireEvent.mouseDown(comboboxDe);
+    });
+    expect(within(containerDe).getByText("Refeição")).toBeInTheDocument();
+    expect(within(containerDe).getByText("Sobremesa")).toBeInTheDocument();
+    expect(
+      within(containerDe).queryByText("Refeição e Sobremesa"),
+    ).not.toBeInTheDocument();
+    expect(containerPara.querySelector("select")).toBeInTheDocument();
+  });
+
   it("Testa Alteração - Motivo Lanche Emergencial", async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-01-30T00:00:00Z"));
@@ -186,10 +229,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
       fireEvent.click(spanElement);
     });
 
-    await selectOption(
-      screen.getByTestId("select-tipos-alimentacao-de-MANHA"),
-      "Refeição",
-    );
+    await selecionaTipoAlimentacaoDe("Refeição");
 
     await selectOption(
       screen.getByTestId("select-tipos-alimentacao-para-MANHA"),

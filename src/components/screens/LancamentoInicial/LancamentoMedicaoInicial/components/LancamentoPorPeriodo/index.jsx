@@ -37,12 +37,14 @@ import {
   getSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { relatorioMedicaoInicialPDF } from "src/services/relatorios";
+import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAberta.service";
 import { BlocoOcorrencias } from "../BlocoOcorrencias";
 import { ModalFinalizarMedicao } from "../ModalFinalizarMedicao";
 import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancamentos";
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";
 import { CardLancamento } from "./CardLancamento";
 import {
+  COR_ESCOLA_ABERTA,
   COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
   CORES,
   removeObjetosDuplicados,
@@ -123,8 +125,36 @@ export const LancamentoPorPeriodo = ({
   const [erroAPI, setErroAPI] = useState("");
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState(false);
+  const [escolaAberta, setEscolaAberta] = useState(null);
 
   const [periodosEspecificos, setPeriodosEspecificos] = useState([]);
+
+  const escolaEhEMEF =
+    escolaSimples?.tipo_unidade?.iniciais === "EMEF" ||
+    escolaInstituicao?.tipo_unidade_escolar_iniciais === "EMEF";
+
+  useEffect(() => {
+    const getEscolaAbertaAsync = async () => {
+      if (!escolaEhEMEF || !escolaInstituicao?.uuid || !mes || !ano) {
+        setEscolaAberta(null);
+        return;
+      }
+
+      const response = await getEscolaAbertaPorMesAno({
+        escola_uuid: escolaInstituicao.uuid,
+        mes,
+        ano,
+      });
+
+      setEscolaAberta(
+        response?.status === HTTP_STATUS.OK && response.data?.possui_cadastro
+          ? response.data.cadastro
+          : null,
+      );
+    };
+
+    getEscolaAbertaAsync();
+  }, [escolaEhEMEF, escolaInstituicao?.uuid, mes, ano]);
 
   const getPeriodosInclusaoContinuaAsync = async () => {
     const response = await getPeriodosInclusaoContinua({
@@ -714,6 +744,19 @@ export const LancamentoPorPeriodo = ({
                 />
               )}
             </>
+          )}
+
+          {escolaEhEMEF && escolaAberta && (
+            <CardLancamento
+              grupo="Escola Aberta"
+              cor={COR_ESCOLA_ABERTA}
+              tipos_alimentacao={escolaAberta.tipos_alimentacao || []}
+              periodoSelecionado={periodoSelecionado}
+              solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+              objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+              quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
+              errosAoSalvar={errosAoSalvar}
+            />
           )}
 
           <div className="mt-4">

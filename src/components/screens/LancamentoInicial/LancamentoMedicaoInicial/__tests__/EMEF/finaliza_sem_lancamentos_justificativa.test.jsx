@@ -88,11 +88,9 @@ describe("EMEF - Validação de Limpeza de Justificativa", () => {
     mock
       .onGet("/medicao-inicial/tipo-contagem-alimentacao/")
       .reply(200, mockGetTiposDeContagemAlimentacao);
-    mock
-      .onGet("/periodos-escolares/inclusao-continua-por-mes/")
-      .reply(200, {
-        periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
-      });
+    mock.onGet("/periodos-escolares/inclusao-continua-por-mes/").reply(200, {
+      periodos: { MANHA: "5067e137-e5f3-4876-a63f-7f58cce93f33" },
+    });
     mock
       .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
       .reply(200, { results: [] });
@@ -126,7 +124,10 @@ describe("EMEF - Validação de Limpeza de Justificativa", () => {
     window.history.pushState({}, "", "?mes=05&ano=2025");
   });
 
-  afterEach(() => cleanup());
+  afterEach(() => {
+    cleanup();
+    jest.useRealTimers();
+  });
 
   it("Renderiza períodos escolares de EMEF", async () => {
     jest.useFakeTimers();

@@ -1,7 +1,4 @@
-import {
-  REFEICAO_E_SOBREMESA,
-  expandirTiposAlimentacao,
-} from "../AlteracaoDeCardapio/Escola/helper";
+import { expandirTiposAlimentacao } from "../AlteracaoDeCardapio/Escola/helper";
 
 export { agruparRefeicaoESobremesa } from "../AlteracaoDeCardapio/Escola/helper";
 
@@ -21,12 +18,6 @@ export const normalizarTiposAlimentacao = (
   if (tipos === undefined || tipos === null) return tipos;
   const tiposDisponiveis =
     buscarTiposAlimentacaoDoVinculo(vinculos, iniciais, periodoUuid) || [];
-  if (Array.isArray(tipos)) {
-    if (tipos.includes(REFEICAO_E_SOBREMESA)) {
-      return expandirTiposAlimentacao(REFEICAO_E_SOBREMESA, tiposDisponiveis);
-    }
-    return tipos;
-  }
   return expandirTiposAlimentacao(tipos, tiposDisponiveis);
 };
 

@@ -401,6 +401,10 @@ describe("AgendaSemanalView", () => {
   // Metodos estaticos (range, navigate, title) exigidos pelo react-big-calendar
 
   describe("Métodos estáticos", () => {
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
     it("range deve retornar { start, end } com intervalo suficiente", () => {
       const resultado = AgendaSemanalView.range(dataBase, {
         length: 7,

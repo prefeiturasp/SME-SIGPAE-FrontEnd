@@ -185,85 +185,113 @@ export default ({ form, onChange }: Args) => {
     );
   }, []);
 
-  useEffect(() => {
-    if (usuarioEhDRE()) {
-      const dreUuidMeusDados = meusDados?.vinculo_atual?.instituicao.uuid;
-      if (dreUuidMeusDados && lotes && unidadesEducacionais) {
-        setLotesOpcoes(
-          formatarOpcoesLote(
-            lotes?.filter(
-              (lote) => lote.diretoria_regional.uuid === dreUuidMeusDados,
-            ),
-          ),
-        );
-        setUnidadesEducacionaisOpcoes(
-          formataUnidadesEducacionaisOpcoes(
-            unidadesEducacionais?.filter(
-              (escola) => escola.diretoria_regional.uuid === dreUuidMeusDados,
-            ),
-          ),
-        );
-      }
-    } else if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
-      const escolaInstituicaoMeusDados = meusDados?.vinculo_atual?.instituicao;
-      const dreUuidMeusDados =
-        escolaInstituicaoMeusDados?.diretoria_regional?.uuid;
-      const loteUuids =
-        escolaInstituicaoMeusDados?.lotes?.map((lote) => lote.uuid) || [];
-      const tipoUnidadeUuid = escolaInstituicaoMeusDados?.tipo_unidade_escolar;
-      const escola = unidadesEducacionais.find(
-        (escola) => escola.codigo_eol === escolaInstituicaoMeusDados.codigo_eol,
-      );
-      if (
+  const preencherOpcoesDRE = () => {
+    const dreUuidMeusDados = meusDados?.vinculo_atual?.instituicao.uuid;
+    if (!(dreUuidMeusDados && lotes && unidadesEducacionais)) return;
+
+    setLotesOpcoes(
+      formatarOpcoesLote(
+        lotes?.filter(
+          (lote) => lote.diretoria_regional.uuid === dreUuidMeusDados,
+        ),
+      ),
+    );
+    setUnidadesEducacionaisOpcoes(
+      formataUnidadesEducacionaisOpcoes(
+        unidadesEducacionais?.filter(
+          (escola) => escola.diretoria_regional.uuid === dreUuidMeusDados,
+        ),
+      ),
+    );
+  };
+
+  const preencherFiltrosEscola = (
+    escola,
+    escolaInstituicaoMeusDados,
+    loteUuids,
+    tipoUnidadeUuid,
+    lotesDaEscola,
+  ) => {
+    const labelEscola = `${escola?.codigo_eol} - ${escola?.nome} - ${
+      escola?.lote ? escola?.lote?.nome : ""
+    }`;
+    if (!form.getState().values.resultado_individual_por_data) {
+      form.change("unidade_educacional", [escola.uuid]);
+    }
+    form.change("lotes", loteUuids);
+    form.change("tipos_unidades", tipoUnidadeUuid ? [tipoUnidadeUuid] : []);
+
+    onChange({
+      lotes: formatarOpcoesLote(lotesDaEscola).map((lote) => lote.label),
+      tipos_unidades: escolaInstituicaoMeusDados?.tipo_unidade_escolar_iniciais
+        ? [escolaInstituicaoMeusDados.tipo_unidade_escolar_iniciais]
+        : [],
+      unidade_educacional: [labelEscola],
+    });
+
+    localStorage.setItem("labelEscolaLote", labelEscola);
+    localStorage.setItem("escolaLoteUuid", escola?.lote?.uuid);
+  };
+
+  const preencherOpcoesEscola = () => {
+    const escolaInstituicaoMeusDados = meusDados?.vinculo_atual?.instituicao;
+    const dreUuidMeusDados =
+      escolaInstituicaoMeusDados?.diretoria_regional?.uuid;
+    const loteUuids =
+      escolaInstituicaoMeusDados?.lotes?.map((lote) => lote.uuid) || [];
+    const tipoUnidadeUuid = escolaInstituicaoMeusDados?.tipo_unidade_escolar;
+    const escola = unidadesEducacionais.find(
+      (escola) => escola.codigo_eol === escolaInstituicaoMeusDados.codigo_eol,
+    );
+
+    if (
+      !(
         escolaInstituicaoMeusDados &&
         dreUuidMeusDados &&
         escola &&
         lotes &&
         unidadesEducacionais
-      ) {
-        const lotesDaEscola = lotes?.filter((lote) =>
-          loteUuids.includes(lote.uuid),
-        );
-        setLotesOpcoes(formatarOpcoesLote(lotesDaEscola));
-        setUnidadesEducacionaisOpcoes(
-          formataUnidadesEducacionaisOpcoes(
-            unidadesEducacionais?.filter(
-              (escola) => escola.diretoria_regional.uuid === dreUuidMeusDados,
-            ),
-          ),
-        );
+      )
+    ) {
+      return;
+    }
 
-        const grupoDaEscola = gruposUnidades.find((grupo) =>
-          grupo.tipos_unidades.some((tipo) => tipo.uuid === tipoUnidadeUuid),
-        );
-        setTiposUnidadesTreeData(
-          formataTiposUnidadesTreeData(
-            gruposUnidades,
-            grupoDaEscola ? [grupoDaEscola] : null,
-          ),
-        );
+    const lotesDaEscola = lotes?.filter((lote) =>
+      loteUuids.includes(lote.uuid),
+    );
+    setLotesOpcoes(formatarOpcoesLote(lotesDaEscola));
+    setUnidadesEducacionaisOpcoes(
+      formataUnidadesEducacionaisOpcoes(
+        unidadesEducacionais?.filter(
+          (escola) => escola.diretoria_regional.uuid === dreUuidMeusDados,
+        ),
+      ),
+    );
 
-        const labelEscola = `${escola?.codigo_eol} - ${escola?.nome} - ${
-          escola?.lote ? escola?.lote?.nome : ""
-        }`;
-        if (!form.getState().values.resultado_individual_por_data) {
-          form.change("unidade_educacional", [escola.uuid]);
-        }
-        form.change("lotes", loteUuids);
-        form.change("tipos_unidades", tipoUnidadeUuid ? [tipoUnidadeUuid] : []);
+    const grupoDaEscola = gruposUnidades.find((grupo) =>
+      grupo.tipos_unidades.some((tipo) => tipo.uuid === tipoUnidadeUuid),
+    );
+    setTiposUnidadesTreeData(
+      formataTiposUnidadesTreeData(
+        gruposUnidades,
+        grupoDaEscola ? [grupoDaEscola] : null,
+      ),
+    );
 
-        onChange({
-          lotes: formatarOpcoesLote(lotesDaEscola).map((lote) => lote.label),
-          tipos_unidades:
-            escolaInstituicaoMeusDados?.tipo_unidade_escolar_iniciais
-              ? [escolaInstituicaoMeusDados.tipo_unidade_escolar_iniciais]
-              : [],
-          unidade_educacional: [labelEscola],
-        });
+    preencherFiltrosEscola(
+      escola,
+      escolaInstituicaoMeusDados,
+      loteUuids,
+      tipoUnidadeUuid,
+      lotesDaEscola,
+    );
+  };
 
-        localStorage.setItem("labelEscolaLote", labelEscola);
-        localStorage.setItem("escolaLoteUuid", escola?.lote?.uuid);
-      }
+  useEffect(() => {
+    if (usuarioEhDRE()) {
+      preencherOpcoesDRE();
+    } else if (usuarioEhEscolaTerceirizadaQualquerPerfil()) {
+      preencherOpcoesEscola();
     }
   }, [meusDados, lotes, unidadesEducacionais, gruposUnidades]);
 

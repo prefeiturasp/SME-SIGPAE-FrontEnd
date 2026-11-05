@@ -262,4 +262,18 @@ describe("PeriodoLancamentoMedicaoInicialCEI - Kit Lanche Passeio no Integral", 
       ).toBeDisabled();
     });
   });
+
+  it("exibe o botão Adicionar no dia liberado por kit lanche passeio", async () => {
+    renderizar();
+    await abrirSemanaDoKitLanche();
+
+    await waitFor(() => {
+      const divBotao = screen.getByTestId(
+        `div-botao-add-obs-${DIA_KIT_LANCHE}-1-observacoes`,
+      );
+      const botao = divBotao.querySelector("button");
+      expect(botao).toBeInTheDocument();
+      expect(botao).toHaveTextContent("Adicionar");
+    });
+  });
 });

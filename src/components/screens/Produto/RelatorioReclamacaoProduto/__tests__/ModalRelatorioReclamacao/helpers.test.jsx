@@ -1,7 +1,10 @@
 import { getConfigCabecario } from "../../components/ModalRelatorioReclamacao/helpers";
-import moment from "moment";
 
 describe("Teste de helpers de ModalRelatorioReclamacao", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("deve retornar CABECARIO_REDUZIDO quando há muitos filtros e apenas 1 status", () => {
     const filtros = {
       status_reclamacao: ["CODAE_ACEITOU"],
@@ -57,6 +60,9 @@ describe("Teste de helpers de ModalRelatorioReclamacao", () => {
   });
 
   it("deve retornar CABECARIO_POR_DATA com data inicial", () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2024, 1, 29, 15, 0, 0));
+
     const filtros = {
       status_reclamacao: [],
       data_inicial_reclamacao: "01/01/2024",
@@ -64,7 +70,7 @@ describe("Teste de helpers de ModalRelatorioReclamacao", () => {
 
     const resultado = getConfigCabecario(filtros);
     expect(resultado.cabecario_tipo).toBe("CABECARIO_POR_DATA");
-    expect(resultado.data_final_reclamacao).toBe(moment().format("DD/MM/YYYY"));
+    expect(resultado.data_final_reclamacao).toBe("29/02/2024");
     expect(resultado.titulo).toContain("01/01/2024");
   });
 

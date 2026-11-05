@@ -48,6 +48,12 @@
       color: $orange;
     }
 
+    &.reprovado {
+      background-color: black;
+      border: 1px solid black;
+      color: white;
+    }
+
     i {
       margin-right: 8px;
     }

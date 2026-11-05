@@ -282,6 +282,10 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
     return payload;
   };
 
+  const handleKeyDownAbrirModal = (guia) => (e) => {
+    acionaComEnterOuEspaco(e, () => abriModalGuia(guia));
+  };
+
   return (
     <Spin tip="Carregando..." spinning={carregando}>
       <ModalDetalharGuia
@@ -443,11 +447,7 @@ export default ({ naoEditavel = false, botaoVoltar, voltarPara, fiscal }) => {
                                     role="button"
                                     tabIndex={0}
                                     onClick={() => abriModalGuia(guia)}
-                                    onKeyDown={(e) =>
-                                      acionaComEnterOuEspaco(e, () =>
-                                        abriModalGuia(guia),
-                                      )
-                                    }
+                                    onKeyDown={handleKeyDownAbrirModal(guia)}
                                     className="numero-guia"
                                   >
                                     {guia.numero_guia}
