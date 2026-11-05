@@ -300,6 +300,8 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
 
   const buildSubstituicoes = async (periodos_, alteracao_) => {
     let substituicoes = [];
+    const ehLancheEmergencial =
+      alteracao_.motivo?.nome === "Lanche Emergencial";
     periodos_.forEach((periodo, periodoIndice) => {
       const subsCEI = alteracao_.substituicoes_cemei_cei_periodo_escolar.find(
         (sub) => sub.periodo_escolar.nome === periodo.nome,
@@ -313,10 +315,12 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
         substituicoes[periodoIndice]["periodo_uuid"] =
           subsCEI.periodo_escolar.uuid;
         substituicoes[periodoIndice]["cei"] = {
-          tipos_alimentacao_de: obterTipoAlimentacaoSelecionado(
-            subsCEI.tipos_alimentacao_de,
-            subsCEI.tipos_alimentacao_de,
-          ),
+          tipos_alimentacao_de: ehLancheEmergencial
+            ? subsCEI.tipos_alimentacao_de.map((ta) => ta.uuid)
+            : obterTipoAlimentacaoSelecionado(
+                subsCEI.tipos_alimentacao_de,
+                subsCEI.tipos_alimentacao_de,
+              ),
           tipos_alimentacao_para: obterTipoAlimentacaoSelecionado(
             subsCEI.tipos_alimentacao_para,
             subsCEI.tipos_alimentacao_para,
@@ -335,10 +339,12 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
           subsEMEI.periodo_escolar.uuid;
         substituicoes[periodoIndice]["emei"] = {};
         substituicoes[periodoIndice]["emei"]["tipos_alimentacao_de"] =
-          obterTipoAlimentacaoSelecionado(
-            subsEMEI.tipos_alimentacao_de,
-            subsEMEI.tipos_alimentacao_de,
-          );
+          ehLancheEmergencial
+            ? subsEMEI.tipos_alimentacao_de.map((ta) => ta.uuid)
+            : obterTipoAlimentacaoSelecionado(
+                subsEMEI.tipos_alimentacao_de,
+                subsEMEI.tipos_alimentacao_de,
+              );
         substituicoes[periodoIndice]["emei"]["tipos_alimentacao_para"] =
           obterTipoAlimentacaoSelecionado(
             subsEMEI.tipos_alimentacao_para,
@@ -642,6 +648,10 @@ export const AlteracaoDeCardapioCEMEI = ({ ...props }) => {
                       alimentosEMEI={alimentosEMEI}
                       substitutosCEI={substitutosCEI}
                       substitutosEMEI={substitutosEMEI}
+                      ehLancheEmergencial={
+                        motivos.find((motivo) => motivo.uuid === values.motivo)
+                          ?.nome === "Lanche Emergencial"
+                      }
                     />
                   );
                 })}
