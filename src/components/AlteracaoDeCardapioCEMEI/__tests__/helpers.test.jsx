@@ -229,4 +229,15 @@ describe("helpers - normalizarTiposAlimentacao", () => {
       normalizarTiposAlimentacao(["a", "b"], vinculos, "EMEI", "p1"),
     ).toEqual(["a", "b"]);
   });
+
+  it("expande Refeição e Sobremesa dentro de arrays (Lanche Emergencial)", () => {
+    expect(
+      normalizarTiposAlimentacao(
+        ["uuid-lanche", REFEICAO_E_SOBREMESA],
+        vinculos,
+        "EMEI",
+        "p1",
+      ),
+    ).toEqual(["uuid-lanche", "uuid-refeicao", "uuid-sobremesa"]);
+  });
 });
