@@ -157,7 +157,8 @@ export function RelatorioFinanceiro() {
                                   : ""
                             }`}
                           >
-                            {STATUS_RELATORIO_FINANCEIRO[relatorio.status]}
+                            {relatorio.status_display ??
+                              STATUS_RELATORIO_FINANCEIRO[relatorio.status]}
                           </td>
                           <td className="col-2 text-center">
                             {relatorio.status !==
@@ -165,7 +166,7 @@ export function RelatorioFinanceiro() {
                             !usuarioEhMedicao() ? (
                               <>
                                 <span
-                                  className="px-2 cursor-pointer"
+                                  className="px-1 cursor-pointer"
                                   role="button"
                                   tabIndex={0}
                                   aria-label="Visualizar"
@@ -181,31 +182,26 @@ export function RelatorioFinanceiro() {
                                     className="fas fa-eye green"
                                   />
                                 </span>
-                                {relatorio.status === "FINALIZADO" && (
-                                  <span className="px-2 cursor-pointer">
+                                {(relatorio.status === "GERADA_MEDICAO_FINAL" ||
+                                  relatorio.possui_medicao_final) && (
+                                  <span
+                                    className="px-2 cursor-pointer"
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label="Ateste Financeiro"
+                                    onClick={() => exportarPDF(relatorio.uuid)}
+                                    onKeyDown={(e) =>
+                                      acionaComEnterOuEspaco(e, () =>
+                                        exportarPDF(relatorio.uuid),
+                                      )
+                                    }
+                                  >
                                     <i
-                                      title="Lançamentos Consolidados"
-                                      className="fas fa-file-excel green"
+                                      title="Ateste Financeiro"
+                                      className="fas fa-file-pdf red"
                                     />
                                   </span>
                                 )}
-                                <span
-                                  className="px-2 cursor-pointer"
-                                  role="button"
-                                  tabIndex={0}
-                                  aria-label="Ateste Financeiro"
-                                  onClick={() => exportarPDF(relatorio.uuid)}
-                                  onKeyDown={(e) =>
-                                    acionaComEnterOuEspaco(e, () =>
-                                      exportarPDF(relatorio.uuid),
-                                    )
-                                  }
-                                >
-                                  <i
-                                    title="Ateste Financeiro"
-                                    className="fas fa-file-pdf red"
-                                  />
-                                </span>
                               </>
                             ) : (
                               <span
