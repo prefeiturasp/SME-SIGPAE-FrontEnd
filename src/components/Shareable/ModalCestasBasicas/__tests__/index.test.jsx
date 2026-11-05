@@ -11,8 +11,12 @@ describe("Testes de comportamentos do componente - ModalCestasBasicas", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2026-11-03T10:00:00Z"));
+    jest.setSystemTime(new Date(2026, 10, 3, 10, 0, 0));
     localStorage.clear();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   const setup = async () => {
