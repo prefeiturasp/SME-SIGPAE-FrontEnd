@@ -128,4 +128,19 @@ describe("Testes da interface de Relatorio Financeiro", () => {
       screen.getByText("Analisar ou Visualizar Medição"),
     ).toBeInTheDocument();
   });
+  it("deve exibir o status Gerada Medição Final e o ícone de PDF apenas nesse relatório", () => {
+    const tabela = screen.getByRole("table");
+    expect(
+      within(tabela).getByText("Gerada Medição Final"),
+    ).toBeInTheDocument();
+    expect(screen.getAllByLabelText("Medição Final")).toHaveLength(1);
+  });
+
+  it("o ícone de PDF da Medição Final não chama nenhuma API", () => {
+    const requisicoesAntes = mock.history.post.length;
+
+    fireEvent.click(screen.getByLabelText("Medição Final"));
+
+    expect(mock.history.post).toHaveLength(requisicoesAntes);
+  });
 });
