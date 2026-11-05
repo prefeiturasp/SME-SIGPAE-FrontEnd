@@ -120,6 +120,15 @@ describe("helper expandirTiposAlimentacao - Alteração de Cardápio Escola", ()
       expandirTiposAlimentacao(REFEICAO_E_SOBREMESA, tiposAlimentacao),
     ).toEqual(["uuid-refeicao", "uuid-sobremesa"]);
   });
+
+  it("expande arrays mantendo os demais itens (Lanche Emergencial)", () => {
+    expect(
+      expandirTiposAlimentacao(
+        ["uuid-lanche", REFEICAO_E_SOBREMESA],
+        tiposAlimentacao,
+      ),
+    ).toEqual(["uuid-lanche", "uuid-refeicao", "uuid-sobremesa"]);
+  });
 });
 
 describe("helper obterTipoAlimentacaoSelecionado - Alteração de Cardápio Escola", () => {

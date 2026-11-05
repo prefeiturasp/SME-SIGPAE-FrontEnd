@@ -142,16 +142,20 @@ export const AlteracaoCardapio = ({ ...props }) => {
     }
 
     const substituicoesValue = deepCopy(periodos);
+    const ehLancheEmergencial =
+      alteracaoDeCardapio.motivo?.nome?.includes("Lanche Emergencial");
 
     for (const substituicao of alteracaoDeCardapio.substituicoes) {
       const substituicaoValue = substituicoesValue.find(
         (subs) => subs.nome === substituicao.periodo_escolar.nome,
       );
       substituicaoValue.check = true;
-      substituicaoValue.tipos_alimentacao_de = obterTipoAlimentacaoSelecionado(
-        substituicao.tipos_alimentacao_de,
-        substituicaoValue.tipos_alimentacao,
-      );
+      substituicaoValue.tipos_alimentacao_de = ehLancheEmergencial
+        ? substituicao.tipos_alimentacao_de.map((tp) => tp.uuid)
+        : obterTipoAlimentacaoSelecionado(
+            substituicao.tipos_alimentacao_de,
+            substituicaoValue.tipos_alimentacao,
+          );
       substituicaoValue.tipos_alimentacao_para =
         obterTipoAlimentacaoSelecionado(
           substituicao.tipos_alimentacao_para,

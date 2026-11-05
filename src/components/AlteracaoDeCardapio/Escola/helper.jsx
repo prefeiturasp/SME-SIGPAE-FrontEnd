@@ -19,6 +19,11 @@ export const expandirTiposAlimentacao = (
   tiposAlimentacao = [],
 ) => {
   if (!selecionado) return [];
+  if (Array.isArray(selecionado)) {
+    return selecionado.flatMap((item) =>
+      expandirTiposAlimentacao(item, tiposAlimentacao),
+    );
+  }
   if (selecionado === REFEICAO_E_SOBREMESA) {
     return tiposAlimentacao
       .filter((tipo) => TIPOS_REFEICAO_E_SOBREMESA.includes(tipo.nome))
