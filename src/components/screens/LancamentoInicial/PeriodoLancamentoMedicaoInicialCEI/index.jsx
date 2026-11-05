@@ -2752,9 +2752,16 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       }
     }
 
+    const liberadoPorKitLanchePasseio =
+      !ehEmeiDaCemeiLocation &&
+      !temInclusaoAutorizadaNoDia &&
+      existeKitLanchePasseioNoDia(kitLanchesAutorizadas, dia);
+
     return (
       !validacaoSemana(dia) &&
-      (validacaoDiaLetivo(dia) || temInclusaoAutorizadaNoDia)
+      (validacaoDiaLetivo(dia) ||
+        temInclusaoAutorizadaNoDia ||
+        liberadoPorKitLanchePasseio)
     );
   };
 
