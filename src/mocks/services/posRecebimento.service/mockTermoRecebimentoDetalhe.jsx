@@ -49,5 +49,5 @@ export const mockTermoRecebimentoDetalhe = {
   fiscal_1: { uuid: "f1", nome: "QUALIDADE" },
   fiscal_2: { uuid: "f2", nome: "MARIANA SANTOS DE LIMA" },
   fiscal_3: { uuid: "f3", nome: "QUALIDADE" },
-  texto_termo: "<p>Texto do termo de recebimento definitivo.</p>",
+  texto_termo: "<p>Texto do termo de recebimento provisório.</p>",
 };

@@ -34,7 +34,7 @@ export interface FiscalPosRecebimento {
   nome: string;
 }
 
-export interface TermoRecebimentoDefinitivoPayload {
+export interface TermoRecebimentoProvisorioPayload {
   empresa: string;
   contrato: string;
   cronogramas: string[];
@@ -112,8 +112,8 @@ export const getFiscaisPosRecebimento = async (): Promise<
   }
 };
 
-export const cadastraTermoRecebimentoDefinitivo = async (
-  payload: TermoRecebimentoDefinitivoPayload,
+export const cadastraTermoRecebimentoProvisorio = async (
+  payload: TermoRecebimentoProvisorioPayload,
 ) => {
   try {
     return await axios.post("/pos-recebimento/termos/", payload);
@@ -123,7 +123,7 @@ export const cadastraTermoRecebimentoDefinitivo = async (
   }
 };
 
-export const listarTermosRecebimentoDefinitivo = async (
+export const listarTermosRecebimentoProvisorio = async (
   params: URLSearchParams,
 ) => {
   try {
@@ -133,7 +133,7 @@ export const listarTermosRecebimentoDefinitivo = async (
   }
 };
 
-export const getTermoRecebimentoDefinitivo = async (uuid: string) => {
+export const getTermoRecebimentoProvisorio = async (uuid: string) => {
   try {
     return await axios.get(`/pos-recebimento/termos/${uuid}/`);
   } catch (error) {

@@ -18,13 +18,13 @@ import {
   getCronogramasPosRecebimento,
   getEmpresasPosRecebimento,
   getFiscaisPosRecebimento,
-  cadastraTermoRecebimentoDefinitivo,
+  cadastraTermoRecebimentoProvisorio,
 } from "src/services/posRecebimento.service";
 import { required } from "src/helpers/fieldValidators";
 import { exibeError } from "src/helpers/utilities";
 import {
   POS_RECEBIMENTO,
-  TERMO_RECEBIMENTO_DEFINITIVO,
+  TERMO_RECEBIMENTO_PROVISORIO,
 } from "src/configs/constants";
 
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
@@ -72,7 +72,7 @@ export default () => {
   }, []);
 
   const voltarPagina = () =>
-    navigate(`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`);
+    navigate(`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`);
 
   const buscarEmpresas = async () => {
     const response = await getEmpresasPosRecebimento();
@@ -256,15 +256,15 @@ export default () => {
         fiscal_3: fiscais.find((f) => f.nome === values.fiscal_3)?.uuid,
         texto_termo: values.texto_termo,
       };
-      const response = await cadastraTermoRecebimentoDefinitivo(payload);
+      const response = await cadastraTermoRecebimentoProvisorio(payload);
       if (response.status === 201) {
-        toastSuccess("Termo de Recebimento Definitivo enviado com sucesso!");
+        toastSuccess("Termo de Recebimento Provisório enviado com sucesso!");
         setShowModalConfirmarEnvio(false);
         voltarPagina();
       } else {
         exibeError(
           response,
-          "Ocorreu um erro ao salvar o Termo de Recebimento Definitivo",
+          "Ocorreu um erro ao salvar o Termo de Recebimento Provisório",
         );
         setShowModalConfirmarEnvio(false);
       }
@@ -300,7 +300,7 @@ export default () => {
 
   return (
     <Spin tip="Carregando..." spinning={carregando}>
-      <div className="card mt-3 card-cadastro-termo-recebimento-definitivo">
+      <div className="card mt-3 card-cadastro-termo-recebimento-provisorio">
         <div className="card-body">
           <Form
             onSubmit={onSubmit}
@@ -401,7 +401,7 @@ export default () => {
                   <ModalGenerico
                     show={showModalConfirmarEnvio}
                     titulo="Salvar e Enviar Termo"
-                    texto="Confirma o envio do Termo de Recebimento Definitivo? Após o envio não será possível alterar os dados informados."
+                    texto="Confirma o envio do Termo de Recebimento Provisório? Após o envio não será possível alterar os dados informados."
                     handleClose={() => setShowModalConfirmarEnvio(false)}
                     loading={carregando}
                     handleSim={() => salvarTermo(values)}
@@ -409,7 +409,7 @@ export default () => {
                   <ModalGenerico
                     show={showModalCancelar}
                     titulo="Cancelar Preenchimento"
-                    texto="Deseja realmente cancelar o cadastro do Termo de Recebimento Definitivo? As informações preenchidas serão descartadas."
+                    texto="Deseja realmente cancelar o cadastro do Termo de Recebimento Provisório? As informações preenchidas serão descartadas."
                     handleClose={() => setShowModalCancelar(false)}
                     handleSim={() => voltarPagina()}
                   />

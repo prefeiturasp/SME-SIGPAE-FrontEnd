@@ -1,4 +1,4 @@
-export const TEXTO_PADRAO_TERMO = `<p>Pelo presente, em face do encerramento da execução do objeto a que se refere o contrato em epígrafe, emitimos nos termos do art. 73 da Lei 8.666/93, o presente TERMO DE RECEBIMENTO DEFINITIVO, após a verificação da qualidade e quantidade do produto [PRODUTO] e sua consequente aceitação. Ressaltamos que...</p>
+export const TEXTO_PADRAO_TERMO = `<p>Pelo presente, em face do encerramento da execução do objeto a que se refere o contrato em epígrafe, emitimos nos termos do art. 73 da Lei 8.666/93, o presente TERMO DE RECEBIMENTO PROVISÓRIO, após a verificação da qualidade e quantidade do produto [PRODUTO] e sua consequente aceitação. Ressaltamos que...</p>
 
 <p>O presente instrumento tem eficácia liberatória de todas as obrigações do contratado, exceto as garantias legais (art. 73, § 2º, da Lei: 8.666/93), bem como autorizamos a restituição de todas as garantias e/ou caução prestadas, conforme ressalva abaixo:</p>
 

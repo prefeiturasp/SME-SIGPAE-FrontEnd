@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 import {
   POS_RECEBIMENTO,
-  DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO,
+  DETALHAR_TERMO_RECEBIMENTO_PROVISORIO,
 } from "src/configs/constants";
 
 import "./styles.scss";
@@ -37,7 +37,7 @@ const Listagem: React.FC<Props> = ({ objetos, fornecedor }) => {
     const botaoDetalhar = (
       <NavLink
         className="float-start"
-        to={`/${POS_RECEBIMENTO}/${DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO}?uuid=${objeto.uuid}`}
+        to={`/${POS_RECEBIMENTO}/${DETALHAR_TERMO_RECEBIMENTO_PROVISORIO}?uuid=${objeto.uuid}`}
       >
         <span className="link-acoes px-2">
           <i title="Detalhar" className="fas fa-eye green" />

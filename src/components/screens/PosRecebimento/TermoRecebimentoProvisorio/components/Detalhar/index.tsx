@@ -14,13 +14,13 @@ import {
 import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
 import {
   fiscalAssinaTermo,
-  getTermoRecebimentoDefinitivo,
+  getTermoRecebimentoProvisorio,
 } from "src/services/posRecebimento.service";
 import {
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
   POS_RECEBIMENTO,
-  TERMO_RECEBIMENTO_DEFINITIVO,
-  TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR,
+  TERMO_RECEBIMENTO_PROVISORIO,
+  TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
 } from "src/configs/constants";
 import {
   formataMilharDecimal,
@@ -67,7 +67,7 @@ const montarObjetoContrato = (
   );
 };
 
-const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
+const DetalharTermoRecebimentoProvisorio: React.FC = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const uuid = urlParams.get("uuid");
   const navigate = useNavigate();
@@ -80,12 +80,12 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
     if (uuid) {
       setCarregando(true);
       try {
-        const response = await getTermoRecebimentoDefinitivo(uuid);
+        const response = await getTermoRecebimentoProvisorio(uuid);
         if (response.status === HTTP_STATUS.OK) {
           setTermo(response.data);
         }
       } catch {
-        // Erro ao carregar termo de recebimento definitivo
+        // Erro ao carregar termo de recebimento provisório
       } finally {
         setCarregando(false);
       }
@@ -99,8 +99,8 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     const rotaListagem = usuarioEhEmpresaFornecedor()
-      ? `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`
-      : `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`;
+      ? `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`
+      : `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`;
     navigate(rotaListagem);
   };
 
@@ -113,7 +113,7 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
         setShowModalAssinatura(false);
         setLoadingAssinatura(false);
         navigate(`/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`);
-        toastSuccess("Termo de Recebimento Definitivo assinado com sucesso!");
+        toastSuccess("Termo de Recebimento Provisório assinado com sucesso!");
       }
     } catch (error) {
       setLoadingAssinatura(false);
@@ -122,7 +122,7 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
       } else {
         toastError(
           error.response?.data?.detail ||
-            "Ocorreu um erro ao assinar o Termo de Recebimento Definitivo",
+            "Ocorreu um erro ao assinar o Termo de Recebimento Provisório",
         );
       }
     }
@@ -251,8 +251,8 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
                 handleClose={() => setShowModalAssinatura(false)}
                 handleSim={handleAssinar}
                 loading={loadingAssinatura}
-                titulo="Assinar Termo de Recebimento Definitivo"
-                texto="Você confirma a leitura das informações apresentadas no Termo de Recebimento Definitivo?"
+                titulo="Assinar Termo de Recebimento Provisório"
+                texto="Você confirma a leitura das informações apresentadas no Termo de Recebimento Provisório?"
                 textoBotao="Sim, Assinar Termo"
                 segundoTitulo="Assinatura"
                 placeholderSenha="Digite sua Senha"
@@ -265,4 +265,4 @@ const DetalharTermoRecebimentoDefinitivo: React.FC = () => {
   );
 };
 
-export default DetalharTermoRecebimentoDefinitivo;
+export default DetalharTermoRecebimentoProvisorio;

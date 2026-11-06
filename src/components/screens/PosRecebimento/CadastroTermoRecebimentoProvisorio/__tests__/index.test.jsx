@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
-import CadastroTermoRecebimentoDefinitivo from "../index";
+import CadastroTermoRecebimentoProvisorio from "../index";
 import mock from "src/services/_mock";
 import { mockListaEmpresas } from "src/mocks/services/posRecebimento.service/mockListaEmpresas";
 import { mockListaContratos } from "src/mocks/services/posRecebimento.service/mockListaContratos";
@@ -115,7 +115,7 @@ const setup = async () => {
   await act(async () => {
     render(
       <MemoryRouter>
-        <CadastroTermoRecebimentoDefinitivo />
+        <CadastroTermoRecebimentoProvisorio />
       </MemoryRouter>,
     );
   });
@@ -149,7 +149,7 @@ const preencherDadosBasicos = async () => {
   await selecionarAutoComplete("fiscal-3", FISCAL_3_NOME);
 };
 
-describe("CadastroTermoRecebimentoDefinitivo", () => {
+describe("CadastroTermoRecebimentoProvisorio", () => {
   it("carrega empresas e fiscais via useEffect ao montar a tela", async () => {
     await setup();
 
@@ -186,7 +186,7 @@ describe("CadastroTermoRecebimentoDefinitivo", () => {
     const textoTermo = screen.getByTestId("texto-termo");
     await waitFor(() => {
       expect(textoTermo.value).toContain("Arroz Parboilizado");
-      expect(textoTermo.value).toContain("TERMO DE RECEBIMENTO DEFINITIVO");
+      expect(textoTermo.value).toContain("TERMO DE RECEBIMENTO PROVISÓRIO");
       expect(textoTermo.value).toContain("art. 73 da Lei 8.666/93");
     });
   });
@@ -292,7 +292,7 @@ describe("CadastroTermoRecebimentoDefinitivo", () => {
     fireEvent.click(botaoSim);
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith(
-        "/pos-recebimento/termo-recebimento-definitivo",
+        "/pos-recebimento/termo-recebimento-provisorio",
       );
     });
   });
@@ -338,7 +338,7 @@ describe("CadastroTermoRecebimentoDefinitivo", () => {
 
     await waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith(
-        "/pos-recebimento/termo-recebimento-definitivo",
+        "/pos-recebimento/termo-recebimento-provisorio",
       );
     });
   });

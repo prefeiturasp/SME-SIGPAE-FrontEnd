@@ -1,7 +1,7 @@
-import CadastroTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/CadastroTermoRecebimentoDefinitivoPage";
-import TermoRecebimentoDefinitivoFornecedorPage from "src/pages/PosRecebimento/TermoRecebimentoDefinitivoFornecedorPage";
-import TermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/TermoRecebimentoDefinitivoPage";
-import DetalharTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoDefinitivoPage";
+import CadastroTermoRecebimentoProvisorioPage from "src/pages/PosRecebimento/CadastroTermoRecebimentoProvisorioPage";
+import TermoRecebimentoProvisorioFornecedorPage from "src/pages/PosRecebimento/TermoRecebimentoProvisorioFornecedorPage";
+import TermoRecebimentoProvisorioPage from "src/pages/PosRecebimento/TermoRecebimentoProvisorioPage";
+import DetalharTermoRecebimentoProvisorioPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoProvisorioPage";
 import PainelAssinaturaTermosRecebimentoPage from "src/pages/PosRecebimento/PainelAssinaturaTermosRecebimentoPage";
 import StatusTermoPendentesAssinatura from "src/pages/PosRecebimento/CardsAssinaturaTermos/StatusTermoPendentesAssinatura";
 import StatusTermoAssinados from "src/pages/PosRecebimento/CardsAssinaturaTermos/StatusTermoAssinados";
@@ -17,21 +17,21 @@ import { RotaInterface } from "../interfaces";
 
 export const rotasPosRecebimento: Array<RotaInterface> = [
   {
-    path: `/${constants.POS_RECEBIMENTO}/${constants.TERMO_RECEBIMENTO_DEFINITIVO}`,
-    component: TermoRecebimentoDefinitivoPage,
+    path: `/${constants.POS_RECEBIMENTO}/${constants.TERMO_RECEBIMENTO_PROVISORIO}`,
+    component: TermoRecebimentoProvisorioPage,
     tipoUsuario:
       usuarioEhCronogramaOuCodae() ||
       usuarioEhDilogDiretoria() ||
       usuarioEhDilogQualidade(),
   },
   {
-    path: `/${constants.POS_RECEBIMENTO}/${constants.CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO}`,
-    component: CadastroTermoRecebimentoDefinitivoPage,
+    path: `/${constants.POS_RECEBIMENTO}/${constants.CADASTRO_TERMO_RECEBIMENTO_PROVISORIO}`,
+    component: CadastroTermoRecebimentoProvisorioPage,
     tipoUsuario: usuarioEhCronogramaOuCodae(),
   },
   {
-    path: `/${constants.POS_RECEBIMENTO}/${constants.DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO}`,
-    component: DetalharTermoRecebimentoDefinitivoPage,
+    path: `/${constants.POS_RECEBIMENTO}/${constants.DETALHAR_TERMO_RECEBIMENTO_PROVISORIO}`,
+    component: DetalharTermoRecebimentoProvisorioPage,
     tipoUsuario:
       usuarioEhCronogramaOuCodae() ||
       usuarioEhDilogDiretoria() ||
@@ -39,8 +39,8 @@ export const rotasPosRecebimento: Array<RotaInterface> = [
       usuarioEhEmpresaFornecedor(),
   },
   {
-    path: `/${constants.POS_RECEBIMENTO}/${constants.TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`,
-    component: TermoRecebimentoDefinitivoFornecedorPage,
+    path: `/${constants.POS_RECEBIMENTO}/${constants.TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`,
+    component: TermoRecebimentoProvisorioFornecedorPage,
     tipoUsuario: usuarioEhEmpresaFornecedor(),
   },
   {
