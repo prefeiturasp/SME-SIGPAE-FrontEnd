@@ -21,18 +21,14 @@ import {
   cadastraTermoRecebimentoDefinitivo,
 } from "src/services/posRecebimento.service";
 import { required } from "src/helpers/fieldValidators";
-import { exibeError } from "src/helpers/utilities";
+import { converterValorParaDecimal, exibeError } from "src/helpers/utilities";
 import {
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_DEFINITIVO,
 } from "src/configs/constants";
 
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
-import {
-  converterValorParaDecimal,
-  cronogramasParaBloco,
-  gerarTextoTermo,
-} from "./helpers";
+import { cronogramasParaBloco, gerarTextoTermo } from "./helpers";
 
 import "./styles.scss";
 

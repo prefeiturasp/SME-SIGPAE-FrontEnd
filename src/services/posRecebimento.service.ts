@@ -171,3 +171,29 @@ export const fiscalAssinaTermo = async (uuid: string, password: string) => {
     { skipAuthRefresh: true },
   );
 };
+
+export interface LoteMemorandoOcorrenciaPayload {
+  lote: string;
+  marca: string;
+  data_fabricacao: string;
+  data_validade: string;
+  quantidade_problema_devolucao: string;
+}
+
+export interface MemorandoOcorrenciaPayload {
+  categoria: string;
+  produto: string;
+  tipo_ocorrencia: string;
+  lotes: LoteMemorandoOcorrenciaPayload[];
+}
+
+export const cadastraMemorandoOcorrencia = async (
+  payload: MemorandoOcorrenciaPayload,
+) => {
+  try {
+    return await axios.post("/pos-recebimento/memorandos-ocorrencia/", payload);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+    throw error;
+  }
+};

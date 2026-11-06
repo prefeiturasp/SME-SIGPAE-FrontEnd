@@ -7,10 +7,12 @@ import {
   CRONOGRAMA_ENTREGA,
   CRONOGRAMA_SEMANAL_FLV,
   FICHA_RECEBIMENTO,
+  MEMORANDO_OCORRENCIAS,
   PAINEL_DOCUMENTOS_RECEBIMENTO,
   PAINEL_FICHAS_TECNICAS,
   PAINEL_LAYOUT_EMBALAGEM,
   PAINEL_RELATORIOS_FISCALIZACAO,
+  POS_RECEBIMENTO,
   PRE_RECEBIMENTO,
   RECEBIMENTO,
   SUPERVISAO,
@@ -682,5 +684,52 @@ describe("PainelInicial - Atalho de Supervisão Terceirizadas", () => {
       screen.queryByRole("button", { name: "Supervisão Terceirizadas" }),
     ).not.toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
+  });
+});
+
+describe("PainelInicial - Memorando de Ocorrências", () => {
+  const renderPainelInicial = () => {
+    render(
+      <MemoryRouter>
+        <PainelInicial />
+      </MemoryRouter>,
+    );
+  };
+
+  beforeEach(() => {
+    Object.defineProperty(global, "localStorage", {
+      value: localStorageMock,
+    });
+
+    localStorage.clear();
+    mockNavigate.mockClear();
+  });
+
+  it.each([PERFIL.DIRETOR_UE, PERFIL.ADMINISTRADOR_UE])(
+    "exibe o card e navega para a listagem para o perfil %s",
+    (perfil) => {
+      localStorage.setItem("perfil", perfil);
+
+      renderPainelInicial();
+
+      const card = screen.getByText("Memorando de Ocorrência");
+      expect(card).toBeInTheDocument();
+
+      fireEvent.click(card);
+
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/${POS_RECEBIMENTO}/${MEMORANDO_OCORRENCIAS}`,
+      );
+    },
+  );
+
+  it("não exibe o card para outros perfis", () => {
+    localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
+
+    renderPainelInicial();
+
+    expect(
+      screen.queryByText("Memorando de Ocorrência"),
+    ).not.toBeInTheDocument();
   });
 });

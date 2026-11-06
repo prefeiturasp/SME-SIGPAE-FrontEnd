@@ -1,4 +1,6 @@
 import CadastroTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/CadastroTermoRecebimentoDefinitivoPage";
+import MemorandoOcorrenciasPage from "src/pages/PosRecebimento/MemorandoOcorrenciasPage";
+import RegistrarMemorandoOcorrenciaPage from "src/pages/PosRecebimento/RegistrarMemorandoOcorrenciaPage";
 import TermoRecebimentoDefinitivoFornecedorPage from "src/pages/PosRecebimento/TermoRecebimentoDefinitivoFornecedorPage";
 import TermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/TermoRecebimentoDefinitivoPage";
 import DetalharTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoDefinitivoPage";
@@ -6,6 +8,7 @@ import PainelAssinaturaTermosRecebimentoPage from "src/pages/PosRecebimento/Pain
 import StatusTermoPendentesAssinatura from "src/pages/PosRecebimento/CardsAssinaturaTermos/StatusTermoPendentesAssinatura";
 import StatusTermoAssinados from "src/pages/PosRecebimento/CardsAssinaturaTermos/StatusTermoAssinados";
 import {
+  exibirMemorandoOcorrencias,
   usuarioEhCronogramaOuCodae,
   usuarioEhDilogDiretoria,
   usuarioEhDilogQualidade,
@@ -16,6 +19,16 @@ import * as constants from "../../constants";
 import { RotaInterface } from "../interfaces";
 
 export const rotasPosRecebimento: Array<RotaInterface> = [
+  {
+    path: `/${constants.POS_RECEBIMENTO}/${constants.MEMORANDO_OCORRENCIAS}/${constants.REGISTRAR_MEMORANDO_OCORRENCIA}`,
+    component: RegistrarMemorandoOcorrenciaPage,
+    tipoUsuario: exibirMemorandoOcorrencias(),
+  },
+  {
+    path: `/${constants.POS_RECEBIMENTO}/${constants.MEMORANDO_OCORRENCIAS}`,
+    component: MemorandoOcorrenciasPage,
+    tipoUsuario: exibirMemorandoOcorrencias(),
+  },
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.TERMO_RECEBIMENTO_DEFINITIVO}`,
     component: TermoRecebimentoDefinitivoPage,

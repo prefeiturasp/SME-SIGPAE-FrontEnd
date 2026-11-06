@@ -26,7 +26,9 @@ import {
   DOCUMENTOS_RECEBIMENTO,
   FICHA_TECNICA,
   LAYOUT_EMBALAGEM,
+  MEMORANDO_OCORRENCIAS,
   PAINEL_RELATORIOS_FISCALIZACAO,
+  POS_RECEBIMENTO,
   PRE_RECEBIMENTO,
   SOLICITACAO_ALTERACAO_CRONOGRAMA_FORNECEDOR,
   SUPERVISAO,
@@ -44,6 +46,7 @@ import {
 import { ENVIRONMENT } from "src/constants/config";
 import {
   exibirGA,
+  exibirMemorandoOcorrencias,
   exibirModuloMedicaoInicial,
   usuarioEhCODAEDietaEspecial,
   usuarioEhCODAEGabinete,
@@ -503,6 +506,18 @@ const PainelInicial = () => {
             </CardLogo>
           </Col>
         </>
+      )}
+      {exibirMemorandoOcorrencias() && (
+        <Col xs={24} sm={24} md={12} lg={8} xl={8}>
+          <CardLogo
+            titulo={"Memorando de Ocorrência"}
+            onClick={() =>
+              navigate(`/${POS_RECEBIMENTO}/${MEMORANDO_OCORRENCIAS}`)
+            }
+          >
+            <IconeDocumentoDeRecebimento />
+          </CardLogo>
+        </Col>
       )}
     </Row>
   );

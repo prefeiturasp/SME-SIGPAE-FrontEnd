@@ -339,6 +339,8 @@ export const ASSINADO_CODAE = "assinado-codae";
 
 export const RECEBIMENTO = "recebimento";
 export const POS_RECEBIMENTO = "pos-recebimento";
+export const MEMORANDO_OCORRENCIAS = "memorando-ocorrencias";
+export const REGISTRAR_MEMORANDO_OCORRENCIA = "registrar-memorando-ocorrencia";
 export const TERMO_RECEBIMENTO_DEFINITIVO = "termo-recebimento-definitivo";
 export const CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO =
   "cadastro-termo-recebimento-definitivo";
