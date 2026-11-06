@@ -34,13 +34,14 @@ import { getListNomesNutricionistas } from "src/services/imr/painelGerencial";
 
 interface Props {
   filtros: FiltrosRelatoriosVisitasInterface;
+  filtrosIniciais?: FiltrosRelatoriosVisitasInterface;
   setFiltros: Dispatch<SetStateAction<FiltrosRelatoriosVisitasInterface>>;
   setRelatoriosVisita: Dispatch<SetStateAction<RelatorioVisitaItemListagem[]>>;
   setConsultaRealizada: Dispatch<SetStateAction<boolean>>;
   perfilNutriSupervisao: boolean;
   buscarResultados: (
     _filtros: FiltrosRelatoriosVisitasInterface,
-    _page: number
+    _page: number,
   ) => void;
   form_: FormApi;
   setForm: (_form: FormApi) => void;
@@ -48,6 +49,7 @@ interface Props {
 
 export const Filtros: React.FC<Props> = ({
   filtros,
+  filtrosIniciais,
   setFiltros,
   setRelatoriosVisita,
   setConsultaRealizada,
@@ -75,7 +77,7 @@ export const Filtros: React.FC<Props> = ({
             nome: dre.nome,
             uuid: dre.uuid,
           };
-        })
+        }),
       );
     }
   };
@@ -90,7 +92,7 @@ export const Filtros: React.FC<Props> = ({
             nome: `${escola.codigo_eol} - ${escola.nome}`,
             uuid: escola.uuid,
           };
-        })
+        }),
       );
     }
     setLoadingEscolas(false);
@@ -105,7 +107,7 @@ export const Filtros: React.FC<Props> = ({
             value: nutri,
             label: nutri.toUpperCase(),
           };
-        })
+        }),
       );
     }
   };
@@ -114,19 +116,21 @@ export const Filtros: React.FC<Props> = ({
     getListaFiltradaAutoCompleteSelect(
       escolas.map((e) => e.nome),
       values.unidade_educacional,
-      true
+      true,
     );
 
   const optionsCampoNutricionista = (values: Record<string, any>) =>
     getListaFiltradaAutoCompleteSelect(
       nutricionistas.map((e) => e.label),
       values.nome_nutricionista,
-      true
+      true,
     );
 
   const onSubmit = async (values: FiltrosRelatoriosVisitasInterface) => {
     let filtros_ = {
-      diretoria_regional: values.diretoria_regional ?? "",
+      ...filtrosIniciais,
+      diretoria_regional:
+        filtrosIniciais?.diretoria_regional ?? values.diretoria_regional ?? "",
       unidade_educacional:
         escolas.find(buscarEscolaPeloNome(values))?.uuid ?? "",
       nome_nutricionista:
@@ -151,12 +155,17 @@ export const Filtros: React.FC<Props> = ({
 
   const onClear = () => {
     setRelatoriosVisita([]);
-    setFiltros({ status: filtros.status } as FiltrosRelatoriosVisitasInterface);
+    setFiltros({ ...filtrosIniciais, status: filtros.status });
     setConsultaRealizada(false);
   };
 
   const requisicoesPreRender = async (): Promise<void> => {
-    await Promise.all([buscarListaDREsAsync(), buscarListaNutricionistas()]);
+    await Promise.all([
+      filtrosIniciais
+        ? buscarListaEscolas(filtrosIniciais.diretoria_regional)
+        : buscarListaDREsAsync(),
+      buscarListaNutricionistas(),
+    ]);
   };
 
   useEffect(() => {
@@ -177,28 +186,30 @@ export const Filtros: React.FC<Props> = ({
             <>
               {!form_ && setForm(form)}
               <div className="row">
-                <div className="col-6">
-                  <Field
-                    component={Select}
-                    options={[
-                      { nome: "Selecione uma DRE", uuid: "" },
-                      ...diretoriasRegionais,
-                    ]}
-                    disabled={loadingEscolas}
-                    naoDesabilitarPrimeiraOpcao
-                    name="diretoria_regional"
-                    label="Diretoria Regional de Educação"
-                    onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
-                      const value = e.target.value;
-                      if (value) {
-                        buscarListaEscolas(value);
-                      } else {
-                        setEscolas([]);
-                      }
-                    }}
-                  />
-                </div>
-                <div className="col-6">
+                {!filtrosIniciais && (
+                  <div className="col-6">
+                    <Field
+                      component={Select}
+                      options={[
+                        { nome: "Selecione uma DRE", uuid: "" },
+                        ...diretoriasRegionais,
+                      ]}
+                      disabled={loadingEscolas}
+                      naoDesabilitarPrimeiraOpcao
+                      name="diretoria_regional"
+                      label="Diretoria Regional de Educação"
+                      onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
+                        const value = e.target.value;
+                        if (value) {
+                          buscarListaEscolas(value);
+                        } else {
+                          setEscolas([]);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+                <div className={filtrosIniciais ? "col-12 col-md-6" : "col-6"}>
                   <Spin tip="Carregando..." spinning={loadingEscolas}>
                     <Field
                       component={AutoCompleteSelectField}
@@ -206,14 +217,19 @@ export const Filtros: React.FC<Props> = ({
                       label="Filtrar por Unidade Educacional"
                       name="unidade_educacional"
                       placeholder="Selecione uma Unidade"
-                      disabled={!values.diretoria_regional || loadingEscolas}
+                      disabled={
+                        !(
+                          filtrosIniciais?.diretoria_regional ||
+                          values.diretoria_regional
+                        ) || loadingEscolas
+                      }
                     />
                   </Spin>
                 </div>
-              </div>
-              <div className="row">
-                {!perfilNutriSupervisao && (
-                  <div className="col-6">
+                {(!perfilNutriSupervisao || filtrosIniciais) && (
+                  <div
+                    className={filtrosIniciais ? "col-12 col-md-6" : "col-6"}
+                  >
                     <Field
                       component={AutoCompleteSelectField}
                       options={optionsCampoNutricionista(values)}
@@ -223,7 +239,7 @@ export const Filtros: React.FC<Props> = ({
                     />
                   </div>
                 )}
-                <div className="col-6">
+                <div className={filtrosIniciais ? "col-12 col-md-6" : "col-6"}>
                   <div className="row">
                     <Label
                       content="Filtrar por Data da Visita"

@@ -4,10 +4,12 @@ import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import MenuPosRecebimento from "../MenuPosRecebimento";
 import {
+  MEMORANDO_OCORRENCIAS,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_PROVISORIO,
   TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
 } from "src/configs/constants";
+import { PERFIL } from "src/constants/shared";
 
 describe("MenuPosRecebimento", () => {
   it("exibe o menu Pós-Recebimento com o submenu Termo de Recebimento Provisório apontando para a página (não para o cadastro)", () => {
@@ -40,6 +42,27 @@ describe("MenuPosRecebimento", () => {
       "href",
       `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`,
     );
+
+    localStorage.clear();
+  });
+
+  it("exibe apenas o Memorando de Ocorrências para DIRETOR_UE", () => {
+    localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
+
+    render(
+      <MemoryRouter>
+        <MenuPosRecebimento />
+      </MemoryRouter>,
+    );
+
+    const linkMemorando = screen.getByText("Memorando de Ocorrências");
+    expect(linkMemorando.closest("a")).toHaveAttribute(
+      "href",
+      `/${POS_RECEBIMENTO}/${MEMORANDO_OCORRENCIAS}`,
+    );
+    expect(
+      screen.queryByText("Termo de Recebimento Definitivo"),
+    ).not.toBeInTheDocument();
 
     localStorage.clear();
   });

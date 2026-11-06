@@ -1,5 +1,5 @@
 import axios from "../../_base";
-import { API_URL } from "src/constants/config";
+import { API_URL, ENVIRONMENT } from "src/constants/config";
 import { ErrorHandlerFunction } from "../../service-helpers";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -10,10 +10,16 @@ import {
 } from "src/interfaces/responses.interface";
 
 export const getDashboardPainelGerencialSupervisao = async (
-  params: FiltrosRelatoriosVisitasInterface
+  params: FiltrosRelatoriosVisitasInterface,
 ) => {
   const url = `${API_URL}/imr/formulario-supervisao/dashboard/`;
-  const response = await axios.get(url, { params }).catch(ErrorHandlerFunction);
+  const parametros = {
+    ...params,
+    novo_painel: !ENVIRONMENT.includes("production"),
+  };
+  const response = await axios
+    .get(url, { params: parametros })
+    .catch(ErrorHandlerFunction);
   if (response) {
     const data = { data: response.data, status: response.status };
     return data;
@@ -21,7 +27,7 @@ export const getDashboardPainelGerencialSupervisao = async (
 };
 
 export const getListRelatoriosVisitaSupervisao = async (
-  params: URLSearchParams
+  params: URLSearchParams,
 ): Promise<ResponseRelatoriosVisitas> => {
   try {
     return await axios.get("/imr/formulario-supervisao/", { params });

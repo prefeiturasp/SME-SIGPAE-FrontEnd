@@ -14,13 +14,6 @@ export const gerarTextoTermo = (produtos) => {
   return TEXTO_PADRAO_TERMO.split(PLACEHOLDER_PRODUTO).join(nomeProdutos);
 };
 
-export const converterValorParaDecimal = (valor) => {
-  if (valor === null || valor === undefined || valor === "") return "0.00";
-  const limpo = String(valor).replace(/\./g, "").replace(",", ".");
-  const numero = parseFloat(limpo);
-  return (isNaN(numero) ? 0 : numero).toFixed(2);
-};
-
 export const cronogramasParaBloco = (
   disponiveis,
   selecionados,

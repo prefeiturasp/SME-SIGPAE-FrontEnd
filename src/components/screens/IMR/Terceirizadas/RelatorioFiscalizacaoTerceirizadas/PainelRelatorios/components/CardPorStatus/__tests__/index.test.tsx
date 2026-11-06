@@ -8,6 +8,12 @@ const cardEmPreenchimento = {
   total: 5,
 };
 
+const filtrosIniciais = Object.freeze({
+  diretoria_regional: "8f1da4a7-11b6-4a09-9eaa-6633d066f26b",
+  mes: 9,
+  ano: 2026,
+});
+
 const criarProps = (sobrescritas = {}) => ({
   cardStatus: cardEmPreenchimento,
   form: { reset: jest.fn() } as any,
@@ -53,12 +59,40 @@ describe("Card por status do painel de relatórios", () => {
     expect(card).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("aplica a cor correspondente quando o card está selecionado", () => {
+  it.each([
+    {
+      status: "EM_PREENCHIMENTO",
+      rotulo: "Em preenchimento pela Supervisão",
+      cor: "verde-claro",
+    },
+    {
+      status: "NUTRIMANIFESTACAO_A_VALIDAR",
+      rotulo: "Enviados pela Supervisão",
+      cor: "azul-claro",
+    },
+    {
+      status: "COM_COMENTARIOS_DE_CODAE",
+      rotulo: "Devolvidos com comentários",
+      cor: "laranja",
+    },
+    {
+      status: "CORRIGIDO_PELA_SUPERVISAO",
+      rotulo: "Corrigidos pela Supervisão",
+      cor: "azul-escuro",
+    },
+    {
+      status: "VALIDADO_POR_CODAE",
+      rotulo: "Validados pela CODAE",
+      cor: "verde-escuro",
+    },
+  ])("aplica a cor $cor ao selecionar $rotulo", ({ status, rotulo, cor }) => {
     const { card } = renderizarCard({
-      statusSelecionado: "EM_PREENCHIMENTO",
+      cardStatus: { label: rotulo, status, total: 2 },
+      statusSelecionado: status,
     });
 
-    expect(card).toHaveClass("verde-claro", "cursor-pointer");
+    expect(screen.getByText(rotulo)).toBeInTheDocument();
+    expect(card).toHaveClass(cor, "cursor-pointer");
     expect(card).not.toHaveClass("cinza");
     expect(card).toHaveAttribute("aria-pressed", "true");
   });
@@ -80,6 +114,7 @@ describe("Card por status do painel de relatórios", () => {
 
     fireEvent.click(card);
     fireEvent.keyDown(card, { key: "Enter" });
+    fireEvent.keyDown(card, { key: " " });
 
     expect(form.reset).not.toHaveBeenCalled();
     expect(props.setPage).not.toHaveBeenCalled();
@@ -99,6 +134,39 @@ describe("Card por status do painel de relatórios", () => {
     esperarEstadoLimpo(props);
     expect(props.setStatusSelecionado).toHaveBeenCalledWith("EM_PREENCHIMENTO");
     expect(props.setFiltros).toHaveBeenCalledWith({
+      status: "EM_PREENCHIMENTO",
+    });
+  });
+
+  it("preserva DRE, mês e ano ao selecionar um status sem alterar os filtros iniciais", () => {
+    const { card, props } = renderizarCard({ filtrosIniciais });
+
+    fireEvent.click(card);
+
+    esperarEstadoLimpo(props);
+    expect(props.setFiltros).toHaveBeenCalledTimes(1);
+    expect(props.setFiltros).toHaveBeenCalledWith({
+      ...filtrosIniciais,
+      status: "EM_PREENCHIMENTO",
+    });
+    expect(filtrosIniciais).not.toHaveProperty("status");
+  });
+
+  it("permite trocar para outro status e mantém o card não selecionado em cinza", () => {
+    const { card, props } = renderizarCard({
+      filtrosIniciais,
+      statusSelecionado: "NUTRIMANIFESTACAO_A_VALIDAR",
+    });
+
+    expect(card).toHaveClass("cinza", "cursor-pointer");
+    expect(card).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(card);
+
+    esperarEstadoLimpo(props);
+    expect(props.setStatusSelecionado).toHaveBeenCalledWith("EM_PREENCHIMENTO");
+    expect(props.setFiltros).toHaveBeenCalledWith({
+      ...filtrosIniciais,
       status: "EM_PREENCHIMENTO",
     });
   });

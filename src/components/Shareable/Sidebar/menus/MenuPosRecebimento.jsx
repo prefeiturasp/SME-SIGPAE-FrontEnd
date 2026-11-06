@@ -1,12 +1,16 @@
 import React from "react";
 import { Menu, LeafItem } from "./shared";
 import {
+  MEMORANDO_OCORRENCIAS,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_PROVISORIO,
   TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
 } from "src/configs/constants";
-import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
+import {
+  usuarioEhEmpresaFornecedor,
+  usuarioEhEscola,
+} from "src/helpers/utilities";
 
 const MenuPosRecebimento = () => {
   return (
@@ -22,6 +26,13 @@ const MenuPosRecebimento = () => {
           dataTestId="termo-recebimento-provisorio-fornecedor"
         >
           Termo de Recebimento Provisório
+        </LeafItem>
+      ) : usuarioEhEscola() ? (
+        <LeafItem
+          to={`/${POS_RECEBIMENTO}/${MEMORANDO_OCORRENCIAS}`}
+          dataTestId="memorando-ocorrencias"
+        >
+          Memorando de Ocorrências
         </LeafItem>
       ) : (
         <>

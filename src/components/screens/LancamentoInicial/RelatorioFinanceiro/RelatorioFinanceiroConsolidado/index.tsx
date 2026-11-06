@@ -40,6 +40,7 @@ import ModalSolicitacaoDownload from "src/components/Shareable/ModalSolicitacaoD
 import ModalAplicarDesconto from "../components/ModalAplicarDesconto";
 import { getEscolasParaFiltros } from "src/services/escola.service";
 import ModalReabrirLancamentos from "../components/ModalReabrirLancamentos";
+import ModalGerarMedicaoFinal from "../components/ModalGerarMedicaoFinal";
 import { MEDICAO_INICIAL, RELATORIO_FINANCEIRO } from "src/configs/constants";
 
 type TotaisParams = {
@@ -59,6 +60,7 @@ export function RelatorioFinanceiroConsolidado() {
   const [carregando, setCarregando] = useState<boolean>(false);
   const [aplicarDesconto, setAplicarDesconto] = useState<boolean>(false);
   const [reabrirLancamentos, setReabrirLancamentos] = useState<boolean>(false);
+  const [gerarMedicaoFinal, setGerarMedicaoFinal] = useState<boolean>(false);
   const [exportando, setExportando] = useState<boolean>(false);
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState<boolean>(false);
@@ -78,6 +80,8 @@ export function RelatorioFinanceiroConsolidado() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const modoVisualizacao = state?.visualizar || false;
+  const podeFinalizarAnalise =
+    !modoVisualizacao && state?.status?.[0] === "EM_ANALISE";
 
   const exportarPDF = async () => {
     setExportando(true);
@@ -325,12 +329,13 @@ export function RelatorioFinanceiroConsolidado() {
                 onClick={async () => await exportarPDF()}
                 disabled={exportando}
               />
-              {!modoVisualizacao && (
+              {podeFinalizarAnalise && (
                 <Botao
+                  dataTestId="botao-finalizar-analise"
                   texto="Finalizar Análise"
                   style={BUTTON_STYLE.GREEN}
                   type={BUTTON_TYPE.BUTTON}
-                  disabled
+                  onClick={() => setGerarMedicaoFinal(true)}
                 />
               )}
             </div>
@@ -352,6 +357,14 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         onSave={(e) => setDescontos(e)}
         tiposAlimentacao={tiposAlimentacao}
+      />
+      <ModalGerarMedicaoFinal
+        showModal={gerarMedicaoFinal}
+        setShowModal={setGerarMedicaoFinal}
+        uuidRelatorio={uuidRelatorioFinanceiro}
+        onSucesso={() =>
+          navigate(`/${MEDICAO_INICIAL}/${RELATORIO_FINANCEIRO}/`)
+        }
       />
       <ModalReabrirLancamentos
         showModal={reabrirLancamentos}
