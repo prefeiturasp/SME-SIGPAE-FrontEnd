@@ -10,7 +10,7 @@ import {
   FiltrosTermoRecebimento,
   TermoRecebimentoListagem,
 } from "./interfaces";
-import { listarTermosRecebimentoDefinitivo } from "src/services/posRecebimento.service";
+import { listarTermosRecebimentoProvisorio } from "src/services/posRecebimento.service";
 
 interface Props {
   fornecedor?: boolean;
@@ -32,7 +32,7 @@ export default ({ fornecedor }: Props) => {
       page: pageNumber,
       ...filtros,
     });
-    const response = await listarTermosRecebimentoDefinitivo(params);
+    const response = await listarTermosRecebimentoProvisorio(params);
 
     if (response) {
       setTermos(response.data.results);
@@ -59,7 +59,7 @@ export default ({ fornecedor }: Props) => {
 
   return (
     <Spin spinning={carregando}>
-      <div className="card mt-3 card-termo-recebimento-definitivo">
+      <div className="card mt-3 card-termo-recebimento-provisorio">
         <div className="card-body">
           <Filtros setFiltros={setFiltros} fornecedor={fornecedor} />
           {consultaRealizada &&

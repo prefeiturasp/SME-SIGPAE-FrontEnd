@@ -9,9 +9,9 @@ import {
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
-import TermoRecebimentoDefinitivo from "../index";
+import TermoRecebimentoProvisorio from "../index";
 import {
-  CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO,
+  CADASTRO_TERMO_RECEBIMENTO_PROVISORIO,
   POS_RECEBIMENTO,
 } from "src/configs/constants";
 import { PERFIL, TIPO_SERVICO } from "src/constants/shared";
@@ -25,7 +25,7 @@ const setup = async () => {
   await act(async () => {
     render(
       <MemoryRouter>
-        <TermoRecebimentoDefinitivo />
+        <TermoRecebimentoProvisorio />
       </MemoryRouter>,
     );
   });
@@ -37,7 +37,7 @@ const clicarFiltrar = async () => {
   });
 };
 
-describe("TermoRecebimentoDefinitivo - Listagem e Filtros", () => {
+describe("TermoRecebimentoProvisorio - Listagem e Filtros", () => {
   beforeEach(() => {
     localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
 
@@ -57,7 +57,7 @@ describe("TermoRecebimentoDefinitivo - Listagem e Filtros", () => {
     const botao = screen.getByText("Cadastrar Termo");
     expect(botao.closest("a")).toHaveAttribute(
       "href",
-      `/${POS_RECEBIMENTO}/${CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO}`,
+      `/${POS_RECEBIMENTO}/${CADASTRO_TERMO_RECEBIMENTO_PROVISORIO}`,
     );
   });
 
@@ -124,12 +124,12 @@ describe("TermoRecebimentoDefinitivo - Listagem e Filtros", () => {
   });
 });
 
-describe("TermoRecebimentoDefinitivo - Versão Fornecedor", () => {
+describe("TermoRecebimentoProvisorio - Versão Fornecedor", () => {
   const setupFornecedor = async () => {
     await act(async () => {
       render(
         <MemoryRouter>
-          <TermoRecebimentoDefinitivo fornecedor />
+          <TermoRecebimentoProvisorio fornecedor />
         </MemoryRouter>,
       );
     });

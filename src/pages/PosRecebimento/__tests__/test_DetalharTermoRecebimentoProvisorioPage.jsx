@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockMeusDadosDilogQualidade } from "src/mocks/meusDados/dilog-qualidade";
-import DetalharTermoRecebimentoDefinitivoPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoDefinitivoPage";
+import DetalharTermoRecebimentoProvisorioPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoProvisorioPage";
 import { mockTermoRecebimentoDetalhe } from "src/mocks/services/posRecebimento.service/mockTermoRecebimentoDetalhe";
 import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
 import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
@@ -42,7 +42,7 @@ const setup = async () => {
             setMeusDados: jest.fn(),
           }}
         >
-          <DetalharTermoRecebimentoDefinitivoPage />
+          <DetalharTermoRecebimentoProvisorioPage />
         </MeusDadosContext.Provider>
       </MemoryRouter>,
     );
@@ -50,7 +50,7 @@ const setup = async () => {
   return utils;
 };
 
-describe("DetalharTermoRecebimentoDefinitivoPage", () => {
+describe("DetalharTermoRecebimentoProvisorioPage", () => {
   beforeEach(() => {
     getNotificacoes.mockResolvedValue({
       data: mockGetNotificacoes,
@@ -123,12 +123,12 @@ describe("DetalharTermoRecebimentoDefinitivoPage", () => {
     await setup();
 
     expect(
-      await screen.findByText("Texto do termo de recebimento definitivo."),
+      await screen.findByText("Texto do termo de recebimento provisório."),
     ).toBeInTheDocument();
   });
 });
 
-describe("DetalharTermoRecebimentoDefinitivoPage - Assinatura do Fiscal", () => {
+describe("DetalharTermoRecebimentoProvisorioPage - Assinatura do Fiscal", () => {
   const URL_ASSINAR = `/pos-recebimento/termos/${TERMO_UUID}/fiscal-assina-termo/`;
 
   const abrirModalConfirmacao = async () => {
@@ -212,11 +212,11 @@ describe("DetalharTermoRecebimentoDefinitivoPage - Assinatura do Fiscal", () => 
     await abrirModalConfirmacao();
 
     expect(
-      screen.getByText("Assinar Termo de Recebimento Definitivo"),
+      screen.getByText("Assinar Termo de Recebimento Provisório"),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Você confirma a leitura das informações apresentadas no Termo de Recebimento Definitivo?",
+        "Você confirma a leitura das informações apresentadas no Termo de Recebimento Provisório?",
       ),
     ).toBeInTheDocument();
     expect(screen.getByText("Não")).toBeInTheDocument();
@@ -273,7 +273,7 @@ describe("DetalharTermoRecebimentoDefinitivoPage - Assinatura do Fiscal", () => 
     );
     expect(JSON.parse(chamada.data)).toEqual({ password: "senha-qualquer" });
     expect(toastSuccess).toHaveBeenCalledWith(
-      "Termo de Recebimento Definitivo assinado com sucesso!",
+      "Termo de Recebimento Provisório assinado com sucesso!",
     );
     expect(mockNavigate).toHaveBeenCalledWith(
       "/pos-recebimento/painel-assinatura-termos-recebimento",
@@ -305,7 +305,7 @@ describe("DetalharTermoRecebimentoDefinitivoPage - Assinatura do Fiscal", () => 
     await confirmarAssinatura("senha-qualquer");
 
     expect(toastError).toHaveBeenCalledWith(
-      "Ocorreu um erro ao assinar o Termo de Recebimento Definitivo",
+      "Ocorreu um erro ao assinar o Termo de Recebimento Provisório",
     );
     expect(toastSuccess).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();

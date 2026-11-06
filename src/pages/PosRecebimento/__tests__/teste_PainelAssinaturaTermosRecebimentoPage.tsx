@@ -25,7 +25,7 @@ import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mock
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import {
   POS_RECEBIMENTO,
-  DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO,
+  DETALHAR_TERMO_RECEBIMENTO_PROVISORIO,
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
 } from "src/configs/constants";
 
@@ -117,7 +117,7 @@ describe("PainelAssinaturaTermosRecebimentoPage", () => {
       const link = item.closest("a");
       expect(link).toHaveAttribute(
         "href",
-        `/${POS_RECEBIMENTO}/${DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO}?uuid=${mockTermosPendentesAssinatura.results[1].uuid}`,
+        `/${POS_RECEBIMENTO}/${DETALHAR_TERMO_RECEBIMENTO_PROVISORIO}?uuid=${mockTermosPendentesAssinatura.results[1].uuid}`,
       );
     });
   });

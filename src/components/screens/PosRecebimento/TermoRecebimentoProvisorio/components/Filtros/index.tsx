@@ -9,7 +9,7 @@ import {
 import "./styles.scss";
 import { NavLink } from "react-router-dom";
 import {
-  CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO,
+  CADASTRO_TERMO_RECEBIMENTO_PROVISORIO,
   POS_RECEBIMENTO,
 } from "src/configs/constants";
 import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
@@ -204,7 +204,7 @@ export default ({ setFiltros, fornecedor }: Props) => {
       {usuarioEhCronogramaOuCodae() && (
         <div className="pt-4 pb-4">
           <NavLink
-            to={`/${POS_RECEBIMENTO}/${CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO}`}
+            to={`/${POS_RECEBIMENTO}/${CADASTRO_TERMO_RECEBIMENTO_PROVISORIO}`}
           >
             <Botao
               texto="Cadastrar Termo"
