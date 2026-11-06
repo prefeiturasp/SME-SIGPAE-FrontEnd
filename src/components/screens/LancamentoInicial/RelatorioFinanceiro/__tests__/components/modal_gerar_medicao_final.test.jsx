@@ -17,8 +17,7 @@ jest.mock("src/components/Shareable/Toast/dialogs");
 
 const UUID = "uuid-relatorio";
 const URL_DADOS = `/medicao-inicial/relatorio-financeiro/${UUID}/dados-medicao-final/`;
-const URL_RESPONSAVEL =
-  "/medicao-inicial/relatorio-financeiro/buscar-responsavel/";
+const urlResponsavel = (rf) => `/dados-servidor-eol/${rf}/`;
 const URL_GERAR = `/medicao-inicial/relatorio-financeiro/${UUID}/gerar-medicao-final/`;
 
 const dadosMedicaoFinal = {
@@ -83,10 +82,10 @@ describe("Testes do Modal Gerar Medição Final", () => {
   beforeEach(() => {
     mock.onGet(URL_DADOS).reply(200, dadosMedicaoFinal);
     mock
-      .onGet(URL_RESPONSAVEL, { params: { rf: "1234567" } })
+      .onGet(urlResponsavel("1234567"))
       .reply(200, { rf: "1234567", nome: "FULANO DE TAL" });
     mock
-      .onGet(URL_RESPONSAVEL, { params: { rf: "9999999" } })
+      .onGet(urlResponsavel("9999999"))
       .reply(404, { detail: MSG_NAO_LOCALIZADO });
   });
 
@@ -164,7 +163,7 @@ describe("Testes do Modal Gerar Medição Final", () => {
 
   it("descarta a resposta de uma busca antiga quando o RF muda durante a requisição", async () => {
     let resolverBuscaAntiga;
-    mock.onGet(URL_RESPONSAVEL, { params: { rf: "1234567" } }).reply(
+    mock.onGet(urlResponsavel("1234567")).reply(
       () =>
         new Promise((resolve) => {
           resolverBuscaAntiga = () =>
@@ -189,9 +188,7 @@ describe("Testes do Modal Gerar Medição Final", () => {
   });
 
   it("mantém Salvar desabilitado enquanto a busca do RF está em andamento", async () => {
-    mock
-      .onGet(URL_RESPONSAVEL, { params: { rf: "1234567" } })
-      .reply(() => new Promise(() => {}));
+    mock.onGet(urlResponsavel("1234567")).reply(() => new Promise(() => {}));
     await abrir();
     digitar("numero_processo_pagamento", "2025/001");
 
@@ -371,7 +368,7 @@ describe("Testes do Modal Gerar Medição Final", () => {
 
   it("trata de forma genérica o 400 em lista do buscar-responsavel", async () => {
     mock
-      .onGet(URL_RESPONSAVEL, { params: { rf: "1234567" } })
+      .onGet(urlResponsavel("1234567"))
       .reply(400, ["Deve ter somente dígitos"]);
     await abrir();
 

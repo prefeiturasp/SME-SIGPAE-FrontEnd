@@ -116,19 +116,15 @@ describe("Finalizar Análise - Relatório Financeiro", () => {
     expect(screen.queryByText("Finalizar Análise")).not.toBeInTheDocument();
   });
 
-  it("não exibe o botão para perfil diferente de Administrador Medição", async () => {
-    localStorage.setItem(
-      "perfil",
-      PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
-    );
-    await renderizar({ status: "EM_ANALISE" });
+  it("não exibe o botão em modo visualização, mesmo com status Em Análise", async () => {
+    await renderizar({ status: "EM_ANALISE", visualizar: true });
 
     expect(screen.queryByText("Finalizar Análise")).not.toBeInTheDocument();
   });
 
   it("após gerar com sucesso redireciona para a listagem do Relatório Financeiro", async () => {
     mock
-      .onGet("/medicao-inicial/relatorio-financeiro/buscar-responsavel/")
+      .onGet("/dados-servidor-eol/1234567/")
       .reply(200, { rf: "1234567", nome: "FULANO DE TAL" });
     mock
       .onPost("/medicao-inicial/relatorio-financeiro/123/gerar-medicao-final/")
