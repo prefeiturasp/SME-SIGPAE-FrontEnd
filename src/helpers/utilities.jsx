@@ -261,6 +261,13 @@ export const formataMilharDecimal = (value) => {
   });
 };
 
+export const converterValorParaDecimal = (valor) => {
+  if (valor === null || valor === undefined || valor === "") return "0.00";
+  const limpo = String(valor).replace(/\./g, "").replace(",", ".");
+  const numero = parseFloat(limpo);
+  return (isNaN(numero) ? 0 : numero).toFixed(2);
+};
+
 export const truncarString = (str, numeroMaximoChars) => {
   if (!str) return "";
 
@@ -1265,6 +1272,10 @@ export const exibirModuloOcorrencias = () => {
       usuarioEhCODAEGabinete() ||
       usuarioEhDilogDiretoria())
   );
+};
+
+export const exibirMemorandoOcorrencias = () => {
+  return !["production"].includes(ENVIRONMENT) && usuarioEhEscola();
 };
 
 export const exibirRelatorioAlimentacoesServidas = () => {
