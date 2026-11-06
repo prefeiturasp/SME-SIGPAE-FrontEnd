@@ -128,19 +128,29 @@ describe("Testes da interface de Relatorio Financeiro", () => {
       screen.getByText("Analisar ou Visualizar Medição"),
     ).toBeInTheDocument();
   });
+
   it("deve exibir o status Gerada Medição Final e o ícone de PDF apenas nesse relatório", () => {
     const tabela = screen.getByRole("table");
     expect(
       within(tabela).getByText("Gerada Medição Final"),
     ).toBeInTheDocument();
-    expect(screen.getAllByLabelText("Medição Final")).toHaveLength(1);
+    expect(screen.getAllByLabelText("Ateste Financeiro")).toHaveLength(1);
   });
 
-  it("o ícone de PDF da Medição Final não chama nenhuma API", () => {
-    const requisicoesAntes = mock.history.post.length;
+  it("o ícone de PDF solicita a exportação do Ateste Financeiro do relatório", async () => {
+    const { uuid } = mockRelatoriosFinanceiro.results.find(
+      (relatorio) => relatorio.status === "GERADA_MEDICAO_FINAL",
+    );
+    const urlExportar = `/medicao-inicial/relatorio-financeiro/exportar-pdf/${uuid}/`;
+    mock.onPost(urlExportar).reply(200, {});
 
-    fireEvent.click(screen.getByLabelText("Medição Final"));
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("Ateste Financeiro"));
+    });
 
-    expect(mock.history.post).toHaveLength(requisicoesAntes);
+    expect(mock.history.post.map((req) => req.url)).toContain(urlExportar);
+    expect(
+      await screen.findByText("Geração solicitada com sucesso."),
+    ).toBeInTheDocument();
   });
 });
