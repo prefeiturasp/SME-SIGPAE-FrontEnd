@@ -560,17 +560,127 @@ describe("PainelInicial - Redirecionamentos dos demais cards", () => {
 
     expect(mockNavigate).toHaveBeenCalledWith("/logistica/conferir-entrega");
   });
+});
 
-  it("navega para o painel de relatórios de fiscalização", () => {
-    localStorage.setItem("perfil", PERFIL.COORDENADOR_SUPERVISAO_NUTRICAO);
-    localStorage.setItem("tipo_perfil", TIPO_PERFIL.SUPERVISAO_NUTRICAO);
+describe("PainelInicial - Atalho de Supervisão Terceirizadas", () => {
+  const perfisPermitidos = [
+    {
+      nome: "NutriSupervisão",
+      perfil: PERFIL.COORDENADOR_SUPERVISAO_NUTRICAO,
+      tipoPerfil: TIPO_PERFIL.SUPERVISAO_NUTRICAO,
+    },
+    {
+      nome: "Nutri Manifestação",
+      perfil: JSON.stringify("COORDENADOR_SUPERVISAO_NUTRICAO_MANIFESTACAO"),
+      tipoPerfil: TIPO_PERFIL.NUTRICAO_MANIFESTACAO,
+    },
+    {
+      nome: "CODAE Gestão de Alimentação",
+      perfil: PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+      tipoPerfil: TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+    },
+    {
+      nome: "CODAE Gabinete",
+      perfil: PERFIL.ADMINISTRADOR_CODAE_GABINETE,
+      tipoPerfil: TIPO_PERFIL.CODAE_GABINETE,
+    },
+    {
+      nome: "Medição",
+      perfil: PERFIL.ADMINITRADOR_MEDICAO,
+      tipoPerfil: TIPO_PERFIL.MEDICAO,
+    },
+    {
+      nome: "Dinutre Diretoria",
+      perfil: PERFIL.DINUTRE_DIRETORIA,
+      tipoPerfil: TIPO_PERFIL.DINUTRE,
+    },
+    {
+      nome: "DRE",
+      perfil: PERFIL.COGESTOR_DRE,
+      tipoPerfil: TIPO_PERFIL.DIRETORIA_REGIONAL,
+    },
+  ];
 
-    renderPainelInicial();
+  const renderizarPainel = (perfil: string, tipoPerfil: string) => {
+    localStorage.setItem("perfil", perfil);
+    localStorage.setItem("tipo_perfil", tipoPerfil);
 
-    fireEvent.click(screen.getByText("Supervisão Terceirizadas"));
-
-    expect(mockNavigate).toHaveBeenCalledWith(
-      `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
+    render(
+      <MemoryRouter>
+        <PainelInicial />
+      </MemoryRouter>,
     );
+  };
+
+  beforeEach(() => {
+    Object.defineProperty(global, "localStorage", { value: localStorageMock });
+    localStorage.clear();
+    mockNavigate.mockClear();
+    jest.replaceProperty(
+      jest.requireMock("src/constants/config"),
+      "ENVIRONMENT",
+      "development",
+    );
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it.each(perfisPermitidos)(
+    "exibe o atalho e navega para o painel de fiscalização para $nome",
+    ({ perfil, tipoPerfil }) => {
+      renderizarPainel(perfil, tipoPerfil);
+
+      const atalho = screen.getByRole("button", {
+        name: "Supervisão Terceirizadas",
+      });
+
+      expect(atalho).toBeInTheDocument();
+      fireEvent.click(atalho);
+
+      expect(mockNavigate).toHaveBeenCalledTimes(1);
+      expect(mockNavigate).toHaveBeenCalledWith(
+        `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
+      );
+    },
+  );
+
+  it.each(perfisPermitidos)(
+    "oculta o atalho em produção para $nome",
+    ({ perfil, tipoPerfil }) => {
+      jest.replaceProperty(
+        jest.requireMock("src/constants/config"),
+        "ENVIRONMENT",
+        "production",
+      );
+
+      renderizarPainel(perfil, tipoPerfil);
+
+      expect(
+        screen.queryByRole("button", { name: "Supervisão Terceirizadas" }),
+      ).not.toBeInTheDocument();
+      expect(mockNavigate).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    {
+      nome: "Diretor de escola",
+      perfil: PERFIL.DIRETOR_UE,
+      tipoPerfil: TIPO_PERFIL.ESCOLA,
+    },
+    {
+      nome: "DILOG Qualidade",
+      perfil: PERFIL.DILOG_QUALIDADE,
+      tipoPerfil: TIPO_PERFIL.PRE_RECEBIMENTO,
+    },
+  ])("não exibe o atalho para $nome", ({ perfil, tipoPerfil }) => {
+    renderizarPainel(perfil, tipoPerfil);
+
+    expect(
+      screen.queryByRole("button", { name: "Supervisão Terceirizadas" }),
+    ).not.toBeInTheDocument();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

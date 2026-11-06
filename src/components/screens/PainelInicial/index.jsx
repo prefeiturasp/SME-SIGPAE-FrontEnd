@@ -217,6 +217,8 @@ const PainelInicial = () => {
         usuarioEhCODAEGestaoAlimentacao() ||
         usuarioEhMedicao() ||
         usuarioEhCODAENutriManifestacao() ||
+        usuarioEhCODAEGabinete() ||
+        usuarioEhDinutreDiretoria() ||
         usuarioEhDRE()) &&
         !ENVIRONMENT.includes("production") && (
           <Col xs={24} sm={24} md={12} lg={8} xl={8}>

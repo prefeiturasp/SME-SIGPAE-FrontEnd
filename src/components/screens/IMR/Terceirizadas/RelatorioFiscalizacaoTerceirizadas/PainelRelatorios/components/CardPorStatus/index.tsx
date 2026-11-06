@@ -13,6 +13,7 @@ import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 type CardPorStatusType = {
   cardStatus: DashboardSupervisaoInterface;
   form: FormApi;
+  filtrosIniciais?: FiltrosRelatoriosVisitasInterface;
   statusSelecionado: string;
   setStatusSelecionado: (_statusSelecionado: string) => void;
   setFiltros: (_filtros: FiltrosRelatoriosVisitasInterface) => void;
@@ -27,6 +28,7 @@ export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
   const {
     cardStatus,
     form,
+    filtrosIniciais,
     setFiltros,
     statusSelecionado,
     setStatusSelecionado,
@@ -43,6 +45,7 @@ export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
     setConsultaRealizada(false);
     setStatusSelecionado(cardStatus.status);
     setFiltros({
+      ...filtrosIniciais,
       status:
         cardStatus.status !== "TODOS_OS_RELATORIOS" ? cardStatus.status : "",
     });
