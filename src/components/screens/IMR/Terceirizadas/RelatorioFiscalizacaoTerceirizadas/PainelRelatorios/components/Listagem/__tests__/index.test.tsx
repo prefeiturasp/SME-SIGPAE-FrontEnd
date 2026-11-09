@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import HTTP_STATUS from "http-status-codes";
 import { MemoryRouter } from "react-router-dom";
@@ -16,6 +17,7 @@ import {
   deleteFormularioSupervisao,
   exportarPDFRelatorioFiscalizacao,
 } from "src/services/imr/relatorioFiscalizacaoTerceirizadas";
+import type { RelatorioVisitaItemListagem } from "src/interfaces/imr.interface";
 import { Listagem } from "../index";
 
 jest.mock("antd", () => {
@@ -69,6 +71,15 @@ const relatorioEnviado = {
   unidade_educacional: UNIDADE_EDUCACIONAL_LONGA,
   data: "25/08/2026",
   status: "Enviado para CODAE",
+};
+
+const relatorioNovoPainel: RelatorioVisitaItemListagem = {
+  ...relatorioEnviado,
+  diretoria_regional: "DIRETORIA REGIONAL DE EDUCACAO CAMPO LIMPO",
+  unidade_educacional: "EMEI ALUISIO DE ALMEIDA",
+  codigo_eol: "000054",
+  tipo_unidade: "EMEI",
+  data: "02/09/2026",
 };
 
 const relatorioEmPreenchimento = {
@@ -148,6 +159,91 @@ describe("Listagem de relatórios de fiscalização", () => {
     expect(
       screen.getByText(`${UNIDADE_EDUCACIONAL_LONGA.slice(0, 40)}...`),
     ).toBeInTheDocument();
+  });
+
+  it("exibe as colunas e os dados do relatório no novo painel preservando os zeros do EOL", () => {
+    renderizarListagem({
+      objetos: [relatorioNovoPainel],
+      exibirNovoPainel: true,
+    });
+
+    expect(
+      screen.getByText("Relatórios das Visitas às Unidades Cadastrados"),
+    ).toBeInTheDocument();
+
+    for (const coluna of [
+      "Diretoria Regional",
+      "Unidade Educacional",
+      "Data da Visita",
+      "Status",
+      "Ações",
+    ]) {
+      expect(screen.getByText(coluna)).toBeInTheDocument();
+    }
+
+    expect(
+      screen.getByText("DIRETORIA REGIONAL DE EDUCACAO CAMPO LIMPO"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("000054 - ALUISIO DE ALMEIDA, EMEI"),
+    ).toBeInTheDocument();
+    expect(screen.getByText("02/09/2026")).toBeInTheDocument();
+    expect(screen.getByText("Enviado pela Supervisão")).toBeInTheDocument();
+  });
+
+  it.each([
+    { status: "Em Preenchimento", texto: "Em Preenchimento" },
+    { status: "Enviado para CODAE", texto: "Enviado pela Supervisão" },
+    { status: "Com comentários de CODAE", texto: "Com comentários de CODAE" },
+    { status: "Corrigido pela Supervisão", texto: "Corrigido pela Supervisão" },
+    { status: "Validado pela CODAE", texto: "Validado pela CODAE" },
+  ])(
+    "exibe o status $status do relatório no novo painel",
+    ({ status, texto }) => {
+      renderizarListagem({
+        objetos: [{ ...relatorioNovoPainel, status }],
+        exibirNovoPainel: true,
+      });
+
+      expect(screen.getByText(texto)).toBeInTheDocument();
+    },
+  );
+
+  it("mantém os relatórios da mesma escola separados e vinculados às suas datas e status", () => {
+    const relatorios: RelatorioVisitaItemListagem[] = [
+      relatorioNovoPainel,
+      {
+        ...relatorioNovoPainel,
+        uuid: "8a32e40d-7069-4d32-b5f6-085c9fd701be",
+      },
+      {
+        ...relatorioNovoPainel,
+        uuid: "a82d4df2-4f9e-4f3f-9c40-03bd055b0461",
+        data: "03/09/2026",
+        status: "Corrigido pela Supervisão",
+      },
+    ];
+    renderizarListagem({
+      objetos: relatorios,
+      exibirNovoPainel: true,
+      perfilNutriSupervisao: true,
+    });
+
+    const identificacoes = screen.getAllByText(
+      "000054 - ALUISIO DE ALMEIDA, EMEI",
+    );
+    expect(identificacoes).toHaveLength(3);
+
+    identificacoes.forEach((identificacao, indice) => {
+      const linha = identificacao.closest(".body-table") as HTMLElement;
+      const relatorio = relatorios[indice];
+
+      expect(
+        within(linha).getByText(relatorio.diretoria_regional),
+      ).toBeInTheDocument();
+      expect(within(linha).getByText(relatorio.data)).toBeInTheDocument();
+      expect(within(linha).getByText(relatorio.status)).toBeInTheDocument();
+    });
   });
 
   it("mantém o status original e exibe as ações permitidas para supervisão", () => {
