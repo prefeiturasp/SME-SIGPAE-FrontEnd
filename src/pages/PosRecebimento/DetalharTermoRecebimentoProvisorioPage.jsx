@@ -6,9 +6,7 @@ import {
   DETALHAR_TERMO_RECEBIMENTO_PROVISORIO,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_PROVISORIO,
-  TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
 } from "src/configs/constants";
-import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
 import DetalharTermoRecebimentoProvisorio from "src/components/screens/PosRecebimento/TermoRecebimentoProvisorio/components/Detalhar";
 
 const atual = {
@@ -16,9 +14,7 @@ const atual = {
   titulo: "Detalhar Termo de Recebimento Provisório",
 };
 
-const rotaListagem = usuarioEhEmpresaFornecedor()
-  ? `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`
-  : `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`;
+const rotaListagem = `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`;
 
 const anteriores = [
   {

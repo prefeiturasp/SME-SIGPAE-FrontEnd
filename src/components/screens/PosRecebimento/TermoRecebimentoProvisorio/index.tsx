@@ -12,11 +12,7 @@ import {
 } from "./interfaces";
 import { listarTermosRecebimentoProvisorio } from "src/services/posRecebimento.service";
 
-interface Props {
-  fornecedor?: boolean;
-}
-
-export default ({ fornecedor }: Props) => {
+export default () => {
   const [filtros, setFiltros] = useState<FiltrosTermoRecebimento>({});
   const [termos, setTermos] = useState<Array<TermoRecebimentoListagem>>([]);
   const [carregando, setCarregando] = useState<boolean>(false);
@@ -61,7 +57,7 @@ export default ({ fornecedor }: Props) => {
     <Spin spinning={carregando}>
       <div className="card mt-3 card-termo-recebimento-provisorio">
         <div className="card-body">
-          <Filtros setFiltros={setFiltros} fornecedor={fornecedor} />
+          <Filtros setFiltros={setFiltros} />
           {consultaRealizada &&
             (termos.length === 0 ? (
               <div className="text-center mt-4 mb-4">
@@ -69,7 +65,7 @@ export default ({ fornecedor }: Props) => {
               </div>
             ) : (
               <>
-                <Listagem objetos={termos} fornecedor={fornecedor} />
+                <Listagem objetos={termos} />
                 <div className="row">
                   <div className="col">
                     <Paginacao
