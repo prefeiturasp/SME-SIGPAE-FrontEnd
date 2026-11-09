@@ -246,6 +246,65 @@ describe("Listagem de relatórios de fiscalização", () => {
     });
   });
 
+  it.each([
+    {
+      cenario: "remove o tipo quando ele é prefixo seguido de espaço",
+      nome: "EMEI ALUISIO DE ALMEIDA",
+      texto: "000054 - ALUISIO DE ALMEIDA, EMEI",
+    },
+    {
+      cenario: "preserva o nome quando não possui o prefixo",
+      nome: "ALUISIO DE ALMEIDA",
+      texto: "000054 - ALUISIO DE ALMEIDA, EMEI",
+    },
+    {
+      cenario: "preserva o tipo quando aparece no meio do nome",
+      nome: "ESCOLA EMEI ALUISIO DE ALMEIDA",
+      texto: "000054 - ESCOLA EMEI ALUISIO DE ALMEIDA, EMEI",
+    },
+    {
+      cenario: "preserva o tipo no início quando não é seguido de espaço",
+      nome: "EMEI-ALUISIO DE ALMEIDA",
+      texto: "000054 - EMEI-ALUISIO DE ALMEIDA, EMEI",
+    },
+    {
+      cenario: "remove somente o prefixo e preserva outra ocorrência do tipo",
+      nome: "EMEI ESCOLA EMEI ALUISIO DE ALMEIDA",
+      texto: "000054 - ESCOLA EMEI ALUISIO DE ALMEIDA, EMEI",
+    },
+  ])("$cenario na identificação da unidade", ({ nome, texto }) => {
+    renderizarListagem({
+      objetos: [{ ...relatorioNovoPainel, unidade_educacional: nome }],
+      exibirNovoPainel: true,
+    });
+
+    expect(screen.getByText(texto)).toBeInTheDocument();
+  });
+
+  it("trunca o nome depois de remover o prefixo e mantém a identificação completa no tooltip", () => {
+    renderizarListagem({
+      objetos: [
+        {
+          ...relatorioNovoPainel,
+          unidade_educacional:
+            "EMEF PROFESSORA MARIA DE LOURDES DA SILVA SANTOS E ALMEIDA",
+          tipo_unidade: "EMEF",
+        },
+      ],
+      exibirNovoPainel: true,
+    });
+
+    const identificacao = screen.getByText(
+      "000054 - PROFESSORA MARIA DE LOURDES DA SILVA SAN..., EMEF",
+    );
+
+    expect(identificacao).toBeInTheDocument();
+    expect(identificacao).toHaveAttribute(
+      "aria-label",
+      "000054 - PROFESSORA MARIA DE LOURDES DA SILVA SANTOS E ALMEIDA, EMEF",
+    );
+  });
+
   it("mantém o status original e exibe as ações permitidas para supervisão", () => {
     renderizarListagem({
       perfilNutriSupervisao: true,
