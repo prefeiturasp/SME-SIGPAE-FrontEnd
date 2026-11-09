@@ -12,6 +12,7 @@ import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 type CardPorStatusType = {
   cardStatus: DashboardSupervisaoInterface;
+  exibirNovoPainel?: boolean;
   form: FormApi;
   filtrosIniciais?: FiltrosRelatoriosVisitasInterface;
   statusSelecionado: string;
@@ -27,6 +28,7 @@ type CardPorStatusType = {
 export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
   const {
     cardStatus,
+    exibirNovoPainel = false,
     form,
     filtrosIniciais,
     setFiltros,
@@ -53,9 +55,11 @@ export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
 
   const getClassNameCorCard = () => {
     if (!cardStatus.total) return "cinza";
-    if (statusSelecionado && statusSelecionado !== cardStatus.status)
-      return "cinza";
-    return CLASSE_COR_CARD[cardStatus.status];
+    if (exibirNovoPainel && !statusSelecionado)
+      return CLASSE_COR_CARD[cardStatus.status];
+    return statusSelecionado === cardStatus.status
+      ? CLASSE_COR_CARD[cardStatus.status]
+      : "cinza";
   };
 
   const getClassNameCursorPointer = () => {

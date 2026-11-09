@@ -162,6 +162,7 @@ export const PainelRelatorios = () => {
                   return (
                     <CardPorStatus
                       cardStatus={cardStatus}
+                      exibirNovoPainel={EXIBIR_NOVO_PAINEL}
                       form={form}
                       key={cardStatus.status}
                       filtrosIniciais={

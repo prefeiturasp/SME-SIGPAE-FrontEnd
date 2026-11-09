@@ -165,23 +165,6 @@ export const Listagem: React.FC<Props> = ({
       </Tooltip>
     );
 
-    if (exibirNovoPainel) {
-      return (
-        <div>
-          <button
-            type="button"
-            className="verde"
-            aria-label="Visualizar relatório"
-          >
-            <i className="fas fa-eye" aria-hidden="true" />
-          </button>
-          {objeto.status !== "Em Preenchimento" &&
-            perfilNutriSupervisao &&
-            botaoImprimir}
-        </div>
-      );
-    }
-
     return (
       <div>
         {objeto.status === "Em Preenchimento" &&
