@@ -27,6 +27,7 @@ import "./styles.scss";
 
 interface Props {
   objetos: RelatorioVisitaItemListagem[];
+  exibirNovoPainel?: boolean;
   perfilNutriSupervisao: boolean;
   podeVisualizarRelatorio: boolean;
   getDashboardPainelGerencialSupervisaoAsync: () => void;
@@ -42,6 +43,7 @@ const TAMANHO_MAXIMO = 40;
 
 export const Listagem: React.FC<Props> = ({
   objetos,
+  exibirNovoPainel = false,
   perfilNutriSupervisao,
   podeVisualizarRelatorio,
   getDashboardPainelGerencialSupervisaoAsync,
@@ -87,6 +89,17 @@ export const Listagem: React.FC<Props> = ({
       }
       setRequisicaoEmAndamento("");
     }
+  };
+
+  const formatarNomeUnidadeEducacional = (
+    nomeUnidade: string = "",
+    tipoUnidade: string = "",
+  ): string => {
+    const prefixo = `${tipoUnidade} `;
+    if (tipoUnidade && nomeUnidade.startsWith(prefixo)) {
+      return nomeUnidade.slice(prefixo.length).trim();
+    }
+    return nomeUnidade;
   };
 
   const renderizarAcoes = (
@@ -152,6 +165,23 @@ export const Listagem: React.FC<Props> = ({
       </Tooltip>
     );
 
+    if (exibirNovoPainel) {
+      return (
+        <div>
+          <button
+            type="button"
+            className="verde"
+            aria-label="Visualizar relatório"
+          >
+            <i className="fas fa-eye" aria-hidden="true" />
+          </button>
+          {objeto.status !== "Em Preenchimento" &&
+            perfilNutriSupervisao &&
+            botaoImprimir}
+        </div>
+      );
+    }
+
     return (
       <div>
         {objeto.status === "Em Preenchimento" &&
@@ -173,7 +203,9 @@ export const Listagem: React.FC<Props> = ({
   return (
     <div className="listagem-relatorios-visita">
       <div className="titulo-verde mt-5 mb-3">
-        Relatórios das Visitas as Unidades Cadastrados
+        {exibirNovoPainel
+          ? "Relatórios das Visitas às Unidades Cadastrados"
+          : "Relatórios das Visitas as Unidades Cadastrados"}
       </div>
 
       <article>
@@ -186,13 +218,33 @@ export const Listagem: React.FC<Props> = ({
         </div>
 
         {objetos.map((objeto) => {
+          const nomeUnidade = exibirNovoPainel
+            ? formatarNomeUnidadeEducacional(
+                objeto.unidade_educacional,
+                objeto.tipo_unidade,
+              )
+            : objeto.unidade_educacional;
+          const identificacaoUnidade = exibirNovoPainel
+            ? `${objeto.codigo_eol} - ${nomeUnidade}, ${objeto.tipo_unidade}`
+            : nomeUnidade;
+
           return (
             <>
               <div key={objeto.uuid} className="grid-table body-table">
                 <div>{objeto.diretoria_regional}</div>
                 <div>
-                  <Tooltip title={objeto.unidade_educacional}>
-                    {truncarString(objeto.unidade_educacional, TAMANHO_MAXIMO)}
+                  <Tooltip title={identificacaoUnidade}>
+                    <span>
+                      {exibirNovoPainel ? (
+                        <>
+                          {objeto.codigo_eol} -{" "}
+                          {truncarString(nomeUnidade, TAMANHO_MAXIMO)},{" "}
+                          {objeto.tipo_unidade}
+                        </>
+                      ) : (
+                        truncarString(nomeUnidade, TAMANHO_MAXIMO)
+                      )}
+                    </span>
                   </Tooltip>
                 </div>
                 <div>{objeto.data}</div>

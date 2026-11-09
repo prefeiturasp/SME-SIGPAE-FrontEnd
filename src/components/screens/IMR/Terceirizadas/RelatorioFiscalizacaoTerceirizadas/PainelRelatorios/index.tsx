@@ -208,6 +208,7 @@ export const PainelRelatorios = () => {
                     <>
                       <Listagem
                         objetos={relatoriosVisita}
+                        exibirNovoPainel={EXIBIR_NOVO_PAINEL}
                         perfilNutriSupervisao={perfilNutriSupervisao}
                         podeVisualizarRelatorio={podeVisualizarRelatorio}
                         getDashboardPainelGerencialSupervisaoAsync={
