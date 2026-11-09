@@ -47,8 +47,8 @@ describe("Card por status do painel de relatórios", () => {
     jest.clearAllMocks();
   });
 
-  it("renderiza um card clicável não selecionado", () => {
-    const { card } = renderizarCard();
+  it("renderiza um card clicável não selecionado no novo painel", () => {
+    const { card } = renderizarCard({ exibirNovoPainel: true });
 
     expect(screen.getByText("Em preenchimento")).toBeInTheDocument();
     expect(screen.getByText("0005")).toBeInTheDocument();
@@ -87,10 +87,11 @@ describe("Card por status do painel de relatórios", () => {
       cor: "verde-escuro",
     },
   ])(
-    "aplica a cor $cor de $rotulo sem seleção ou quando selecionado",
+    "aplica a cor $cor de $rotulo sem seleção ou quando selecionado no novo painel",
     ({ status, rotulo, cor }) => {
       const { card, props, rerender } = renderizarCard({
         cardStatus: { label: rotulo, status, total: 2 },
+        exibirNovoPainel: true,
       });
 
       expect(screen.getByText(rotulo)).toBeInTheDocument();
