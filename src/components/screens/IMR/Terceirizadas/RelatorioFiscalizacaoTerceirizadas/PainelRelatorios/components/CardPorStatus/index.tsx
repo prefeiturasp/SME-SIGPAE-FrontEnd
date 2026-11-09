@@ -53,6 +53,8 @@ export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
 
   const getClassNameCorCard = () => {
     if (!cardStatus.total) return "cinza";
+    if (statusSelecionado && statusSelecionado !== cardStatus.status)
+      return "cinza";
     return CLASSE_COR_CARD[cardStatus.status];
   };
 

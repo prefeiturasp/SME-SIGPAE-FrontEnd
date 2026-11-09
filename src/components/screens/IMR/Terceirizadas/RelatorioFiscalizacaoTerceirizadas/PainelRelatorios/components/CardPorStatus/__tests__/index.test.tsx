@@ -87,7 +87,7 @@ describe("Card por status do painel de relatórios", () => {
       cor: "verde-escuro",
     },
   ])(
-    "mantém a cor $cor de $rotulo independentemente da seleção",
+    "aplica a cor $cor de $rotulo sem seleção ou quando selecionado",
     ({ status, rotulo, cor }) => {
       const { card, props, rerender } = renderizarCard({
         cardStatus: { label: rotulo, status, total: 2 },
@@ -110,7 +110,13 @@ describe("Card por status do painel de relatórios", () => {
           : "EM_PREENCHIMENTO";
       rerender(<CardPorStatus {...props} statusSelecionado={outroStatus} />);
 
-      expect(card).toHaveClass(cor);
+      expect(card).toHaveClass("cinza", "cursor-pointer");
+      expect(card).not.toHaveClass(cor);
+      expect(card).toHaveAttribute("aria-pressed", "false");
+
+      rerender(<CardPorStatus {...props} statusSelecionado="" />);
+
+      expect(card).toHaveClass(cor, "cursor-pointer");
       expect(card).not.toHaveClass("cinza");
       expect(card).toHaveAttribute("aria-pressed", "false");
     },
@@ -171,14 +177,14 @@ describe("Card por status do painel de relatórios", () => {
     expect(filtrosIniciais).not.toHaveProperty("status");
   });
 
-  it("permite trocar para outro status e mantém a cor do card não selecionado", () => {
+  it("permite selecionar um card com dados que ficou cinza após outra seleção", () => {
     const { card, props } = renderizarCard({
       filtrosIniciais,
       statusSelecionado: "NUTRIMANIFESTACAO_A_VALIDAR",
     });
 
-    expect(card).toHaveClass("verde-claro", "cursor-pointer");
-    expect(card).not.toHaveClass("cinza");
+    expect(card).toHaveClass("cinza", "cursor-pointer");
+    expect(card).not.toHaveClass("verde-claro");
     expect(card).toHaveAttribute("aria-pressed", "false");
 
     fireEvent.click(card);
