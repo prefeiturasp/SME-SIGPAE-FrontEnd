@@ -7,7 +7,6 @@ import {
   MEMORANDO_OCORRENCIAS,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_PROVISORIO,
-  TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
 } from "src/configs/constants";
 import { PERFIL } from "src/constants/shared";
 
@@ -27,25 +26,6 @@ describe("MenuPosRecebimento", () => {
     );
   });
 
-  it("exibe o item Termo de Recebimento Provisório apontando para a versão do fornecedor", () => {
-    localStorage.setItem("perfil", '"ADMINISTRADOR_EMPRESA"');
-    localStorage.setItem("tipo_servico", '"FORNECEDOR"');
-
-    render(
-      <MemoryRouter>
-        <MenuPosRecebimento />
-      </MemoryRouter>,
-    );
-
-    const linkTermo = screen.getByText("Termo de Recebimento Provisório");
-    expect(linkTermo.closest("a")).toHaveAttribute(
-      "href",
-      `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`,
-    );
-
-    localStorage.clear();
-  });
-
   it("exibe apenas o Memorando de Ocorrências para DIRETOR_UE", () => {
     localStorage.setItem("perfil", PERFIL.DIRETOR_UE);
 
@@ -61,7 +41,7 @@ describe("MenuPosRecebimento", () => {
       `/${POS_RECEBIMENTO}/${MEMORANDO_OCORRENCIAS}`,
     );
     expect(
-      screen.queryByText("Termo de Recebimento Definitivo"),
+      screen.queryByText("Termo de Recebimento Provisório"),
     ).not.toBeInTheDocument();
 
     localStorage.clear();

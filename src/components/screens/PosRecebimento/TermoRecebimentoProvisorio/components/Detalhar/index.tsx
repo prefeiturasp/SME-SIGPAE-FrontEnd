@@ -20,12 +20,8 @@ import {
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_PROVISORIO,
-  TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
 } from "src/configs/constants";
-import {
-  formataMilharDecimal,
-  usuarioEhEmpresaFornecedor,
-} from "src/helpers/utilities";
+import { formataMilharDecimal } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { Parser } from "html-to-react";
 import { CronogramaTermoItem, TermoRecebimentoDetalhe } from "../../interfaces";
@@ -98,10 +94,7 @@ const DetalharTermoRecebimentoProvisorio: React.FC = () => {
 
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    const rotaListagem = usuarioEhEmpresaFornecedor()
-      ? `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`
-      : `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`;
-    navigate(rotaListagem);
+    navigate(`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`);
   };
 
   const handleAssinar = async (password: string) => {

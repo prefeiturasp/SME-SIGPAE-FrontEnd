@@ -220,7 +220,6 @@ export const SidebarContent = () => {
     usuarioEhCronogramaOuCodae() ||
     usuarioEhDilogDiretoria() ||
     usuarioEhRecebimento() ||
-    usuarioEhEmpresaFornecedor() ||
     exibirMemorandoOcorrencias();
 
   const exibirMenuSupervisao =

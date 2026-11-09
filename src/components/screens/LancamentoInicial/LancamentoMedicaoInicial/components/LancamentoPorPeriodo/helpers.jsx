@@ -1,3 +1,4 @@
+import { getDay, lastDayOfMonth, parse, subDays } from "date-fns";
 import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 import {
   capitalize,
@@ -25,6 +26,47 @@ export const CORES = [
 export const COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS = "#7B2CBF";
 
 export const COR_ESCOLA_ABERTA = "#3D9DAD";
+
+export const obterUltimoDiaAtendimentoEscolaAberta = (cadastro, mes, ano) => {
+  if (!cadastro) {
+    return null;
+  }
+
+  const mesNumerico = Number(mes);
+  const anoNumerico = Number(ano);
+  if (!mesNumerico || !anoNumerico) {
+    return null;
+  }
+
+  const primeiroDiaMes = new Date(anoNumerico, mesNumerico - 1, 1);
+  const ultimoDiaMes = new Date(
+    anoNumerico,
+    mesNumerico - 1,
+    lastDayOfMonth(primeiroDiaMes).getDate(),
+  );
+  const dataInicial = parse(cadastro.data_inicial, "dd/MM/yyyy", new Date());
+  const dataFinal = parse(cadastro.data_final, "dd/MM/yyyy", new Date());
+  const dataInicioPeriodo =
+    dataInicial > primeiroDiaMes ? dataInicial : primeiroDiaMes;
+  const dataFimPeriodo = dataFinal < ultimoDiaMes ? dataFinal : ultimoDiaMes;
+
+  if (dataInicioPeriodo > dataFimPeriodo) {
+    return null;
+  }
+
+  const diasSemana = (cadastro.dias_semana || []).map(String);
+  let dia = new Date(dataFimPeriodo);
+
+  while (dia >= dataInicioPeriodo) {
+    const diaSemana = String((getDay(dia) + 6) % 7);
+    if (diasSemana.includes(diaSemana)) {
+      return new Date(dia);
+    }
+    dia = subDays(dia, 1);
+  }
+
+  return null;
+};
 
 export const OPCOES_AVALIACAO_A_CONTENTO = {
   SIM_SEM_OCORRENCIAS: 1,
