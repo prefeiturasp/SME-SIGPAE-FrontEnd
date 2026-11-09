@@ -305,6 +305,48 @@ describe("Listagem de relatórios de fiscalização", () => {
     );
   });
 
+  it.each([
+    {
+      cenario: "ativa",
+      exibirNovoPainel: true,
+      titulo: "Relatórios das Visitas às Unidades Cadastrados",
+      identificacao: "000054 - ALUISIO DE ALMEIDA, EMEI",
+      identificacaoOculta: "EMEI ALUISIO DE ALMEIDA",
+    },
+    {
+      cenario: "desativada",
+      exibirNovoPainel: false,
+      titulo: "Relatórios das Visitas as Unidades Cadastrados",
+      identificacao: "EMEI ALUISIO DE ALMEIDA",
+      identificacaoOculta: "000054 - ALUISIO DE ALMEIDA, EMEI",
+    },
+    {
+      cenario: "não informada",
+      exibirNovoPainel: undefined,
+      titulo: "Relatórios das Visitas as Unidades Cadastrados",
+      identificacao: "EMEI ALUISIO DE ALMEIDA",
+      identificacaoOculta: "000054 - ALUISIO DE ALMEIDA, EMEI",
+    },
+  ])(
+    "exibe a apresentação correspondente à feature flag $cenario",
+    ({ exibirNovoPainel, titulo, identificacao, identificacaoOculta }) => {
+      renderizarListagem({
+        objetos: [relatorioNovoPainel],
+        exibirNovoPainel,
+      });
+
+      expect(screen.getByText(titulo)).toBeInTheDocument();
+      expect(screen.getByText(identificacao)).toBeInTheDocument();
+      expect(screen.getByText(identificacao)).toHaveAttribute(
+        "aria-label",
+        identificacao,
+      );
+      expect(screen.queryByText(identificacaoOculta)).not.toBeInTheDocument();
+      expect(screen.getByText("02/09/2026")).toBeInTheDocument();
+      expect(screen.getByText("Enviado pela Supervisão")).toBeInTheDocument();
+    },
+  );
+
   it("mantém o status original e exibe as ações permitidas para supervisão", () => {
     renderizarListagem({
       perfilNutriSupervisao: true,

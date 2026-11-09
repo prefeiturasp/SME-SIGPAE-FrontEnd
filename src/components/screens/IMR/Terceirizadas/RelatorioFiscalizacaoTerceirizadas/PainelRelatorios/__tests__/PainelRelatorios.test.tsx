@@ -41,6 +41,7 @@ jest.mock("../components/CardPorStatus", () => {
   return {
     CardPorStatus: ({
       cardStatus,
+      exibirNovoPainel,
       filtrosIniciais,
       setConsultaRealizada,
       setFiltros,
@@ -53,6 +54,7 @@ jest.mock("../components/CardPorStatus", () => {
         {
           type: "button",
           "data-testid": `card-${cardStatus.status}`,
+          "data-novo-painel": String(exibirNovoPainel),
           "data-total": String(cardStatus.total),
           disabled: !cardStatus.total,
           onClick: () => {
@@ -145,6 +147,7 @@ jest.mock("../components/Listagem", () => {
   return {
     Listagem: ({
       objetos,
+      exibirNovoPainel,
       perfilNutriSupervisao,
       podeVisualizarRelatorio,
       filtros,
@@ -155,6 +158,7 @@ jest.mock("../components/Listagem", () => {
         "div",
         {
           "data-testid": "listagem",
+          "data-novo-painel": String(exibirNovoPainel),
           "data-perfil-nutri": String(perfilNutriSupervisao),
           "data-pode-visualizar": String(podeVisualizarRelatorio),
         },
@@ -349,6 +353,9 @@ describe("Painel de relatórios de fiscalização", () => {
       "card-CORRIGIDO_PELA_SUPERVISAO",
       "card-VALIDADO_POR_CODAE",
     ]);
+    for (const card of screen.getAllByTestId(/^card-/)) {
+      expect(card).toHaveAttribute("data-novo-painel", "true");
+    }
     expect(screen.getByTestId("card-VALIDADO_POR_CODAE")).toHaveAttribute(
       "data-total",
       "3",
@@ -488,6 +495,10 @@ describe("Painel de relatórios de fiscalização", () => {
 
     expect(await screen.findByTestId("listagem")).toHaveTextContent(
       UUID_RELATORIO_UM,
+    );
+    expect(screen.getByTestId("listagem")).toHaveAttribute(
+      "data-novo-painel",
+      "true",
     );
     expect(screen.getByTestId("listagem")).toHaveAttribute(
       "data-pode-visualizar",
