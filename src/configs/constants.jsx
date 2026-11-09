@@ -341,13 +341,13 @@ export const RECEBIMENTO = "recebimento";
 export const POS_RECEBIMENTO = "pos-recebimento";
 export const MEMORANDO_OCORRENCIAS = "memorando-ocorrencias";
 export const REGISTRAR_MEMORANDO_OCORRENCIA = "registrar-memorando-ocorrencia";
-export const TERMO_RECEBIMENTO_DEFINITIVO = "termo-recebimento-definitivo";
-export const CADASTRO_TERMO_RECEBIMENTO_DEFINITIVO =
-  "cadastro-termo-recebimento-definitivo";
-export const DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO =
-  "detalhar-termo-recebimento-definitivo";
-export const TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR =
-  "termo-recebimento-definitivo-fornecedor";
+export const TERMO_RECEBIMENTO_PROVISORIO = "termo-recebimento-provisorio";
+export const CADASTRO_TERMO_RECEBIMENTO_PROVISORIO =
+  "cadastro-termo-recebimento-provisorio";
+export const DETALHAR_TERMO_RECEBIMENTO_PROVISORIO =
+  "detalhar-termo-recebimento-provisorio";
+export const TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR =
+  "termo-recebimento-provisorio-fornecedor";
 export const PAINEL_ASSINATURA_TERMOS_RECEBIMENTO =
   "painel-assinatura-termos-recebimento";
 export const PENDENTES_ASSINATURA_TERMOS = "pendentes-de-assinatura";
