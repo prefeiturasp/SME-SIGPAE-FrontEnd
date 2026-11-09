@@ -3,8 +3,8 @@ import { Menu, LeafItem } from "./shared";
 import {
   MEMORANDO_OCORRENCIAS,
   POS_RECEBIMENTO,
-  TERMO_RECEBIMENTO_DEFINITIVO,
-  TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR,
+  TERMO_RECEBIMENTO_PROVISORIO,
+  TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
 } from "src/configs/constants";
 import {
@@ -22,10 +22,10 @@ const MenuPosRecebimento = () => {
     >
       {usuarioEhEmpresaFornecedor() ? (
         <LeafItem
-          to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`}
-          dataTestId="termo-recebimento-definitivo-fornecedor"
+          to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`}
+          dataTestId="termo-recebimento-provisorio-fornecedor"
         >
-          Termo de Recebimento Definitivo
+          Termo de Recebimento Provisório
         </LeafItem>
       ) : usuarioEhEscola() ? (
         <LeafItem
@@ -43,10 +43,10 @@ const MenuPosRecebimento = () => {
             Painel de Assinaturas
           </LeafItem>
           <LeafItem
-            to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`}
-            dataTestId="termo-recebimento-definitivo"
+            to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`}
+            dataTestId="termo-recebimento-provisorio"
           >
-            Termo de Recebimento Definitivo
+            Termo de Recebimento Provisório
           </LeafItem>
         </>
       )}
