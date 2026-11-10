@@ -194,6 +194,7 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - EMEF
     });
     expect(within(containerDe).getByText("Refeição")).toBeInTheDocument();
     expect(within(containerDe).getByText("Sobremesa")).toBeInTheDocument();
+    expect(within(containerDe).getByText("Todos")).toBeInTheDocument();
     expect(
       within(containerDe).queryByText("Refeição e Sobremesa"),
     ).not.toBeInTheDocument();
