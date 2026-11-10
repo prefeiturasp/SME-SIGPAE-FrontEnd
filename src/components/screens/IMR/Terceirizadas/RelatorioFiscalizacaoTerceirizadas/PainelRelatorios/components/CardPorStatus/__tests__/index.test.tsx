@@ -47,8 +47,8 @@ describe("Card por status do painel de relatórios", () => {
     jest.clearAllMocks();
   });
 
-  it("renderiza um card clicável não selecionado", () => {
-    const { card } = renderizarCard();
+  it("renderiza um card clicável não selecionado no novo painel", () => {
+    const { card } = renderizarCard({ exibirNovoPainel: true });
 
     expect(screen.getByText("Em preenchimento")).toBeInTheDocument();
     expect(screen.getByText("0005")).toBeInTheDocument();
@@ -87,10 +87,11 @@ describe("Card por status do painel de relatórios", () => {
       cor: "verde-escuro",
     },
   ])(
-    "mantém a cor $cor de $rotulo independentemente da seleção",
+    "aplica a cor $cor de $rotulo sem seleção ou quando selecionado no novo painel",
     ({ status, rotulo, cor }) => {
       const { card, props, rerender } = renderizarCard({
         cardStatus: { label: rotulo, status, total: 2 },
+        exibirNovoPainel: true,
       });
 
       expect(screen.getByText(rotulo)).toBeInTheDocument();
@@ -110,38 +111,83 @@ describe("Card por status do painel de relatórios", () => {
           : "EM_PREENCHIMENTO";
       rerender(<CardPorStatus {...props} statusSelecionado={outroStatus} />);
 
-      expect(card).toHaveClass(cor);
+      expect(card).toHaveClass("cinza", "cursor-pointer");
+      expect(card).not.toHaveClass(cor);
+      expect(card).toHaveAttribute("aria-pressed", "false");
+
+      rerender(<CardPorStatus {...props} statusSelecionado="" />);
+
+      expect(card).toHaveClass(cor, "cursor-pointer");
       expect(card).not.toHaveClass("cinza");
       expect(card).toHaveAttribute("aria-pressed", "false");
     },
   );
 
-  it("não permite selecionar um card sem relatórios", () => {
-    const form = { reset: jest.fn() };
-    const { card, props } = renderizarCard({
-      cardStatus: { ...cardEmPreenchimento, total: 0 },
-      form,
-      statusSelecionado: "EM_PREENCHIMENTO",
-    });
+  it.each([false, undefined])(
+    "preserva as cores anteriores com a feature flag %p",
+    (exibirNovoPainel) => {
+      const { card, props, rerender } = renderizarCard({ exibirNovoPainel });
 
-    expect(screen.getByText("0000")).toBeInTheDocument();
-    expect(card).toHaveClass("cinza");
-    expect(card).not.toHaveClass("cursor-pointer");
-    expect(card).not.toHaveAttribute("role");
-    expect(card).not.toHaveAttribute("tabindex");
-    expect(card).not.toHaveAttribute("aria-pressed");
+      expect(card).toHaveClass("cinza", "cursor-pointer");
+      expect(card).not.toHaveClass("verde-claro");
+      expect(card).toHaveAttribute("aria-pressed", "false");
 
-    fireEvent.click(card);
-    fireEvent.keyDown(card, { key: "Enter" });
-    fireEvent.keyDown(card, { key: " " });
+      rerender(
+        <CardPorStatus {...props} statusSelecionado="EM_PREENCHIMENTO" />,
+      );
 
-    expect(form.reset).not.toHaveBeenCalled();
-    expect(props.setPage).not.toHaveBeenCalled();
-    expect(props.setRelatoriosVisita).not.toHaveBeenCalled();
-    expect(props.setConsultaRealizada).not.toHaveBeenCalled();
-    expect(props.setStatusSelecionado).not.toHaveBeenCalled();
-    expect(props.setFiltros).not.toHaveBeenCalled();
-  });
+      expect(card).toHaveClass("verde-claro", "cursor-pointer");
+      expect(card).not.toHaveClass("cinza");
+      expect(card).toHaveAttribute("aria-pressed", "true");
+
+      rerender(
+        <CardPorStatus
+          {...props}
+          statusSelecionado="NUTRIMANIFESTACAO_A_VALIDAR"
+        />,
+      );
+
+      expect(card).toHaveClass("cinza", "cursor-pointer");
+      expect(card).not.toHaveClass("verde-claro");
+      expect(card).toHaveAttribute("aria-pressed", "false");
+
+      rerender(<CardPorStatus {...props} statusSelecionado="" />);
+
+      expect(card).toHaveClass("cinza", "cursor-pointer");
+      expect(card).not.toHaveClass("verde-claro");
+    },
+  );
+
+  it.each([true, false, undefined])(
+    "não permite selecionar um card sem relatórios com a feature flag %p",
+    (exibirNovoPainel) => {
+      const form = { reset: jest.fn() };
+      const { card, props } = renderizarCard({
+        cardStatus: { ...cardEmPreenchimento, total: 0 },
+        exibirNovoPainel,
+        form,
+        statusSelecionado: "EM_PREENCHIMENTO",
+      });
+
+      expect(screen.getByText("0000")).toBeInTheDocument();
+      expect(card).toHaveClass("cinza");
+      expect(card).not.toHaveClass("cursor-pointer");
+      expect(card).not.toHaveAttribute("role");
+      expect(card).not.toHaveAttribute("tabindex");
+      expect(card).not.toHaveAttribute("aria-pressed");
+
+      fireEvent.click(card);
+      fireEvent.keyDown(card, { key: "Enter" });
+      fireEvent.keyDown(card, { key: " " });
+
+      expect(form.reset).not.toHaveBeenCalled();
+      expect(props.setPage).not.toHaveBeenCalled();
+      expect(props.setRelatoriosVisita).not.toHaveBeenCalled();
+      expect(props.setConsultaRealizada).not.toHaveBeenCalled();
+      expect(props.setStatusSelecionado).not.toHaveBeenCalled();
+      expect(props.setFiltros).not.toHaveBeenCalled();
+    },
+  );
 
   it("limpa a consulta anterior e seleciona o status ao clicar", () => {
     const form = { reset: jest.fn() };
@@ -171,25 +217,31 @@ describe("Card por status do painel de relatórios", () => {
     expect(filtrosIniciais).not.toHaveProperty("status");
   });
 
-  it("permite trocar para outro status e mantém a cor do card não selecionado", () => {
-    const { card, props } = renderizarCard({
-      filtrosIniciais,
-      statusSelecionado: "NUTRIMANIFESTACAO_A_VALIDAR",
-    });
+  it.each([true, false])(
+    "permite selecionar um card com dados que ficou cinza após outra seleção com a feature flag %p",
+    (exibirNovoPainel) => {
+      const { card, props } = renderizarCard({
+        filtrosIniciais,
+        exibirNovoPainel,
+        statusSelecionado: "NUTRIMANIFESTACAO_A_VALIDAR",
+      });
 
-    expect(card).toHaveClass("verde-claro", "cursor-pointer");
-    expect(card).not.toHaveClass("cinza");
-    expect(card).toHaveAttribute("aria-pressed", "false");
+      expect(card).toHaveClass("cinza", "cursor-pointer");
+      expect(card).not.toHaveClass("verde-claro");
+      expect(card).toHaveAttribute("aria-pressed", "false");
 
-    fireEvent.click(card);
+      fireEvent.click(card);
 
-    esperarEstadoLimpo(props);
-    expect(props.setStatusSelecionado).toHaveBeenCalledWith("EM_PREENCHIMENTO");
-    expect(props.setFiltros).toHaveBeenCalledWith({
-      ...filtrosIniciais,
-      status: "EM_PREENCHIMENTO",
-    });
-  });
+      esperarEstadoLimpo(props);
+      expect(props.setStatusSelecionado).toHaveBeenCalledWith(
+        "EM_PREENCHIMENTO",
+      );
+      expect(props.setFiltros).toHaveBeenCalledWith({
+        ...filtrosIniciais,
+        status: "EM_PREENCHIMENTO",
+      });
+    },
+  );
 
   it("envia o status vazio ao selecionar todos os relatórios", () => {
     const cardTodosOsRelatorios = {

@@ -135,6 +135,8 @@ export interface RelatorioVisitaItemListagem {
   diretoria_regional?: string;
   data?: string;
   status?: string;
+  codigo_eol?: string;
+  tipo_unidade?: string;
 }
 
 export interface RespostaOcorrenciaInterface {
