@@ -2737,9 +2737,15 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     );
     const diaDeCorrecao = ehDiaParaCorrigir(dia, categoriaId, diasParaCorrecao);
 
+    const temKitLancheAutorizadoNoDia =
+      calcularSomaKitLanches(kitLanchesAutorizadas, dia) > 0;
+
     if (ehGrupoSolicitacoesAlimentacao || ehProgramasEProjetosLocation) {
       return (
-        !validacaoSemana(dia) && (temInclusaoAutorizadaNoDia || diaDeCorrecao)
+        !validacaoSemana(dia) &&
+        (temInclusaoAutorizadaNoDia ||
+          diaDeCorrecao ||
+          (ehGrupoSolicitacoesAlimentacao && temKitLancheAutorizadoNoDia))
       );
     }
 
