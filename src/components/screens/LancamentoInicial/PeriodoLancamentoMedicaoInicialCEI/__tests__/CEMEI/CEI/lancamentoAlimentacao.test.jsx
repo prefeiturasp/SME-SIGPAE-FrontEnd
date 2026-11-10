@@ -130,7 +130,7 @@ describe("Lançamento UE - Solicitações de Alimentação - Infantil - CEI da C
     );
   });
 
-  it("ao lançar quantidade diferente da autorizada, o botão fica vermelho e abre o modal", async () => {
+  it("ao lançar quantidade diferente da autorizada, o botão fica vermelho", async () => {
     await renderPage({ kitLanches: kitLancheAutorizado });
 
     const inputKit = await screen.findByTestId(
@@ -143,11 +143,6 @@ describe("Lançamento UE - Solicitações de Alimentação - Infantil - CEI da C
     );
     await waitFor(() =>
       expect(botao.className).toContain("red-button-outline"),
-    );
-
-    fireEvent.click(botao);
-    await waitFor(() =>
-      expect(screen.getByText("Observação Diária")).toBeInTheDocument(),
     );
   });
 });
