@@ -160,6 +160,9 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
       within(selectAlterarAlimentacaoDeEMEI).getByText("Sobremesa"),
     ).toBeInTheDocument();
     expect(
+      within(selectAlterarAlimentacaoDeEMEI).getByText("Todos"),
+    ).toBeInTheDocument();
+    expect(
       within(selectAlterarAlimentacaoDeEMEI).queryByText(
         "Refeição e Sobremesa",
       ),
