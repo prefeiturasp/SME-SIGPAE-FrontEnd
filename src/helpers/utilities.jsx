@@ -559,6 +559,7 @@ export const usuarioComAcessoAoRelatorioCronogramasSemanais = () => {
     PERFIL.DILOG_QUALIDADE,
     PERFIL.DILOG_CRONOGRAMA,
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+    PERFIL.DILOG_ABASTECIMENTO,
   ].includes(localStorage.getItem("perfil"));
 };
 
