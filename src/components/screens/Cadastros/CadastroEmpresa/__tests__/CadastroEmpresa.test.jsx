@@ -615,6 +615,72 @@ describe("Endereço da empresa", () => {
   });
 });
 
+describe("Número do contrato na tela de cadastro de empresa", () => {
+  beforeEach(() => {
+    localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
+  });
+
+  it("mantém o campo habilitado para preencher um contrato novo", async () => {
+    await setup();
+
+    const campoNumeroContrato = document.querySelector(
+      '[data-cy="numero_contrato_0"]',
+    );
+
+    expect(campoNumeroContrato).toBeEnabled();
+    expect(campoNumeroContrato).toBeRequired();
+    expect(campoNumeroContrato).toHaveValue("");
+
+    alterarCampo(campoNumeroContrato, "001/2026");
+
+    expect(campoNumeroContrato).toHaveValue("001/2026");
+  });
+
+  it("permite alterar o número do contrato existente e envia a alteração ao salvar", async () => {
+    const numeroNovo = "321/2026";
+    const empresaAtualizada = empresaDistribuidor();
+    empresaAtualizada.contratos[0].numero = numeroNovo;
+    const urlAtualizacao = `/empresas-nao-terceirizadas/${mockEmpresa.uuid}/`;
+
+    window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
+    mock.onPatch(urlAtualizacao).reply(200, empresaAtualizada);
+
+    await setup();
+
+    const campoNumeroContrato = document.querySelector(
+      '[data-cy="numero_contrato_0"]',
+    );
+    await waitFor(() =>
+      expect(campoNumeroContrato).toHaveValue(mockEmpresa.contratos[0].numero),
+    );
+    expect(campoNumeroContrato).toBeEnabled();
+    expect(campoNumeroContrato).toBeRequired();
+
+    alterarCampo(campoNumeroContrato, numeroNovo);
+
+    expect(campoNumeroContrato).toHaveValue(numeroNovo);
+    expect(screen.getByRole("button", { name: /Atualizar/i })).toBeEnabled();
+
+    await confirmarEnvio(/Atualizar/i);
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        "Empresa atualizada com sucesso!",
+      ),
+    );
+    expect(mock.history.patch).toHaveLength(1);
+    expect(mock.history.patch[0].url).toBe(urlAtualizacao);
+
+    const dadosEnviados = JSON.parse(mock.history.patch[0].data);
+    expect(dadosEnviados.contratos[0]).toMatchObject({
+      uuid: mockEmpresa.contratos[0].uuid,
+      numero: numeroNovo,
+    });
+    expect(dadosEnviados.contratos[1]).not.toHaveProperty("numero");
+  });
+});
+
 describe("Services de empresa", () => {
   it("createNaoTerceirizada devolve o erro de CNPJ duplicado", async () => {
     mock.onPost("/empresas-nao-terceirizadas/").reply(400, {
