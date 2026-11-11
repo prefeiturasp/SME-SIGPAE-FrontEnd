@@ -147,7 +147,6 @@ export const ContratosFormSet = ({
                               ? contratoJaCadastrado
                               : () => {},
                           )}
-                          // disabled={!!contratos[index].uuid}
                         />
                       </div>
                       <div className="col-2">
