@@ -2735,17 +2735,20 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     const temInclusaoAutorizadaNoDia = inclusoesAutorizadas.some(
       (inclusao) => Number(inclusao.dia) === Number(dia),
     );
-    const diaDeCorrecao = ehDiaParaCorrigir(dia, categoriaId, diasParaCorrecao);
-
     const temKitLancheAutorizadoNoDia =
       calcularSomaKitLanches(kitLanchesAutorizadas, dia) > 0;
+    const temLancheEmergencialAutorizadoNoDia = (
+      alteracoesAlimentacaoAutorizadas || []
+    ).some((alteracao) => Number(alteracao.dia) === Number(dia));
+    const diaDeCorrecao = ehDiaParaCorrigir(dia, categoriaId, diasParaCorrecao);
 
     if (ehGrupoSolicitacoesAlimentacao || ehProgramasEProjetosLocation) {
       return (
         !validacaoSemana(dia) &&
         (temInclusaoAutorizadaNoDia ||
-          diaDeCorrecao ||
-          (ehGrupoSolicitacoesAlimentacao && temKitLancheAutorizadoNoDia))
+          temKitLancheAutorizadoNoDia ||
+          temLancheEmergencialAutorizadoNoDia ||
+          diaDeCorrecao)
       );
     }
 
