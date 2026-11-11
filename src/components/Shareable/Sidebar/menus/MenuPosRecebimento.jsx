@@ -6,7 +6,10 @@ import {
   TERMO_RECEBIMENTO_PROVISORIO,
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
 } from "src/configs/constants";
-import { usuarioEhEscola } from "src/helpers/utilities";
+import {
+  usuarioEhDilogQualidade,
+  usuarioEhEscola,
+} from "src/helpers/utilities";
 
 const MenuPosRecebimento = () => {
   return (
@@ -25,12 +28,14 @@ const MenuPosRecebimento = () => {
         </LeafItem>
       ) : (
         <>
-          <LeafItem
-            to={`/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`}
-            dataTestId="painel-assinatura-termos-recebimento"
-          >
-            Painel de Assinaturas
-          </LeafItem>
+          {usuarioEhDilogQualidade() && (
+            <LeafItem
+              to={`/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`}
+              dataTestId="painel-assinatura-termos-recebimento"
+            >
+              Painel de Assinaturas
+            </LeafItem>
+          )}
           <LeafItem
             to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`}
             dataTestId="termo-recebimento-provisorio"
