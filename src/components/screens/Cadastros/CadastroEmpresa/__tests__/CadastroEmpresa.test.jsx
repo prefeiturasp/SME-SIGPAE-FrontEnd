@@ -512,6 +512,51 @@ describe("Endereço da empresa", () => {
     });
   });
 
+  it("envia o endereço corrigido manualmente após consultar o CEP ao atualizar a empresa", async () => {
+    localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
+    window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
+
+    const enderecoEditado = {
+      endereco: "Rua de Teste",
+      numero: "123",
+      complemento: "Sala 2",
+      bairro: "Centro",
+      cidade: "Uberlândia",
+      estado: "MG",
+    };
+    const urlAtualizacao = `/empresas-nao-terceirizadas/${mockEmpresa.uuid}/`;
+    mock.onPatch(urlAtualizacao).reply(200, {
+      ...empresaDistribuidor(),
+      ...enderecoEditado,
+      cep: "01001000",
+    });
+
+    await setup();
+    await consultarCep();
+
+    Object.entries(enderecoEditado).forEach(([campo, valor]) => {
+      alterarCampo(`[data-cy="${campo}"]`, valor);
+    });
+
+    expect(screen.getByRole("button", { name: /Atualizar/i })).toBeEnabled();
+    await confirmarEnvio(/Atualizar/i);
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        "Empresa atualizada com sucesso!",
+      ),
+    );
+    expect(mock.history.patch).toHaveLength(1);
+    expect(mock.history.patch[0].url).toBe(urlAtualizacao);
+
+    const dadosEnviados = JSON.parse(mock.history.patch[0].data);
+    expect(dadosEnviados).toMatchObject({
+      ...enderecoEditado,
+      cep: "01001000",
+    });
+  });
+
   describe.each([
     {
       nome: "DILOG_CRONOGRAMA",
