@@ -33,6 +33,17 @@ const kitLancheAutorizado = [
 ];
 
 let kitLanchesAtual = [];
+let alteracoesAtual = [];
+const lancheEmergencialAutorizado = [
+  {
+    dia: DIA,
+    numero_alunos: 10,
+    inclusao_id_externo: "D5730",
+    motivo: "Lanche Emergencial",
+    periodos_escolares: ["INTEGRAL"],
+    tipos_alimentacao_de: ["Lanche 4h"],
+  },
+];
 
 const registrarMocks = () => {
   mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosEscolaCEMEI);
@@ -48,7 +59,7 @@ const registrarMocks = () => {
     .reply(200, { results: [] });
   mock
     .onGet("/escola-solicitacoes/alteracoes-alimentacao-autorizadas/")
-    .reply(200, { results: [] });
+    .reply(() => [200, { results: alteracoesAtual }]);
   mock
     .onGet("/escola-solicitacoes/kit-lanches-autorizadas/")
     .reply(() => [200, { results: kitLanchesAtual }]);
@@ -65,8 +76,9 @@ const registrarMocks = () => {
     .reply(200, { results: [] });
 };
 
-const renderPage = async ({ kitLanches = [] } = {}) => {
+const renderPage = async ({ kitLanches = [], alteracoes = [] } = {}) => {
   kitLanchesAtual = kitLanches;
+  alteracoesAtual = alteracoes;
 
   window.history.pushState({}, "", `?uuid=${SOLICITACAO_UUID}`);
 
@@ -120,16 +132,6 @@ describe("Lançamento UE - Solicitações de Alimentação - Infantil - CEI da C
     });
   });
 
-  it("não exibe o botão Adicionar quando não há kit lanche, inclusão nem correção no dia", async () => {
-    await renderPage({ kitLanches: [] });
-
-    await screen.findByText("Observações");
-    const div = queryDivObservacoes();
-    expect(div === null || within(div).queryByText("Adicionar") === null).toBe(
-      true,
-    );
-  });
-
   it("ao lançar quantidade diferente da autorizada, o botão fica vermelho", async () => {
     await renderPage({ kitLanches: kitLancheAutorizado });
 
@@ -143,6 +145,26 @@ describe("Lançamento UE - Solicitações de Alimentação - Infantil - CEI da C
     );
     await waitFor(() =>
       expect(botao.className).toContain("red-button-outline"),
+    );
+  });
+
+  it("exibe o botão Adicionar em Observações quando há Lanche Emergencial autorizado no dia", async () => {
+    await renderPage({ alteracoes: lancheEmergencialAutorizado });
+
+    await waitFor(() => {
+      const div = queryDivObservacoes();
+      expect(div).toBeInTheDocument();
+      expect(within(div).getByText("Adicionar")).toBeInTheDocument();
+    });
+  });
+
+  it("não exibe o botão Adicionar quando não há Lanche Emergencial nem kit lanche no dia", async () => {
+    await renderPage({ alteracoes: [], kitLanches: [] });
+
+    await screen.findByText("Observações");
+    const div = queryDivObservacoes();
+    expect(div === null || within(div).queryByText("Adicionar") === null).toBe(
+      true,
     );
   });
 });
