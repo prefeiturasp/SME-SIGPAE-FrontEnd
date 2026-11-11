@@ -183,9 +183,9 @@ describe("PainelAssinaturaTermosRecebimentoPage", () => {
       expect(getRotaPainel().tipoUsuario).toBe(true);
     });
 
-    it("libera acesso para DILOG_CRONOGRAMA", () => {
+    it("bloqueia acesso para DILOG_CRONOGRAMA", () => {
       localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
-      expect(getRotaPainel().tipoUsuario).toBe(true);
+      expect(getRotaPainel().tipoUsuario).toBe(false);
     });
 
     it("bloqueia acesso para um usuário sem permissão", () => {
