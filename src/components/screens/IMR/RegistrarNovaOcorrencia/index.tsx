@@ -56,13 +56,12 @@ import "./style.scss";
 const renderizaParametrizacoes = (
   parametrizacoes,
   name,
-  indexFieldArray,
   tipoOcorrencia,
   form,
   escolaSelecionada,
 ) =>
   parametrizacoes.map((parametrizacao) => (
-    <div key={indexFieldArray} className="row">
+    <div key={parametrizacao.uuid} className="row">
       <RenderComponentByParametrizacao
         parametrizacao={parametrizacao}
         name_grupos={name}
@@ -447,7 +446,7 @@ export const RegistrarNovaOcorrencia = ({
                         <FieldArray name="grupos">
                           {({ fields }) =>
                             fields.map((name, indexFieldArray) => (
-                              <>
+                              <React.Fragment key={name}>
                                 {indexFieldArray > 0 && (
                                   <div className="row">
                                     <div className="col-11">
@@ -472,22 +471,18 @@ export const RegistrarNovaOcorrencia = ({
                                   renderizaParametrizacoes(
                                     tipoOcorrencia.parametrizacoes,
                                     name,
-                                    indexFieldArray,
                                     tipoOcorrencia,
                                     form,
                                     escolaSelecionada,
                                   )
                                 ) : (
-                                  <div
-                                    key={indexFieldArray}
-                                    className="row mt-3"
-                                  >
+                                  <div className="row mt-3">
                                     <div className="col-12">
                                       Não há parametrização para esse item.
                                     </div>
                                   </div>
                                 )}
-                              </>
+                              </React.Fragment>
                             ))
                           }
                         </FieldArray>
