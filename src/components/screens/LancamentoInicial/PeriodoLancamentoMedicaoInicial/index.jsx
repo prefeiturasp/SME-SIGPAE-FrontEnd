@@ -3309,7 +3309,9 @@ export default () => {
       temLancheEmergencialDiarioNoDia;
 
     const liberadoPorDiaLetivo =
-      !ehCategoriaSolicitacoesDeAlimentacao && validacaoDiaLetivo(dia);
+      !ehCategoriaSolicitacoesDeAlimentacao &&
+      !ehGrupoETECUrlParam &&
+      validacaoDiaLetivo(dia);
 
     return (
       (!validacaoSemana(dia) &&
