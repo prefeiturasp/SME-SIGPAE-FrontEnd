@@ -168,17 +168,17 @@ describe("Ver Mais - Cards do Painel de Assinaturas", () => {
 
     const perfisComAcesso = [
       { nome: "DILOG_QUALIDADE", perfil: PERFIL.DILOG_QUALIDADE },
+    ];
+
+    const perfisSemAcesso = [
+      { nome: "ADMINISTRADOR_EMPRESA", perfil: PERFIL.ADMINISTRADOR_EMPRESA },
+      { nome: "USUARIO_EMPRESA", perfil: PERFIL.USUARIO_EMPRESA },
       { nome: "DILOG_DIRETORIA", perfil: PERFIL.DILOG_DIRETORIA },
       { nome: "DILOG_CRONOGRAMA", perfil: PERFIL.DILOG_CRONOGRAMA },
       {
         nome: "COORDENADOR_CODAE_DILOG_LOGISTICA",
         perfil: PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
       },
-    ];
-
-    const perfisSemAcesso = [
-      { nome: "ADMINISTRADOR_EMPRESA", perfil: PERFIL.ADMINISTRADOR_EMPRESA },
-      { nome: "USUARIO_EMPRESA", perfil: PERFIL.USUARIO_EMPRESA },
     ];
 
     it.each(perfisComAcesso)(
@@ -190,7 +190,7 @@ describe("Ver Mais - Cards do Painel de Assinaturas", () => {
     );
 
     it.each(perfisSemAcesso)(
-      "bloqueia painel e Ver Mais para $nome (Fornecedor)",
+      "bloqueia painel e Ver Mais para $nome",
       ({ perfil }) => {
         localStorage.setItem("perfil", perfil);
         rotasDoPainel().forEach((rota) => expect(rota.tipoUsuario).toBe(false));

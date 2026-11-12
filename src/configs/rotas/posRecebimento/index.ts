@@ -51,25 +51,16 @@ export const rotasPosRecebimento: Array<RotaInterface> = [
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`,
     component: PainelAssinaturaTermosRecebimentoPage,
-    tipoUsuario:
-      usuarioEhCronogramaOuCodae() ||
-      usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade(),
+    tipoUsuario: usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}/${constants.PENDENTES_ASSINATURA_TERMOS}/`,
     component: StatusTermoPendentesAssinatura,
-    tipoUsuario:
-      usuarioEhCronogramaOuCodae() ||
-      usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade(),
+    tipoUsuario: usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}/${constants.ASSINADOS_TERMOS}/`,
     component: StatusTermoAssinados,
-    tipoUsuario:
-      usuarioEhCronogramaOuCodae() ||
-      usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade(),
+    tipoUsuario: usuarioEhDilogQualidade(),
   },
 ];
