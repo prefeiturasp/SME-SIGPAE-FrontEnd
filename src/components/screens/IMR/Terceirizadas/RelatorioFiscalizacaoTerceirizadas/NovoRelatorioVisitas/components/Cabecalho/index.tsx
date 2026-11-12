@@ -278,7 +278,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                         inputValue: string,
                         option: { label: string },
                       ) =>
-                        option!.label
+                        option.label
                           .toUpperCase()
                           .indexOf(inputValue.toUpperCase()) !== -1
                       }
