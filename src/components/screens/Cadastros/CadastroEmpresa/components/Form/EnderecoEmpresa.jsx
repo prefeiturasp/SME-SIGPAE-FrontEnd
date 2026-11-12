@@ -103,7 +103,7 @@ export const EnderecoEmpresa = ({
               name="endereco"
               required
               maxlength="150"
-              disabled={camposEnderecoDesabilitado}
+              disabled={!ehDistribuidor && camposEnderecoDesabilitado}
             />
           </div>
         </div>
@@ -131,7 +131,7 @@ export const EnderecoEmpresa = ({
               name="bairro"
               required
               maxlength="140"
-              disabled={camposEnderecoDesabilitado}
+              disabled={!ehDistribuidor && camposEnderecoDesabilitado}
             />
           </div>
         </div>
@@ -142,7 +142,7 @@ export const EnderecoEmpresa = ({
               label="Cidade"
               name="cidade"
               required
-              disabled={camposEnderecoDesabilitado}
+              disabled={!ehDistribuidor && camposEnderecoDesabilitado}
               maxlength="140"
             />
           </div>
@@ -152,7 +152,7 @@ export const EnderecoEmpresa = ({
               label="Estado"
               name="estado"
               required
-              disabled={camposEnderecoDesabilitado}
+              disabled={!ehDistribuidor && camposEnderecoDesabilitado}
               maxlength="140"
             />
           </div>
@@ -182,7 +182,7 @@ export const EnderecoEmpresa = ({
                             setaContatosEmpresa(
                               "telefone",
                               value,
-                              indiceEmpresa
+                              indiceEmpresa,
                             );
                           }}
                         />
