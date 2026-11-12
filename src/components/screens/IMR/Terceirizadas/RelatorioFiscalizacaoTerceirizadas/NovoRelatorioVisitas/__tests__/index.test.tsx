@@ -597,6 +597,56 @@ describe("NovoRelatorioVisitas", () => {
     expect(mockToastError).not.toHaveBeenCalled();
   });
 
+  it("exibe erro e permanece na tela quando a criação do rascunho falha", async () => {
+    const valoresRascunho = {
+      escola: escolaUuid,
+      diretoria_regional: "99999999-9999-4999-8999-999999999999",
+      data: "01/07/2026",
+      lote: "LOTE 01",
+      terceirizada: "Empresa de teste",
+      total_matriculados_por_data: 100,
+      maior_frequencia_no_periodo: 100,
+      acompanhou_visita: "nao",
+      anexos: [],
+      notificacoes_assinadas: [],
+    };
+    const payloadRascunho = {
+      ...valoresRascunho,
+      acompanhou_visita: false,
+      ocorrencias: [],
+      ocorrencias_nao_se_aplica: [],
+    };
+    mockFormValues = valoresRascunho;
+    mockFormataPayload.mockReturnValueOnce(payloadRascunho);
+    mockCreateRascunhoFormularioSupervisao.mockResolvedValueOnce({
+      status: HTTP_STATUS.BAD_REQUEST,
+      data: { detail: "Dados do relatório inválidos." },
+    });
+
+    await renderizarFormulario();
+
+    fireEvent.click(screen.getByRole("button", { name: "Salvar rascunho" }));
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Confirmar salvamento do rascunho",
+      }),
+    );
+
+    await waitFor(() =>
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Erro ao criar rascunho do Relatório de Fiscalização. Tente novamente mais tarde.",
+      ),
+    );
+
+    expect(mockCreateRascunhoFormularioSupervisao).toHaveBeenCalledTimes(1);
+    expect(mockCreateRascunhoFormularioSupervisao).toHaveBeenCalledWith(
+      payloadRascunho,
+    );
+    expect(mockUpdateRascunhoFormularioSupervisao).not.toHaveBeenCalled();
+    expect(mockToastSuccess).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("atualiza um rascunho existente após a confirmação", async () => {
     mockFormValues = {
       uuid: formularioUuid,
