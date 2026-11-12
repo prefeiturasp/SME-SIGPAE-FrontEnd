@@ -1,3 +1,4 @@
+import { saveAs } from "file-saver";
 import axios from "./_base";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -170,6 +171,16 @@ export const fiscalAssinaTermo = async (uuid: string, password: string) => {
     },
     { skipAuthRefresh: true },
   );
+};
+
+export const imprimirTermoRecebimentoProvisorio = async (uuid: string) => {
+  try {
+    const url = `/pos-recebimento/termos/${uuid}/gerar-pdf-termo/`;
+    const { data } = await axios.get(url, { responseType: "blob" });
+    saveAs(data, `termo_recebimento_provisorio_${uuid}.pdf`);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
 };
 
 export interface LoteMemorandoOcorrenciaPayload {

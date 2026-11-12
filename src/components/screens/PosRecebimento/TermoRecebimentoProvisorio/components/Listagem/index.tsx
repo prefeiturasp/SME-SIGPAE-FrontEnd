@@ -1,20 +1,56 @@
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import {
   POS_RECEBIMENTO,
   DETALHAR_TERMO_RECEBIMENTO_PROVISORIO,
 } from "src/configs/constants";
+import {
+  acionaComEnterOuEspaco,
+  usuarioPodeBaixarTermoRecebimentoProvisorio,
+} from "src/helpers/utilities";
+import { imprimirTermoRecebimentoProvisorio } from "src/services/posRecebimento.service";
 
 import "./styles.scss";
 
 import { TermoRecebimentoListagem } from "../../interfaces";
+import { STATUS_ASSINATURAS_CONCLUIDAS } from "../../constants";
 
 interface Props {
   objetos: Array<TermoRecebimentoListagem>;
 }
 
-const Listagem: React.FC<Props> = ({ objetos }) => {
+const deParaStatusFornecedor = (objeto: TermoRecebimentoListagem): string => {
+  if (objeto.status === "ASSINADO_FORNECEDOR") {
+    return "Assinado";
+  }
+  if (
+    [
+      "ENVIADO_FISCAIS",
+      "ENVIADO_DILOG",
+      "ENVIADO_COORDENADOR",
+      "ENVIADO_FORNECEDOR",
+    ].includes(objeto.status)
+  ) {
+    return "Recebido";
+  }
+  return objeto.status_display ?? "";
+};
+
+const Listagem: React.FC<Props> = ({ objetos, fornecedor }) => {
+  const [uuidEmDownload, setUuidEmDownload] = useState<string | null>(null);
+  const podeBaixarTermo = usuarioPodeBaixarTermoRecebimentoProvisorio();
+
+  const baixarTermoEmPdf = async (objeto: TermoRecebimentoListagem) => {
+    if (uuidEmDownload) return;
+    setUuidEmDownload(objeto.uuid);
+    try {
+      await imprimirTermoRecebimentoProvisorio(objeto.uuid);
+    } finally {
+      setUuidEmDownload(null);
+    }
+  };
+
   const renderizarAcoes = (objeto: TermoRecebimentoListagem): ReactElement => {
     const botaoDetalhar = (
       <NavLink
@@ -35,19 +71,44 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
       </NavLink>
     );
 
+    const baixando = uuidEmDownload === objeto.uuid;
     const botaoImprimir = (
       <span
         className="float-start ms-1 link-acoes green"
+        role="button"
+        tabIndex={0}
+        aria-label="Termo em PDF"
+        onClick={() => baixarTermoEmPdf(objeto)}
+        onKeyDown={(e) =>
+          acionaComEnterOuEspaco(e, () => baixarTermoEmPdf(objeto))
+        }
         data-testid="btnImprimir"
       >
-        <i className="fas fa-print" title="Baixar PDF" />
+        <i
+          className={`fas ${baixando ? "fa-spinner fa-spin" : "fa-print"}`}
+          title="Termo em PDF"
+        />
       </span>
+    );
+
+    if (fornecedor) {
+      const assinado = objeto.status === "ASSINADO_FORNECEDOR";
+      return (
+        <div className="d-flex">
+          {botaoDetalhar}
+          {assinado && botaoAlterar}
+        </div>
+      );
+    }
+
+    const assinaturasConcluidas = STATUS_ASSINATURAS_CONCLUIDAS.includes(
+      objeto.status,
     );
 
     return (
       <div className="d-flex">
         {botaoDetalhar}
-        {botaoImprimir}
+        {assinaturasConcluidas && podeBaixarTermo && botaoImprimir}
         {botaoAlterar}
       </div>
     );
@@ -74,8 +135,8 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
 
         {objetos.map((objeto) => {
           return (
-            <>
-              <div key={objeto.uuid} className="grid-table body-table">
+            <React.Fragment key={objeto.uuid}>
+              <div className="grid-table body-table">
                 <div>{objeto.numero_contrato}</div>
                 <div
                   className={`d-flex align-items-center justify-content-between`}
@@ -86,7 +147,7 @@ const Listagem: React.FC<Props> = ({ objetos }) => {
                 <div>{objeto.status_display}</div>
                 <div className="p-0">{renderizarAcoes(objeto)}</div>
               </div>
-            </>
+            </React.Fragment>
           );
         })}
       </article>
