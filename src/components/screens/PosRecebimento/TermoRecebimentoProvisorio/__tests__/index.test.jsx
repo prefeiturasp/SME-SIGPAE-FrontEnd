@@ -8,6 +8,7 @@ import {
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
+import { saveAs } from "file-saver";
 import mock from "src/services/_mock";
 import TermoRecebimentoProvisorio from "../index";
 import {
@@ -20,6 +21,24 @@ import {
   mockListaTermosRecebimentoFornecedor,
   mockListaTermosRecebimentoVazia,
 } from "src/mocks/services/posRecebimento.service/mockListaTermosRecebimento";
+
+jest.mock("file-saver", () => ({ saveAs: jest.fn() }));
+
+const mockListaComStatus = (status) => ({
+  count: 1,
+  next: null,
+  previous: null,
+  results: [
+    {
+      uuid: "uuid-dilog",
+      numero_contrato: "123/2025",
+      nome_empresa: "Empresa Alfa",
+      data_cadastro: "01/08/2025",
+      status,
+      status_display: status,
+    },
+  ],
+});
 
 const setup = async () => {
   await act(async () => {
@@ -124,6 +143,77 @@ describe("TermoRecebimentoProvisorio - Listagem e Filtros", () => {
   });
 });
 
+describe("TermoRecebimentoProvisorio - Download do Termo em PDF", () => {
+  beforeEach(() => {
+    localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+    mock.reset();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
+  it("exibe o ícone de impressora quando as três assinaturas foram concluídas", async () => {
+    mock
+      .onGet("/pos-recebimento/termos/")
+      .reply(200, mockListaComStatus("ENVIADO_DILOG"));
+
+    await setup();
+    await clicarFiltrar();
+
+    expect(await screen.findByTestId("btnImprimir")).toBeInTheDocument();
+  });
+
+  it("não exibe o ícone de impressora com assinaturas pendentes", async () => {
+    mock
+      .onGet("/pos-recebimento/termos/")
+      .reply(200, mockListaComStatus("ENVIADO_FISCAIS"));
+
+    await setup();
+    await clicarFiltrar();
+
+    expect(await screen.findByText("Empresa Alfa")).toBeInTheDocument();
+    expect(screen.queryByTestId("btnImprimir")).not.toBeInTheDocument();
+  });
+
+  it("não exibe o ícone para perfis fora da história", async () => {
+    localStorage.setItem("perfil", PERFIL.DILOG_ABASTECIMENTO);
+    mock
+      .onGet("/pos-recebimento/termos/")
+      .reply(200, mockListaComStatus("ENVIADO_DILOG"));
+
+    await setup();
+    await clicarFiltrar();
+
+    expect(await screen.findByText("Empresa Alfa")).toBeInTheDocument();
+    expect(screen.queryByTestId("btnImprimir")).not.toBeInTheDocument();
+  });
+
+  it("realiza o download do PDF ao acionar o ícone de impressora", async () => {
+    mock
+      .onGet("/pos-recebimento/termos/")
+      .reply(200, mockListaComStatus("ENVIADO_DILOG"));
+    mock
+      .onGet("/pos-recebimento/termos/uuid-dilog/gerar-pdf-termo/")
+      .reply(200, new Blob(["pdf"], { type: "application/pdf" }));
+    saveAs.mockClear();
+
+    await setup();
+    await clicarFiltrar();
+
+    await act(async () => {
+      fireEvent.click(await screen.findByTestId("btnImprimir"));
+    });
+
+    await waitFor(() => {
+      expect(
+        mock.history.get.some((call) => call.url.includes("gerar-pdf-termo")),
+      ).toBe(true);
+    });
+    expect(saveAs).toHaveBeenCalled();
+  });
+});
+
 describe("TermoRecebimentoProvisorio - Versão Fornecedor", () => {
   const setupFornecedor = async () => {
     await act(async () => {
@@ -189,7 +279,7 @@ describe("TermoRecebimentoProvisorio - Versão Fornecedor", () => {
     expect(screen.getAllByText("Assinado").length).toBeGreaterThan(0);
   });
 
-  it("exibe Imprimir e Editar apenas para o termo assinado", async () => {
+  it("não exibe Imprimir para o fornecedor e mantém Editar no termo assinado", async () => {
     await setupFornecedor();
     await clicarFiltrarFornecedor();
 
@@ -197,7 +287,7 @@ describe("TermoRecebimentoProvisorio - Versão Fornecedor", () => {
 
     const acoes = screen.getAllByTitle("Detalhar");
     expect(acoes.length).toBe(2);
-    expect(screen.getAllByTitle("Imprimir").length).toBe(1);
+    expect(screen.queryByTitle("Imprimir")).not.toBeInTheDocument();
     expect(screen.getAllByTitle("Alterar").length).toBe(1);
   });
 
