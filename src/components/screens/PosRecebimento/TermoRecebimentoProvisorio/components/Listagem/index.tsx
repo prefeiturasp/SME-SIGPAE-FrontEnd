@@ -20,24 +20,7 @@ interface Props {
   objetos: Array<TermoRecebimentoListagem>;
 }
 
-const deParaStatusFornecedor = (objeto: TermoRecebimentoListagem): string => {
-  if (objeto.status === "ASSINADO_FORNECEDOR") {
-    return "Assinado";
-  }
-  if (
-    [
-      "ENVIADO_FISCAIS",
-      "ENVIADO_DILOG",
-      "ENVIADO_COORDENADOR",
-      "ENVIADO_FORNECEDOR",
-    ].includes(objeto.status)
-  ) {
-    return "Recebido";
-  }
-  return objeto.status_display ?? "";
-};
-
-const Listagem: React.FC<Props> = ({ objetos, fornecedor }) => {
+const Listagem: React.FC<Props> = ({ objetos }) => {
   const [uuidEmDownload, setUuidEmDownload] = useState<string | null>(null);
   const podeBaixarTermo = usuarioPodeBaixarTermoRecebimentoProvisorio();
 
@@ -90,16 +73,6 @@ const Listagem: React.FC<Props> = ({ objetos, fornecedor }) => {
         />
       </span>
     );
-
-    if (fornecedor) {
-      const assinado = objeto.status === "ASSINADO_FORNECEDOR";
-      return (
-        <div className="d-flex">
-          {botaoDetalhar}
-          {assinado && botaoAlterar}
-        </div>
-      );
-    }
 
     const assinaturasConcluidas = STATUS_ASSINATURAS_CONCLUIDAS.includes(
       objeto.status,
