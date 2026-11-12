@@ -5,6 +5,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import {
+  formataPayload,
   validarFormulariosParaCategoriasDeNotificacao,
   validarFormulariosTiposOcorrencia,
 } from "../helpers";
@@ -218,19 +219,6 @@ jest.mock("../components/ModalSalvar", () => ({
   ModalSalvar: () => null,
 }));
 
-jest.mock("../components/ModalSalvarRascunho", () => {
-  const React = require("react");
-
-  return {
-    ModalSalvarRascunho: ({ show }) =>
-      show
-        ? React.createElement("div", {
-            "data-testid": "modal-salvar-rascunho",
-          })
-        : null,
-  };
-});
-
 jest.mock("../components/ModalBaixarNotificacoes", () => ({
   ModalBaixarNotificaoces: () => null,
 }));
@@ -315,6 +303,10 @@ const mockFormataPayloadUpdate = formataPayloadUpdate as jest.MockedFunction<
   typeof formataPayloadUpdate
 >;
 
+const mockFormataPayload = formataPayload as jest.MockedFunction<
+  typeof formataPayload
+>;
+
 const payloadUpdateMock = {
   uuid: formularioUuid,
   escola: escolaUuid,
@@ -322,10 +314,9 @@ const payloadUpdateMock = {
 };
 
 describe("NovoRelatorioVisitas", () => {
-  window.history.pushState({}, "", "/");
-
   beforeEach(() => {
     jest.clearAllMocks();
+    window.history.pushState({}, "", "/");
 
     mockFormValues = {
       [`grupos_${tipoOcorrenciaUuid}`]: [
@@ -541,6 +532,69 @@ describe("NovoRelatorioVisitas", () => {
     expect(mockCreateRascunhoFormularioSupervisao).not.toHaveBeenCalled();
 
     expect(mockUpdateRascunhoFormularioSupervisao).not.toHaveBeenCalled();
+  });
+
+  it("cria um novo rascunho após confirmar e retorna ao painel", async () => {
+    const valoresRascunho = {
+      escola: escolaUuid,
+      diretoria_regional: "99999999-9999-4999-8999-999999999999",
+      data: "01/07/2026",
+      lote: "LOTE 01",
+      terceirizada: "Empresa de teste",
+      total_matriculados_por_data: 100,
+      maior_frequencia_no_periodo: 100,
+      acompanhou_visita: "nao",
+      anexos: [],
+      notificacoes_assinadas: [],
+    };
+    const payloadRascunho = {
+      ...valoresRascunho,
+      acompanhou_visita: false,
+      ocorrencias: [],
+      ocorrencias_nao_se_aplica: [],
+    };
+    mockFormValues = valoresRascunho;
+    mockFormataPayload.mockReturnValueOnce(payloadRascunho);
+    mockCreateRascunhoFormularioSupervisao.mockResolvedValueOnce({
+      status: HTTP_STATUS.CREATED,
+      data: { ...payloadRascunho, uuid: formularioUuid },
+    });
+
+    await renderizarFormulario();
+
+    fireEvent.click(screen.getByRole("button", { name: "Salvar rascunho" }));
+
+    expect(screen.getByTestId("modal-salvar-rascunho")).toBeInTheDocument();
+    expect(mockCreateRascunhoFormularioSupervisao).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Confirmar salvamento do rascunho",
+      }),
+    );
+
+    await waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/supervisao/terceirizadas/painel-relatorios-fiscalizacao",
+      ),
+    );
+
+    expect(mockFormataPayload).toHaveBeenCalledWith(
+      valoresRascunho,
+      expect.objectContaining({ uuid: escolaUuid, edital: editalUuid }),
+      [],
+      [],
+    );
+    expect(mockCreateRascunhoFormularioSupervisao).toHaveBeenCalledTimes(1);
+    expect(mockCreateRascunhoFormularioSupervisao).toHaveBeenCalledWith(
+      payloadRascunho,
+    );
+    expect(mockUpdateRascunhoFormularioSupervisao).not.toHaveBeenCalled();
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      "Rascunho do Relatório de Fiscalização salvo com sucesso!",
+    );
+    expect(mockToastError).not.toHaveBeenCalled();
   });
 
   it("atualiza um rascunho existente após a confirmação", async () => {
