@@ -1,3 +1,4 @@
+import { saveAs } from "file-saver";
 import axios from "./_base";
 import { getMensagemDeErro } from "src/helpers/statusErrors";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
@@ -34,7 +35,7 @@ export interface FiscalPosRecebimento {
   nome: string;
 }
 
-export interface TermoRecebimentoDefinitivoPayload {
+export interface TermoRecebimentoProvisorioPayload {
   empresa: string;
   contrato: string;
   cronogramas: string[];
@@ -112,8 +113,8 @@ export const getFiscaisPosRecebimento = async (): Promise<
   }
 };
 
-export const cadastraTermoRecebimentoDefinitivo = async (
-  payload: TermoRecebimentoDefinitivoPayload,
+export const cadastraTermoRecebimentoProvisorio = async (
+  payload: TermoRecebimentoProvisorioPayload,
 ) => {
   try {
     return await axios.post("/pos-recebimento/termos/", payload);
@@ -123,7 +124,7 @@ export const cadastraTermoRecebimentoDefinitivo = async (
   }
 };
 
-export const listarTermosRecebimentoDefinitivo = async (
+export const listarTermosRecebimentoProvisorio = async (
   params: URLSearchParams,
 ) => {
   try {
@@ -133,7 +134,7 @@ export const listarTermosRecebimentoDefinitivo = async (
   }
 };
 
-export const getTermoRecebimentoDefinitivo = async (uuid: string) => {
+export const getTermoRecebimentoProvisorio = async (uuid: string) => {
   try {
     return await axios.get(`/pos-recebimento/termos/${uuid}/`);
   } catch (error) {
@@ -170,4 +171,40 @@ export const fiscalAssinaTermo = async (uuid: string, password: string) => {
     },
     { skipAuthRefresh: true },
   );
+};
+
+export const imprimirTermoRecebimentoProvisorio = async (uuid: string) => {
+  try {
+    const url = `/pos-recebimento/termos/${uuid}/gerar-pdf-termo/`;
+    const { data } = await axios.get(url, { responseType: "blob" });
+    saveAs(data, `termo_recebimento_provisorio_${uuid}.pdf`);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+  }
+};
+
+export interface LoteMemorandoOcorrenciaPayload {
+  lote: string;
+  marca: string;
+  data_fabricacao: string;
+  data_validade: string;
+  quantidade_problema_devolucao: string;
+}
+
+export interface MemorandoOcorrenciaPayload {
+  categoria: string;
+  produto: string;
+  tipo_ocorrencia: string;
+  lotes: LoteMemorandoOcorrenciaPayload[];
+}
+
+export const cadastraMemorandoOcorrencia = async (
+  payload: MemorandoOcorrenciaPayload,
+) => {
+  try {
+    return await axios.post("/pos-recebimento/memorandos-ocorrencia/", payload);
+  } catch (error) {
+    toastError(getMensagemDeErro(error.response?.status));
+    throw error;
+  }
 };

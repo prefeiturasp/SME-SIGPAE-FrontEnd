@@ -1,11 +1,17 @@
 import InputText from "src/components/Shareable/Input/InputText";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import Select from "src/components/Shareable/Select";
 import {
   maxValue,
   naoPodeSerZero,
   required,
+  requiredMultiselect,
 } from "src/helpers/fieldValidators";
-import { agregarDefault, composeValidators } from "src/helpers/utilities";
+import {
+  agregarDefault,
+  composeValidators,
+  formatarParaMultiselect,
+} from "src/helpers/utilities";
 import { useState } from "react";
 import { Field } from "react-final-form";
 import {
@@ -28,6 +34,7 @@ export const TabelaFaixasCEMEI = ({
   alimentosEMEI,
   substitutosCEI,
   substitutosEMEI,
+  ehLancheEmergencial,
 }) => {
   const periodoCEI = vinculos.find(
     (vinculo) =>
@@ -111,24 +118,53 @@ export const TabelaFaixasCEMEI = ({
                 <div className=" alunos-label">Alunos CEI</div>
               </div>
               <div className="col-4">
-                <Field
-                  label="Alterar alimentação de:"
-                  component={Select}
-                  dataTestId="select-alterar-alimentacao-de-CEI"
-                  name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`}
-                  options={agregarDefault(
-                    agruparRefeicaoESobremesa(
+                {ehLancheEmergencial ? (
+                  <Field
+                    label="Alterar alimentação de:"
+                    component={MultiselectRaw}
+                    dataTestId="select-alterar-alimentacao-de-CEI"
+                    name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`}
+                    selected={
+                      values.substituicoes[periodoIndice]?.cei
+                        ?.tipos_alimentacao_de || []
+                    }
+                    options={formatarParaMultiselect(
                       formatarOpcoes(
                         alimentosCEI.find(
                           (v) => v.periodo_escolar.nome === periodo.nome,
                         ).tipos_alimentacao,
                       ),
-                    ),
-                  )}
-                  naoDesabilitarPrimeiraOpcao
-                  validate={totalFrequenciaCEI > 0 && required}
-                  required
-                />
+                    )}
+                    onSelectedChanged={(values_) => {
+                      form.change(
+                        `substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`,
+                        values_.map((value_) => value_.value),
+                      );
+                    }}
+                    placeholder="Selecione tipos de alimentação"
+                    validate={totalFrequenciaCEI > 0 && requiredMultiselect}
+                    required
+                  />
+                ) : (
+                  <Field
+                    label="Alterar alimentação de:"
+                    component={Select}
+                    dataTestId="select-alterar-alimentacao-de-CEI"
+                    name={`substituicoes[${periodoIndice}][cei][tipos_alimentacao_de]`}
+                    options={agregarDefault(
+                      agruparRefeicaoESobremesa(
+                        formatarOpcoes(
+                          alimentosCEI.find(
+                            (v) => v.periodo_escolar.nome === periodo.nome,
+                          ).tipos_alimentacao,
+                        ),
+                      ),
+                    )}
+                    naoDesabilitarPrimeiraOpcao
+                    validate={totalFrequenciaCEI > 0 && required}
+                    required
+                  />
+                )}
               </div>
               <div className="col-4">
                 <Field
@@ -244,24 +280,53 @@ export const TabelaFaixasCEMEI = ({
                 <div className=" alunos-label">Alunos EMEI</div>
               </div>
               <div className="col-4">
-                <Field
-                  component={Select}
-                  label="Alterar alimentação de:"
-                  name={`substituicoes[${periodoIndice}][emei][tipos_alimentacao_de]`}
-                  dataTestId="select-alterar-alimentacao-de-EMEI"
-                  options={agregarDefault(
-                    agruparRefeicaoESobremesa(
+                {ehLancheEmergencial ? (
+                  <Field
+                    component={MultiselectRaw}
+                    label="Alterar alimentação de:"
+                    name={`substituicoes[${periodoIndice}][emei][tipos_alimentacao_de]`}
+                    dataTestId="select-alterar-alimentacao-de-EMEI"
+                    selected={
+                      values.substituicoes[periodoIndice]?.emei
+                        ?.tipos_alimentacao_de || []
+                    }
+                    options={formatarParaMultiselect(
                       formatarOpcoes(
                         alimentosEMEI.find(
                           (v) => v.periodo_escolar.nome === periodo.nome,
                         ).tipos_alimentacao,
                       ),
-                    ),
-                  )}
-                  naoDesabilitarPrimeiraOpcao
-                  validate={totalFrequenciaEMEI > 0 && required}
-                  required
-                />
+                    )}
+                    onSelectedChanged={(values_) => {
+                      form.change(
+                        `substituicoes[${periodoIndice}][emei][tipos_alimentacao_de]`,
+                        values_.map((value_) => value_.value),
+                      );
+                    }}
+                    placeholder="Selecione tipos de alimentação"
+                    validate={totalFrequenciaEMEI > 0 && requiredMultiselect}
+                    required
+                  />
+                ) : (
+                  <Field
+                    component={Select}
+                    label="Alterar alimentação de:"
+                    name={`substituicoes[${periodoIndice}][emei][tipos_alimentacao_de]`}
+                    dataTestId="select-alterar-alimentacao-de-EMEI"
+                    options={agregarDefault(
+                      agruparRefeicaoESobremesa(
+                        formatarOpcoes(
+                          alimentosEMEI.find(
+                            (v) => v.periodo_escolar.nome === periodo.nome,
+                          ).tipos_alimentacao,
+                        ),
+                      ),
+                    )}
+                    naoDesabilitarPrimeiraOpcao
+                    validate={totalFrequenciaEMEI > 0 && required}
+                    required
+                  />
+                )}
               </div>
               <div className="col-4">
                 <Field

@@ -26,6 +26,60 @@ describe("helper formataValues - Alteração de Cardápio Escola", () => {
     ]);
   });
 
+  it("inclui 29 de fevereiro em ano bissexto e omite em ano comum", () => {
+    expect(
+      formataValues({
+        data_inicial: "27/02/2024",
+        data_final: "01/03/2024",
+        substituicoes: [],
+      }).datas_intervalo,
+    ).toEqual([
+      { data: "2024-02-27" },
+      { data: "2024-02-28" },
+      { data: "2024-02-29" },
+      { data: "2024-03-01" },
+    ]);
+
+    expect(
+      formataValues({
+        data_inicial: "27/02/2025",
+        data_final: "01/03/2025",
+        substituicoes: [],
+      }).datas_intervalo,
+    ).toEqual([
+      { data: "2025-02-27" },
+      { data: "2025-02-28" },
+      { data: "2025-03-01" },
+    ]);
+  });
+
+  it("atravessa a virada de ano e a transição de horário de verão sem duplicar dias", () => {
+    expect(
+      formataValues({
+        data_inicial: "30/12/2025",
+        data_final: "02/01/2026",
+        substituicoes: [],
+      }).datas_intervalo,
+    ).toEqual([
+      { data: "2025-12-30" },
+      { data: "2025-12-31" },
+      { data: "2026-01-01" },
+      { data: "2026-01-02" },
+    ]);
+
+    expect(
+      formataValues({
+        data_inicial: "08/03/2025",
+        data_final: "10/03/2025",
+        substituicoes: [],
+      }).datas_intervalo,
+    ).toEqual([
+      { data: "2025-03-08" },
+      { data: "2025-03-09" },
+      { data: "2025-03-10" },
+    ]);
+  });
+
   it("preenche datas_intervalo com um único dia quando há alterar_dia", () => {
     const values = formataValues({
       alterar_dia: "30/01/2025",
@@ -119,6 +173,15 @@ describe("helper expandirTiposAlimentacao - Alteração de Cardápio Escola", ()
     expect(
       expandirTiposAlimentacao(REFEICAO_E_SOBREMESA, tiposAlimentacao),
     ).toEqual(["uuid-refeicao", "uuid-sobremesa"]);
+  });
+
+  it("expande arrays mantendo os demais itens (Lanche Emergencial)", () => {
+    expect(
+      expandirTiposAlimentacao(
+        ["uuid-lanche", REFEICAO_E_SOBREMESA],
+        tiposAlimentacao,
+      ),
+    ).toEqual(["uuid-lanche", "uuid-refeicao", "uuid-sobremesa"]);
   });
 });
 

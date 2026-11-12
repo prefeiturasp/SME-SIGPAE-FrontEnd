@@ -1,12 +1,15 @@
 import React from "react";
 import { Menu, LeafItem } from "./shared";
 import {
+  MEMORANDO_OCORRENCIAS,
   POS_RECEBIMENTO,
-  TERMO_RECEBIMENTO_DEFINITIVO,
-  TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR,
+  TERMO_RECEBIMENTO_PROVISORIO,
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
 } from "src/configs/constants";
-import { usuarioEhEmpresaFornecedor } from "src/helpers/utilities";
+import {
+  usuarioEhDilogQualidade,
+  usuarioEhEscola,
+} from "src/helpers/utilities";
 
 const MenuPosRecebimento = () => {
   return (
@@ -16,26 +19,28 @@ const MenuPosRecebimento = () => {
       title="Pós-Recebimento"
       dataTestId="pos-recebimento"
     >
-      {usuarioEhEmpresaFornecedor() ? (
+      {usuarioEhEscola() ? (
         <LeafItem
-          to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO_FORNECEDOR}`}
-          dataTestId="termo-recebimento-definitivo-fornecedor"
+          to={`/${POS_RECEBIMENTO}/${MEMORANDO_OCORRENCIAS}`}
+          dataTestId="memorando-ocorrencias"
         >
-          Termo de Recebimento Definitivo
+          Memorando de Ocorrências
         </LeafItem>
       ) : (
         <>
+          {usuarioEhDilogQualidade() && (
+            <LeafItem
+              to={`/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`}
+              dataTestId="painel-assinatura-termos-recebimento"
+            >
+              Painel de Assinaturas
+            </LeafItem>
+          )}
           <LeafItem
-            to={`/${POS_RECEBIMENTO}/${PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`}
-            dataTestId="painel-assinatura-termos-recebimento"
+            to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`}
+            dataTestId="termo-recebimento-provisorio"
           >
-            Painel de Assinaturas
-          </LeafItem>
-          <LeafItem
-            to={`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_DEFINITIVO}`}
-            dataTestId="termo-recebimento-definitivo"
-          >
-            Termo de Recebimento Definitivo
+            Termo de Recebimento Provisório
           </LeafItem>
         </>
       )}

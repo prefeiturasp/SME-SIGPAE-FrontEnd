@@ -217,6 +217,51 @@ describe("Helpers getIntervaloMes - Registrar Nova Ocorrência", () => {
     expect(maxDate).toEqual(new Date(2024, 1, 29));
   });
 
+  it("considera fevereiro de ano comum com 28 dias", () => {
+    const { minDate, maxDate } = getIntervaloMes(
+      "02",
+      "2025",
+      new Date(2025, 2, 1),
+    );
+
+    expect(minDate).toEqual(new Date(2025, 1, 1));
+    expect(maxDate).toEqual(new Date(2025, 1, 28));
+  });
+
+  it("em 1º de janeiro mantém dezembro do ano anterior até o dia 31", () => {
+    const { minDate, maxDate } = getIntervaloMes(
+      "12",
+      "2025",
+      new Date(2026, 0, 1),
+    );
+
+    expect(minDate).toEqual(new Date(2025, 11, 1));
+    expect(maxDate).toEqual(new Date(2025, 11, 31));
+  });
+
+  it("no dia 1 do mês corrente não oferece dia selecionável dentro do mês", () => {
+    const { minDate, maxDate } = getIntervaloMes(
+      "6",
+      "2024",
+      new Date(2024, 5, 1),
+    );
+
+    expect(minDate).toEqual(new Date(2024, 5, 1));
+    expect(maxDate).toEqual(new Date(2024, 4, 31));
+    expect(maxDate < minDate).toBe(true);
+  });
+
+  it("no último dia do ano limita o mês corrente ao dia anterior", () => {
+    const { minDate, maxDate } = getIntervaloMes(
+      "12",
+      "2025",
+      new Date(2025, 11, 31),
+    );
+
+    expect(minDate).toEqual(new Date(2025, 11, 1));
+    expect(maxDate).toEqual(new Date(2025, 11, 30));
+  });
+
   it.each([
     ["mês ausente", undefined, "2024"],
     ["ano ausente", "6", undefined],

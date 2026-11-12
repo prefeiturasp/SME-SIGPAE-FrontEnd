@@ -19,6 +19,11 @@ export const expandirTiposAlimentacao = (
   tiposAlimentacao = [],
 ) => {
   if (!selecionado) return [];
+  if (Array.isArray(selecionado)) {
+    return selecionado.flatMap((item) =>
+      expandirTiposAlimentacao(item, tiposAlimentacao),
+    );
+  }
   if (selecionado === REFEICAO_E_SOBREMESA) {
     return tiposAlimentacao
       .filter((tipo) => TIPOS_REFEICAO_E_SOBREMESA.includes(tipo.nome))
@@ -50,16 +55,29 @@ export const obterTipoAlimentacaoSelecionado = (
   return uuids[0];
 };
 
+const parseDataIsoLocal = (iso) => {
+  const [ano, mes, dia] = iso.split("-").map(Number);
+  return new Date(ano, mes - 1, dia);
+};
+
+const formatarDataIsoLocal = (data) => {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+  return `${ano}-${mes}-${dia}`;
+};
+
 const getDaysArray = (start, end) => {
-  let arr = [];
-  for (
-    let dt = new Date(start);
-    dt <= new Date(end);
-    dt.setDate(dt.getDate() + 1)
-  ) {
-    arr.push(new Date(dt).toISOString().split("T")[0]);
+  const datas = [];
+  const cursor = parseDataIsoLocal(start);
+  const limite = parseDataIsoLocal(end);
+
+  while (cursor <= limite) {
+    datas.push(formatarDataIsoLocal(cursor));
+    cursor.setDate(cursor.getDate() + 1);
   }
-  return arr;
+
+  return datas;
 };
 
 export const formataValues = (values) => {

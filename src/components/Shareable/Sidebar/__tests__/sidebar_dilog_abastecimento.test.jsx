@@ -22,7 +22,7 @@ const awaitServices = async () => {
   });
 };
 
-describe("Test <Sidebar> - Usuário DINUTRE_DIRETORIA", () => {
+describe("Test <Sidebar> - Usuário DILOG_ABASTECIMENTO", () => {
   const nome = "DILOG ABASTECIMENTO";
 
   const TestSidebarComponent = () => {
@@ -56,7 +56,7 @@ describe("Test <Sidebar> - Usuário DINUTRE_DIRETORIA", () => {
           }}
         >
           <TestSidebarComponent />
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
   });
@@ -76,7 +76,7 @@ describe("Test <Sidebar> - Usuário DINUTRE_DIRETORIA", () => {
     expect(linkPreRecebimento).toHaveTextContent("Painel de Aprovações");
     expect(linkPreRecebimento).toHaveTextContent("Cronograma de Entrega");
     expect(linkPreRecebimento).toHaveTextContent(
-      "Verificar Alterações de Cronograma"
+      "Verificar Alterações de Cronograma",
     );
     expect(linkPreRecebimento).toHaveTextContent("Calendário de Cronogramas");
 
@@ -84,5 +84,16 @@ describe("Test <Sidebar> - Usuário DINUTRE_DIRETORIA", () => {
     fireEvent.click(linkRelatorios);
 
     expect(linkPreRecebimento).toHaveTextContent("Cronogramas de Entregas");
+  });
+
+  it("exibe o link do relatório de cronogramas semanais para Abastecimento", async () => {
+    await awaitServices();
+
+    fireEvent.click(screen.getByTestId("pre-recebimento"));
+    fireEvent.click(screen.getByTestId("relatorios-pr"));
+
+    expect(
+      screen.getByRole("link", { name: "Cronogramas Semanais", exact: true }),
+    ).toHaveAttribute("href", "/pre-recebimento/relatorio-cronograma-semanal/");
   });
 });

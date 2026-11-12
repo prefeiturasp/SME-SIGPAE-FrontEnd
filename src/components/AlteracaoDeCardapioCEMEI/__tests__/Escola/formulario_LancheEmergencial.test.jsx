@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { mockDiasUteis } from "src/mocks/diasUseisMock";
@@ -141,9 +141,35 @@ describe("Teste Formulário Alteração de Cardápio - Lanche Emergencial - CEME
     const selectAlterarAlimentacaoDeEMEI = screen.getByTestId(
       "select-alterar-alimentacao-de-EMEI",
     );
-    fireEvent.change(selectAlterarAlimentacaoDeEMEI.querySelector("select"), {
-      target: { value: "65f11f11-630b-4629-bb17-07c875c548f1" },
-    });
+    expect(
+      selectAlterarAlimentacaoDeEMEI.querySelector("select"),
+    ).not.toBeInTheDocument();
+    const comboboxDe = within(selectAlterarAlimentacaoDeEMEI).getByRole(
+      "combobox",
+    );
+    expect(
+      screen
+        .getByTestId("select-alterar-alimentacao-para-EMEI")
+        .querySelector("select"),
+    ).toBeInTheDocument();
+    fireEvent.mouseDown(comboboxDe);
+    expect(
+      within(selectAlterarAlimentacaoDeEMEI).getByText("Refeição"),
+    ).toBeInTheDocument();
+    expect(
+      within(selectAlterarAlimentacaoDeEMEI).getByText("Sobremesa"),
+    ).toBeInTheDocument();
+    expect(
+      within(selectAlterarAlimentacaoDeEMEI).getByText("Todos"),
+    ).toBeInTheDocument();
+    expect(
+      within(selectAlterarAlimentacaoDeEMEI).queryByText(
+        "Refeição e Sobremesa",
+      ),
+    ).not.toBeInTheDocument();
+    fireEvent.click(
+      within(selectAlterarAlimentacaoDeEMEI).getByText("Refeição"),
+    );
 
     const selectAlterarAlimentacaoParaEMEI = screen.getByTestId(
       "select-alterar-alimentacao-para-EMEI",

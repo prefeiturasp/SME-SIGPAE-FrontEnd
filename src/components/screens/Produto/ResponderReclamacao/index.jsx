@@ -40,6 +40,18 @@ const TabelaProdutos = ({
   ativos,
   setAtivos,
 }) => {
+  const alternarAtivo = (indexProduto) => {
+    if (ativos.includes(indexProduto)) {
+      setAtivos(ativos.filter((el) => el !== indexProduto));
+    } else {
+      setAtivos([...ativos, indexProduto]);
+    }
+  };
+
+  const handleKeyDownAlternarAtivo = (indexProduto) => (e) => {
+    acionaComEnterOuEspaco(e, () => alternarAtivo(indexProduto));
+  };
+
   return (
     <>
       <LabelResultadoDaBusca filtros={filtros} />
@@ -95,15 +107,7 @@ const TabelaProdutos = ({
                             )
                           : setAtivos([...ativos, indexProduto]);
                       }}
-                      onKeyDown={(e) =>
-                        acionaComEnterOuEspaco(e, () => {
-                          ativos.includes(indexProduto)
-                            ? setAtivos(
-                                ativos.filter((el) => el !== indexProduto),
-                              )
-                            : setAtivos([...ativos, indexProduto]);
-                        })
-                      }
+                      onKeyDown={handleKeyDownAlternarAtivo(indexProduto)}
                     />
                   </div>
                 </div>

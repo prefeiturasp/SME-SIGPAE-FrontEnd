@@ -1,13 +1,16 @@
 import { InputText } from "src/components/Shareable/Input/InputText";
+import { MultiselectRaw } from "src/components/Shareable/MultiselectRaw";
 import { Select } from "src/components/Shareable/Select";
 import {
   composeValidators,
   maxValue,
   naoPodeSerZero,
   required,
+  requiredMultiselect,
 } from "src/helpers/fieldValidators";
 import {
   agregarDefault,
+  formatarParaMultiselect,
   usuarioEhEscolaSemAlunosRegulares,
 } from "src/helpers/utilities";
 import PropTypes from "prop-types";
@@ -15,8 +18,13 @@ import { Field } from "react-final-form";
 import { FieldArray } from "react-final-form-arrays";
 import { agruparRefeicaoESobremesa } from "../../helper";
 
+const paraValoresSelecionados = (values_) =>
+  values_.map((value_) => value_.value);
+
 export const PeriodosFields = ({ ...props }) => {
   const { ehMotivoPorNome, periodos, form, values } = props;
+
+  const ehLancheEmergencial = ehMotivoPorNome("Lanche Emergencial", values);
 
   const exibeApenasPorNome = (tiposAlimentacao, nome) => {
     return tiposAlimentacao.filter((tp) => tp.nome.includes(nome));
@@ -33,7 +41,9 @@ export const PeriodosFields = ({ ...props }) => {
         uuid: tipo_alimentacao.uuid,
       }),
     );
-    return agruparRefeicaoESobremesa(tiposAlimentacao);
+    return ehLancheEmergencial
+      ? tiposAlimentacao
+      : agruparRefeicaoESobremesa(tiposAlimentacao);
   };
 
   const handleTiposAlimentacaoDe = (tiposAlimentacao, values) => {
@@ -129,24 +139,54 @@ export const PeriodosFields = ({ ...props }) => {
                 </div>
               </div>
               <div className="col-3 pe-3">
-                <Field
-                  component={Select}
-                  dataTestId={`select-tipos-alimentacao-de-${
-                    getPeriodo(index).nome
-                  }`}
-                  name={`${name}.tipos_alimentacao_de`}
-                  options={agregarDefault(
-                    handleTiposAlimentacaoDe(getOpcoes(index), values),
-                  )}
-                  naoDesabilitarPrimeiraOpcao
-                  disabled={!values.substituicoes[index]["check"]}
-                  required={values.substituicoes[index]["check"]}
-                  validate={(value, allValues) =>
-                    allValues.substituicoes[index]?.check
-                      ? required(value)
-                      : undefined
-                  }
-                />
+                {ehLancheEmergencial ? (
+                  <Field
+                    component={MultiselectRaw}
+                    dataTestId={`select-tipos-alimentacao-de-${
+                      getPeriodo(index).nome
+                    }`}
+                    name={`${name}.tipos_alimentacao_de`}
+                    selected={
+                      values.substituicoes[index].tipos_alimentacao_de || []
+                    }
+                    options={formatarParaMultiselect(
+                      handleTiposAlimentacaoDe(getOpcoes(index), values),
+                    )}
+                    onSelectedChanged={(values_) => {
+                      form.change(
+                        `substituicoes[${index}].tipos_alimentacao_de`,
+                        paraValoresSelecionados(values_),
+                      );
+                    }}
+                    placeholder="Selecione tipos de alimentação"
+                    disabled={!values.substituicoes[index]["check"]}
+                    required={values.substituicoes[index]["check"]}
+                    validate={(value, allValues) =>
+                      allValues.substituicoes[index]?.check
+                        ? requiredMultiselect(value)
+                        : undefined
+                    }
+                  />
+                ) : (
+                  <Field
+                    component={Select}
+                    dataTestId={`select-tipos-alimentacao-de-${
+                      getPeriodo(index).nome
+                    }`}
+                    name={`${name}.tipos_alimentacao_de`}
+                    options={agregarDefault(
+                      handleTiposAlimentacaoDe(getOpcoes(index), values),
+                    )}
+                    naoDesabilitarPrimeiraOpcao
+                    disabled={!values.substituicoes[index]["check"]}
+                    required={values.substituicoes[index]["check"]}
+                    validate={(value, allValues) =>
+                      allValues.substituicoes[index]?.check
+                        ? required(value)
+                        : undefined
+                    }
+                  />
+                )}
               </div>
               <div className="col-3 pe-3">
                 <Field

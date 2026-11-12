@@ -249,14 +249,14 @@ describe("desabilitarField CEI/CEMEI", () => {
     });
 
     it("deve desabilitar solicitações quando dia é futuro no mês atual", () => {
-      // cenário: dia futuro no mesmo mês
       const a = baseArgs();
 
       a.nomeCategoria = "SOLICITAÇÕES";
       a.rowName = "kit_lanche";
-
-      a.mesAnoConsiderado = new Date(); // mesmo mês
-      a.mesAnoDefault = new Date();
+      a.dia = 2;
+      a.kitLanchesAutorizadas = [{ dia: 2 }];
+      a.mesAnoConsiderado = new Date(2026, 9, 1);
+      a.mesAnoDefault = new Date(2026, 9, 1);
 
       expect(call(a)).toBe(true);
     });

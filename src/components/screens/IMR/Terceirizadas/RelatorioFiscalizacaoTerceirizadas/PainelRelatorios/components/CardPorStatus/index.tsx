@@ -12,7 +12,9 @@ import { acionaComEnterOuEspaco } from "src/helpers/utilities";
 
 type CardPorStatusType = {
   cardStatus: DashboardSupervisaoInterface;
+  exibirNovoPainel?: boolean;
   form: FormApi;
+  filtrosIniciais?: FiltrosRelatoriosVisitasInterface;
   statusSelecionado: string;
   setStatusSelecionado: (_statusSelecionado: string) => void;
   setFiltros: (_filtros: FiltrosRelatoriosVisitasInterface) => void;
@@ -26,7 +28,9 @@ type CardPorStatusType = {
 export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
   const {
     cardStatus,
+    exibirNovoPainel = false,
     form,
+    filtrosIniciais,
     setFiltros,
     statusSelecionado,
     setStatusSelecionado,
@@ -43,15 +47,19 @@ export const CardPorStatus = ({ ...props }: CardPorStatusType) => {
     setConsultaRealizada(false);
     setStatusSelecionado(cardStatus.status);
     setFiltros({
+      ...filtrosIniciais,
       status:
         cardStatus.status !== "TODOS_OS_RELATORIOS" ? cardStatus.status : "",
     });
   };
 
   const getClassNameCorCard = () => {
-    if (!cardStatus.total || statusSelecionado !== cardStatus.status)
-      return "cinza";
-    return CLASSE_COR_CARD[cardStatus.status];
+    if (!cardStatus.total) return "cinza";
+    if (exibirNovoPainel && !statusSelecionado)
+      return CLASSE_COR_CARD[cardStatus.status];
+    return statusSelecionado === cardStatus.status
+      ? CLASSE_COR_CARD[cardStatus.status]
+      : "cinza";
   };
 
   const getClassNameCursorPointer = () => {

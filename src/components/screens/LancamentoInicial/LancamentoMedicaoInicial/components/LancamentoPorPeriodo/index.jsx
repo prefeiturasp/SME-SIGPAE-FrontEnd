@@ -37,12 +37,14 @@ import {
   getSolicitacaoMedicaoInicial,
 } from "src/services/medicaoInicial/solicitacaoMedicaoInicial.service";
 import { relatorioMedicaoInicialPDF } from "src/services/relatorios";
+import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAberta.service";
 import { BlocoOcorrencias } from "../BlocoOcorrencias";
 import { ModalFinalizarMedicao } from "../ModalFinalizarMedicao";
 import { ModalFinalizarMedicaoSemLancamentos } from "../ModalFinalizarSemLancamentos";
 import { ModalSemOcorrenciasIMR } from "../ModalSemOcorrenciasIMR";
 import { CardLancamento } from "./CardLancamento";
 import {
+  COR_ESCOLA_ABERTA,
   COR_SOLICITACOES_ALIMENTACAO_EXTRAORDINARIAS,
   CORES,
   removeObjetosDuplicados,
@@ -52,6 +54,15 @@ import {
 } from "./helpers";
 
 import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+
+const TIPOS_ESCOLA_ABERTA = [
+  "EMEF",
+  "CEU EMEF",
+  "EMEFM",
+  "EMEF P FOM",
+  "CEU GESTAO",
+];
+
 export const LancamentoPorPeriodo = ({
   escolaInstituicao,
   periodosEscolaSimples,
@@ -123,8 +134,43 @@ export const LancamentoPorPeriodo = ({
   const [erroAPI, setErroAPI] = useState("");
   const [exibirModalCentralDownloads, setExibirModalCentralDownloads] =
     useState(false);
+  const [escolaAberta, setEscolaAberta] = useState(null);
 
   const [periodosEspecificos, setPeriodosEspecificos] = useState([]);
+
+  const tipoUnidadeEscola =
+    escolaSimples?.tipo_unidade?.iniciais ||
+    escolaInstituicao?.tipo_unidade_escolar_iniciais;
+  const escolaPermiteEscolaAberta =
+    TIPOS_ESCOLA_ABERTA.includes(tipoUnidadeEscola);
+
+  useEffect(() => {
+    const getEscolaAbertaAsync = async () => {
+      if (
+        !escolaPermiteEscolaAberta ||
+        !escolaInstituicao?.uuid ||
+        !mes ||
+        !ano
+      ) {
+        setEscolaAberta(null);
+        return;
+      }
+
+      const response = await getEscolaAbertaPorMesAno({
+        escola_uuid: escolaInstituicao.uuid,
+        mes,
+        ano,
+      });
+
+      setEscolaAberta(
+        response?.status === HTTP_STATUS.OK && response.data?.possui_cadastro
+          ? response.data.cadastro
+          : null,
+      );
+    };
+
+    getEscolaAbertaAsync();
+  }, [escolaPermiteEscolaAberta, escolaInstituicao?.uuid, mes, ano]);
 
   const getPeriodosInclusaoContinuaAsync = async () => {
     const response = await getPeriodosInclusaoContinua({
@@ -714,6 +760,19 @@ export const LancamentoPorPeriodo = ({
                 />
               )}
             </>
+          )}
+
+          {escolaPermiteEscolaAberta && escolaAberta && (
+            <CardLancamento
+              grupo="Escola Aberta"
+              cor={COR_ESCOLA_ABERTA}
+              tipos_alimentacao={escolaAberta.tipos_alimentacao || []}
+              periodoSelecionado={periodoSelecionado}
+              solicitacaoMedicaoInicial={solicitacaoMedicaoInicial}
+              objSolicitacaoMIFinalizada={objSolicitacaoMIFinalizada}
+              quantidadeAlimentacoesLancadas={quantidadeAlimentacoesLancadas}
+              errosAoSalvar={errosAoSalvar}
+            />
           )}
 
           <div className="mt-4">

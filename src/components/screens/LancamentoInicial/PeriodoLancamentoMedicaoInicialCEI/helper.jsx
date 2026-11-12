@@ -1178,6 +1178,45 @@ export const existeKitLanchePasseioNoDia = (kitLanchesAutorizadas, dia) =>
     ),
   );
 
+const ehLiberadoPorKitLanchePasseio = ({
+  rowName,
+  nomeCategoria,
+  values,
+  uuidFaixaEtaria,
+  dia,
+  categoria,
+  kitLanchesAutorizadas,
+  inclusoesAutorizadas,
+  ehEmeiDaCemeiLocation,
+  ehSolicitacoesAlimentacaoLocation,
+  ehProgramasEProjetosLocation,
+}) => {
+  const temKitLanchePasseioNoDia = existeKitLanchePasseioNoDia(
+    kitLanchesAutorizadas,
+    dia,
+  );
+  const temInclusaoAlimentacaoNoDia = inclusoesAutorizadas?.some(
+    (inclusao) => Number(inclusao.dia) === Number(dia),
+  );
+  const dietaAutorizadaParaFaixa =
+    nomeCategoria.includes("DIETA") &&
+    Number(
+      values[
+        `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
+      ],
+    ) > 0;
+
+  return (
+    rowName === "frequencia" &&
+    (nomeCategoria === "ALIMENTAÇÃO" || dietaAutorizadaParaFaixa) &&
+    temKitLanchePasseioNoDia &&
+    !temInclusaoAlimentacaoNoDia &&
+    !ehEmeiDaCemeiLocation &&
+    !ehSolicitacoesAlimentacaoLocation &&
+    !ehProgramasEProjetosLocation
+  );
+};
+
 export const desabilitarField = (
   dia,
   rowName,
@@ -1329,30 +1368,21 @@ export const desabilitarField = (
     return desabilitadoStatus;
   }
 
-  const temKitLanchePasseioNoDia = existeKitLanchePasseioNoDia(
-    kitLanchesAutorizadas,
-    dia,
-  );
-  const temInclusaoAlimentacaoNoDia = inclusoesAutorizadas?.some(
-    (inclusao) => Number(inclusao.dia) === Number(dia),
-  );
-  const dietaAutorizadaParaFaixa =
-    nomeCategoria.includes("DIETA") &&
-    Number(
-      values[
-        `dietas_autorizadas__faixa_${uuidFaixaEtaria}__dia_${dia}__categoria_${categoria}`
-      ],
-    ) > 0;
-  const liberadoPorKitLanchePasseio =
-    rowName === "frequencia" &&
-    (nomeCategoria === "ALIMENTAÇÃO" || dietaAutorizadaParaFaixa) &&
-    temKitLanchePasseioNoDia &&
-    !temInclusaoAlimentacaoNoDia &&
-    !ehEmeiDaCemeiLocation &&
-    !ehSolicitacoesAlimentacaoLocation &&
-    !ehProgramasEProjetosLocation;
-
-  if (liberadoPorKitLanchePasseio) {
+  if (
+    ehLiberadoPorKitLanchePasseio({
+      rowName,
+      nomeCategoria,
+      values,
+      uuidFaixaEtaria,
+      dia,
+      categoria,
+      kitLanchesAutorizadas,
+      inclusoesAutorizadas,
+      ehEmeiDaCemeiLocation,
+      ehSolicitacoesAlimentacaoLocation,
+      ehProgramasEProjetosLocation,
+    })
+  ) {
     return ehFaixaMenorDeUmAno;
   }
 
