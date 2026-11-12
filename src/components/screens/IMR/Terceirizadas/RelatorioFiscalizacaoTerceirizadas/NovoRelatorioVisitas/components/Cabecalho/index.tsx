@@ -280,7 +280,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                       ) =>
                         option.label
                           .toUpperCase()
-                          .indexOf(inputValue.toUpperCase()) !== -1
+                          .includes(inputValue.toUpperCase())
                       }
                       name="escola"
                       label="Unidade Educacional"
