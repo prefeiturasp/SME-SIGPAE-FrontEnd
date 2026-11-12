@@ -25,7 +25,6 @@ import {
 } from "src/configs/constants";
 import {
   formataMilharDecimal,
-  usuarioEhEmpresaFornecedor,
   usuarioPodeBaixarTermoRecebimentoProvisorio,
 } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
