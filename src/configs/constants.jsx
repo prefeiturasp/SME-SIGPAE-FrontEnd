@@ -346,8 +346,6 @@ export const CADASTRO_TERMO_RECEBIMENTO_PROVISORIO =
   "cadastro-termo-recebimento-provisorio";
 export const DETALHAR_TERMO_RECEBIMENTO_PROVISORIO =
   "detalhar-termo-recebimento-provisorio";
-export const TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR =
-  "termo-recebimento-provisorio-fornecedor";
 export const PAINEL_ASSINATURA_TERMOS_RECEBIMENTO =
   "painel-assinatura-termos-recebimento";
 export const PENDENTES_ASSINATURA_TERMOS = "pendentes-de-assinatura";

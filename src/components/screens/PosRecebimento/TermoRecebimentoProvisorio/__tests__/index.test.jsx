@@ -15,10 +15,9 @@ import {
   CADASTRO_TERMO_RECEBIMENTO_PROVISORIO,
   POS_RECEBIMENTO,
 } from "src/configs/constants";
-import { PERFIL, TIPO_SERVICO } from "src/constants/shared";
+import { PERFIL } from "src/constants/shared";
 import {
   mockListaTermosRecebimento,
-  mockListaTermosRecebimentoFornecedor,
   mockListaTermosRecebimentoVazia,
 } from "src/mocks/services/posRecebimento.service/mockListaTermosRecebimento";
 

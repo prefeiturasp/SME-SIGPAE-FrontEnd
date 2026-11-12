@@ -18,7 +18,6 @@ import { STATUS_ASSINATURAS_CONCLUIDAS } from "../../constants";
 
 interface Props {
   objetos: Array<TermoRecebimentoListagem>;
-  fornecedor?: boolean;
 }
 
 const deParaStatusFornecedor = (objeto: TermoRecebimentoListagem): string => {
@@ -128,7 +127,7 @@ const Listagem: React.FC<Props> = ({ objetos, fornecedor }) => {
       <article>
         <div className="grid-table header-table">
           <div>Nº do Contrato</div>
-          {fornecedor ? <div>Produtos</div> : <div>Empresa Contratada</div>}
+          <div>Empresa Contratada</div>
           <div>Data de Cadastro</div>
           <div>Status</div>
           <div>Ações</div>
@@ -142,16 +141,10 @@ const Listagem: React.FC<Props> = ({ objetos, fornecedor }) => {
                 <div
                   className={`d-flex align-items-center justify-content-between`}
                 >
-                  {fornecedor
-                    ? objeto.produtos && objeto.produtos.join(", ")
-                    : objeto.nome_empresa}
+                  {objeto.nome_empresa}
                 </div>
                 <div>{objeto.data_cadastro}</div>
-                <div>
-                  {fornecedor
-                    ? deParaStatusFornecedor(objeto)
-                    : objeto.status_display}
-                </div>
+                <div>{objeto.status_display}</div>
                 <div className="p-0">{renderizarAcoes(objeto)}</div>
               </div>
             </React.Fragment>

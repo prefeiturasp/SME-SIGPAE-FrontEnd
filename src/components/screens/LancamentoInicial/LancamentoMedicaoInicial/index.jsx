@@ -23,6 +23,8 @@ import {
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getEscolaSimples } from "src/services/escola.service";
+import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAberta.service";
+import { obterUltimoDiaAtendimentoEscolaAberta } from "./components/LancamentoPorPeriodo/helpers";
 import {
   getDiasCalendario,
   getHistoricoEscola,
@@ -783,45 +785,69 @@ export default () => {
     solicitacao,
     diasCalendario,
   ) => {
-    const ultimoDiaComSolicitacaoAutorizada_ =
-      await getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
-        payload["escola_uuid"],
-        payload["mes"],
-        payload["ano"],
-      );
+    const [ultimoDiaComSolicitacaoAutorizada_, escolaAberta] =
+      await Promise.all([
+        getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
+          payload["escola_uuid"],
+          payload["mes"],
+          payload["ano"],
+        ),
+        getEscolaAbertaPorMesAno({
+          escola_uuid: payload["escola_uuid"],
+          mes: payload["mes"],
+          ano: payload["ano"],
+        }),
+      ]);
     const listaDiasLetivos = diasCalendario.filter(
       (dia) => dia.dia_letivo === true,
     );
+    const ultimoDiaAtendimentoEscolaAberta =
+      escolaAberta?.status === HTTP_STATUS.OK &&
+      escolaAberta.data?.possui_cadastro
+        ? obterUltimoDiaAtendimentoEscolaAberta(
+            escolaAberta.data.cadastro,
+            payload["mes"],
+            payload["ano"],
+          )
+        : null;
 
-    if (!listaDiasLetivos.length) {
+    if (!listaDiasLetivos.length && !ultimoDiaAtendimentoEscolaAberta) {
       setNaoPodeFinalizar(false);
       return;
     }
 
-    let diasParaDescontar = 1;
-    if (payload["mes"] === DEZEMBRO && listaDiasLetivos.length > 1) {
-      diasParaDescontar += 1;
-    }
+    const datasConsideradas = [];
 
-    const ultimoDiaLetivo =
-      listaDiasLetivos[listaDiasLetivos.length - diasParaDescontar];
-    let dataUltimoDia = new Date(
-      `${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`,
-    );
+    if (listaDiasLetivos.length) {
+      let diasParaDescontar = 1;
+      if (payload["mes"] === DEZEMBRO && listaDiasLetivos.length > 1) {
+        diasParaDescontar += 1;
+      }
+
+      const ultimoDiaLetivo =
+        listaDiasLetivos[listaDiasLetivos.length - diasParaDescontar];
+      datasConsideradas.push(
+        new Date(`${payload["ano"]}/${payload["mes"]}/${ultimoDiaLetivo.dia}`),
+      );
+    }
 
     if (
       ultimoDiaComSolicitacaoAutorizada_ &&
       solicitacao &&
       escolaNaoPossuiAlunosRegulares(solicitacao)
     ) {
-      dataUltimoDia = new Date(
-        Math.max(
-          dataUltimoDia.getTime(),
-          new Date(ultimoDiaComSolicitacaoAutorizada_ + "T00:00:00").getTime(),
-        ),
+      datasConsideradas.push(
+        new Date(ultimoDiaComSolicitacaoAutorizada_ + "T00:00:00"),
       );
     }
 
+    if (ultimoDiaAtendimentoEscolaAberta) {
+      datasConsideradas.push(ultimoDiaAtendimentoEscolaAberta);
+    }
+
+    const dataUltimoDia = new Date(
+      Math.max(...datasConsideradas.map((data) => data.getTime())),
+    );
     dataUltimoDia.setHours(23, 59, 59, 999);
     const dataHoje = new Date();
     const naoPodeFinalizarSeAindaNaoPassouOUltimoDia =

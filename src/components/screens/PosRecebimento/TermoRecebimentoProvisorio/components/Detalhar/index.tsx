@@ -22,7 +22,6 @@ import {
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_PROVISORIO,
-  TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR,
 } from "src/configs/constants";
 import {
   formataMilharDecimal,
@@ -103,10 +102,7 @@ const DetalharTermoRecebimentoProvisorio: React.FC = () => {
 
   const handleBack = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    const rotaListagem = usuarioEhEmpresaFornecedor()
-      ? `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`
-      : `/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`;
-    navigate(rotaListagem);
+    navigate(`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`);
   };
 
   const baixarTermoEmPdf = async () => {

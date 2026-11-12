@@ -1,5 +1,4 @@
 import CadastroTermoRecebimentoProvisorioPage from "src/pages/PosRecebimento/CadastroTermoRecebimentoProvisorioPage";
-import TermoRecebimentoProvisorioFornecedorPage from "src/pages/PosRecebimento/TermoRecebimentoProvisorioFornecedorPage";
 import TermoRecebimentoProvisorioPage from "src/pages/PosRecebimento/TermoRecebimentoProvisorioPage";
 import DetalharTermoRecebimentoProvisorioPage from "src/pages/PosRecebimento/DetalharTermoRecebimentoProvisorioPage";
 import MemorandoOcorrenciasPage from "src/pages/PosRecebimento/MemorandoOcorrenciasPage";
@@ -12,7 +11,6 @@ import {
   usuarioEhCronogramaOuCodae,
   usuarioEhDilogDiretoria,
   usuarioEhDilogQualidade,
-  usuarioEhEmpresaFornecedor,
 } from "src/helpers/utilities";
 
 import * as constants from "../../constants";
@@ -48,36 +46,21 @@ export const rotasPosRecebimento: Array<RotaInterface> = [
     tipoUsuario:
       usuarioEhCronogramaOuCodae() ||
       usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade() ||
-      usuarioEhEmpresaFornecedor(),
-  },
-  {
-    path: `/${constants.POS_RECEBIMENTO}/${constants.TERMO_RECEBIMENTO_PROVISORIO_FORNECEDOR}`,
-    component: TermoRecebimentoProvisorioFornecedorPage,
-    tipoUsuario: usuarioEhEmpresaFornecedor(),
+      usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}`,
     component: PainelAssinaturaTermosRecebimentoPage,
-    tipoUsuario:
-      usuarioEhCronogramaOuCodae() ||
-      usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade(),
+    tipoUsuario: usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}/${constants.PENDENTES_ASSINATURA_TERMOS}/`,
     component: StatusTermoPendentesAssinatura,
-    tipoUsuario:
-      usuarioEhCronogramaOuCodae() ||
-      usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade(),
+    tipoUsuario: usuarioEhDilogQualidade(),
   },
   {
     path: `/${constants.POS_RECEBIMENTO}/${constants.PAINEL_ASSINATURA_TERMOS_RECEBIMENTO}/${constants.ASSINADOS_TERMOS}/`,
     component: StatusTermoAssinados,
-    tipoUsuario:
-      usuarioEhCronogramaOuCodae() ||
-      usuarioEhDilogDiretoria() ||
-      usuarioEhDilogQualidade(),
+    tipoUsuario: usuarioEhDilogQualidade(),
   },
 ];

@@ -54,6 +54,15 @@ import {
 } from "./helpers";
 
 import { ORDEM_ALIMENTACAO_RECREIO } from "src/components/screens/LancamentoInicial/constants";
+
+const TIPOS_ESCOLA_ABERTA = [
+  "EMEF",
+  "CEU EMEF",
+  "EMEFM",
+  "EMEF P FOM",
+  "CEU GESTAO",
+];
+
 export const LancamentoPorPeriodo = ({
   escolaInstituicao,
   periodosEscolaSimples,
@@ -129,13 +138,20 @@ export const LancamentoPorPeriodo = ({
 
   const [periodosEspecificos, setPeriodosEspecificos] = useState([]);
 
-  const escolaEhEMEF =
-    escolaSimples?.tipo_unidade?.iniciais === "EMEF" ||
-    escolaInstituicao?.tipo_unidade_escolar_iniciais === "EMEF";
+  const tipoUnidadeEscola =
+    escolaSimples?.tipo_unidade?.iniciais ||
+    escolaInstituicao?.tipo_unidade_escolar_iniciais;
+  const escolaPermiteEscolaAberta =
+    TIPOS_ESCOLA_ABERTA.includes(tipoUnidadeEscola);
 
   useEffect(() => {
     const getEscolaAbertaAsync = async () => {
-      if (!escolaEhEMEF || !escolaInstituicao?.uuid || !mes || !ano) {
+      if (
+        !escolaPermiteEscolaAberta ||
+        !escolaInstituicao?.uuid ||
+        !mes ||
+        !ano
+      ) {
         setEscolaAberta(null);
         return;
       }
@@ -154,7 +170,7 @@ export const LancamentoPorPeriodo = ({
     };
 
     getEscolaAbertaAsync();
-  }, [escolaEhEMEF, escolaInstituicao?.uuid, mes, ano]);
+  }, [escolaPermiteEscolaAberta, escolaInstituicao?.uuid, mes, ano]);
 
   const getPeriodosInclusaoContinuaAsync = async () => {
     const response = await getPeriodosInclusaoContinua({
@@ -746,7 +762,7 @@ export const LancamentoPorPeriodo = ({
             </>
           )}
 
-          {escolaEhEMEF && escolaAberta && (
+          {escolaPermiteEscolaAberta && escolaAberta && (
             <CardLancamento
               grupo="Escola Aberta"
               cor={COR_ESCOLA_ABERTA}

@@ -162,6 +162,7 @@ export const PainelRelatorios = () => {
                   return (
                     <CardPorStatus
                       cardStatus={cardStatus}
+                      exibirNovoPainel={EXIBIR_NOVO_PAINEL}
                       form={form}
                       key={cardStatus.status}
                       filtrosIniciais={
@@ -208,6 +209,7 @@ export const PainelRelatorios = () => {
                     <>
                       <Listagem
                         objetos={relatoriosVisita}
+                        exibirNovoPainel={EXIBIR_NOVO_PAINEL}
                         perfilNutriSupervisao={perfilNutriSupervisao}
                         podeVisualizarRelatorio={podeVisualizarRelatorio}
                         getDashboardPainelGerencialSupervisaoAsync={

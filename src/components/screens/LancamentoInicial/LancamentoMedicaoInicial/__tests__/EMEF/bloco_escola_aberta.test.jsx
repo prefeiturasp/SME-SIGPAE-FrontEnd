@@ -10,6 +10,7 @@ import {
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { EscolaSimplesContextProvider } from "src/context/EscolaSimplesContext";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import { localStorageMock } from "src/mocks/localStorageMock";
 import { mockDiasCalendarioEMEFMaio2025 } from "src/mocks/medicaoInicial/PeriodoLancamentoMedicaoInicial/EMEF/Maio2025/diasCalendario";
@@ -41,6 +42,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Bloco Escola Aberta
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
   let respostaEscolaAberta;
+  let escolaSimplesMock;
 
   const renderPage = async () => {
     await act(async () => {
@@ -57,7 +59,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Bloco Escola Aberta
               setMeusDados: jest.fn(),
             }}
           >
-            <LancamentoMedicaoInicialPage />
+            <EscolaSimplesContextProvider>
+              <LancamentoMedicaoInicialPage />
+            </EscolaSimplesContextProvider>
             <ToastContainer />
           </MeusDadosContext.Provider>
         </MemoryRouter>,
@@ -75,6 +79,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Bloco Escola Aberta
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-06-01T10:00:00Z"));
     respostaEscolaAberta = cadastroEscolaAberta;
+    escolaSimplesMock = mockEscolaSimplesEMEF;
     mock.reset();
 
     mock
@@ -86,7 +91,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Bloco Escola Aberta
       .reply(200, { quantidade_nao_lidos: 0 });
     mock
       .onGet(`/escolas-simples/${escolaUuid}/`)
-      .reply(200, mockEscolaSimplesEMEF);
+      .reply(() => [200, escolaSimplesMock]);
     mock.onGet(`/historico-escola/${escolaUuid}/`).reply(200, {});
     mock
       .onGet("/solicitacao-medicao-inicial/solicitacoes-lancadas/")
@@ -185,6 +190,42 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Bloco Escola Aberta
     expect(screen.queryByText("01/10/2026")).not.toBeInTheDocument();
     expect(screen.queryByText("31/10/2026")).not.toBeInTheDocument();
     expect(screen.queryByText("42")).not.toBeInTheDocument();
+  });
+
+  it.each(["EMEF", "CEU EMEF", "EMEFM", "EMEF P FOM", "CEU GESTAO"])(
+    "renderiza o bloco Escola Aberta para o tipo de escola %s",
+    async (tipoUnidade) => {
+      escolaSimplesMock = {
+        ...mockEscolaSimplesEMEF,
+        tipo_unidade: {
+          ...mockEscolaSimplesEMEF.tipo_unidade,
+          iniciais: tipoUnidade,
+        },
+      };
+
+      await renderPage();
+      jest.useRealTimers();
+
+      expect(await screen.findByText("Escola Aberta")).toBeInTheDocument();
+    },
+  );
+
+  it("não renderiza o bloco para tipo de escola não permitido", async () => {
+    escolaSimplesMock = {
+      ...mockEscolaSimplesEMEF,
+      tipo_unidade: {
+        ...mockEscolaSimplesEMEF.tipo_unidade,
+        iniciais: "CIEJA",
+      },
+    };
+
+    await renderPage();
+    jest.useRealTimers();
+
+    await waitFor(() => {
+      expect(screen.getByText("Manhã")).toBeInTheDocument();
+      expect(screen.queryByText("Escola Aberta")).not.toBeInTheDocument();
+    });
   });
 
   it("não renderiza o bloco quando a escola não possui cadastro no mês", async () => {
