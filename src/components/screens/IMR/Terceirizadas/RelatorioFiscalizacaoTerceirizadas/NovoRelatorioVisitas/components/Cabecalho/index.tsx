@@ -304,7 +304,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                           form.change("lote", _escola?.lote_nome);
                           form.change("terceirizada", _escola?.terceirizada);
 
-                          await setEscolaSelecionada(_escola);
+                          setEscolaSelecionada(_escola);
                           await getTiposOcorrenciaPorEditalNutrisupervisaoAsync(
                             form,
                             _escola,
