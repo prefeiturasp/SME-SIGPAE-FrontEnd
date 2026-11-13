@@ -6,6 +6,7 @@ import {
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
+import { FluxoDeStatusPreRecebimento } from "src/components/Shareable/FluxoDeStatusPreRecebimento";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import {
   toastError,
@@ -127,6 +128,12 @@ const DetalharTermoRecebimentoProvisorio: React.FC = () => {
         <div className="card-body">
           {termo && (
             <div>
+              {termo.logs && termo.logs.length > 0 && (
+                <div className="row my-4">
+                  <FluxoDeStatusPreRecebimento listaDeStatus={termo.logs} />
+                </div>
+              )}
+
               <div className="row detalhar-head my-3">
                 <div>
                   <p>
