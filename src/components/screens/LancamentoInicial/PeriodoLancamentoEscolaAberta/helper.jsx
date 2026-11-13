@@ -290,6 +290,7 @@ export const montarPayload = ({
   colunasHabilitadas,
   linhas,
   numParticipantes,
+  incluirRemocoes = false,
 }) => {
   const valoresMedicao = [];
 
@@ -314,6 +315,14 @@ export const montarPayload = ({
           categoria_medicao: categoriaId,
           tipo_alimentacao: linha.uuid || "",
         });
+      } else if (incluirRemocoes) {
+        valoresMedicao.push({
+          dia: coluna.dia,
+          valor: "-1",
+          nome_campo: linha.name,
+          categoria_medicao: categoriaId,
+          tipo_alimentacao: linha.uuid || "",
+        });
       }
     });
 
@@ -324,6 +333,14 @@ export const montarPayload = ({
       valoresMedicao.push({
         dia: coluna.dia,
         valor: observacao,
+        nome_campo: "observacoes",
+        categoria_medicao: categoriaId,
+        tipo_alimentacao: "",
+      });
+    } else if (incluirRemocoes) {
+      valoresMedicao.push({
+        dia: coluna.dia,
+        valor: "-1",
         nome_campo: "observacoes",
         categoria_medicao: categoriaId,
         tipo_alimentacao: "",

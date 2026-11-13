@@ -16,13 +16,18 @@
     margin: 10px 0 15px 0;
 
     .grid-table {
-      height: 40px;
+      min-height: 40px;
       font-size: 14px;
       line-height: 16px;
       display: grid;
       align-items: center;
       text-align: center;
-      grid-template-columns: 0.15fr 0.35fr 0.2fr 0.2fr 0.2fr;
+      grid-template-columns:
+        minmax(0, 0.2fr)
+        minmax(0, 0.3fr)
+        minmax(0, 0.2fr)
+        minmax(0, 0.2fr)
+        minmax(0, 0.2fr);
     }
 
     .header-table {
@@ -34,6 +39,8 @@
         align-items: center;
         text-align: left;
         height: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
         border-right: 1px solid #e9eaea;
         padding: 0;
         padding-left: 8px;
@@ -75,6 +82,8 @@
         align-items: center;
         text-align: left;
         height: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
         border-bottom: 1px solid #e9eaea;
         border-right: 1px solid #e9eaea;
         padding: 0;

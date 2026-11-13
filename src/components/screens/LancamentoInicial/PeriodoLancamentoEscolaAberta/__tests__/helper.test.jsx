@@ -222,5 +222,73 @@ describe("PeriodoLancamentoEscolaAberta helper", () => {
         },
       ],
     });
+    expect(payload.valores_medicao.some((valor) => valor.valor === "-1")).toBe(
+      false,
+    );
+  });
+
+  it("envia valores -1 para campos removidos em uma atualização", () => {
+    const linhas = montarLinhasTiposAlimentacao(cadastro.tipos_alimentacao);
+    const payload = montarPayload({
+      solicitacaoUuid: "uuid-solicitacao",
+      categoriaId: 1,
+      values: {
+        lanche__dia_05__categoria_1: "10",
+      },
+      colunasHabilitadas: [{ dia: "05" }],
+      linhas,
+      numParticipantes: 50,
+      incluirRemocoes: true,
+    });
+
+    expect(payload.valores_medicao).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "lanche_4h",
+          tipo_alimentacao: "uuid-lanche-4h",
+        }),
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "refeicao",
+          tipo_alimentacao: "uuid-refeicao",
+        }),
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "repeticao_refeicao",
+          tipo_alimentacao: "",
+        }),
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "sobremesa",
+          tipo_alimentacao: "uuid-sobremesa",
+        }),
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "repeticao_sobremesa",
+          tipo_alimentacao: "",
+        }),
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "observacoes",
+          tipo_alimentacao: "",
+        }),
+      ]),
+    );
+    expect(payload.valores_medicao).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dia: "05",
+          valor: "10",
+          nome_campo: "lanche",
+        }),
+      ]),
+    );
   });
 });

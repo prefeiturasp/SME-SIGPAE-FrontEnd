@@ -1,3 +1,5 @@
+import { LogSolicitacoesUsuarioSimples } from "src/interfaces/dados_comuns.interface";
+
 export interface TermoRecebimentoListagem {
   uuid: string;
   numero_contrato: string;
@@ -88,6 +90,7 @@ export interface TermoRecebimentoDetalhe {
   fiscal_2: FiscalTermoDetalhe;
   fiscal_3: FiscalTermoDetalhe;
   texto_termo: string;
+  logs?: LogSolicitacoesUsuarioSimples[];
   criado_em?: string;
   alterado_em?: string;
 }
