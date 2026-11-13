@@ -438,6 +438,37 @@ describe("PeriodoLancamentoEscolaAberta", () => {
     expect(await screen.findByText("Tela anterior")).toBeInTheDocument();
   });
 
+  it("fecha a confirmação e permanece na edição ao escolher Não", async () => {
+    renderComRotas();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "5" } });
+
+    fireEvent.click(screen.getByText("Voltar"));
+
+    expect(
+      await screen.findByText(
+        'Deseja realmente sair da página de lançamento em edição? Caso opte por "Sim", você poderá perder os dados inseridos!',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Não"));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          'Deseja realmente sair da página de lançamento em edição? Caso opte por "Sim", você poderá perder os dados inseridos!',
+        ),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Semana 2")).toBeInTheDocument();
+  });
+
   it("preenche participantes somente nas datas habilitadas e salva a semana", async () => {
     let payloadSalvo;
 
