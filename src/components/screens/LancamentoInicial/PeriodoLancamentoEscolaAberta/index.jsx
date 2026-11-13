@@ -27,6 +27,7 @@ import ModalErro from "../PeriodoLancamentoMedicaoInicial/components/ModalErro";
 import ModalObservacaoDiaria from "../PeriodoLancamentoMedicaoInicial/components/ModalObservacaoDiaria";
 import { ModalVoltarPeriodoLancamento } from "../PeriodoLancamentoMedicaoInicial/components/ModalVoltarPeriodoLancamento";
 import "../PeriodoLancamentoMedicaoInicial/styles.scss";
+import "./styles.scss";
 import {
   NOME_GRUPO_ESCOLA_ABERTA,
   dataHabilitada,
@@ -69,6 +70,8 @@ export const PeriodoLancamentoEscolaAberta = () => {
   const [semanaSelecionada, setSemanaSelecionada] = useState("1");
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
+  const [ultimaAtualizacaoMedicao, setUltimaAtualizacaoMedicao] =
+    useState(null);
   const [showModalObservacao, setShowModalObservacao] = useState(false);
   const [showModalVoltar, setShowModalVoltar] = useState(false);
   const [showModalErro, setShowModalErro] = useState(false);
@@ -146,6 +149,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
           (valor) => valor.nome_campo === "observacoes",
         ),
       );
+      setUltimaAtualizacaoMedicao(
+        valoresIniciaisSalvos[0]?.medicao_alterado_em || null,
+      );
       setLoading(false);
     };
 
@@ -206,6 +212,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
       setValoresSalvos(valoresAtualizados);
       setValoresObservacoes(
         valoresAtualizados.filter((item) => item.nome_campo === "observacoes"),
+      );
+      setUltimaAtualizacaoMedicao(
+        valoresAtualizados[0]?.medicao_alterado_em || null,
       );
       const form = formRef.current;
       form?.restart({ ...form.getState().values });
@@ -281,6 +290,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
             (item) => item.nome_campo === "observacoes",
           ),
         );
+        setUltimaAtualizacaoMedicao(
+          valoresAtualizados[0]?.medicao_alterado_em || null,
+        );
         form.restart({ ...form.getState().values });
         if (exibirMensagemSucesso) {
           toastSuccess("Lançamentos salvos com sucesso");
@@ -294,6 +306,41 @@ export const PeriodoLancamentoEscolaAberta = () => {
       setSalvando(false);
     }
   };
+
+  useEffect(() => {
+    const intervaloSalvamentoAutomatico = setInterval(() => {
+      const form = formRef.current;
+
+      if (
+        !dados ||
+        !form ||
+        salvando ||
+        showModalObservacao ||
+        showModalVoltar ||
+        Object.keys(formErrors).length > 0 ||
+        !form.getState().dirty
+      ) {
+        return;
+      }
+
+      salvarLancamentos(form, {
+        semana: semanaSelecionada,
+        exibirMensagemSucesso: false,
+        exibirAlertaSemValores: false,
+      });
+    }, 180000);
+
+    return () => clearInterval(intervaloSalvamentoAutomatico);
+  }, [
+    dados,
+    semanaSelecionada,
+    formErrors,
+    salvando,
+    showModalObservacao,
+    showModalVoltar,
+    valoresSalvos,
+    salvarLancamentos,
+  ]);
 
   const renderizarValorForaDoMes = (nomeCampo, valor, coluna) => (
     <div className="field-values-input">
@@ -585,6 +632,13 @@ export const PeriodoLancamentoEscolaAberta = () => {
                     </div>
                   </article>
                 </section>
+
+                {ultimaAtualizacaoMedicao && (
+                  <p className="ultimo-salvamento mb-0">
+                    Lançamento do período {NOME_GRUPO_ESCOLA_ABERTA} salvo em{" "}
+                    {ultimaAtualizacaoMedicao}
+                  </p>
+                )}
 
                 <Botao
                   className="float-end"
