@@ -44,6 +44,8 @@ import {
   tabAlunosEmebs,
   validacaoSemana,
   exibirCheckBox,
+  trataCategoriasMedicaoRecreio,
+  formatarParaSlug,
 } from "src/components/screens/LancamentoInicial/PeriodoLancamentoMedicaoInicial/helper";
 import {
   formatarLinhasTabelaAlimentacaoCEI,
@@ -411,49 +413,56 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     periodoGrupo,
     solicitacao,
     somaPorCategoria,
+    tiposAlimentacaoInclusaoContinua = [],
   ) => {
-    if (!categoriasDeMedicao) {
-      let response_categorias_medicao = await getCategoriasDeMedicao();
-      let categoriasMedicaoLocal;
-      if (periodoGrupo.nome_periodo_grupo.includes("Solicitações")) {
-        categoriasMedicaoLocal = response_categorias_medicao.data.filter(
-          (cat) => cat.nome.includes("SOLICITAÇÕES"),
-        );
-        setCategoriasDeMedicao(categoriasMedicaoLocal);
-      } else if (periodoGrupo.nome_periodo_grupo === "ETEC") {
-        categoriasMedicaoLocal = response_categorias_medicao.data.filter(
-          (cat) => cat.nome === "ALIMENTAÇÃO",
-        );
-        setCategoriasDeMedicao(categoriasMedicaoLocal);
-      } else {
-        categoriasMedicaoLocal = response_categorias_medicao.data.filter(
-          (cat) => !cat.nome.includes("SOLICITAÇÕES"),
-        );
-        setCategoriasDeMedicao(categoriasMedicaoLocal);
-      }
+    const response_categorias_medicao = await getCategoriasDeMedicao();
+    const todas = response_categorias_medicao.data;
 
-      if (
-        ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
-        ehRecreioCeiDaCemei()
-      ) {
-        categoriasMedicaoLocal = response_categorias_medicao.data.filter(
-          (cat) =>
-            !cat.nome.includes("SOLICITAÇÕES") && !cat.nome.includes("ENTERAL"),
-        );
-        setCategoriasDeMedicao(categoriasMedicaoLocal);
-      }
-
-      categoriasMedicaoLocal = categoriasMedicaoLocal.filter((categoria) => {
-        if (!categoria.nome.includes("DIETA")) return true;
-
-        const soma = somaPorCategoria[categoria.id] || 0;
-        return soma > 0;
-      });
-
-      setCategoriasDeMedicao(categoriasMedicaoLocal);
-      return categoriasMedicaoLocal;
+    let categoriasMedicaoLocal;
+    if (periodoGrupo.nome_periodo_grupo.includes("Solicitações")) {
+      categoriasMedicaoLocal = todas.filter((cat) =>
+        cat.nome.includes("SOLICITAÇÕES"),
+      );
+    } else if (periodoGrupo.nome_periodo_grupo === "ETEC") {
+      categoriasMedicaoLocal = todas.filter(
+        (cat) => cat.nome === "ALIMENTAÇÃO",
+      );
+    } else {
+      categoriasMedicaoLocal = todas.filter(
+        (cat) => !cat.nome.includes("SOLICITAÇÕES"),
+      );
     }
-    return categoriasDeMedicao;
+
+    if (
+      ehEscolaTipoCEI({ nome: solicitacao.escola }) ||
+      ehRecreioCeiDaCemei()
+    ) {
+      categoriasMedicaoLocal = todas.filter(
+        (cat) =>
+          !cat.nome.includes("SOLICITAÇÕES") && !cat.nome.includes("ENTERAL"),
+      );
+    }
+
+    categoriasMedicaoLocal = categoriasMedicaoLocal.filter(
+      (categoria) =>
+        !categoria.nome.includes("DIETA") ||
+        (somaPorCategoria[categoria.id] || 0) > 0,
+    );
+
+    if (
+      periodoGrupo.nome_periodo_grupo === "Programas e Projetos" &&
+      tiposAlimentacaoInclusaoContinua.length
+    ) {
+      categoriasMedicaoLocal = trataCategoriasMedicaoRecreio(
+        categoriasMedicaoLocal,
+        tiposAlimentacaoInclusaoContinua.map((tipo) => ({
+          name: formatarParaSlug(tipo),
+        })),
+      );
+    }
+
+    setCategoriasDeMedicao(categoriasMedicaoLocal);
+    return categoriasMedicaoLocal;
   };
 
   const formatarLinhasTabelasCEIHelper = (
@@ -1023,6 +1032,56 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
     }
   };
 
+  const getTiposAlimentacaoInclusoesContinuas = (inclusoesAutorizadas) => {
+    const tiposAlimentacao = [];
+    (Array.isArray(inclusoesAutorizadas) ? inclusoesAutorizadas : []).forEach(
+      (inclusao) => {
+        const alimentacoes = inclusao?.alimentacoes;
+        if (typeof alimentacoes !== "string") return;
+        alimentacoes.split(",").forEach((alimentacao) => {
+          const nome = alimentacao.trim();
+          if (nome && !tiposAlimentacao.includes(nome)) {
+            tiposAlimentacao.push(nome);
+          }
+        });
+      },
+    );
+    return tiposAlimentacao;
+  };
+
+  const carregarTiposAlimentacaoInclusaoContinua = async () => {
+    try {
+      const responsePeriodos = await getPeriodosInclusaoContinua({
+        mes: mesSolicitacao,
+        ano: anoSolicitacao,
+        escola: solicitacao.escola_uuid,
+      });
+      const periodos =
+        responsePeriodos?.status === HTTP_STATUS.OK
+          ? Object.keys(responsePeriodos.data.periodos || {})
+          : [];
+
+      const params = {
+        escola_uuid: solicitacao.escola_uuid,
+        tipo_solicitacao: "Inclusão de",
+        mes: mesSolicitacao,
+        ano: anoSolicitacao,
+        periodos_escolares: periodos,
+        tipo_doc: "INC_ALIMENTA_CONTINUA",
+      };
+      if (ehEscolaTipoCEMEI({ nome: solicitacao.escola })) {
+        params.cemei_emei = true;
+      }
+
+      const response = await getSolicitacoesInclusoesAutorizadasEscola(params);
+      const inclusoes = response?.data?.results || [];
+
+      return getTiposAlimentacaoInclusoesContinuas(inclusoes);
+    } catch {
+      return [];
+    }
+  };
+
   useEffect(() => {
     if (
       ehEscolaTipoCEMEI({ nome: solicitacao.escola })
@@ -1061,12 +1120,18 @@ export const TabelaLancamentosPeriodo = ({ ...props }) => {
             response_valores_periodos.data,
           );
 
+          const tiposAlimentacaoInclusaoContinua =
+            periodoGrupo.nome_periodo_grupo === "Programas e Projetos"
+              ? await carregarTiposAlimentacaoInclusaoContinua()
+              : [];
+
           let categoriasMedicao = await getCategoriasDeMedicaoAsyncHelper(
             categoriasDeMedicao,
             setCategoriasDeMedicao,
             periodoGrupo,
             solicitacao,
             somaPorCategoria,
+            tiposAlimentacaoInclusaoContinua,
           );
           setTabItemsSemanas(getTabItemsSemanas(dataReferencia));
 
