@@ -56,10 +56,10 @@ type CabecahoType = {
   escolaSelecionada: EscolaLabelInterface;
   getTiposOcorrenciaPorEditalNutrisupervisaoAsync: (
     _form: FormApi<any, Partial<any>>,
-    _escola: EscolaLabelInterface
+    _escola: EscolaLabelInterface,
   ) => Promise<void>;
   setTiposOcorrencia: (
-    _tiposOcorrencia: Array<TipoOcorrenciaInterface>
+    _tiposOcorrencia: Array<TipoOcorrenciaInterface>,
   ) => void;
   somenteLeitura?: boolean;
   isEditing?: boolean;
@@ -103,7 +103,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
             nome: dre.nome,
             uuid: dre.uuid,
           };
-        })
+        }),
       );
     } else {
       setErroAPI("Erro ao carregar DREs. Tente novamente mais tarde.");
@@ -125,11 +125,11 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
             uuid: escola.uuid,
             lote_nome: escola.lote_obj?.nome,
             edital: escola.lote_obj?.contratos_do_lote.find(
-              (lote) => !lote.encerrado
+              (lote) => !lote.encerrado,
             )?.edital,
             terceirizada: escola.terceirizada,
           };
-        })
+        }),
       );
     } else {
       setErroAPI("Erro ao carregar escolas. Tente novamente mais tarde.");
@@ -152,7 +152,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
 
   const getTotalAlunosMatriculadosPorData = async (
     data: string,
-    escolaUUID: string
+    escolaUUID: string,
   ): Promise<void> => {
     setLoadingTotalMatriculadosPorData(true);
     const response: ResponseGetQuantidadeAlunosMatriculadosPorDataInterface =
@@ -164,7 +164,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
       form.change("total_matriculados_por_data", response.data);
     } else {
       setErroAPI(
-        "Erro ao carregar quantidade alunos matriculados por data. Tente novamente mais tarde."
+        "Erro ao carregar quantidade alunos matriculados por data. Tente novamente mais tarde.",
       );
     }
     setLoadingTotalMatriculadosPorData(false);
@@ -190,7 +190,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
       setPeriodosVisita(response.data.results);
     } else {
       setErroAPI(
-        "Erro ao carregar Períodos de Visita. Tente novamente mais tarde."
+        "Erro ao carregar Períodos de Visita. Tente novamente mais tarde.",
       );
     }
   };
@@ -207,7 +207,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
   }, []);
 
   useEffect(() => {
-    if (initialValues && initialValues.escola) {
+    if (initialValues?.escola) {
       setEscolaInitialValues(initialValues);
     }
   }, [initialValues]);
@@ -276,11 +276,11 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                       options={escolas}
                       filterOption={(
                         inputValue: string,
-                        option: { label: string }
+                        option: { label: string },
                       ) =>
-                        option!.label
+                        option.label
                           .toUpperCase()
-                          .indexOf(inputValue.toUpperCase()) !== -1
+                          .includes(inputValue.toUpperCase())
                       }
                       name="escola"
                       label="Unidade Educacional"
@@ -295,7 +295,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                       inputOnChange={async (value: string) => {
                         setTiposOcorrencia(undefined);
                         const _escola = escolas.find(
-                          (e: EscolaLabelInterface) => e.value === value
+                          (e: EscolaLabelInterface) => e.value === value,
                         );
                         if (_escola) {
                           form.change("total_matriculados_por_data", undefined);
@@ -304,15 +304,15 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                           form.change("lote", _escola?.lote_nome);
                           form.change("terceirizada", _escola?.terceirizada);
 
-                          await setEscolaSelecionada(_escola);
+                          setEscolaSelecionada(_escola);
                           await getTiposOcorrenciaPorEditalNutrisupervisaoAsync(
                             form,
-                            _escola
+                            _escola,
                           );
                           if (values.data && _escola) {
                             await getTotalAlunosMatriculadosPorData(
                               values.data,
-                              _escola.uuid
+                              _escola.uuid,
                             );
                           }
                         } else {
@@ -371,7 +371,7 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                       if (props.escolaSelecionada) {
                         getTotalAlunosMatriculadosPorData(
                           value,
-                          props.escolaSelecionada.uuid
+                          props.escolaSelecionada.uuid,
                         );
                       }
                     }}
@@ -420,8 +420,8 @@ export const Cabecalho = ({ ...props }: CabecahoType) => {
                     validate={composeValidators(
                       required,
                       maxValueMaiorFrequenciaNoPeriodoIMR(
-                        values.total_matriculados_por_data
-                      )
+                        values.total_matriculados_por_data,
+                      ),
                     )}
                     min={0}
                     placeholder="Informe a quantidade"

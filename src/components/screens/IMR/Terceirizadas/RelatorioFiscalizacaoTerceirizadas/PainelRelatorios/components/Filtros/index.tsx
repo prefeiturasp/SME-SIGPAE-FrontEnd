@@ -139,7 +139,7 @@ export const Filtros: React.FC<Props> = ({
       data_final: values.data_final ?? "",
     };
     if (filtros.status) filtros_["status"] = filtros.status;
-    await setFiltros({ ...filtros_ });
+    setFiltros({ ...filtros_ });
     await buscarResultados(filtros_, 1);
   };
 

@@ -43,14 +43,14 @@ export const SeletorTipoOcorrencia = ({
       validate={required}
       disabled={disabled || !values.categoria}
       naoDesabilitarPrimeiraOpcao
-      onChangeEffect={async (e: ChangeEvent<HTMLInputElement>) => {
+      onChangeEffect={(e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        await setTipoOcorrencia(
+        setTipoOcorrencia(
           tiposOcorrencia.find(
             (tipoOcorrencia) => tipoOcorrencia.uuid === value,
           ),
         );
-        await form.change("grupos", [{}]);
+        form.change("grupos", [{}]);
       }}
     />
   );
