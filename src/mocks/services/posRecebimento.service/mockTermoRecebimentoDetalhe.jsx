@@ -50,4 +50,36 @@ export const mockTermoRecebimentoDetalhe = {
   fiscal_2: { uuid: "f2", nome: "MARIANA SANTOS DE LIMA" },
   fiscal_3: { uuid: "f3", nome: "QUALIDADE" },
   texto_termo: "<p>Texto do termo de recebimento provisório.</p>",
+  logs: [
+    {
+      status_evento_explicacao: "Termo Criado",
+      usuario: { uuid: "a1b2", nome: "Maria Souza" },
+      criado_em: "11/11/2026 09:14:32",
+      justificativa: "",
+    },
+    {
+      status_evento_explicacao: "Assinatura Fiscal do Contrato",
+      usuario: { uuid: "c3d4", nome: "João Lima" },
+      criado_em: "11/11/2026 10:02:01",
+      justificativa: "",
+    },
+    {
+      status_evento_explicacao: "Assinatura Fiscal do Contrato",
+      usuario: { uuid: "e5f6", nome: "Ana Dias" },
+      criado_em: "12/11/2026 08:30:45",
+      justificativa: "",
+    },
+    {
+      status_evento_explicacao: "Assinatura Fiscal do Contrato",
+      usuario: { uuid: "g7h8", nome: "Pedro Rocha" },
+      criado_em: "12/11/2026 14:10:09",
+      justificativa: "",
+    },
+    {
+      status_evento_explicacao: "Termo Assinado",
+      usuario: { uuid: "g7h8", nome: "Pedro Rocha" },
+      criado_em: "12/11/2026 14:10:09",
+      justificativa: "",
+    },
+  ],
 };

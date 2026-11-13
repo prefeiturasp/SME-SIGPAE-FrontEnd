@@ -23,9 +23,11 @@ import {
   updateValoresPeriodosLancamentos,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAberta.service";
+import ModalErro from "../PeriodoLancamentoMedicaoInicial/components/ModalErro";
 import ModalObservacaoDiaria from "../PeriodoLancamentoMedicaoInicial/components/ModalObservacaoDiaria";
 import { ModalVoltarPeriodoLancamento } from "../PeriodoLancamentoMedicaoInicial/components/ModalVoltarPeriodoLancamento";
 import "../PeriodoLancamentoMedicaoInicial/styles.scss";
+import "./styles.scss";
 import {
   NOME_GRUPO_ESCOLA_ABERTA,
   dataHabilitada,
@@ -68,8 +70,11 @@ export const PeriodoLancamentoEscolaAberta = () => {
   const [semanaSelecionada, setSemanaSelecionada] = useState("1");
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
+  const [ultimaAtualizacaoMedicao, setUltimaAtualizacaoMedicao] =
+    useState(null);
   const [showModalObservacao, setShowModalObservacao] = useState(false);
   const [showModalVoltar, setShowModalVoltar] = useState(false);
+  const [showModalErro, setShowModalErro] = useState(false);
   const [observacaoSelecionada, setObservacaoSelecionada] = useState(null);
   const [formValues, setFormValues] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -144,6 +149,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
           (valor) => valor.nome_campo === "observacoes",
         ),
       );
+      setUltimaAtualizacaoMedicao(
+        valoresIniciaisSalvos[0]?.medicao_alterado_em || null,
+      );
       setLoading(false);
     };
 
@@ -164,8 +172,8 @@ export const PeriodoLancamentoEscolaAberta = () => {
     );
   }, [dados]);
 
-  const montarColunas = (mesAno, cadastro) =>
-    montarDiasDaSemana(mesAno, Number(semanaSelecionada)).map((diaInfo) => ({
+  const montarColunas = (mesAno, cadastro, semana = semanaSelecionada) =>
+    montarDiasDaSemana(mesAno, Number(semana)).map((diaInfo) => ({
       ...diaInfo,
       foraDoMes: obterTextoForaDoMes(diaInfo, mesAno),
       habilitado: dataHabilitada(diaInfo, mesAno, cadastro),
@@ -205,6 +213,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
       setValoresObservacoes(
         valoresAtualizados.filter((item) => item.nome_campo === "observacoes"),
       );
+      setUltimaAtualizacaoMedicao(
+        valoresAtualizados[0]?.medicao_alterado_em || null,
+      );
       const form = formRef.current;
       form?.restart({ ...form.getState().values });
       toastSuccess("Observação salva com sucesso");
@@ -214,8 +225,15 @@ export const PeriodoLancamentoEscolaAberta = () => {
     toastError("Erro ao salvar observação.");
   };
 
-  const salvarLancamentos = async (form) => {
-    if (!dados) {
+  const salvarLancamentos = async (
+    form,
+    {
+      semana = semanaSelecionada,
+      exibirMensagemSucesso = true,
+      exibirAlertaSemValores = true,
+    } = {},
+  ) => {
+    if (!dados || !form) {
       return;
     }
 
@@ -223,6 +241,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
     const colunasHabilitadas = montarColunas(
       dados.mesAno,
       dados.cadastro,
+      semana,
     ).filter((coluna) => coluna.habilitado);
 
     const erros = validarLancamentos(
@@ -238,6 +257,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
       return;
     }
 
+    const medicaoUuid = obterMedicaoUuid(valoresSalvos);
     const payload = montarPayload({
       solicitacaoUuid: dados.uuid,
       categoriaId: dados.categoriaId,
@@ -245,17 +265,19 @@ export const PeriodoLancamentoEscolaAberta = () => {
       colunasHabilitadas,
       linhas: dados.linhas,
       numParticipantes: dados.cadastro.num_participantes,
+      incluirRemocoes: Boolean(medicaoUuid),
     });
 
     if (!payload.valores_medicao.length) {
-      toastWarn("Não há valores para serem salvos");
+      if (exibirAlertaSemValores) {
+        toastWarn("Não há valores para serem salvos");
+      }
       return;
     }
 
     setSalvando(true);
 
     try {
-      const medicaoUuid = obterMedicaoUuid(valoresSalvos);
       const response = medicaoUuid
         ? await updateValoresPeriodosLancamentos(medicaoUuid, payload)
         : await setPeriodoLancamento(payload);
@@ -268,8 +290,13 @@ export const PeriodoLancamentoEscolaAberta = () => {
             (item) => item.nome_campo === "observacoes",
           ),
         );
-        form.restart({ ...values });
-        toastSuccess("Lançamentos salvos com sucesso");
+        setUltimaAtualizacaoMedicao(
+          valoresAtualizados[0]?.medicao_alterado_em || null,
+        );
+        form.restart({ ...form.getState().values });
+        if (exibirMensagemSucesso) {
+          toastSuccess("Lançamentos salvos com sucesso");
+        }
       } else {
         toastError("Erro ao salvar lançamentos.");
       }
@@ -279,6 +306,41 @@ export const PeriodoLancamentoEscolaAberta = () => {
       setSalvando(false);
     }
   };
+
+  useEffect(() => {
+    const intervaloSalvamentoAutomatico = setInterval(() => {
+      const form = formRef.current;
+
+      if (
+        !dados ||
+        !form ||
+        salvando ||
+        showModalObservacao ||
+        showModalVoltar ||
+        Object.keys(formErrors).length > 0 ||
+        !form.getState().dirty
+      ) {
+        return;
+      }
+
+      salvarLancamentos(form, {
+        semana: semanaSelecionada,
+        exibirMensagemSucesso: false,
+        exibirAlertaSemValores: false,
+      });
+    }, 180000);
+
+    return () => clearInterval(intervaloSalvamentoAutomatico);
+  }, [
+    dados,
+    semanaSelecionada,
+    formErrors,
+    salvando,
+    showModalObservacao,
+    showModalVoltar,
+    valoresSalvos,
+    salvarLancamentos,
+  ]);
 
   const renderizarValorForaDoMes = (nomeCampo, valor, coluna) => (
     <div className="field-values-input">
@@ -295,6 +357,21 @@ export const PeriodoLancamentoEscolaAberta = () => {
       />
     </div>
   );
+
+  const onChangeSemana = (semana) => {
+    if (Object.keys(formErrors).length > 0) {
+      setShowModalErro(true);
+      return;
+    }
+
+    const semanaAnterior = semanaSelecionada;
+    setSemanaSelecionada(semana);
+    salvarLancamentos(formRef.current, {
+      semana: semanaAnterior,
+      exibirMensagemSucesso: false,
+      exibirAlertaSemValores: false,
+    });
+  };
 
   const onClickBotaoVoltar = () => {
     if (formRef.current?.getState().dirty) {
@@ -406,7 +483,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
                 <div className="weeks-tabs mb-2">
                   <Tabs
                     activeKey={semanaSelecionada}
-                    onChange={setSemanaSelecionada}
+                    onChange={onChangeSemana}
                     type="card"
                     className={
                       semanaSelecionada === "1"
@@ -556,6 +633,13 @@ export const PeriodoLancamentoEscolaAberta = () => {
                   </article>
                 </section>
 
+                {ultimaAtualizacaoMedicao && (
+                  <p className="ultimo-salvamento mb-0">
+                    Lançamento do período {NOME_GRUPO_ESCOLA_ABERTA} salvo em{" "}
+                    {ultimaAtualizacaoMedicao}
+                  </p>
+                )}
+
                 <Botao
                   className="float-end"
                   texto="Salvar Lançamentos"
@@ -592,6 +676,11 @@ export const PeriodoLancamentoEscolaAberta = () => {
               setValoresObservacoes={setValoresObservacoes}
               alunosTabSelecionada={null}
               escolaEhEMEBS={false}
+            />
+
+            <ModalErro
+              showModalErro={showModalErro}
+              setShowModalErro={setShowModalErro}
             />
 
             <ModalVoltarPeriodoLancamento

@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom";
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -96,6 +97,7 @@ describe("PeriodoLancamentoEscolaAberta", () => {
   afterEach(() => {
     cleanup();
     mock.reset();
+    jest.restoreAllMocks();
   });
 
   it("renderiza mês, período, semanas e tipos de alimentação do cadastro", async () => {
@@ -171,6 +173,145 @@ describe("PeriodoLancamentoEscolaAberta", () => {
     );
   });
 
+  it("não permite trocar de semana quando há erro de preenchimento", async () => {
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "51" } });
+
+    await waitFor(() => {
+      expect(inputLanche).toHaveClass("invalid-field");
+    });
+
+    fireEvent.click(screen.getByText("Semana 3"));
+
+    expect(await screen.findByText("Aviso de Erro")).toBeInTheDocument();
+    expect(screen.getByText("Semana 2").closest(".ant-tabs-tab")).toHaveClass(
+      "ant-tabs-tab-active",
+    );
+  });
+
+  it("envia os lançamentos da semana atual ao trocar de aba", async () => {
+    let payloadSalvo;
+
+    mock.onPost("/medicao-inicial/medicao/").reply((config) => {
+      payloadSalvo = JSON.parse(config.data);
+      return [201, { valores_medicao: [] }];
+    });
+
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "10" } });
+
+    fireEvent.click(screen.getByText("Semana 3"));
+
+    await waitFor(() => {
+      expect(payloadSalvo).toBeTruthy();
+    });
+
+    expect(payloadSalvo.valores_medicao).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dia: "05",
+          valor: "10",
+          nome_campo: "lanche",
+        }),
+        expect.objectContaining({
+          dia: "07",
+          valor: "50",
+          nome_campo: "participantes",
+        }),
+      ]),
+    );
+    expect(screen.getByText("Semana 3").closest(".ant-tabs-tab")).toHaveClass(
+      "ant-tabs-tab-active",
+    );
+  });
+
+  it("salva automaticamente após 3 minutos quando há alterações", async () => {
+    let payloadSalvo;
+
+    mock.onPost("/medicao-inicial/medicao/").reply((config) => {
+      payloadSalvo = JSON.parse(config.data);
+      return [201, { valores_medicao: [] }];
+    });
+
+    const setIntervalSpy = jest.spyOn(global, "setInterval");
+
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "10" } });
+
+    const chamadasIntervalo = setIntervalSpy.mock.calls.filter(
+      ([, intervalo]) => intervalo === 180000,
+    );
+    const callbackSalvamento =
+      chamadasIntervalo[chamadasIntervalo.length - 1][0];
+
+    await act(async () => {
+      callbackSalvamento();
+    });
+
+    await waitFor(() => {
+      expect(payloadSalvo).toBeTruthy();
+    });
+
+    expect(payloadSalvo.valores_medicao).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dia: "05",
+          valor: "10",
+          nome_campo: "lanche",
+        }),
+      ]),
+    );
+  });
+
+  it("exibe a data da última atualização após salvar", async () => {
+    mock.onPost("/medicao-inicial/medicao/").reply(201, {
+      valores_medicao: [
+        {
+          nome_campo: "lanche",
+          medicao_alterado_em: "13/11/2026, às 15:30:00",
+        },
+      ],
+    });
+
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "10" } });
+    fireEvent.click(screen.getByText("Salvar Lançamentos"));
+
+    expect(
+      await screen.findByText(
+        "Lançamento do período Escola Aberta salvo em 13/11/2026, às 15:30:00",
+      ),
+    ).toBeInTheDocument();
+  });
+
   it("carrega valores salvos e atualiza a medição existente", async () => {
     let payloadAtualizacao;
 
@@ -218,6 +359,52 @@ describe("PeriodoLancamentoEscolaAberta", () => {
     );
   });
 
+  it("envia remoção ao apagar um valor já salvo", async () => {
+    let payloadAtualizacao;
+
+    mock.onGet("/medicao-inicial/valores-medicao/").reply(200, [
+      {
+        nome_campo: "lanche",
+        dia: "05",
+        valor: "10",
+        categoria_medicao: 1,
+        medicao_uuid: "uuid-medicao",
+      },
+    ]);
+    mock.onPatch("/medicao-inicial/medicao/uuid-medicao/").reply((config) => {
+      payloadAtualizacao = JSON.parse(config.data);
+      return [200, { valores_medicao: [] }];
+    });
+
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    expect(inputLanche).toHaveValue("10");
+
+    fireEvent.change(inputLanche, { target: { value: "" } });
+    fireEvent.click(screen.getByText("Salvar Lançamentos"));
+
+    await waitFor(() => {
+      expect(payloadAtualizacao).toBeTruthy();
+    });
+
+    expect(payloadAtualizacao.valores_medicao).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "lanche",
+          tipo_alimentacao: "uuid-lanche",
+        }),
+      ]),
+    );
+  });
+
   it("volta direto quando não há alterações não salvas", async () => {
     renderComRotas();
     await screen.findByText("Participantes");
@@ -249,6 +436,37 @@ describe("PeriodoLancamentoEscolaAberta", () => {
     fireEvent.click(screen.getByText("Sim"));
 
     expect(await screen.findByText("Tela anterior")).toBeInTheDocument();
+  });
+
+  it("fecha a confirmação e permanece na edição ao escolher Não", async () => {
+    renderComRotas();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "5" } });
+
+    fireEvent.click(screen.getByText("Voltar"));
+
+    expect(
+      await screen.findByText(
+        'Deseja realmente sair da página de lançamento em edição? Caso opte por "Sim", você poderá perder os dados inseridos!',
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Não"));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(
+          'Deseja realmente sair da página de lançamento em edição? Caso opte por "Sim", você poderá perder os dados inseridos!',
+        ),
+      ).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Semana 2")).toBeInTheDocument();
   });
 
   it("preenche participantes somente nas datas habilitadas e salva a semana", async () => {
