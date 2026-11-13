@@ -171,6 +171,29 @@ describe("PeriodoLancamentoEscolaAberta", () => {
     );
   });
 
+  it("não permite trocar de semana quando há erro de preenchimento", async () => {
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "51" } });
+
+    await waitFor(() => {
+      expect(inputLanche).toHaveClass("invalid-field");
+    });
+
+    fireEvent.click(screen.getByText("Semana 3"));
+
+    expect(await screen.findByText("Aviso de Erro")).toBeInTheDocument();
+    expect(screen.getByText("Semana 2").closest(".ant-tabs-tab")).toHaveClass(
+      "ant-tabs-tab-active",
+    );
+  });
+
   it("carrega valores salvos e atualiza a medição existente", async () => {
     let payloadAtualizacao;
 
