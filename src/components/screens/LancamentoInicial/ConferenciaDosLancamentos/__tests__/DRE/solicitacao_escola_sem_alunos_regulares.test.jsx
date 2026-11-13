@@ -148,7 +148,9 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
       .reply(200, { results: [] });
   };
 
-  const carregaMedicaoProgramasProjetos = () => {
+  const carregaMedicaoProgramasProjetos = (
+    alimentacoes = "lanche_4h, lanche, sobremesa",
+  ) => {
     mock
       .onGet("/medicao-inicial/valores-medicao/")
       .reply(200, mockValoresMedicaoCMCTProgramasProjetosSetembro2025);
@@ -158,7 +160,7 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
         {
           dia: "02",
           periodo: "MANHA",
-          alimentacoes: "lanche_4h, lanche, sobremesa",
+          alimentacoes,
           numero_alunos: 100,
           dias_semana: [],
           inclusao_id_externo: "E1351",
@@ -341,5 +343,35 @@ describe("Teste Conferência de Lançamentos - Usuário DRE - Solicitação CMCT
         screen.getByText("Solicitação de correção salva com sucesso"),
       ).toBeInTheDocument();
     });
+  });
+
+  it("Programas e Projetos com inclusão contínua só de `sobremesa` NÃO exibe tabelas de DIETA ESPECIAL", async () => {
+    const botao = screen.getByTestId(
+      "visualizar-lancamento-Programas e Projetos",
+    );
+
+    carregaMedicaoProgramasProjetos("sobremesa");
+
+    await act(async () => {
+      fireEvent.click(botao);
+    });
+
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.queryAllByText(/DIETA ESPECIAL/)).toHaveLength(0);
+  });
+
+  it("Programas e Projetos com inclusão contínua de `lanche_4h` exibe tabelas de DIETA ESPECIAL", async () => {
+    const botao = screen.getByTestId(
+      "visualizar-lancamento-Programas e Projetos",
+    );
+
+    carregaMedicaoProgramasProjetos("lanche_4h, sobremesa");
+
+    await act(async () => {
+      fireEvent.click(botao);
+    });
+
+    expect(screen.getByText("ALIMENTAÇÃO")).toBeInTheDocument();
+    expect(screen.queryAllByText(/DIETA ESPECIAL/).length).toBeGreaterThan(0);
   });
 });
