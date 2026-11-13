@@ -23,6 +23,7 @@ import {
   updateValoresPeriodosLancamentos,
 } from "src/services/medicaoInicial/periodoLancamentoMedicao.service";
 import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAberta.service";
+import ModalErro from "../PeriodoLancamentoMedicaoInicial/components/ModalErro";
 import ModalObservacaoDiaria from "../PeriodoLancamentoMedicaoInicial/components/ModalObservacaoDiaria";
 import { ModalVoltarPeriodoLancamento } from "../PeriodoLancamentoMedicaoInicial/components/ModalVoltarPeriodoLancamento";
 import "../PeriodoLancamentoMedicaoInicial/styles.scss";
@@ -70,6 +71,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
   const [salvando, setSalvando] = useState(false);
   const [showModalObservacao, setShowModalObservacao] = useState(false);
   const [showModalVoltar, setShowModalVoltar] = useState(false);
+  const [showModalErro, setShowModalErro] = useState(false);
   const [observacaoSelecionada, setObservacaoSelecionada] = useState(null);
   const [formValues, setFormValues] = useState({});
   const [formErrors, setFormErrors] = useState({});
@@ -297,6 +299,15 @@ export const PeriodoLancamentoEscolaAberta = () => {
     </div>
   );
 
+  const onChangeSemana = (semana) => {
+    if (Object.keys(formErrors).length > 0) {
+      setShowModalErro(true);
+      return;
+    }
+
+    setSemanaSelecionada(semana);
+  };
+
   const onClickBotaoVoltar = () => {
     if (formRef.current?.getState().dirty) {
       setShowModalVoltar(true);
@@ -407,7 +418,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
                 <div className="weeks-tabs mb-2">
                   <Tabs
                     activeKey={semanaSelecionada}
-                    onChange={setSemanaSelecionada}
+                    onChange={onChangeSemana}
                     type="card"
                     className={
                       semanaSelecionada === "1"
@@ -593,6 +604,11 @@ export const PeriodoLancamentoEscolaAberta = () => {
               setValoresObservacoes={setValoresObservacoes}
               alunosTabSelecionada={null}
               escolaEhEMEBS={false}
+            />
+
+            <ModalErro
+              showModalErro={showModalErro}
+              setShowModalErro={setShowModalErro}
             />
 
             <ModalVoltarPeriodoLancamento
