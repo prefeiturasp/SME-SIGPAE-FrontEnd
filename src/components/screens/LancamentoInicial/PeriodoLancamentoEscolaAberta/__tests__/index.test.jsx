@@ -194,6 +194,49 @@ describe("PeriodoLancamentoEscolaAberta", () => {
     );
   });
 
+  it("envia os lançamentos da semana atual ao trocar de aba", async () => {
+    let payloadSalvo;
+
+    mock.onPost("/medicao-inicial/medicao/").reply((config) => {
+      payloadSalvo = JSON.parse(config.data);
+      return [201, { valores_medicao: [] }];
+    });
+
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    fireEvent.change(inputLanche, { target: { value: "10" } });
+
+    fireEvent.click(screen.getByText("Semana 3"));
+
+    await waitFor(() => {
+      expect(payloadSalvo).toBeTruthy();
+    });
+
+    expect(payloadSalvo.valores_medicao).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dia: "05",
+          valor: "10",
+          nome_campo: "lanche",
+        }),
+        expect.objectContaining({
+          dia: "07",
+          valor: "50",
+          nome_campo: "participantes",
+        }),
+      ]),
+    );
+    expect(screen.getByText("Semana 3").closest(".ant-tabs-tab")).toHaveClass(
+      "ant-tabs-tab-active",
+    );
+  });
+
   it("carrega valores salvos e atualiza a medição existente", async () => {
     let payloadAtualizacao;
 
