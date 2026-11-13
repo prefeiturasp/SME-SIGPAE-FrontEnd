@@ -218,6 +218,52 @@ describe("PeriodoLancamentoEscolaAberta", () => {
     );
   });
 
+  it("envia remoção ao apagar um valor já salvo", async () => {
+    let payloadAtualizacao;
+
+    mock.onGet("/medicao-inicial/valores-medicao/").reply(200, [
+      {
+        nome_campo: "lanche",
+        dia: "05",
+        valor: "10",
+        categoria_medicao: 1,
+        medicao_uuid: "uuid-medicao",
+      },
+    ]);
+    mock.onPatch("/medicao-inicial/medicao/uuid-medicao/").reply((config) => {
+      payloadAtualizacao = JSON.parse(config.data);
+      return [200, { valores_medicao: [] }];
+    });
+
+    renderComponente();
+    await screen.findByText("Participantes");
+
+    fireEvent.click(screen.getByText("Semana 2"));
+
+    const inputLanche = await screen.findByTestId(
+      "lanche__dia_05__categoria_1",
+    );
+    expect(inputLanche).toHaveValue("10");
+
+    fireEvent.change(inputLanche, { target: { value: "" } });
+    fireEvent.click(screen.getByText("Salvar Lançamentos"));
+
+    await waitFor(() => {
+      expect(payloadAtualizacao).toBeTruthy();
+    });
+
+    expect(payloadAtualizacao.valores_medicao).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dia: "05",
+          valor: "-1",
+          nome_campo: "lanche",
+          tipo_alimentacao: "uuid-lanche",
+        }),
+      ]),
+    );
+  });
+
   it("volta direto quando não há alterações não salvas", async () => {
     renderComRotas();
     await screen.findByText("Participantes");
