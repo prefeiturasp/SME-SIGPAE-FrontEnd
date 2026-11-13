@@ -238,6 +238,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
       return;
     }
 
+    const medicaoUuid = obterMedicaoUuid(valoresSalvos);
     const payload = montarPayload({
       solicitacaoUuid: dados.uuid,
       categoriaId: dados.categoriaId,
@@ -245,6 +246,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
       colunasHabilitadas,
       linhas: dados.linhas,
       numParticipantes: dados.cadastro.num_participantes,
+      incluirRemocoes: Boolean(medicaoUuid),
     });
 
     if (!payload.valores_medicao.length) {
@@ -255,7 +257,6 @@ export const PeriodoLancamentoEscolaAberta = () => {
     setSalvando(true);
 
     try {
-      const medicaoUuid = obterMedicaoUuid(valoresSalvos);
       const response = medicaoUuid
         ? await updateValoresPeriodosLancamentos(medicaoUuid, payload)
         : await setPeriodoLancamento(payload);
