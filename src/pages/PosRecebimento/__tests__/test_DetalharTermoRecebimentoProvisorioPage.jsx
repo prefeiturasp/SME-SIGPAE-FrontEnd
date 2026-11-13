@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { saveAs } from "file-saver";
 import { MemoryRouter } from "react-router-dom";
 import mock from "src/services/_mock";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
@@ -17,6 +24,7 @@ import {
   toastSuccess,
 } from "src/components/Shareable/Toast/dialogs";
 import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
+import { PERFIL, TIPO_SERVICO } from "src/constants/shared";
 
 const TERMO_UUID = mockTermoRecebimentoDetalhe.uuid;
 
@@ -25,6 +33,7 @@ const normalizar = (texto) => texto.replace(/\s+/g, " ").trim();
 const mockNavigate = jest.fn();
 
 jest.mock("src/services/notificacoes.service");
+jest.mock("file-saver", () => ({ saveAs: jest.fn() }));
 jest.mock("src/components/Shareable/Toast/dialogs");
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -66,6 +75,7 @@ describe("DetalharTermoRecebimentoProvisorioPage", () => {
       "meusDados",
       JSON.stringify(mockMeusDadosDilogQualidade),
     );
+    localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
     window.history.pushState({}, "", `?uuid=${TERMO_UUID}`);
 
     mock.reset();
@@ -125,6 +135,60 @@ describe("DetalharTermoRecebimentoProvisorioPage", () => {
     expect(
       await screen.findByText("Texto do termo de recebimento provisório."),
     ).toBeInTheDocument();
+  });
+
+  it("mantém o botão Termo em PDF desabilitado com assinaturas pendentes", async () => {
+    await setup();
+
+    await screen.findByText("Empresa do Luis Zimmermann");
+
+    expect(screen.getByTestId("termo-em-pdf")).toBeDisabled();
+  });
+
+  it("habilita e baixa o PDF após as três assinaturas", async () => {
+    mock.reset();
+    mock.onGet(`/pos-recebimento/termos/${TERMO_UUID}/`).reply(200, {
+      ...mockTermoRecebimentoDetalhe,
+      status: "ENVIADO_DILOG",
+      pode_assinar: false,
+    });
+    mock
+      .onGet(`/pos-recebimento/termos/${TERMO_UUID}/gerar-pdf-termo/`)
+      .reply(200, new Blob(["pdf"], { type: "application/pdf" }));
+    saveAs.mockClear();
+
+    await setup();
+    await screen.findByText("Empresa do Luis Zimmermann");
+
+    const botao = screen.getByTestId("termo-em-pdf");
+    expect(botao).toBeEnabled();
+
+    await act(async () => {
+      fireEvent.click(botao);
+    });
+
+    await waitFor(() => {
+      expect(
+        mock.history.get.some((call) => call.url.includes("gerar-pdf-termo")),
+      ).toBe(true);
+    });
+    expect(saveAs).toHaveBeenCalled();
+  });
+
+  it("não exibe o botão Termo em PDF para perfis fora da história", async () => {
+    localStorage.setItem("perfil", PERFIL.ADMINISTRADOR_EMPRESA);
+    localStorage.setItem("tipo_servico", TIPO_SERVICO.FORNECEDOR);
+    mock.reset();
+    mock.onGet(`/pos-recebimento/termos/${TERMO_UUID}/`).reply(200, {
+      ...mockTermoRecebimentoDetalhe,
+      status: "ENVIADO_DILOG",
+      pode_assinar: false,
+    });
+
+    await setup();
+    await screen.findByText("Empresa do Luis Zimmermann");
+
+    expect(screen.queryByTestId("termo-em-pdf")).not.toBeInTheDocument();
   });
 
   describe("Linha do tempo", () => {
@@ -206,6 +270,7 @@ describe("DetalharTermoRecebimentoProvisorioPage - Assinatura do Fiscal", () => 
       "meusDados",
       JSON.stringify(mockMeusDadosDilogQualidade),
     );
+    localStorage.setItem("perfil", PERFIL.DILOG_QUALIDADE);
     window.history.pushState({}, "", `?uuid=${TERMO_UUID}`);
 
     mock.reset();

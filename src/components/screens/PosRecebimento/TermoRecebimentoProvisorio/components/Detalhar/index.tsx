@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
 import Botao from "src/components/Shareable/Botao";
 import {
+  BUTTON_ICON,
   BUTTON_STYLE,
   BUTTON_TYPE,
 } from "src/components/Shareable/Botao/constants";
@@ -16,16 +17,21 @@ import { MSG_SENHA_INVALIDA } from "src/components/screens/helper";
 import {
   fiscalAssinaTermo,
   getTermoRecebimentoProvisorio,
+  imprimirTermoRecebimentoProvisorio,
 } from "src/services/posRecebimento.service";
 import {
   PAINEL_ASSINATURA_TERMOS_RECEBIMENTO,
   POS_RECEBIMENTO,
   TERMO_RECEBIMENTO_PROVISORIO,
 } from "src/configs/constants";
-import { formataMilharDecimal } from "src/helpers/utilities";
+import {
+  formataMilharDecimal,
+  usuarioPodeBaixarTermoRecebimentoProvisorio,
+} from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { Parser } from "html-to-react";
 import { CronogramaTermoItem, TermoRecebimentoDetalhe } from "../../interfaces";
+import { STATUS_ASSINATURAS_CONCLUIDAS } from "../../constants";
 import "./styles.scss";
 
 const htmlParser = Parser();
@@ -72,6 +78,7 @@ const DetalharTermoRecebimentoProvisorio: React.FC = () => {
   const [carregando, setCarregando] = useState(false);
   const [showModalAssinatura, setShowModalAssinatura] = useState(false);
   const [loadingAssinatura, setLoadingAssinatura] = useState(false);
+  const [carregandoPdf, setCarregandoPdf] = useState(false);
 
   const getDetalhes = async () => {
     if (uuid) {
@@ -97,6 +104,20 @@ const DetalharTermoRecebimentoProvisorio: React.FC = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     navigate(`/${POS_RECEBIMENTO}/${TERMO_RECEBIMENTO_PROVISORIO}`);
   };
+
+  const baixarTermoEmPdf = async () => {
+    if (!termo?.uuid) return;
+    setCarregandoPdf(true);
+    try {
+      await imprimirTermoRecebimentoProvisorio(termo.uuid);
+    } finally {
+      setCarregandoPdf(false);
+    }
+  };
+
+  const assinaturasConcluidas =
+    !!termo && STATUS_ASSINATURAS_CONCLUIDAS.includes(termo.status);
+  const podeBaixarTermo = usuarioPodeBaixarTermoRecebimentoProvisorio();
 
   const handleAssinar = async (password: string) => {
     if (!uuid) return;
@@ -227,6 +248,27 @@ const DetalharTermoRecebimentoProvisorio: React.FC = () => {
               </div>
 
               <div className="mt-4 mb-4 d-flex justify-content-end">
+                {podeBaixarTermo && (
+                  <Botao
+                    texto={
+                      carregandoPdf ? (
+                        <img
+                          src="/assets/image/ajax-loader.gif"
+                          alt="ajax-loader"
+                        />
+                      ) : (
+                        "Termo em PDF"
+                      )
+                    }
+                    dataTestId="termo-em-pdf"
+                    type={BUTTON_TYPE.BUTTON}
+                    style={BUTTON_STYLE.GREEN}
+                    icon={BUTTON_ICON.FILE_PDF}
+                    className="me-3"
+                    onClick={baixarTermoEmPdf}
+                    disabled={!assinaturasConcluidas || carregandoPdf}
+                  />
+                )}
                 <Botao
                   texto="Voltar"
                   dataTestId="voltar"

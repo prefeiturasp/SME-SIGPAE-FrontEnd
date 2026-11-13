@@ -10,7 +10,7 @@ import {
 import "@testing-library/jest-dom";
 import { MemoryRouter } from "react-router-dom";
 import { CadastroEmpresa } from "../CadastroEmpresa";
-import { TIPO_PERFIL } from "../../../../../constants/shared";
+import { PERFIL, TIPO_PERFIL } from "../../../../../constants/shared";
 import mock from "src/services/_mock";
 import {
   mockContratosCadastrados,
@@ -471,6 +471,258 @@ describe("Carrega página de Empresas visão não Fornecedor", () => {
         "Erro ao atualizar cadastro de empresa",
       ),
     );
+  });
+});
+
+describe("Endereço da empresa", () => {
+  const camposConsultados = ["endereco", "bairro", "cidade", "estado"];
+  const camposManuais = ["numero", "complemento"];
+  const enderecoConsultado = {
+    ...mockCEP,
+    cep: "01001-000",
+    logradouro: "Praça da Sé",
+    bairro: "Sé",
+    localidade: "São Paulo",
+    uf: "SP",
+  };
+
+  const consultarCep = async () => {
+    alterarCampo("#cep", "01001000");
+
+    await waitFor(() => {
+      expect(document.querySelector('[data-cy="endereco"]')).toHaveValue(
+        enderecoConsultado.logradouro,
+      );
+      expect(document.querySelector('[data-cy="bairro"]')).toHaveValue(
+        enderecoConsultado.bairro,
+      );
+      expect(document.querySelector('[data-cy="cidade"]')).toHaveValue(
+        enderecoConsultado.localidade,
+      );
+      expect(document.querySelector('[data-cy="estado"]')).toHaveValue(
+        enderecoConsultado.uf,
+      );
+    });
+  };
+
+  beforeEach(() => {
+    global.fetch.mockResolvedValue({
+      status: 200,
+      json: async () => enderecoConsultado,
+    });
+  });
+
+  it("envia o endereço corrigido manualmente após consultar o CEP ao atualizar a empresa", async () => {
+    localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
+    window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
+
+    const enderecoEditado = {
+      endereco: "Rua de Teste",
+      numero: "123",
+      complemento: "Sala 2",
+      bairro: "Centro",
+      cidade: "Uberlândia",
+      estado: "MG",
+    };
+    const urlAtualizacao = `/empresas-nao-terceirizadas/${mockEmpresa.uuid}/`;
+    mock.onPatch(urlAtualizacao).reply(200, {
+      ...empresaDistribuidor(),
+      ...enderecoEditado,
+      cep: "01001000",
+    });
+
+    await setup();
+    await consultarCep();
+
+    Object.entries(enderecoEditado).forEach(([campo, valor]) => {
+      alterarCampo(`[data-cy="${campo}"]`, valor);
+    });
+
+    expect(screen.getByRole("button", { name: /Atualizar/i })).toBeEnabled();
+    await confirmarEnvio(/Atualizar/i);
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        "Empresa atualizada com sucesso!",
+      ),
+    );
+    expect(mock.history.patch).toHaveLength(1);
+    expect(mock.history.patch[0].url).toBe(urlAtualizacao);
+
+    const dadosEnviados = JSON.parse(mock.history.patch[0].data);
+    expect(dadosEnviados).toMatchObject({
+      ...enderecoEditado,
+      cep: "01001000",
+    });
+  });
+
+  describe.each([
+    {
+      nome: "DILOG_CRONOGRAMA",
+      perfil: PERFIL.DILOG_CRONOGRAMA,
+      tipoPerfil: TIPO_PERFIL.PRE_RECEBIMENTO,
+    },
+    {
+      nome: "COORDENADOR_CODAE_DILOG_LOGISTICA",
+      perfil: PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+      tipoPerfil: TIPO_PERFIL.LOGISTICA,
+    },
+    {
+      nome: "COORDENADOR_GESTAO_PRODUTO",
+      perfil: PERFIL.COORDENADOR_GESTAO_PRODUTO,
+      tipoPerfil: TIPO_PERFIL.GESTAO_PRODUTO,
+    },
+    {
+      nome: "ADMINISTRADOR_CONTRATOS",
+      perfil: PERFIL.ADMINISTRADOR_CONTRATOS,
+      tipoPerfil: JSON.stringify("administrador_contratos"),
+    },
+  ])("Perfil $nome", ({ perfil, tipoPerfil }) => {
+    beforeEach(() => {
+      localStorage.setItem("perfil", perfil);
+      localStorage.setItem("tipo_perfil", tipoPerfil);
+    });
+
+    it.each(["cadastro", "edição"])(
+      "permite editar todos os campos de endereço no modo %s, inclusive após consultar o CEP",
+      async (modo) => {
+        if (modo === "edição") {
+          window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
+        }
+
+        await setup();
+
+        expect(document.querySelector("#cep")).toBeEnabled();
+        [...camposConsultados, ...camposManuais].forEach((campo) => {
+          expect(document.querySelector(`[data-cy="${campo}"]`)).toBeEnabled();
+        });
+
+        await consultarCep();
+
+        expect(document.querySelector("#cep")).toBeEnabled();
+        const enderecoEditado = {
+          endereco: "Rua de Teste",
+          numero: "123",
+          complemento: "Sala 2",
+          bairro: "Centro",
+          cidade: "Uberlândia",
+          estado: "MG",
+        };
+
+        Object.entries(enderecoEditado).forEach(([campo, valor]) => {
+          const elemento = document.querySelector(`[data-cy="${campo}"]`);
+          expect(elemento).toBeEnabled();
+          alterarCampo(elemento, valor);
+          expect(elemento).toHaveValue(valor);
+        });
+      },
+    );
+  });
+
+  describe("Visão de Alimentação", () => {
+    beforeEach(() => {
+      configurarMocksApi(empresaFornecedor());
+      localStorage.setItem(
+        "perfil",
+        PERFIL.COORDENADOR_GESTAO_ALIMENTACAO_TERCEIRIZADA,
+      );
+      localStorage.setItem(
+        "tipo_perfil",
+        TIPO_PERFIL.GESTAO_ALIMENTACAO_TERCEIRIZADA,
+      );
+    });
+
+    it.each(["cadastro", "edição"])(
+      "preserva o bloqueio dos campos de endereço no modo %s, inclusive após consultar o CEP",
+      async (modo) => {
+        if (modo === "edição") {
+          window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
+        }
+
+        await setup();
+
+        camposConsultados.forEach((campo) => {
+          expect(document.querySelector(`[data-cy="${campo}"]`)).toBeDisabled();
+        });
+
+        await consultarCep();
+
+        camposConsultados.forEach((campo) => {
+          expect(document.querySelector(`[data-cy="${campo}"]`)).toBeDisabled();
+        });
+        expect(document.querySelector("#cep")).toBeEnabled();
+        camposManuais.forEach((campo) => {
+          expect(document.querySelector(`[data-cy="${campo}"]`)).toBeEnabled();
+        });
+      },
+    );
+  });
+});
+
+describe("Número do contrato na tela de cadastro de empresa", () => {
+  beforeEach(() => {
+    localStorage.setItem("perfil", PERFIL.DILOG_CRONOGRAMA);
+    localStorage.setItem("tipo_perfil", TIPO_PERFIL.PRE_RECEBIMENTO);
+  });
+
+  it("mantém o campo habilitado para preencher um contrato novo", async () => {
+    await setup();
+
+    const campoNumeroContrato = document.querySelector(
+      '[data-cy="numero_contrato_0"]',
+    );
+
+    expect(campoNumeroContrato).toBeEnabled();
+    expect(campoNumeroContrato).toBeRequired();
+    expect(campoNumeroContrato).toHaveValue("");
+
+    alterarCampo(campoNumeroContrato, "001/2026");
+
+    expect(campoNumeroContrato).toHaveValue("001/2026");
+  });
+
+  it("permite alterar o número do contrato existente e envia a alteração ao salvar", async () => {
+    const numeroNovo = "321/2026";
+    const empresaAtualizada = empresaDistribuidor();
+    empresaAtualizada.contratos[0].numero = numeroNovo;
+    const urlAtualizacao = `/empresas-nao-terceirizadas/${mockEmpresa.uuid}/`;
+
+    window.history.pushState({}, "", `?uuid=${mockEmpresa.uuid}`);
+    mock.onPatch(urlAtualizacao).reply(200, empresaAtualizada);
+
+    await setup();
+
+    const campoNumeroContrato = document.querySelector(
+      '[data-cy="numero_contrato_0"]',
+    );
+    await waitFor(() =>
+      expect(campoNumeroContrato).toHaveValue(mockEmpresa.contratos[0].numero),
+    );
+    expect(campoNumeroContrato).toBeEnabled();
+    expect(campoNumeroContrato).toBeRequired();
+
+    alterarCampo(campoNumeroContrato, numeroNovo);
+
+    expect(campoNumeroContrato).toHaveValue(numeroNovo);
+    expect(screen.getByRole("button", { name: /Atualizar/i })).toBeEnabled();
+
+    await confirmarEnvio(/Atualizar/i);
+
+    await waitFor(() =>
+      expect(toastSuccess).toHaveBeenCalledWith(
+        "Empresa atualizada com sucesso!",
+      ),
+    );
+    expect(mock.history.patch).toHaveLength(1);
+    expect(mock.history.patch[0].url).toBe(urlAtualizacao);
+
+    const dadosEnviados = JSON.parse(mock.history.patch[0].data);
+    expect(dadosEnviados.contratos[0]).toMatchObject({
+      uuid: mockEmpresa.contratos[0].uuid,
+      numero: numeroNovo,
+    });
+    expect(dadosEnviados.contratos[1]).not.toHaveProperty("numero");
   });
 });
 

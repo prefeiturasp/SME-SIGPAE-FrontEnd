@@ -115,7 +115,7 @@ describe("Teste Refeições Simultâneas período NOITE - EMEF", () => {
   const mockValoresMedicaoEMEFJaneiro2026Atualizado =
     mockValoresMedicaoEMEFJaneiro2026.map((item) => ({
       ...item,
-      nome_campo: item.nome === "lanche" ? "lanche_4h" : item.nome,
+      nome_campo: item.nome_campo === "lanche" ? "lanche_4h" : item.nome_campo,
     }));
 
   const mockValoresMedicaoComObservacao = [
@@ -1279,6 +1279,39 @@ describe("Teste Refeições Simultâneas período MANHA - EMEF", () => {
           expect(modal).not.toBeInTheDocument();
         });
       });
+    });
+  });
+
+  describe("Botão de observação x input habilitado", () => {
+    it("não exibe o botão 'Adicionar' em feriado (dia útil sem input)", async () => {
+      const dia = "01";
+      expect(
+        screen.getByTestId(`frequencia__dia_${dia}__categoria_1`),
+      ).toBeDisabled();
+      expect(
+        screen.queryByTestId(`botao-observacao__dia_${dia}__categoria_1`),
+      ).not.toBeInTheDocument();
+    });
+
+    it("não exibe o botão em fim de semana", async () => {
+      expect(
+        screen.queryByTestId("botao-observacao__dia_03__categoria_1"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByTestId("botao-observacao__dia_04__categoria_1"),
+      ).not.toBeInTheDocument();
+    });
+
+    it("exibe o botão 'Adicionar' em dia com input habilitado", async () => {
+      fireEvent.click(screen.getByText("Semana 2"));
+
+      const dia = "05";
+      expect(
+        screen.getByTestId(`frequencia__dia_${dia}__categoria_1`),
+      ).not.toBeDisabled();
+      expect(
+        screen.getByTestId(`botao-observacao__dia_${dia}__categoria_1`),
+      ).toBeInTheDocument();
     });
   });
 });

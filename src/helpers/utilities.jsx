@@ -666,6 +666,15 @@ export const usuarioEhCronogramaOuCodae = () => {
   ].includes(localStorage.getItem("perfil"));
 };
 
+export const usuarioPodeBaixarTermoRecebimentoProvisorio = () => {
+  return [
+    PERFIL.DILOG_QUALIDADE,
+    PERFIL.DILOG_DIRETORIA,
+    PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+  ].includes(localStorage.getItem("perfil"));
+};
+
 export const usuarioEhPreRecebimento = () => {
   return (
     [
