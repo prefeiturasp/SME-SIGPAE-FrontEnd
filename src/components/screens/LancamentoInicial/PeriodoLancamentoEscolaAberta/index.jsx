@@ -166,8 +166,8 @@ export const PeriodoLancamentoEscolaAberta = () => {
     );
   }, [dados]);
 
-  const montarColunas = (mesAno, cadastro) =>
-    montarDiasDaSemana(mesAno, Number(semanaSelecionada)).map((diaInfo) => ({
+  const montarColunas = (mesAno, cadastro, semana = semanaSelecionada) =>
+    montarDiasDaSemana(mesAno, Number(semana)).map((diaInfo) => ({
       ...diaInfo,
       foraDoMes: obterTextoForaDoMes(diaInfo, mesAno),
       habilitado: dataHabilitada(diaInfo, mesAno, cadastro),
@@ -216,8 +216,15 @@ export const PeriodoLancamentoEscolaAberta = () => {
     toastError("Erro ao salvar observação.");
   };
 
-  const salvarLancamentos = async (form) => {
-    if (!dados) {
+  const salvarLancamentos = async (
+    form,
+    {
+      semana = semanaSelecionada,
+      exibirMensagemSucesso = true,
+      exibirAlertaSemValores = true,
+    } = {},
+  ) => {
+    if (!dados || !form) {
       return;
     }
 
@@ -225,6 +232,7 @@ export const PeriodoLancamentoEscolaAberta = () => {
     const colunasHabilitadas = montarColunas(
       dados.mesAno,
       dados.cadastro,
+      semana,
     ).filter((coluna) => coluna.habilitado);
 
     const erros = validarLancamentos(
@@ -252,7 +260,9 @@ export const PeriodoLancamentoEscolaAberta = () => {
     });
 
     if (!payload.valores_medicao.length) {
-      toastWarn("Não há valores para serem salvos");
+      if (exibirAlertaSemValores) {
+        toastWarn("Não há valores para serem salvos");
+      }
       return;
     }
 
@@ -271,8 +281,10 @@ export const PeriodoLancamentoEscolaAberta = () => {
             (item) => item.nome_campo === "observacoes",
           ),
         );
-        form.restart({ ...values });
-        toastSuccess("Lançamentos salvos com sucesso");
+        form.restart({ ...form.getState().values });
+        if (exibirMensagemSucesso) {
+          toastSuccess("Lançamentos salvos com sucesso");
+        }
       } else {
         toastError("Erro ao salvar lançamentos.");
       }
@@ -305,7 +317,13 @@ export const PeriodoLancamentoEscolaAberta = () => {
       return;
     }
 
+    const semanaAnterior = semanaSelecionada;
     setSemanaSelecionada(semana);
+    salvarLancamentos(formRef.current, {
+      semana: semanaAnterior,
+      exibirMensagemSucesso: false,
+      exibirAlertaSemValores: false,
+    });
   };
 
   const onClickBotaoVoltar = () => {
