@@ -126,6 +126,44 @@ describe("DetalharTermoRecebimentoProvisorioPage", () => {
       await screen.findByText("Texto do termo de recebimento provisório."),
     ).toBeInTheDocument();
   });
+
+  describe("Linha do tempo", () => {
+    it("renderiza um item por log", async () => {
+      await setup();
+      await screen.findByText("Empresa do Luis Zimmermann");
+
+      expect(screen.getAllByText("Termo Criado")).toHaveLength(1);
+      expect(screen.getAllByText("Assinatura Fiscal do Contrato")).toHaveLength(
+        3,
+      );
+      expect(screen.getAllByText("Termo Assinado")).toHaveLength(1);
+
+      expect(screen.getByText("Maria Souza")).toBeInTheDocument();
+      expect(screen.getByText("João Lima")).toBeInTheDocument();
+      expect(screen.getByText("Ana Dias")).toBeInTheDocument();
+      expect(screen.getAllByText("Pedro Rocha")).toHaveLength(2);
+
+      expect(screen.getByText(/11\/11\/2026 09:14:32/)).toBeInTheDocument();
+      expect(screen.getByText(/11\/11\/2026 10:02:01/)).toBeInTheDocument();
+      expect(screen.getByText(/12\/11\/2026 08:30:45/)).toBeInTheDocument();
+      expect(screen.getAllByText(/12\/11\/2026 14:10:09/)).toHaveLength(2);
+    });
+
+    it("não renderiza a linha do tempo quando logs vem vazio", async () => {
+      mock.reset();
+      mock
+        .onGet(`/pos-recebimento/termos/${TERMO_UUID}/`)
+        .reply(200, { ...mockTermoRecebimentoDetalhe, logs: [] });
+
+      await setup();
+      await screen.findByText("Empresa do Luis Zimmermann");
+
+      expect(screen.queryByText("Termo Criado")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Assinatura Fiscal do Contrato"),
+      ).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe("DetalharTermoRecebimentoProvisorioPage - Assinatura do Fiscal", () => {
