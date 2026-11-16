@@ -289,6 +289,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Recreio com lanche 
 });
 
 describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Sem query string", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
@@ -312,9 +316,23 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Sem query string", 
   });
 
   it("Mantém a URL sem mês e ano e não seleciona período automaticamente", async () => {
-    const dataAtual = new Date();
-    const mesAtual = String(dataAtual.getMonth() + 1).padStart(2, "0");
-    const anoAtual = String(dataAtual.getFullYear());
+    jest.useFakeTimers({
+      doNotFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "setImmediate",
+        "clearImmediate",
+        "nextTick",
+        "queueMicrotask",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+      ],
+    });
+    jest.setSystemTime(new Date(2024, 1, 15, 15, 0, 0));
+    const mesAtual = "02";
+    const anoAtual = "2024";
     const recreioUuid = "recreio-default-uuid";
     const recreioTitulo = `Recreio ${mesAtual}/${anoAtual}`;
     const dataInicioRecreio = `02/${mesAtual}/${anoAtual}`;

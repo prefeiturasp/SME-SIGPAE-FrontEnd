@@ -26,6 +26,8 @@ import {
 import { mockGetNotificacoes } from "src/mocks/services/notificacoes.service/mockGetNotificacoes";
 import { mockGetQtdNaoLidas } from "src/mocks/services/notificacoes.service/mockGetQtdNaoLidas";
 import { PERFIL, TIPO_PERFIL } from "src/constants/shared";
+import { mockMeusDadosDilogAbastecimento } from "src/mocks/meusDados/dilog-abastecimento";
+import { MeusDadosInterface } from "src/context/MeusDadosContext/interfaces";
 
 jest.mock("src/components/Shareable/Toast/dialogs");
 jest.mock("src/services/notificacoes.service");
@@ -35,7 +37,9 @@ const URL_EMPRESAS = "/terceirizadas/lista-empresas-cronograma/";
 const URL_PRODUTOS = "/cadastro-produtos-edital/lista-completa-logistica/";
 const URL_EXCEL = "/cronogramas-semanais/gerar-relatorio-xlsx-async/";
 
-const setup = async () => {
+const setup = async (
+  meusDados: MeusDadosInterface = mockMeusDadosDilogQualidade,
+) => {
   await act(async () => {
     render(
       <MemoryRouter
@@ -43,7 +47,7 @@ const setup = async () => {
       >
         <MeusDadosContext.Provider
           value={{
-            meusDados: mockMeusDadosDilogQualidade,
+            meusDados,
             setMeusDados: jest.fn(),
           }}
         >
@@ -205,6 +209,37 @@ describe("RelatorioCronogramaSemanalPage", () => {
   });
 
   describe("Listagem", () => {
+    it("permite que Abastecimento filtre e visualize os cronogramas semanais", async () => {
+      localStorage.setItem("perfil", PERFIL.DILOG_ABASTECIMENTO);
+      localStorage.setItem(
+        "meusDados",
+        JSON.stringify(mockMeusDadosDilogAbastecimento),
+      );
+      mock
+        .onGet(URL_LISTAGEM)
+        .reply(200, mockListagemRelatorioCronogramasSemanais);
+
+      await setup(mockMeusDadosDilogAbastecimento);
+      await screen.findByText("Filtrar por Empresa");
+
+      fireEvent.change(
+        screen.getByPlaceholderText("Digite o nº do Cronograma Semanal"),
+        { target: { value: "001/2025" } },
+      );
+      await clicarFiltrar();
+
+      expect(
+        await screen.findByText("Empresa Alfa Alimentos LTDA"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Empresa Beta Comercio LTDA"),
+      ).toBeInTheDocument();
+      expect(paramsListagem().get("numero_cronograma_semanal")).toBe(
+        "001/2025",
+      );
+      expect(toastError).not.toHaveBeenCalled();
+    });
+
     it("renderiza as linhas com os dados formatados após filtrar", async () => {
       mock
         .onGet(URL_LISTAGEM)

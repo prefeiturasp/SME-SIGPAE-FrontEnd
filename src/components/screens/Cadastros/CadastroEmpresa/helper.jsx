@@ -164,8 +164,10 @@ export const formataJsonParaEnvio = (valoresForm, valoresState) => {
         programa: valoresForm[`programa_${index}`],
       };
 
-      if (!contrato.uuid) {
-        payloadContrato.numero = valoresForm[`numero_contrato_${index}`];
+      const numeroContrato = valoresForm[`numero_contrato_${index}`];
+
+      if (!contrato.uuid || numeroContrato !== contrato.numero) {
+        payloadContrato.numero = numeroContrato;
       }
 
       return payloadContrato;

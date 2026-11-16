@@ -158,7 +158,6 @@ export const PeriodosFields = ({ ...props }) => {
                         paraValoresSelecionados(values_),
                       );
                     }}
-                    allowSelectAll={false}
                     placeholder="Selecione tipos de alimentação"
                     disabled={!values.substituicoes[index]["check"]}
                     required={values.substituicoes[index]["check"]}

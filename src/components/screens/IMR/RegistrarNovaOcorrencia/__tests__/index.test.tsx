@@ -256,6 +256,10 @@ const selecionarTipoOcorrencia = async () => {
 };
 
 describe("RegistrarNovaOcorrencia", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -574,6 +578,22 @@ describe("RegistrarNovaOcorrencia", () => {
   });
 
   it("limita a data da ocorrência ao mês e ano da medição", async () => {
+    jest.useFakeTimers({
+      doNotFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "setImmediate",
+        "clearImmediate",
+        "nextTick",
+        "queueMicrotask",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+      ],
+    });
+    jest.setSystemTime(new Date(2025, 0, 1, 12, 0, 0));
+
     renderizarComponente();
 
     await selecionarTipoOcorrencia();
@@ -587,18 +607,8 @@ describe("RegistrarNovaOcorrencia", () => {
         mockSeletorDeDatas.mock.calls.length - 1
       ][0];
 
-    const hoje = new Date();
-    const ontem = new Date(
-      hoje.getFullYear(),
-      hoje.getMonth(),
-      hoje.getDate() - 1,
-    );
-    const ultimoDiaMes = new Date(2024, 5, 30);
-
     expect(ultimaChamada.minDate).toEqual(new Date(2024, 5, 1));
-    expect(ultimaChamada.maxDate).toEqual(
-      ontem < ultimoDiaMes ? ontem : ultimoDiaMes,
-    );
+    expect(ultimaChamada.maxDate).toEqual(new Date(2024, 5, 30));
   });
 
   it("monta a escola selecionada com os dados do contexto e do edital", async () => {
@@ -926,6 +936,34 @@ describe("RegistrarNovaOcorrencia", () => {
 
   const URL_LISTA_OCORRENCIAS =
     "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias?ano=2024&mes=6";
+
+  it("bloqueia a edição quando o tipo da ocorrência não está entre os tipos disponíveis", async () => {
+    mockGetTiposOcorrencia.mockResolvedValueOnce({
+      status: 200,
+      data: [segundoTipoOcorrencia],
+    });
+
+    renderizarComponente(propsEdicao);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("carregamento")).not.toBeInTheDocument();
+    });
+
+    expect(mockGetTiposOcorrencia).toHaveBeenCalledWith({
+      edital_uuid: EDITAL_UUID,
+    });
+    expect(mockBuscarOcorrencia).toHaveBeenCalledWith({
+      uuid: OCORRENCIA_UUID,
+      tipo_ocorrencia: TIPO_OCORRENCIA_UUID,
+      grupo: 1,
+    });
+    expect(mockForm).not.toHaveBeenCalled();
+    expect(mockSeletorCategoria).not.toHaveBeenCalled();
+    expect(mockSeletorTipoOcorrencia).not.toHaveBeenCalled();
+    expect(mockAtualizarOcorrencia).not.toHaveBeenCalled();
+    expect(mockExcluirOcorrencia).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
 
   it("abre o modal de cancelamento e retorna à listagem somente ao confirmar", async () => {
     renderizarComponente(propsEdicao);

@@ -3293,21 +3293,34 @@ export default () => {
       alteracoesAlimentacaoAutorizadas?.some(
         (alteracao) => alteracao.dia === dia,
       );
+
     const temDiaHabilitadoParaLancamentoETEC =
       ehGrupoETECUrlParam &&
       categoriaAtual?.nome === "ALIMENTAÇÃO" &&
       validacaoDiaLancamentoETEC(dia, categoriaId);
+
+    const temLancheEmergencialDiarioNoDia =
+      diasLancheEmergencialDiarioAtivo?.includes(dia) &&
+      validacaoDiaLetivoLancheEmergencial(dia);
+
+    const temSolicitacaoHabilitadaNoDia =
+      temKitLancheAutorizadoNoDia ||
+      temLancheEmergencialAutorizadoNoDia ||
+      temLancheEmergencialDiarioNoDia;
+
+    const liberadoPorDiaLetivo =
+      !ehCategoriaSolicitacoesDeAlimentacao &&
+      !ehGrupoETECUrlParam &&
+      validacaoDiaLetivo(dia);
 
     return (
       (!validacaoSemana(dia) &&
         (temDiaHabilitadoParaLancamentoETEC ||
           (ehProgramasEProjetos
             ? temInclusaoAutorizadaNoDia
-            : validacaoDiaLetivo(dia) || temInclusaoAutorizadaNoDia) ||
-          (temKitLancheAutorizadoNoDia &&
-            ehCategoriaSolicitacoesDeAlimentacao) ||
-          (temLancheEmergencialAutorizadoNoDia &&
-            ehCategoriaSolicitacoesDeAlimentacao)) &&
+            : liberadoPorDiaLetivo || temInclusaoAutorizadaNoDia) ||
+          (ehCategoriaSolicitacoesDeAlimentacao &&
+            temSolicitacaoHabilitadaNoDia)) &&
         !escolaEhEMEBS()) ||
       (escolaEhEMEBS() &&
         !validacaoSemana(dia) &&

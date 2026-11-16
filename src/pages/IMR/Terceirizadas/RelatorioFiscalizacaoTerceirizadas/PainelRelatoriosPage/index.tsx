@@ -11,7 +11,7 @@ import { PainelRelatorios } from "src/components/screens/IMR/Terceirizadas/Relat
 
 const atual = {
   href: `/${SUPERVISAO}/${TERCEIRIZADAS}/${PAINEL_RELATORIOS_FISCALIZACAO}`,
-  titulo: "Painel de Acompanhamento dos Relatórios",
+  titulo: "Painel de Acompanhamento dos Relatórios de Fiscalização",
 };
 
 const anteriores = [

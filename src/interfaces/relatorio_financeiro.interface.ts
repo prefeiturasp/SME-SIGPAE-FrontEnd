@@ -19,6 +19,29 @@ export interface RelatorioFinanceiroInterface {
   ano: string;
   lote: Lote;
   grupo_unidade_escolar: GrupoUnidadeEscolar;
+  status_display?: string;
+  possui_medicao_final?: boolean;
+}
+
+export interface DadosMedicaoFinal {
+  empresa_contratada: string | null;
+  periodo_inicio: string | null;
+  periodo_fim: string | null;
+  lote: string | null;
+  dre: string | null;
+  tipos_unidade: string | null;
+  numero_contrato: string | null;
+  numero_processo_administrativo: string | null;
+}
+
+export interface ResponsavelConferencia {
+  rf: string;
+  nome: string;
+}
+
+export interface PayloadGerarMedicaoFinal {
+  rf_responsavel_conferencia: string;
+  numero_processo_pagamento: string;
 }
 
 export interface PayloadRelatorioFinanceiro {

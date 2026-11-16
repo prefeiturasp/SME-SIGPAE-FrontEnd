@@ -779,6 +779,27 @@ export const formataPayloadCadastroFichaTecnica = (
   return payload;
 };
 
+const gerarCamposNaoFLV = (
+  values: Record<string, any>,
+  conferidos: StateConferidosAnalise,
+  ehPereciveis: boolean,
+) => ({
+  ...(!conferidos.informacoes_nutricionais
+    ? gerarCamposInformacoesNutricionais(values)
+    : {}),
+  ...(!conferidos.conservacao
+    ? gerarCamposConservacao(values, ehPereciveis)
+    : {}),
+  ...(!conferidos.temperatura_e_transporte && ehPereciveis
+    ? gerarCamposTemperaturaTransporte(values, ehPereciveis)
+    : {}),
+  ...(!conferidos.armazenamento ? gerarCamposArmazenamento(values) : {}),
+  ...(!conferidos.embalagem_e_rotulagem
+    ? gerarCamposEmbalagemRotulagem(values, ehPereciveis)
+    : {}),
+  ...(!conferidos.modo_preparo ? gerarCamposModoPreparo(values) : {}),
+});
+
 export const formataPayloadCorrecaoFichaTecnica = (
   values: Record<string, any>,
   conferidos: StateConferidosAnalise,
@@ -791,7 +812,7 @@ export const formataPayloadCorrecaoFichaTecnica = (
   ehFichaFLV: boolean = false,
   mostrarNumeroRegistro: boolean = true,
 ) => {
-  let payload: FichaTecnicaPayload = {
+  const payload: FichaTecnicaPayload = {
     ...(conferidos.fabricante_envasador === false
       ? gerarCamposProponenteFabricante(
           values,
@@ -808,27 +829,8 @@ export const formataPayloadCorrecaoFichaTecnica = (
       ? gerarCamposResponsavelTecnico(values, arquivo)
       : {}),
     password: password,
+    ...(!ehFichaFLV ? gerarCamposNaoFLV(values, conferidos, ehPereciveis) : {}),
   };
-
-  if (!ehFichaFLV) {
-    payload = {
-      ...payload,
-      ...(!conferidos.informacoes_nutricionais
-        ? gerarCamposInformacoesNutricionais(values)
-        : {}),
-      ...(!conferidos.conservacao
-        ? gerarCamposConservacao(values, ehPereciveis)
-        : {}),
-      ...(!conferidos.temperatura_e_transporte && ehPereciveis
-        ? gerarCamposTemperaturaTransporte(values, ehPereciveis)
-        : {}),
-      ...(!conferidos.armazenamento ? gerarCamposArmazenamento(values) : {}),
-      ...(!conferidos.embalagem_e_rotulagem
-        ? gerarCamposEmbalagemRotulagem(values, ehPereciveis)
-        : {}),
-      ...(!conferidos.modo_preparo ? gerarCamposModoPreparo(values) : {}),
-    };
-  }
 
   return payload;
 };

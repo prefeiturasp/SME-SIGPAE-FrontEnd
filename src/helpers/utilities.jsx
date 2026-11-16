@@ -261,6 +261,13 @@ export const formataMilharDecimal = (value) => {
   });
 };
 
+export const converterValorParaDecimal = (valor) => {
+  if (valor === null || valor === undefined || valor === "") return "0.00";
+  const limpo = String(valor).replace(/\./g, "").replace(",", ".");
+  const numero = parseFloat(limpo);
+  return (isNaN(numero) ? 0 : numero).toFixed(2);
+};
+
 export const truncarString = (str, numeroMaximoChars) => {
   if (!str) return "";
 
@@ -552,6 +559,7 @@ export const usuarioComAcessoAoRelatorioCronogramasSemanais = () => {
     PERFIL.DILOG_QUALIDADE,
     PERFIL.DILOG_CRONOGRAMA,
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+    PERFIL.DILOG_ABASTECIMENTO,
   ].includes(localStorage.getItem("perfil"));
 };
 
@@ -653,6 +661,15 @@ export const usuarioEhDilogQualidadeOuCronograma = () => {
 
 export const usuarioEhCronogramaOuCodae = () => {
   return [
+    PERFIL.DILOG_CRONOGRAMA,
+    PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
+  ].includes(localStorage.getItem("perfil"));
+};
+
+export const usuarioPodeBaixarTermoRecebimentoProvisorio = () => {
+  return [
+    PERFIL.DILOG_QUALIDADE,
+    PERFIL.DILOG_DIRETORIA,
     PERFIL.DILOG_CRONOGRAMA,
     PERFIL.COORDENADOR_CODAE_DILOG_LOGISTICA,
   ].includes(localStorage.getItem("perfil"));
@@ -1265,6 +1282,10 @@ export const exibirModuloOcorrencias = () => {
       usuarioEhCODAEGabinete() ||
       usuarioEhDilogDiretoria())
   );
+};
+
+export const exibirMemorandoOcorrencias = () => {
+  return !["production"].includes(ENVIRONMENT) && usuarioEhEscola();
 };
 
 export const exibirRelatorioAlimentacoesServidas = () => {

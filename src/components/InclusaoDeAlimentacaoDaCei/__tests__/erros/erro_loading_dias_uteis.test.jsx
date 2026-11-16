@@ -18,9 +18,24 @@ import mock from "src/services/_mock";
 describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
   const escolaUuid =
     mockMeusDadosEscolaCEIcomMANHAeTARDE.vinculo_atual.instituicao.uuid;
-  const hoje = new Date().toISOString().split("T")[0];
-
   beforeEach(async () => {
+    jest.useFakeTimers({
+      doNotFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "setImmediate",
+        "clearImmediate",
+        "nextTick",
+        "queueMicrotask",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+      ],
+    });
+    jest.setSystemTime(new Date(2026, 10, 3, 22, 0, 0));
+    const hoje = "2026-11-03";
+
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEIcomMANHAeTARDE);
@@ -29,7 +44,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
       .reply(200, mockMotivosInclusaoNormal);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarCEIComManhaTarde);
     mock
@@ -41,7 +56,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
     mock.onPost("/inclusoes-alimentacao-da-cei/").reply(201, {});
     mock
       .onPut(
-        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`,
       )
       .reply(200, {
         uuid: mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0]
@@ -49,7 +64,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
       });
     mock
       .onPatch(
-        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/inicio-pedido/`
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
 
@@ -66,7 +81,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
       .entries()) {
       mock
         .onGet(
-          `/quantidade-alunos-por-periodo/${uuidPeriodoEscolar}/alunos-por-faixa-etaria/${hoje}/`
+          `/quantidade-alunos-por-periodo/${uuidPeriodoEscolar}/alunos-por-faixa-etaria/${hoje}/`,
         )
         .reply(200, mocksQuantidadeALunosFaixaEtaria[index]);
     }
@@ -95,16 +110,20 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
             <InclusaoDeAlimentacaoCEIPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("renderiza erro `Erro ao carregar dias úteis. Tente novamente mais tarde.`", async () => {
     expect(
       screen.getByText(
-        "Erro ao carregar dias úteis. Tente novamente mais tarde."
-      )
+        "Erro ao carregar dias úteis. Tente novamente mais tarde.",
+      ),
     ).toBeInTheDocument();
   });
 });

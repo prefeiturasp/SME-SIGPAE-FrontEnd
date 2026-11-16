@@ -4,6 +4,7 @@ import { ENVIRONMENT } from "src/constants/config";
 import {
   ehUsuarioRelatorios,
   exibirGA,
+  exibirMemorandoOcorrencias,
   exibirModuloMedicaoInicial,
   usuarioComAcessoTelaEntregasDilog,
   usuarioEhAdministradorCONTRATOS,
@@ -219,7 +220,7 @@ export const SidebarContent = () => {
     usuarioEhCronogramaOuCodae() ||
     usuarioEhDilogDiretoria() ||
     usuarioEhRecebimento() ||
-    usuarioEhEmpresaFornecedor();
+    exibirMemorandoOcorrencias();
 
   const exibirMenuSupervisao =
     (usuarioEhNutricionistaSupervisao() ||

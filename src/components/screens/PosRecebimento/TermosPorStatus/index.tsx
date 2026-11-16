@@ -9,7 +9,7 @@ import InputText from "src/components/Shareable/Input/InputText";
 import { gerarParametrosConsulta } from "src/helpers/utilities";
 import {
   POS_RECEBIMENTO,
-  DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO,
+  DETALHAR_TERMO_RECEBIMENTO_PROVISORIO,
 } from "src/configs/constants";
 import { TermoRecebimentoAssinaturaDashboard } from "../PainelAssinaturaTermosRecebimento/interfaces";
 
@@ -56,7 +56,7 @@ const TermosPorStatus: React.FC<Props> = ({
       return {
         texto: `${item.numero_contrato} - ${empresa} - ${produtos}`,
         data: item.criado_em,
-        link: `/${POS_RECEBIMENTO}/${DETALHAR_TERMO_RECEBIMENTO_DEFINITIVO}?uuid=${item.uuid}`,
+        link: `/${POS_RECEBIMENTO}/${DETALHAR_TERMO_RECEBIMENTO_PROVISORIO}?uuid=${item.uuid}`,
       };
     });
 

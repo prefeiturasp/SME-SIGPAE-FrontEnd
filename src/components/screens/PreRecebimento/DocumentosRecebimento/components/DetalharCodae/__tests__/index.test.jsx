@@ -88,6 +88,19 @@ const mockDadosDocumentoCorrecao = {
   ],
 };
 
+const mockDadosDocumentoReprovado = {
+  ...mockDadosDocumentoAprovado,
+  status: "Reprovado",
+  logs: [
+    {
+      status_evento_explicacao: "Reprovado",
+      criado_em: "2024-01-22 09:00:00",
+      usuario: { nome: "Usuário CODAE" },
+      justificativa: "Documento fora do padrão exigido",
+    },
+  ],
+};
+
 const mockDadosDocumentoPrazoOutro = {
   ...mockDadosDocumentoAprovado,
   datas_fabricacao_e_prazos: [
@@ -178,6 +191,68 @@ describe("DetalharCodaeDocumentosRecebimento", () => {
       await waitFor(() => {
         expect(screen.getByText(/Solicitada Correção em/)).toBeInTheDocument();
       });
+    });
+
+    it("exibe status reprovado quando documento está reprovado", async () => {
+      mock
+        .onGet(/\/documentos-de-recebimento\/.*\/?/)
+        .reply(200, mockDadosDocumentoReprovado);
+
+      await setup();
+
+      await waitFor(() => {
+        expect(screen.getByText(/Documento reprovado em/)).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("Documento Reprovado", () => {
+    beforeEach(() => {
+      mock
+        .onGet(/\/documentos-de-recebimento\/.*\/?/)
+        .reply(200, mockDadosDocumentoReprovado);
+    });
+
+    it("exibe seção de reprovação com a justificativa", async () => {
+      await setup();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Documento(s) de Recebimento Reprovado(s)"),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByText("Justificativa da Reprovação"),
+        ).toBeInTheDocument();
+        expect(
+          screen.getByDisplayValue("Documento fora do padrão exigido"),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("não exibe seção Dados do Laudo quando reprovado", async () => {
+      await setup();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Documento(s) de Recebimento Reprovado(s)"),
+        ).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText("Dados do Laudo")).not.toBeInTheDocument();
+    });
+
+    it("não exibe seção de solicitação de correção quando reprovado", async () => {
+      await setup();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Documento(s) de Recebimento Reprovado(s)"),
+        ).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByText("Solicitação de Correção"),
+      ).not.toBeInTheDocument();
     });
   });
 

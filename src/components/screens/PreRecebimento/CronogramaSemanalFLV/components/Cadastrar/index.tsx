@@ -46,10 +46,12 @@ import {
 } from "src/interfaces/cronograma_semanal.interface";
 import {
   obterLimitesMes,
-  formataDataISOparaDDMMYYYY,
   calcularQuantidadeEstimada,
   calcularQuantidadeEstimadaDisponivel,
   calcularDiferenca,
+  montarCamposCronograma,
+  obterProgramacoesIniciais,
+  agruparEtapasPorMes,
 } from "./helpers";
 import { ModalAssinaturaUsuario } from "src/components/Shareable/ModalAssinaturaUsuario";
 import ModalGenerico from "src/components/Shareable/ModalGenerico";
@@ -218,108 +220,34 @@ const CadastrarCronogramaSemanal: React.FC<CadastrarCronogramaSemanalProps> = ({
       if (response && response.data) {
         const data = response.data;
 
-        form.change("produto", data.ficha_tecnica?.produto?.nome || "");
-        form.change("fornecedor", data.empresa?.nome_fantasia || "");
-        form.change("numero_contrato", data.contrato?.numero || "");
-        form.change("numero_processo_sei", data.contrato?.processo || "");
-        form.change(
-          "numero_chamada_publica_ou_ata",
-          data.contrato?.numero_pregao
-            ? data.contrato?.ata || ""
-            : data.contrato?.numero_chamada_publica || "",
-        );
-        form.change(
-          "tipo_documento",
-          data.contrato?.numero_pregao ? "Nº da Ata" : "Nº da Chamada Pública",
-        );
-        form.change("numero_empenho", data.numero_empenho || "");
-        form.change(
-          "qtd_total_empenho",
-          formataMilharDecimal(data.qtd_total_empenho) || "",
-        );
-        form.change(
-          "custo_unitario_produto",
-          `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
-        );
+        const campos = montarCamposCronograma(data);
+        for (const [campo, valor] of Object.entries(campos)) {
+          form.change(campo, valor);
+        }
 
-        let programacoesIniciais;
         if (cronogramaSemanalExistente?.programacoes) {
-          programacoesIniciais = cronogramaSemanalExistente.programacoes.map(
-            (p) => ({
-              mes_programado: p.mes_programado,
-              data_inicio: formataDataISOparaDDMMYYYY(p.data_inicio) || "",
-              data_fim: formataDataISOparaDDMMYYYY(p.data_fim) || "",
-              quantidade: formataMilharDecimal(p.quantidade),
-            }),
-          );
           form.change(
             "observacoes",
             cronogramaSemanalExistente.observacoes || "",
           );
-        } else {
-          const programacoesAtuais = form.getState().values.programacoes;
-          programacoesIniciais =
-            programacoesAtuais && programacoesAtuais.length > 0
-              ? programacoesAtuais
-              : [programacaoPadrao];
         }
 
+        const programacoesIniciais = obterProgramacoesIniciais(
+          cronogramaSemanalExistente,
+          form.getState().values.programacoes,
+          programacaoPadrao,
+        );
         form.change("programacoes", programacoesIniciais);
 
-        const novosValores = {
+        setValoresCronogramaMensal({
           ...form.getState().values,
-          produto: data.ficha_tecnica?.produto?.nome || "",
-          fornecedor: data.empresa?.nome_fantasia || "",
-          numero_contrato: data.contrato?.numero || "",
-          numero_processo_sei: data.contrato?.processo || "",
-          numero_chamada_publica_ou_ata: data.contrato?.numero_pregao
-            ? data.contrato?.ata || ""
-            : data.contrato?.numero_chamada_publica || "",
-          tipo_documento: data.contrato?.numero_pregao
-            ? "Nº da Ata"
-            : "Nº da Chamada Pública",
-          numero_empenho: data.numero_empenho || "",
-          qtd_total_empenho: formataMilharDecimal(data.qtd_total_empenho) || "",
-          custo_unitario_produto: `R$ ${formataMilharDecimal(data.custo_unitario_produto)}`,
+          ...campos,
           programacoes: programacoesIniciais,
           observacoes: cronogramaSemanalExistente?.observacoes || "",
-        };
-
-        setValoresCronogramaMensal(novosValores);
+        });
 
         if (data.etapas && data.etapas.length > 0) {
-          const meses: {
-            [key: string]: {
-              quantidade_total: number;
-              quantidade_estimada_disponivel: number;
-            };
-          } = {};
-          data.etapas.forEach((etapa: any) => {
-            if (etapa.data_programada) {
-              const mesAno = etapa.data_programada;
-              if (!meses[mesAno]) {
-                meses[mesAno] = {
-                  quantidade_total: 0,
-                  quantidade_estimada_disponivel: 0,
-                };
-              }
-              meses[mesAno].quantidade_total += etapa.quantidade || 0;
-              meses[mesAno].quantidade_estimada_disponivel =
-                etapa.quantidade_estimada_disponivel ?? 0;
-            }
-          });
-
-          const etapasMesesList: EtapaMes[] = Object.entries(meses).map(
-            ([
-              mes_ano,
-              { quantidade_total, quantidade_estimada_disponivel },
-            ]) => ({
-              mes_ano,
-              quantidade_total,
-              quantidade_estimada_disponivel,
-            }),
-          );
-          setEtapasMeses(etapasMesesList);
+          setEtapasMeses(agruparEtapasPorMes(data.etapas));
         }
 
         setCronogramaMensalSelecionado(data);

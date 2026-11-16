@@ -141,7 +141,6 @@ export const TabelaFaixasCEMEI = ({
                         values_.map((value_) => value_.value),
                       );
                     }}
-                    allowSelectAll={false}
                     placeholder="Selecione tipos de alimentação"
                     validate={totalFrequenciaCEI > 0 && requiredMultiselect}
                     required
@@ -304,7 +303,6 @@ export const TabelaFaixasCEMEI = ({
                         values_.map((value_) => value_.value),
                       );
                     }}
-                    allowSelectAll={false}
                     placeholder="Selecione tipos de alimentação"
                     validate={totalFrequenciaEMEI > 0 && requiredMultiselect}
                     required

@@ -57,6 +57,10 @@ const awaitServices = async () => {
 };
 
 describe("Teste <Container> do Painel Pedidos - CODAE - Inclusão de Alimentação", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   beforeEach(async () => {
     getDiretoriaregionalSimplissima.mockResolvedValue({
       data: mockDiretoriaRegionalSimplissima,

@@ -25,9 +25,25 @@ import mock from "src/services/_mock";
 describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
   const escolaUuid =
     mockMeusDadosEscolaCEIcomMANHAeTARDE.vinculo_atual.instituicao.uuid;
-  const hoje = new Date().toISOString().split("T")[0];
 
   beforeEach(async () => {
+    jest.useFakeTimers({
+      doNotFake: [
+        "setTimeout",
+        "clearTimeout",
+        "setInterval",
+        "clearInterval",
+        "setImmediate",
+        "clearImmediate",
+        "nextTick",
+        "queueMicrotask",
+        "requestAnimationFrame",
+        "cancelAnimationFrame",
+      ],
+    });
+    jest.setSystemTime(new Date(2026, 10, 3, 22, 0, 0));
+    const hoje = "2026-11-03";
+
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEIcomMANHAeTARDE);
@@ -37,7 +53,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
     mock.onGet("/dias-uteis/").reply(200, mockDiasUteis);
     mock
       .onGet(
-        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`
+        `/vinculos-tipo-alimentacao-u-e-periodo-escolar/escola/${escolaUuid}/`,
       )
       .reply(200, mockVinculosTipoAlimentacaoPeriodoEscolarCEIComManhaTarde);
     mock
@@ -46,7 +62,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
     mock.onPost("/inclusoes-alimentacao-da-cei/").reply(201, {});
     mock
       .onPut(
-        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`,
       )
       .reply(200, {
         uuid: mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0]
@@ -54,7 +70,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
       });
     mock
       .onPatch(
-        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/inicio-pedido/`
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/inicio-pedido/`,
       )
       .reply(200, {});
 
@@ -71,7 +87,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
       .entries()) {
       mock
         .onGet(
-          `/quantidade-alunos-por-periodo/${uuidPeriodoEscolar}/alunos-por-faixa-etaria/${hoje}/`
+          `/quantidade-alunos-por-periodo/${uuidPeriodoEscolar}/alunos-por-faixa-etaria/${hoje}/`,
         )
         .reply(200, mocksQuantidadeALunosFaixaEtaria[index]);
     }
@@ -100,9 +116,13 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
             <InclusaoDeAlimentacaoCEIPage />
             <ToastContainer />
           </MeusDadosContext.Provider>
-        </MemoryRouter>
+        </MemoryRouter>,
       );
     });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("renderiza título da página e o breadcrumb `Inclusão de Alimentação`", async () => {
@@ -115,18 +135,18 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
 
     expect(
       screen.getByText(
-        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar"
-      )
+        "Informação automática disponibilizada pelo Cadastro da Unidade Escolar",
+      ),
     ).toBeInTheDocument();
   });
 
   it("renderiza bloco `Rascunhos`", async () => {
     expect(screen.getByText("Rascunhos")).toBeInTheDocument();
     expect(
-      screen.getByText("Inclusão de Alimentação # A38E6")
+      screen.getByText("Inclusão de Alimentação # A38E6"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Criado em: 27/05/2025 15:58:05")
+      screen.getByText("Criado em: 27/05/2025 15:58:05"),
     ).toBeInTheDocument();
   });
 
@@ -134,7 +154,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
     const selectMotivoDiv = screen.getByTestId("div-select-motivo");
     const selectElementMotivo = selectMotivoDiv.querySelector("select");
     const uuidReposicaoDeAula = mockMotivosInclusaoNormal.results.find(
-      (motivo) => motivo.nome.includes("Reposição de aula")
+      (motivo) => motivo.nome.includes("Reposição de aula"),
     ).uuid;
     fireEvent.change(selectElementMotivo, {
       target: { value: uuidReposicaoDeAula },
@@ -162,16 +182,16 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Tipos de Alimentação do período integral:")
+        screen.getByText("Tipos de Alimentação do período integral:"),
       ).toBeInTheDocument();
     });
 
     expect(
-      screen.getByText("Lanche, Desjejum, Almoço, Colação, Refeição da tarde")
+      screen.getByText("Lanche, Desjejum, Almoço, Colação, Refeição da tarde"),
     ).toBeInTheDocument();
 
     const inputElementNumeroAlunosFaixaIntegral = screen.getByTestId(
-      `periodos_e_faixas[0].periodos[0].faixas_etarias[0].quantidade_alunos`
+      `periodos_e_faixas[0].periodos[0].faixas_etarias[0].quantidade_alunos`,
     );
     fireEvent.change(inputElementNumeroAlunosFaixaIntegral, {
       target: { value: "1" },
@@ -182,12 +202,12 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Tipos de Alimentação do período manha:")
+        screen.getByText("Tipos de Alimentação do período manha:"),
       ).toBeInTheDocument();
     });
 
     const inputElementNumeroAlunosFaixaManha = screen.getByTestId(
-      `periodos_e_faixas[1].faixas_etarias[0].quantidade_alunos`
+      `periodos_e_faixas[1].faixas_etarias[0].quantidade_alunos`,
     );
     fireEvent.change(inputElementNumeroAlunosFaixaManha, {
       target: { value: "88" },
@@ -200,7 +220,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Solicitação Rascunho criada com sucesso!")
+        screen.getByText("Solicitação Rascunho criada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -220,7 +240,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Inclusão de Alimentação enviada com sucesso!")
+        screen.getByText("Inclusão de Alimentação enviada com sucesso!"),
       ).toBeInTheDocument();
     });
   });
@@ -252,8 +272,8 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Necessário selecionar ao menos período e preencher uma faixa etária"
-        )
+          "Necessário selecionar ao menos período e preencher uma faixa etária",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -261,7 +281,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
   it("Exclui rascunho", async () => {
     mock
       .onDelete(
-        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`,
       )
       .replyOnce(204, {});
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -281,7 +301,7 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
   it("Erro ao excluir rascunho", async () => {
     mock
       .onDelete(
-        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`
+        `/inclusoes-alimentacao-da-cei/${mockRascunhosInclusaoAlimentacaoEscolaCEIManhaETarde.results[0].uuid}/`,
       )
       .replyOnce(400, { detail: "Erro ao excluir rascunho" });
     window.confirm = jest.fn().mockImplementation(() => true);
@@ -292,8 +312,8 @@ describe("Teste Formulário Inclusão de Alimentação - CEI", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde."
-        )
+          "Houve um erro ao excluir o rascunho. Tente novamente mais tarde.",
+        ),
       ).toBeInTheDocument();
     });
   });

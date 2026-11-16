@@ -108,15 +108,6 @@ const preencherFiltros = async ({
   }
 };
 
-function getDataComZero() {
-  const hoje = new Date();
-  const dia = String(hoje.getDate()).padStart(2, "0");
-  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
-  const ano = hoje.getFullYear();
-
-  return `${dia}/${mes}/${ano}`;
-}
-
 describe("Teste ControleDeFrequencia", () => {
   const mockMesesAnos = {
     data: {
@@ -197,6 +188,7 @@ describe("Teste ControleDeFrequencia", () => {
   afterEach(() => {
     mock.reset();
     jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
   describe("Carregamento inicial", () => {
@@ -688,6 +680,21 @@ describe("Teste ControleDeFrequencia", () => {
     });
 
     it("Deve renderizar título com data atual quando não houver datas", async () => {
+      jest.useFakeTimers({
+        doNotFake: [
+          "setTimeout",
+          "clearTimeout",
+          "setInterval",
+          "clearInterval",
+          "setImmediate",
+          "clearImmediate",
+          "nextTick",
+          "queueMicrotask",
+          "requestAnimationFrame",
+          "cancelAnimationFrame",
+        ],
+      });
+      jest.setSystemTime(new Date(2024, 1, 29, 15, 0, 0));
       setupMocks();
 
       getTotalAlunosMatriculados.mockResolvedValue({
@@ -719,11 +726,10 @@ describe("Teste ControleDeFrequencia", () => {
 
       fireEvent.click(btnFiltrar);
 
-      const data = getDataComZero();
       await waitFor(() => {
         expect(
           screen.getByTestId("resultado-controle-frequencia"),
-        ).toHaveTextContent(`EM ${data}`);
+        ).toHaveTextContent("EM 29/02/2024");
       });
     });
 

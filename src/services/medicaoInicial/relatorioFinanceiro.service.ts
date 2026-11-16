@@ -5,6 +5,9 @@ import {
   RelatorioFinanceiroResponse,
   DescontoFinanceiro,
   DescontoFinanceiroResponse,
+  DadosMedicaoFinal,
+  ResponsavelConferencia,
+  PayloadGerarMedicaoFinal,
 } from "src/interfaces/relatorio_financeiro.interface";
 import axios from "../_base";
 import { ErrorHandlerFunction } from "../service-helpers";
@@ -84,6 +87,38 @@ export const reabrirLancamentosRelatorio = async (
   const response = await axios
     .put(
       `/medicao-inicial/relatorio-financeiro/reabrir-lancamentos/${relatorioFinanceiro}/`,
+      payload,
+    )
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+export const getDadosMedicaoFinal = async (relatorioFinanceiro: string) => {
+  return await axios.get<DadosMedicaoFinal>(
+    `/medicao-inicial/relatorio-financeiro/${relatorioFinanceiro}/dados-medicao-final/`,
+  );
+};
+
+export const buscarResponsavelConferencia = async (rf: string) => {
+  const response = await axios
+    .get<ResponsavelConferencia>(`/dados-servidor-eol/${rf}/`)
+    .catch(ErrorHandlerFunction);
+  if (response) {
+    const data = { data: response.data, status: response.status };
+    return data;
+  }
+};
+
+export const gerarMedicaoFinal = async (
+  payload: PayloadGerarMedicaoFinal,
+  relatorioFinanceiro: string,
+) => {
+  const response = await axios
+    .post(
+      `/medicao-inicial/relatorio-financeiro/${relatorioFinanceiro}/gerar-medicao-final/`,
       payload,
     )
     .catch(ErrorHandlerFunction);

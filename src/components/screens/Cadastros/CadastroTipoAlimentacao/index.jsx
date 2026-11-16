@@ -96,6 +96,12 @@ export default ({ tiposUnidadesEscolar }) => {
     setCarregando(false);
   };
 
+  const handleKeyDownConfirmar = (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      setAlterandoTiposDeAlimentacao(false);
+    }
+  };
+
   return (
     <Spin tip="Carregando..." spinning={carregando || !opcoesTiposUnidades}>
       <div className="card mt-3">
@@ -198,16 +204,7 @@ export default ({ tiposUnidadesEscolar }) => {
                                                 false,
                                               )
                                             }
-                                            onKeyDown={(e) => {
-                                              if (
-                                                e.key === "Enter" ||
-                                                e.key === " "
-                                              ) {
-                                                setAlterandoTiposDeAlimentacao(
-                                                  false,
-                                                );
-                                              }
-                                            }}
+                                            onKeyDown={handleKeyDownConfirmar}
                                           >
                                             <Field
                                               name={`vinculos[${indice}].tipos_alimentacao`}

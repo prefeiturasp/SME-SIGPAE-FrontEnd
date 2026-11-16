@@ -3,7 +3,9 @@ import {
   formataMilharDecimal,
   geradorUUID,
   formatarCPFouCNPJ,
+  usuarioComAcessoAoRelatorioCronogramasSemanais,
 } from "../utilities";
+import { PERFIL } from "../../constants/shared";
 
 describe("formataMilhar", () => {
   test("deve formatar números corretamente", () => {
@@ -104,5 +106,21 @@ describe("formatarCPFouCNPJ", () => {
   test("deve rejeitar CNPJ com letras nos dígitos verificadores (últimos 2)", () => {
     expect(formatarCPFouCNPJ("12.345.678/0001-A5")).not.toMatch(/-[A-Z]/);
     expect(formatarCPFouCNPJ("1234567890AB")).toBe("1234567890AB");
+  });
+});
+
+describe("usuarioComAcessoAoRelatorioCronogramasSemanais", () => {
+  beforeEach(() => {
+    localStorage.removeItem("perfil");
+  });
+
+  afterEach(() => {
+    localStorage.removeItem("perfil");
+  });
+
+  test("permite acesso ao relatório semanal para DILOG_ABASTECIMENTO", () => {
+    localStorage.setItem("perfil", PERFIL.DILOG_ABASTECIMENTO);
+
+    expect(usuarioComAcessoAoRelatorioCronogramasSemanais()).toBe(true);
   });
 });

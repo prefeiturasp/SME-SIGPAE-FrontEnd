@@ -24,6 +24,9 @@ export const tipoDeStatusClasse = (status: LogSolicitacoesUsuarioSimples) => {
     case "Envio da Ficha Técnica":
     case "Correção Realizada":
     case "Ficha Técnica Aprovada":
+    case "Termo Criado":
+    case "Assinatura Fiscal do Contrato":
+    case "Termo Assinado":
       return "active";
 
     case "Solicitada Alteração":

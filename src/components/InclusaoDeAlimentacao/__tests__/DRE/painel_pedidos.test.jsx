@@ -48,6 +48,10 @@ const pedidoRegular = {
 const totais = { PRIORITARIO: 1, LIMITE: 1, REGULAR: 1 };
 
 describe("Teste Página do Painel Pedidos - DRE - Inclusão de Alimentação", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   let unmount;
   beforeEach(async () => {
     mock.onGet("/usuarios/meus-dados/").reply(200, mockMeusDadosCogestor);

@@ -30,6 +30,7 @@ import {
   composeValidators,
   deepCopy,
   getError,
+  getYYYYMMDDfromDate,
 } from "src/helpers/utilities";
 import HTTP_STATUS from "http-status-codes";
 import { useEffect, useState } from "react";
@@ -339,7 +340,7 @@ export const InclusaoDeAlimentacaoDaCei = ({ ...props }) => {
   useEffect(() => {
     async function fetch() {
       let periodos_e_faixas = [];
-      const dataInclusao = new Date().toISOString().split("T")[0];
+      const dataInclusao = getYYYYMMDDfromDate(new Date());
       for (let index = 0; index < periodos.length; index++) {
         const periodo = periodos[index];
         const response = await getQuantidadeAlunosFaixaEtaria(

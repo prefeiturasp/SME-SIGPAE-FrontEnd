@@ -182,6 +182,10 @@ jest.mock(
 const PainelPedidos = require("../CODAE/PainelPedidos").default;
 
 describe("PainelPedidos", () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   const dreUuid = "8f1da4a7-11b6-4a09-9eaa-6633d066f26b";
   const loteUuid = "f9cb1f30-7b86-4cc2-9f5f-d9e7d81c1234";
 

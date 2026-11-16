@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import {
@@ -18,9 +18,15 @@ import { CardPorStatus } from "./components/CardPorStatus";
 import "./style.scss";
 import { DashboardSupervisaoInterface } from "./interfaces";
 import { FormApi } from "final-form";
+import { ENVIRONMENT } from "src/constants/config";
+import { FiltrosIniciais } from "./components/FiltrosIniciais";
+
+const EXIBIR_NOVO_PAINEL = !ENVIRONMENT.includes("production");
 
 export const PainelRelatorios = () => {
   const [filtros, setFiltros] = useState<FiltrosRelatoriosVisitasInterface>({});
+  const [filtrosIniciais, setFiltrosIniciais] =
+    useState<FiltrosRelatoriosVisitasInterface>({});
   const [page, setPage] = useState<number>(1);
   const [totalResultados, setTotalResultados] = useState(0);
   const [consultaRealizada, setConsultaRealizada] = useState(false);
@@ -32,6 +38,10 @@ export const PainelRelatorios = () => {
   const [statusSelecionado, setStatusSelecionado] = useState<string>("");
 
   const [carregandoTabela, setCarregandoTabela] = useState(false);
+  const [carregandoDashboard, setCarregandoDashboard] =
+    useState(!EXIBIR_NOVO_PAINEL);
+  const consultaDashboardAtual = useRef(0);
+  const consultaResultadosAtual = useRef(0);
   const [form, setForm] = useState<FormApi>();
   const perfilNutriSupervisao =
     JSON.parse(localStorage.getItem("perfil")) ===
@@ -42,6 +52,7 @@ export const PainelRelatorios = () => {
     filtros_: FiltrosRelatoriosVisitasInterface,
     pageNumber: number,
   ) => {
+    const consultaAtual = ++consultaResultadosAtual.current;
     setCarregandoTabela(true);
 
     try {
@@ -51,31 +62,67 @@ export const PainelRelatorios = () => {
       });
       const response = await getListRelatoriosVisitaSupervisao(params);
 
-      if (response.status === HTTP_STATUS.OK) {
+      if (
+        consultaAtual === consultaResultadosAtual.current &&
+        response?.status === HTTP_STATUS.OK
+      ) {
         setRelatoriosVisita(response.data.results);
         setTotalResultados(response.data.count);
         setConsultaRealizada(true);
       }
     } finally {
-      setCarregandoTabela(false);
+      if (consultaAtual === consultaResultadosAtual.current) {
+        setCarregandoTabela(false);
+      }
     }
   };
 
   const getDashboardPainelGerencialSupervisaoAsync = async () => {
-    const response = await getDashboardPainelGerencialSupervisao(filtros);
-    if (response.status === HTTP_STATUS.OK) {
+    const consultaAtual = ++consultaDashboardAtual.current;
+    setCarregandoDashboard(true);
+
+    try {
+      const response = await getDashboardPainelGerencialSupervisao(
+        EXIBIR_NOVO_PAINEL ? filtrosIniciais : filtros,
+      );
+
+      if (
+        consultaAtual !== consultaDashboardAtual.current ||
+        response?.status !== HTTP_STATUS.OK
+      )
+        return;
+
       setDashboard(
         response.data.results.map((item) => {
-          if (
-            item.status === "NUTRIMANIFESTACAO_A_VALIDAR" &&
-            !perfilNutriSupervisao
-          ) {
+          if (item.status === "NUTRIMANIFESTACAO_A_VALIDAR") {
             return { ...item, label: "Enviados pela Supervisão" };
           }
           return item;
         }),
       );
+    } finally {
+      if (consultaAtual === consultaDashboardAtual.current) {
+        setCarregandoDashboard(false);
+      }
     }
+  };
+
+  const alterarFiltrosIniciais = (
+    novosFiltros: FiltrosRelatoriosVisitasInterface,
+  ) => {
+    consultaDashboardAtual.current += 1;
+    consultaResultadosAtual.current += 1;
+    setFiltrosIniciais(novosFiltros);
+    setFiltros(novosFiltros);
+    setDashboard(undefined);
+    setStatusSelecionado("");
+    setRelatoriosVisita([]);
+    setTotalResultados(0);
+    setConsultaRealizada(false);
+    setCarregandoDashboard(false);
+    setCarregandoTabela(false);
+    setPage(1);
+    setForm(undefined);
   };
 
   const proximaPagina = (page: number) => {
@@ -84,22 +131,43 @@ export const PainelRelatorios = () => {
   };
 
   useEffect(() => {
+    if (
+      EXIBIR_NOVO_PAINEL &&
+      (!filtrosIniciais.diretoria_regional ||
+        !filtrosIniciais.mes ||
+        !filtrosIniciais.ano)
+    )
+      return;
     getDashboardPainelGerencialSupervisaoAsync();
-  }, []);
+    return () => {
+      consultaDashboardAtual.current += 1;
+      consultaResultadosAtual.current += 1;
+    };
+  }, [filtrosIniciais]);
 
   return (
-    <Spin tip="Carregando..." spinning={!dashboard}>
+    <Spin tip="Carregando..." spinning={carregandoDashboard}>
       <div className="card painel-acompanhamento-supervisao mt-3">
         <div className="card-body">
+          {EXIBIR_NOVO_PAINEL && (
+            <FiltrosIniciais
+              filtros={filtrosIniciais}
+              aoAlterarFiltros={alterarFiltrosIniciais}
+            />
+          )}
           {dashboard && (
             <>
               <div className="d-flex row row-cols-1">
-                {dashboard.map((cardStatus, index) => {
+                {dashboard.map((cardStatus) => {
                   return (
                     <CardPorStatus
                       cardStatus={cardStatus}
+                      exibirNovoPainel={EXIBIR_NOVO_PAINEL}
                       form={form}
-                      key={index}
+                      key={cardStatus.status}
+                      filtrosIniciais={
+                        EXIBIR_NOVO_PAINEL ? filtrosIniciais : undefined
+                      }
                       setConsultaRealizada={setConsultaRealizada}
                       setFiltros={setFiltros}
                       setPage={setPage}
@@ -110,13 +178,18 @@ export const PainelRelatorios = () => {
                   );
                 })}
               </div>
-              <div className="mt-3 text-center">
-                Selecione um dos status acima para visualizar a listagem de
-                relatórios
-              </div>
+              {!statusSelecionado && (
+                <div className="mt-3 text-center">
+                  Selecione um dos status acima para visualizar a listagem de
+                  relatórios
+                </div>
+              )}
               {statusSelecionado && (
                 <Filtros
                   filtros={filtros}
+                  filtrosIniciais={
+                    EXIBIR_NOVO_PAINEL ? filtrosIniciais : undefined
+                  }
                   setFiltros={setFiltros}
                   setRelatoriosVisita={setRelatoriosVisita}
                   setConsultaRealizada={setConsultaRealizada}
@@ -136,6 +209,7 @@ export const PainelRelatorios = () => {
                     <>
                       <Listagem
                         objetos={relatoriosVisita}
+                        exibirNovoPainel={EXIBIR_NOVO_PAINEL}
                         perfilNutriSupervisao={perfilNutriSupervisao}
                         podeVisualizarRelatorio={podeVisualizarRelatorio}
                         getDashboardPainelGerencialSupervisaoAsync={

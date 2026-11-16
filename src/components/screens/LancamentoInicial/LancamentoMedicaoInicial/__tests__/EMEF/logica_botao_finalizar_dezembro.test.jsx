@@ -19,7 +19,10 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
   const escolaUuid =
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
+  let respostaEscolaAberta;
+
   beforeEach(async () => {
+    respostaEscolaAberta = { possui_cadastro: false };
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -80,6 +83,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
         "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/",
       )
       .reply(200, { ultima_data: "2025-12-20" });
+    mock
+      .onGet("/escola-aberta/por-escola/")
+      .reply(() => [200, respostaEscolaAberta]);
 
     const search = `?mes=12&ano=2025`;
     window.history.pushState({}, "", search);
@@ -161,6 +167,82 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
   it("Finaliza - botao habilitado (último dia letivo)", async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-19T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).not.toBeDisabled();
+  });
+
+  it("mantém Finalizar bloqueado enquanto o último atendimento de Escola Aberta não terminou", async () => {
+    respostaEscolaAberta = {
+      possui_cadastro: true,
+      cadastro: {
+        data_inicial: "01/12/2025",
+        data_final: "20/12/2025",
+        dias_semana: ["5"],
+      },
+    };
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-20T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).toBeDisabled();
+  });
+
+  it("libera Finalizar após o último atendimento de Escola Aberta", async () => {
+    respostaEscolaAberta = {
+      possui_cadastro: true,
+      cadastro: {
+        data_inicial: "01/12/2025",
+        data_final: "20/12/2025",
+        dias_semana: ["5"],
+      },
+    };
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-21T10:00:00Z"));
     jest.clearAllMocks();
 
     await act(async () => {

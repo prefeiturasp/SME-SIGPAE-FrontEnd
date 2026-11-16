@@ -124,6 +124,9 @@ export interface FiltrosRelatoriosVisitasInterface {
   data_inicial?: string;
   data_final?: string;
   status?: string;
+  mes?: number;
+  ano?: number;
+  novo_painel?: boolean;
 }
 
 export interface RelatorioVisitaItemListagem {
@@ -132,6 +135,8 @@ export interface RelatorioVisitaItemListagem {
   diretoria_regional?: string;
   data?: string;
   status?: string;
+  codigo_eol?: string;
+  tipo_unidade?: string;
 }
 
 export interface RespostaOcorrenciaInterface {

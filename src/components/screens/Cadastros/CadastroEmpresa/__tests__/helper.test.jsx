@@ -223,6 +223,61 @@ describe("Função formataJsonParaEnvio", () => {
     expect(payload.representante_telefone).toEqual("11111111111");
     expect(payload.responsavel_telefone).toEqual("22222222222");
   });
+
+  describe("Número do contrato no payload", () => {
+    const valoresFormulario = {
+      cep: "01001-000",
+      numero_contrato_0: "001/2026",
+      numero_processo_0: "6016.2026/0000001-0",
+      vigencia_de_0: "01/01/2026",
+      vigencia_ate_0: "31/12/2026",
+    };
+
+    const estadoFormulario = {
+      ehDistribuidor: true,
+      contatosPessoaEmpresa: [],
+      contratos: [
+        {
+          uuid: "79966033-3226-403e-9617-aa7e4c638c3a",
+          numero: "001/2026",
+          encerrado: false,
+        },
+      ],
+    };
+
+    it("envia o número no cadastro de um novo contrato", () => {
+      const dados = formataJsonParaEnvio(valoresFormulario, {
+        ...estadoFormulario,
+        contratos: [{ encerrado: false }],
+      });
+
+      expect(dados.contratos).toHaveLength(1);
+      expect(dados.contratos[0].numero).toBe("001/2026");
+    });
+
+    it("envia o novo número mantendo o UUID do contrato existente", () => {
+      const dados = formataJsonParaEnvio(
+        { ...valoresFormulario, numero_contrato_0: "002/2026" },
+        estadoFormulario,
+      );
+
+      expect(dados.contratos).toHaveLength(1);
+      expect(dados.contratos[0]).toMatchObject({
+        uuid: "79966033-3226-403e-9617-aa7e4c638c3a",
+        numero: "002/2026",
+      });
+    });
+
+    it("omite o número quando ele não foi alterado na edição", () => {
+      const dados = formataJsonParaEnvio(valoresFormulario, estadoFormulario);
+
+      expect(dados.contratos).toHaveLength(1);
+      expect(dados.contratos[0].uuid).toBe(
+        "79966033-3226-403e-9617-aa7e4c638c3a",
+      );
+      expect(dados.contratos[0]).not.toHaveProperty("numero");
+    });
+  });
 });
 
 describe("Função mensagemErroCnpj", () => {

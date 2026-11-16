@@ -5,22 +5,27 @@ import { CustomToolbar } from "../index";
 
 describe("Teste <CustomToolbar>", () => {
   let toolbarMock;
-  const today = new Date();
 
-  const calculateMonth = (offset) => {
-    const date = new Date(today.getFullYear(), today.getMonth() + offset, 1);
-    return date;
-  };
+  const calculateMonth = (base, offset) =>
+    new Date(base.getFullYear(), base.getMonth() + offset, 1);
 
   beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2025, 11, 15, 10, 0, 0));
+    const today = new Date();
+
     toolbarMock = {
-      date: calculateMonth(0),
+      date: calculateMonth(today, 0),
       onNavigate: jest.fn(),
       onView: jest.fn(),
       view: "month",
     };
 
     render(<CustomToolbar {...toolbarMock} />);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it("verifica se a label do mês e ano é exibida corretamente", () => {
@@ -53,7 +58,7 @@ describe("Teste <CustomToolbar>", () => {
     fireEvent.click(botaoAnterior);
     expect(toolbarMock.onNavigate).toHaveBeenCalledWith("prev");
 
-    const expectedDate = calculateMonth(-1);
+    const expectedDate = calculateMonth(new Date(), -1);
     expect(toolbarMock.date.getMonth()).toBe(expectedDate.getMonth());
   });
 
@@ -65,7 +70,7 @@ describe("Teste <CustomToolbar>", () => {
     fireEvent.click(botaoProximo);
     expect(toolbarMock.onNavigate).toHaveBeenCalledWith("current");
 
-    const expectedDate = calculateMonth(1);
+    const expectedDate = calculateMonth(new Date(), 1);
     expect(toolbarMock.date.getMonth()).toBe(expectedDate.getMonth());
   });
 

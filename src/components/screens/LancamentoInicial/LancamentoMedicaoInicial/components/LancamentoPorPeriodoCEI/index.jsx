@@ -449,6 +449,15 @@ export const LancamentoPorPeriodoCEI = ({
     return uuidPeriodo;
   };
 
+  const adicionarTiposUnicos = (tiposAlimentacao, novosTipos) => {
+    for (const tipo of novosTipos) {
+      const jaExiste = tiposAlimentacao.some((t) => t.nome === tipo.nome);
+      if (!jaExiste) {
+        tiposAlimentacao.push(tipo);
+      }
+    }
+  };
+
   const tiposAlimentacaoProgramasEProjetos = () => {
     let tiposAlimentacao = [];
     Object.keys(periodosInclusaoContinua).forEach((periodo) => {
@@ -493,13 +502,10 @@ export const LancamentoPorPeriodoCEI = ({
     }
 
     if (inclusoesEventoEspecificoAutorizadas?.length > 0) {
-      inclusoesEventoEspecificoAutorizadas.forEach((vinculo) => {
-        vinculo.tipos_alimentacao.forEach((tipo) => {
-          if (!tiposAlimentacao.find((t) => t.nome === tipo.nome)) {
-            tiposAlimentacao.push(tipo);
-          }
-        });
-      });
+      const tiposDosVinculos = inclusoesEventoEspecificoAutorizadas.flatMap(
+        (vinculo) => vinculo.tipos_alimentacao,
+      );
+      adicionarTiposUnicos(tiposAlimentacao, tiposDosVinculos);
     }
 
     return tiposAlimentacao;
