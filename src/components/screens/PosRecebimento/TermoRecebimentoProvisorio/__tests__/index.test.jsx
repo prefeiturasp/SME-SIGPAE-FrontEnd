@@ -155,7 +155,7 @@ describe("TermoRecebimentoProvisorio - Download do Termo em PDF", () => {
   it("exibe o ícone de impressora quando as três assinaturas foram concluídas", async () => {
     mock
       .onGet("/pos-recebimento/termos/")
-      .reply(200, mockListaComStatus("ENVIADO_DILOG"));
+      .reply(200, mockListaComStatus("TERMO_ASSINADO"));
 
     await setup();
     await clicarFiltrar();
@@ -179,7 +179,7 @@ describe("TermoRecebimentoProvisorio - Download do Termo em PDF", () => {
     localStorage.setItem("perfil", PERFIL.DILOG_ABASTECIMENTO);
     mock
       .onGet("/pos-recebimento/termos/")
-      .reply(200, mockListaComStatus("ENVIADO_DILOG"));
+      .reply(200, mockListaComStatus("TERMO_ASSINADO"));
 
     await setup();
     await clicarFiltrar();
@@ -191,7 +191,7 @@ describe("TermoRecebimentoProvisorio - Download do Termo em PDF", () => {
   it("realiza o download do PDF ao acionar o ícone de impressora", async () => {
     mock
       .onGet("/pos-recebimento/termos/")
-      .reply(200, mockListaComStatus("ENVIADO_DILOG"));
+      .reply(200, mockListaComStatus("TERMO_ASSINADO"));
     mock
       .onGet("/pos-recebimento/termos/uuid-dilog/gerar-pdf-termo/")
       .reply(200, new Blob(["pdf"], { type: "application/pdf" }));
