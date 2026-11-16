@@ -105,6 +105,50 @@ describe("ModalCancelarSuspensaoAlimentacao", () => {
     expect(screen.getByText("Sem permissão")).toBeInTheDocument();
   });
 
+  it("deve exibir erro inesperado quando a requisição falha sem resposta da API", async () => {
+    mock
+      .onPatch(
+        `/suspensao-alimentacao-de-cei/${uuidMock}/cancela-suspensao-cei/`,
+      )
+      .networkError();
+
+    await setup(true);
+
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "Justificativa válida" },
+    });
+
+    fireEvent.click(screen.getByText("Sim"));
+
+    expect(
+      await screen.findByText("Erro inesperado ao cancelar suspensão"),
+    ).toBeInTheDocument();
+    expect(closeModal).toHaveBeenCalled();
+    expect(setSolicitacaoSuspensao).not.toHaveBeenCalled();
+  });
+
+  it("não deve atualizar a solicitação quando a API retorna status de sucesso diferente de OK", async () => {
+    mock
+      .onPatch(
+        `/suspensao-alimentacao-de-cei/${uuidMock}/cancela-suspensao-cei/`,
+      )
+      .reply(204);
+
+    await setup(true);
+
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "Justificativa válida" },
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.getByText("Sim"));
+    });
+
+    await waitFor(() => expect(mock.history.patch).toHaveLength(1));
+    expect(setSolicitacaoSuspensao).not.toHaveBeenCalled();
+    expect(closeModal).not.toHaveBeenCalled();
+  });
+
   it("não deve renderizar o modal quando showModal = false", async () => {
     mock
       .onPatch(
