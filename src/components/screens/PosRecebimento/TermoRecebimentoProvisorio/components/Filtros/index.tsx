@@ -25,28 +25,12 @@ interface Props {
 
 const opcoesStatus = [
   {
-    label: "Rascunho",
-    value: "RASCUNHO",
-  },
-  {
     label: "Enviado Fiscais",
     value: "ENVIADO_FISCAIS",
   },
   {
-    label: "Enviado DILOG",
-    value: "ENVIADO_DILOG",
-  },
-  {
-    label: "Enviado Coordenador",
-    value: "ENVIADO_COORDENADOR",
-  },
-  {
-    label: "Enviado Fornecedor",
-    value: "ENVIADO_FORNECEDOR",
-  },
-  {
-    label: "Assinado Fornecedor",
-    value: "ASSINADO_FORNECEDOR",
+    label: "Termo Assinado",
+    value: "TERMO_ASSINADO",
   },
 ];
 

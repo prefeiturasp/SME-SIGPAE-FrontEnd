@@ -116,13 +116,10 @@ export const ListaOcorrencias = () => {
       solicitacaoMedicaoInicialUuid,
       ocorrenciaUuid: ocorrencia.uuid,
       tipoOcorrenciaUuid: ocorrencia.tipo_ocorrencia,
-      grupo: ocorrencia.grupo !== null ? String(ocorrencia.grupo) : null,
+      grupo: ocorrencia.grupo === null ? null : String(ocorrencia.grupo),
     };
     const queryString = new URLSearchParams(
-      Object.entries(parametros).filter(([, valor]) => valor) as [
-        string,
-        string,
-      ][],
+      Object.entries(parametros).filter(([, valor]) => valor),
     ).toString();
 
     navigate(

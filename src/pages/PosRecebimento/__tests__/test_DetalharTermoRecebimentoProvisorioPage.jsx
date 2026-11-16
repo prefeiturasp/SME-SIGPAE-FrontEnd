@@ -149,7 +149,7 @@ describe("DetalharTermoRecebimentoProvisorioPage", () => {
     mock.reset();
     mock.onGet(`/pos-recebimento/termos/${TERMO_UUID}/`).reply(200, {
       ...mockTermoRecebimentoDetalhe,
-      status: "ENVIADO_DILOG",
+      status: "TERMO_ASSINADO",
       pode_assinar: false,
     });
     mock
@@ -181,7 +181,7 @@ describe("DetalharTermoRecebimentoProvisorioPage", () => {
     mock.reset();
     mock.onGet(`/pos-recebimento/termos/${TERMO_UUID}/`).reply(200, {
       ...mockTermoRecebimentoDetalhe,
-      status: "ENVIADO_DILOG",
+      status: "TERMO_ASSINADO",
       pode_assinar: false,
     });
 

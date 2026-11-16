@@ -40,7 +40,7 @@ export const SeletorDeDatas = ({ ...props }: SeletorDeDatasType) => {
 
   const setInitialDates = () => {
     const fieldState = form.getFieldState(name);
-    if (fieldState && fieldState.value && fieldState.value.length) {
+    if (fieldState?.value?.length) {
       setDates(fieldState.value);
       fieldState.value.forEach((_value, _dateinputIndex) => {
         form.change(`${name}_${_dateinputIndex}_${titulo}`, _value);

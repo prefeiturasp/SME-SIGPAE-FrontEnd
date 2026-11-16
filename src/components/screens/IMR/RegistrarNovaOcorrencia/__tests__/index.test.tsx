@@ -937,6 +937,34 @@ describe("RegistrarNovaOcorrencia", () => {
   const URL_LISTA_OCORRENCIAS =
     "/lancamento-inicial/lancamento-medicao-inicial/registrar-ocorrencias?ano=2024&mes=6";
 
+  it("bloqueia a edição quando o tipo da ocorrência não está entre os tipos disponíveis", async () => {
+    mockGetTiposOcorrencia.mockResolvedValueOnce({
+      status: 200,
+      data: [segundoTipoOcorrencia],
+    });
+
+    renderizarComponente(propsEdicao);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("carregamento")).not.toBeInTheDocument();
+    });
+
+    expect(mockGetTiposOcorrencia).toHaveBeenCalledWith({
+      edital_uuid: EDITAL_UUID,
+    });
+    expect(mockBuscarOcorrencia).toHaveBeenCalledWith({
+      uuid: OCORRENCIA_UUID,
+      tipo_ocorrencia: TIPO_OCORRENCIA_UUID,
+      grupo: 1,
+    });
+    expect(mockForm).not.toHaveBeenCalled();
+    expect(mockSeletorCategoria).not.toHaveBeenCalled();
+    expect(mockSeletorTipoOcorrencia).not.toHaveBeenCalled();
+    expect(mockAtualizarOcorrencia).not.toHaveBeenCalled();
+    expect(mockExcluirOcorrencia).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("abre o modal de cancelamento e retorna à listagem somente ao confirmar", async () => {
     renderizarComponente(propsEdicao);
 
