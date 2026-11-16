@@ -196,6 +196,10 @@ describe("DetalharTermoRecebimentoProvisorioPage", () => {
       await setup();
       await screen.findByText("Empresa do Luis Zimmermann");
 
+      expect(
+        screen.getByText("Fluxo de Assinaturas do Termo"),
+      ).toBeInTheDocument();
+
       expect(screen.getAllByText("Termo Criado")).toHaveLength(1);
       expect(screen.getAllByText("Assinatura Fiscal do Contrato")).toHaveLength(
         3,

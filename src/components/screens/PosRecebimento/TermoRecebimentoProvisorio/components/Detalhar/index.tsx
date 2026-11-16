@@ -151,6 +151,9 @@ const DetalharTermoRecebimentoProvisorio: React.FC = () => {
             <div>
               {termo.logs && termo.logs.length > 0 && (
                 <div className="row my-4">
+                  <p className="head-green">
+                    <b>Fluxo de Assinaturas do Termo</b>
+                  </p>
                   <FluxoDeStatusPreRecebimento listaDeStatus={termo.logs} />
                 </div>
               )}
