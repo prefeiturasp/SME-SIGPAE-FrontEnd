@@ -1,4 +1,14 @@
-import { getDay, lastDayOfMonth, parse, subDays } from "date-fns";
+import {
+  endOfDay,
+  format,
+  getDay,
+  getYear,
+  isValid,
+  lastDayOfMonth,
+  parse,
+  startOfDay,
+  subDays,
+} from "date-fns";
 import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 import {
   capitalize,
@@ -66,6 +76,41 @@ export const obterUltimoDiaAtendimentoEscolaAberta = (cadastro, mes, ano) => {
   }
 
   return null;
+};
+
+export const obterDataFinalizacaoMedicaoDezembro = (
+  dataFinalizacao,
+  mes,
+  ano,
+) => {
+  if (!dataFinalizacao || !mes || !ano) {
+    return null;
+  }
+
+  const data = parse(dataFinalizacao, "dd/MM/yyyy", new Date());
+
+  if (!isValid(data)) {
+    return null;
+  }
+
+  const mesmoMes = format(data, "MM") === String(mes).padStart(2, "0");
+  const mesmoAno = String(getYear(data)) === String(ano);
+
+  return mesmoMes && mesmoAno ? data : null;
+};
+
+export const deveBloquearFinalizacaoDezembro = (
+  dataFinalizacaoDezembro,
+  ultimoDiaAtendimentoEscolaAberta,
+  dataHoje = new Date(),
+) => {
+  const bloqueadoAntesDaDataCadastrada =
+    dataHoje < startOfDay(dataFinalizacaoDezembro);
+  const bloqueadoPorEscolaAberta =
+    !!ultimoDiaAtendimentoEscolaAberta &&
+    dataHoje <= endOfDay(ultimoDiaAtendimentoEscolaAberta);
+
+  return bloqueadoAntesDaDataCadastrada || bloqueadoPorEscolaAberta;
 };
 
 export const OPCOES_AVALIACAO_A_CONTENTO = {

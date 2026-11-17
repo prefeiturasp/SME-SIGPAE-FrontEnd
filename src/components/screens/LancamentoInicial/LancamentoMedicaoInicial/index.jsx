@@ -24,7 +24,12 @@ import {
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getEscolaSimples } from "src/services/escola.service";
 import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAberta.service";
-import { obterUltimoDiaAtendimentoEscolaAberta } from "./components/LancamentoPorPeriodo/helpers";
+import { getDataFinalizaMedicaoDezembro } from "src/services/medicaoInicial/dataFinalizaMedicaoDezembro.service";
+import {
+  deveBloquearFinalizacaoDezembro,
+  obterDataFinalizacaoMedicaoDezembro,
+  obterUltimoDiaAtendimentoEscolaAberta,
+} from "./components/LancamentoPorPeriodo/helpers";
 import {
   getDiasCalendario,
   getHistoricoEscola,
@@ -174,6 +179,19 @@ export default () => {
       toastError("Erro ao obter o último dia com solicitação autorizada.");
       return null;
     }
+  };
+
+  const getDataFinalizaMedicaoDezembroAsync = async () => {
+    const response = await getDataFinalizaMedicaoDezembro();
+    if (response?.status === HTTP_STATUS.OK) {
+      return response.data?.data;
+    }
+    return null;
+  };
+
+  const ehEscolaElegivelRegraDezembro = (solicitacao) => {
+    const escola = { nome: solicitacao?.escola };
+    return !ehEscolaTipoCEI(escola) && !ehEscolaTipoCEMEI(escola);
   };
 
   const getCadastrosRecreioNasFerias = async () => {
@@ -785,19 +803,28 @@ export default () => {
     solicitacao,
     diasCalendario,
   ) => {
-    const [ultimoDiaComSolicitacaoAutorizada_, escolaAberta] =
-      await Promise.all([
-        getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
-          payload["escola_uuid"],
-          payload["mes"],
-          payload["ano"],
-        ),
-        getEscolaAbertaPorMesAno({
-          escola_uuid: payload["escola_uuid"],
-          mes: payload["mes"],
-          ano: payload["ano"],
-        }),
-      ]);
+    const deveUsarDataFinalizacaoDezembro =
+      payload["mes"] === DEZEMBRO && ehEscolaElegivelRegraDezembro(solicitacao);
+
+    const [
+      ultimoDiaComSolicitacaoAutorizada_,
+      escolaAberta,
+      dataFinalizaMedicaoDezembro,
+    ] = await Promise.all([
+      getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
+        payload["escola_uuid"],
+        payload["mes"],
+        payload["ano"],
+      ),
+      getEscolaAbertaPorMesAno({
+        escola_uuid: payload["escola_uuid"],
+        mes: payload["mes"],
+        ano: payload["ano"],
+      }),
+      deveUsarDataFinalizacaoDezembro
+        ? getDataFinalizaMedicaoDezembroAsync()
+        : Promise.resolve(null),
+    ]);
     const listaDiasLetivos = diasCalendario.filter(
       (dia) => dia.dia_letivo === true,
     );
@@ -810,6 +837,22 @@ export default () => {
             payload["ano"],
           )
         : null;
+
+    const dataFinalizacaoDezembro = obterDataFinalizacaoMedicaoDezembro(
+      dataFinalizaMedicaoDezembro,
+      payload["mes"],
+      payload["ano"],
+    );
+
+    if (dataFinalizacaoDezembro) {
+      setNaoPodeFinalizar(
+        deveBloquearFinalizacaoDezembro(
+          dataFinalizacaoDezembro,
+          ultimoDiaAtendimentoEscolaAberta,
+        ),
+      );
+      return;
+    }
 
     if (!listaDiasLetivos.length && !ultimoDiaAtendimentoEscolaAberta) {
       setNaoPodeFinalizar(false);
