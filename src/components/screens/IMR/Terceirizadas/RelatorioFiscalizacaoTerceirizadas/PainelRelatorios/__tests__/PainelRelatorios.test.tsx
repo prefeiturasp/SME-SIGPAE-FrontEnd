@@ -9,6 +9,7 @@ import {
 import HTTP_STATUS from "http-status-codes";
 import {
   gerarParametrosConsulta,
+  usuarioEhAdministradorNutriSupervisao,
   usuarioPodeVisualizarRelatorioIMR,
 } from "src/helpers/utilities";
 import {
@@ -202,6 +203,7 @@ jest.mock("src/components/Shareable/Paginacao", () => {
 
 jest.mock("src/helpers/utilities", () => ({
   gerarParametrosConsulta: jest.fn(),
+  usuarioEhAdministradorNutriSupervisao: jest.fn(),
   usuarioPodeVisualizarRelatorioIMR: jest.fn(),
 }));
 
@@ -227,7 +229,7 @@ const dashboard = [
     total: 1,
   },
   {
-    label: "Enviados para CODAE",
+    label: "Enviado para CODAE",
     status: "NUTRIMANIFESTACAO_A_VALIDAR",
     total: 2,
   },
@@ -259,6 +261,9 @@ const relatorios = [
 ];
 
 const mockGerarParametrosConsulta = jest.mocked(gerarParametrosConsulta);
+const mockUsuarioEhAdministradorNutriSupervisao = jest.mocked(
+  usuarioEhAdministradorNutriSupervisao,
+);
 const mockUsuarioPodeVisualizarRelatorioIMR = jest.mocked(
   usuarioPodeVisualizarRelatorioIMR,
 );
@@ -295,6 +300,7 @@ describe("Painel de relatórios de fiscalização", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     localStorage.clear();
+    mockUsuarioEhAdministradorNutriSupervisao.mockReturnValue(false);
     mockUsuarioPodeVisualizarRelatorioIMR.mockReturnValue(true);
     mockGerarParametrosConsulta.mockImplementation(
       (valores) =>
@@ -402,9 +408,10 @@ describe("Painel de relatórios de fiscalização", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
-    expect(mockGetDashboardPainelGerencialSupervisao).toHaveBeenCalledWith(
-      mockFiltrosIniciais,
-    );
+    expect(mockGetDashboardPainelGerencialSupervisao).toHaveBeenCalledWith({
+      ...mockFiltrosIniciais,
+      novo_painel: true,
+    });
   });
 
   it("encerra o carregamento quando a consulta do dashboard não retorna sucesso", async () => {
@@ -452,7 +459,7 @@ describe("Painel de relatórios de fiscalização", () => {
       await screen.findByRole("button", { name: "Enviados pela Supervisão" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Enviados para CODAE" }),
+      screen.queryByRole("button", { name: "Enviado para CODAE" }),
     ).not.toBeInTheDocument();
   });
 
@@ -608,7 +615,10 @@ describe("Painel de relatórios de fiscalização", () => {
     await waitFor(() => {
       expect(
         mockGetDashboardPainelGerencialSupervisao,
-      ).toHaveBeenLastCalledWith(mockFiltrosIniciais);
+      ).toHaveBeenLastCalledWith({
+        ...mockFiltrosIniciais,
+        novo_painel: true,
+      });
     });
   });
 
@@ -648,7 +658,10 @@ describe("Painel de relatórios de fiscalização", () => {
 
       expect(
         mockGetDashboardPainelGerencialSupervisao,
-      ).toHaveBeenLastCalledWith(filtrosEsperados);
+      ).toHaveBeenLastCalledWith({
+        ...filtrosEsperados,
+        novo_painel: true,
+      });
       expect(screen.queryByTestId("filtros")).not.toBeInTheDocument();
       expect(screen.queryByTestId("listagem")).not.toBeInTheDocument();
       expect(screen.queryByTestId("paginacao")).not.toBeInTheDocument();
@@ -715,6 +728,7 @@ describe("Painel de relatórios de fiscalização", () => {
     expect(mockGetDashboardPainelGerencialSupervisao).toHaveBeenLastCalledWith({
       ...mockFiltrosIniciais,
       mes: 8,
+      novo_painel: true,
     });
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });

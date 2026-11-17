@@ -102,10 +102,10 @@ describe("Service do dashboard de supervisão", () => {
   );
 
   it.each([
-    { ambiente: "development", flagInformada: false, flagEsperada: true },
+    { ambiente: "development", flagInformada: false, flagEsperada: false },
     { ambiente: "production", flagInformada: true, flagEsperada: false },
   ])(
-    "prioriza o ambiente $ambiente quando a flag recebida é diferente",
+    "envia novo_painel=$flagEsperada em $ambiente com a flag informada como $flagInformada",
     async ({ ambiente, flagInformada, flagEsperada }) => {
       jest.replaceProperty(
         jest.requireMock("src/constants/config"),

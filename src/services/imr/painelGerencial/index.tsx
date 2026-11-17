@@ -15,7 +15,8 @@ export const getDashboardPainelGerencialSupervisao = async (
   const url = `${API_URL}/imr/formulario-supervisao/dashboard/`;
   const parametros = {
     ...params,
-    novo_painel: !ENVIRONMENT.includes("production"),
+    novo_painel:
+      !ENVIRONMENT.includes("production") && (params.novo_painel ?? true),
   };
   const response = await axios
     .get(url, { params: parametros })
