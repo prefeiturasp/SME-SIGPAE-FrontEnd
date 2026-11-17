@@ -162,6 +162,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
         "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/",
       )
       .reply(200, { ultima_data: "2025-12-20" });
+    mock
+      .onGet("/medicao-inicial/data-finaliza-medicao-dezembro/")
+      .reply(200, { data: "15/12/2025" });
 
     const search = `?mes=12&ano=2025`;
     window.history.pushState({}, "", search);
@@ -188,9 +191,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     expect(botaoFinalizar).toBeDisabled();
   });
 
-  it("Finaliza - botao bloqueado (penúltimo dia letivo)", async () => {
+  it("Finaliza - botao bloqueado (antes da data cadastrada)", async () => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-12-18T10:00:00Z"));
+    jest.setSystemTime(new Date("2025-12-14T10:00:00Z"));
     jest.clearAllMocks();
 
     await renderPage();
@@ -199,18 +202,18 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     expect(botaoFinalizar).toBeDisabled();
   });
 
-  it("Finaliza - botao bloqueado (último dia letivo)", async () => {
+  it("Finaliza - botao habilitado (na data cadastrada)", async () => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-12-19T10:00:00Z"));
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
     jest.clearAllMocks();
 
     await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
-    expect(botaoFinalizar).toBeDisabled();
+    expect(botaoFinalizar).not.toBeDisabled();
   });
 
-  it("Finaliza - botao bloqueado (dia da última solicitação)", async () => {
+  it("Finaliza - botao habilitado (após a data cadastrada)", async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-20T10:00:00Z"));
     jest.clearAllMocks();
@@ -218,7 +221,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
-    expect(botaoFinalizar).toBeDisabled();
+    expect(botaoFinalizar).not.toBeDisabled();
   });
 
   it("Finaliza - botao habilitado (um dia após a última solicitação)", async () => {

@@ -86,6 +86,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     mock
       .onGet("/escola-aberta/por-escola/")
       .reply(() => [200, respostaEscolaAberta]);
+    mock
+      .onGet("/medicao-inicial/data-finaliza-medicao-dezembro/")
+      .reply(200, { data: "15/12/2025" });
 
     const search = `?mes=12&ano=2025`;
     window.history.pushState({}, "", search);
@@ -134,9 +137,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     expect(botaoFinalizar).toBeDisabled();
   });
 
-  it("Finaliza - botao bloqueado (penúltimo dia letivo)", async () => {
+  it("Finaliza - botao bloqueado (antes da data cadastrada)", async () => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-12-18T10:00:00Z"));
+    jest.setSystemTime(new Date("2025-12-14T10:00:00Z"));
     jest.clearAllMocks();
 
     await act(async () => {
@@ -164,9 +167,9 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     expect(botaoFinalizar).toBeDisabled();
   });
 
-  it("Finaliza - botao habilitado (último dia letivo)", async () => {
+  it("Finaliza - botao habilitado (na data cadastrada)", async () => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date("2025-12-19T10:00:00Z"));
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
     jest.clearAllMocks();
 
     await act(async () => {
