@@ -99,6 +99,38 @@ export const obterDataFinalizacaoMedicaoDezembro = (
   return mesmoMes && mesmoAno ? data : null;
 };
 
+export const obterDataSimulada = (
+  dataSimulada,
+  dataReferencia = new Date(),
+) => {
+  if (!dataSimulada) {
+    return null;
+  }
+
+  const data = parse(dataSimulada, "yyyy-MM-dd", dataReferencia);
+
+  return isValid(data) ? data : null;
+};
+
+export const montarSearchPeriodo = (
+  mes,
+  ano,
+  recreioNasFerias,
+  dataSimulada,
+) => {
+  let search = `?mes=${mes}&ano=${ano}`;
+
+  if (recreioNasFerias) {
+    search += `&recreio_nas_ferias=${recreioNasFerias}`;
+  }
+
+  if (dataSimulada) {
+    search += `&data_simulada=${dataSimulada}`;
+  }
+
+  return search;
+};
+
 export const deveBloquearFinalizacaoDezembro = (
   dataFinalizacaoDezembro,
   ultimoDiaAtendimentoEscolaAberta,

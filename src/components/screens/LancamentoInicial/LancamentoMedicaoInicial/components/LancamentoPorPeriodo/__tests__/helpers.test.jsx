@@ -1,6 +1,8 @@
 import {
   deveBloquearFinalizacaoDezembro,
+  montarSearchPeriodo,
   obterDataFinalizacaoMedicaoDezembro,
+  obterDataSimulada,
   obterUltimoDiaAtendimentoEscolaAberta,
 } from "../helpers";
 
@@ -109,6 +111,50 @@ describe("obterDataFinalizacaoMedicaoDezembro", () => {
     expect(
       obterDataFinalizacaoMedicaoDezembro("data-invalida", "12", "2025"),
     ).toBeNull();
+  });
+});
+
+describe("obterDataSimulada", () => {
+  it("retorna a data simulada quando ela é válida", () => {
+    const data = obterDataSimulada("2026-12-15", new Date(2026, 10, 17));
+
+    expect(data.getFullYear()).toBe(2026);
+    expect(data.getMonth()).toBe(11);
+    expect(data.getDate()).toBe(15);
+  });
+
+  it("retorna null quando não há data simulada", () => {
+    expect(obterDataSimulada(null)).toBeNull();
+  });
+
+  it("retorna null quando a data simulada é inválida", () => {
+    expect(obterDataSimulada("data-invalida")).toBeNull();
+  });
+});
+
+describe("montarSearchPeriodo", () => {
+  it("monta a query string com mês e ano", () => {
+    expect(montarSearchPeriodo("12", "2026")).toBe("?mes=12&ano=2026");
+  });
+
+  it("inclui o recreio nas férias quando informado", () => {
+    expect(montarSearchPeriodo("12", "2026", "recreio-uuid")).toBe(
+      "?mes=12&ano=2026&recreio_nas_ferias=recreio-uuid",
+    );
+  });
+
+  it("preserva a data simulada quando informada", () => {
+    expect(montarSearchPeriodo("12", "2026", null, "2026-12-15")).toBe(
+      "?mes=12&ano=2026&data_simulada=2026-12-15",
+    );
+  });
+
+  it("preserva recreio e data simulada juntos", () => {
+    expect(
+      montarSearchPeriodo("12", "2026", "recreio-uuid", "2026-12-15"),
+    ).toBe(
+      "?mes=12&ano=2026&recreio_nas_ferias=recreio-uuid&data_simulada=2026-12-15",
+    );
   });
 });
 
