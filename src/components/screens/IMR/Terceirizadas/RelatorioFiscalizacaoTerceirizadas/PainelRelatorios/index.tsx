@@ -3,6 +3,7 @@ import HTTP_STATUS from "http-status-codes";
 import { Spin } from "antd";
 import {
   gerarParametrosConsulta,
+  usuarioEhAdministradorNutriSupervisao,
   usuarioPodeVisualizarRelatorioIMR,
 } from "src/helpers/utilities";
 import { getListRelatoriosVisitaSupervisao } from "src/services/imr/painelGerencial";
@@ -21,9 +22,11 @@ import { FormApi } from "final-form";
 import { ENVIRONMENT } from "src/constants/config";
 import { FiltrosIniciais } from "./components/FiltrosIniciais";
 
-const EXIBIR_NOVO_PAINEL = !ENVIRONMENT.includes("production");
-
 export const PainelRelatorios = () => {
+  const habilitarVisaoPorPerfil = !ENVIRONMENT.includes("production");
+  const perfilAdministradorSupervisao = usuarioEhAdministradorNutriSupervisao();
+  const exibirNovoPainel =
+    habilitarVisaoPorPerfil && !perfilAdministradorSupervisao;
   const [filtros, setFiltros] = useState<FiltrosRelatoriosVisitasInterface>({});
   const [filtrosIniciais, setFiltrosIniciais] =
     useState<FiltrosRelatoriosVisitasInterface>({});
@@ -39,13 +42,16 @@ export const PainelRelatorios = () => {
 
   const [carregandoTabela, setCarregandoTabela] = useState(false);
   const [carregandoDashboard, setCarregandoDashboard] =
-    useState(!EXIBIR_NOVO_PAINEL);
+    useState(!exibirNovoPainel);
   const consultaDashboardAtual = useRef(0);
   const consultaResultadosAtual = useRef(0);
   const [form, setForm] = useState<FormApi>();
   const perfilNutriSupervisao =
     JSON.parse(localStorage.getItem("perfil")) ===
     "COORDENADOR_SUPERVISAO_NUTRICAO";
+  const podeElaborarRelatorio = habilitarVisaoPorPerfil
+    ? perfilAdministradorSupervisao
+    : perfilNutriSupervisao;
   const podeVisualizarRelatorio = usuarioPodeVisualizarRelatorioIMR();
 
   const buscarResultados = async (
@@ -82,9 +88,10 @@ export const PainelRelatorios = () => {
     setCarregandoDashboard(true);
 
     try {
-      const response = await getDashboardPainelGerencialSupervisao(
-        EXIBIR_NOVO_PAINEL ? filtrosIniciais : filtros,
-      );
+      const response = await getDashboardPainelGerencialSupervisao({
+        ...(exibirNovoPainel ? filtrosIniciais : filtros),
+        novo_painel: exibirNovoPainel,
+      });
 
       if (
         consultaAtual !== consultaDashboardAtual.current ||
@@ -132,7 +139,7 @@ export const PainelRelatorios = () => {
 
   useEffect(() => {
     if (
-      EXIBIR_NOVO_PAINEL &&
+      exibirNovoPainel &&
       (!filtrosIniciais.diretoria_regional ||
         !filtrosIniciais.mes ||
         !filtrosIniciais.ano)
@@ -143,13 +150,13 @@ export const PainelRelatorios = () => {
       consultaDashboardAtual.current += 1;
       consultaResultadosAtual.current += 1;
     };
-  }, [filtrosIniciais]);
+  }, [filtrosIniciais, exibirNovoPainel]);
 
   return (
     <Spin tip="Carregando..." spinning={carregandoDashboard}>
       <div className="card painel-acompanhamento-supervisao mt-3">
         <div className="card-body">
-          {EXIBIR_NOVO_PAINEL && (
+          {exibirNovoPainel && (
             <FiltrosIniciais
               filtros={filtrosIniciais}
               aoAlterarFiltros={alterarFiltrosIniciais}
@@ -162,11 +169,11 @@ export const PainelRelatorios = () => {
                   return (
                     <CardPorStatus
                       cardStatus={cardStatus}
-                      exibirNovoPainel={EXIBIR_NOVO_PAINEL}
+                      exibirNovoPainel={exibirNovoPainel}
                       form={form}
                       key={cardStatus.status}
                       filtrosIniciais={
-                        EXIBIR_NOVO_PAINEL ? filtrosIniciais : undefined
+                        exibirNovoPainel ? filtrosIniciais : undefined
                       }
                       setConsultaRealizada={setConsultaRealizada}
                       setFiltros={setFiltros}
@@ -188,7 +195,7 @@ export const PainelRelatorios = () => {
                 <Filtros
                   filtros={filtros}
                   filtrosIniciais={
-                    EXIBIR_NOVO_PAINEL ? filtrosIniciais : undefined
+                    exibirNovoPainel ? filtrosIniciais : undefined
                   }
                   setFiltros={setFiltros}
                   setRelatoriosVisita={setRelatoriosVisita}
@@ -209,8 +216,8 @@ export const PainelRelatorios = () => {
                     <>
                       <Listagem
                         objetos={relatoriosVisita}
-                        exibirNovoPainel={EXIBIR_NOVO_PAINEL}
-                        perfilNutriSupervisao={perfilNutriSupervisao}
+                        exibirNovoPainel={exibirNovoPainel}
+                        perfilNutriSupervisao={podeElaborarRelatorio}
                         podeVisualizarRelatorio={podeVisualizarRelatorio}
                         getDashboardPainelGerencialSupervisaoAsync={
                           getDashboardPainelGerencialSupervisaoAsync
