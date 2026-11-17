@@ -101,7 +101,10 @@ export const PainelRelatorios = () => {
 
       setDashboard(
         response.data.results.map((item) => {
-          if (item.status === "NUTRIMANIFESTACAO_A_VALIDAR") {
+          if (
+            item.status === "NUTRIMANIFESTACAO_A_VALIDAR" &&
+            (exibirNovoPainel || !perfilNutriSupervisao)
+          ) {
             return { ...item, label: "Enviados pela Supervisão" };
           }
           return item;
