@@ -9,6 +9,8 @@ import { TabelaAlimentacao } from "./TabelaAlimentacao";
 import { TabelaDietasCEI } from "./TabelaDietasCEI";
 import { TabelaDietas } from "./TabelaDietas";
 import { ConsolidadoTotal } from "../ConsolidadoTotal";
+import { TabelaDescontos } from "./TabelaDescontos";
+import { ResumoDescontos } from "../../types";
 import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
 
 type Props = {
@@ -16,6 +18,7 @@ type Props = {
   faixasEtarias: Array<FaixaEtaria>;
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo: any;
+  descontos?: ResumoDescontos;
 };
 
 export default ({
@@ -23,6 +26,7 @@ export default ({
   faixasEtarias,
   tiposAlimentacao,
   totaisConsumo,
+  descontos,
 }: Props) => {
   const [consolidadoCEI, setConsolidadoCEI] = useState({
     quantidade: 0,
@@ -136,7 +140,6 @@ export default ({
           ordem="A"
           possuiReajuste={relatorioConsolidado.possui_reajuste}
         />
-
         <TabelaDietasCEI
           ref={refDietaACEI}
           tabelas={_TABELAS_CEI}
@@ -145,7 +148,6 @@ export default ({
           totaisConsumo={_TOTAIS_CONSUMO_POR_FAIXA_ETARIA}
           ordem="B"
         />
-
         <TabelaDietasCEI
           ref={refDietaBCEI}
           tabelas={_TABELAS_CEI}
@@ -170,7 +172,6 @@ export default ({
           unidade="CEMEI"
           possuiReajuste={relatorioConsolidado.possui_reajuste}
         />
-
         <TabelaDietas
           ref={refDietaAEMEI}
           tabelas={_TABELAS_EMEI}
@@ -180,7 +181,6 @@ export default ({
           ordem="INF. B"
           unidade="CEMEI"
         />
-
         <TabelaDietas
           ref={refDietaBEMEI}
           tabelas={_TABELAS_EMEI}
@@ -190,6 +190,7 @@ export default ({
           ordem="INF. C"
           unidade="CEMEI"
         />
+        <TabelaDescontos descontos={descontos} />
       </div>
 
       {cards.map((card, index) => (
@@ -200,6 +201,7 @@ export default ({
             tituloQuantidade={card.tituloQuantidade}
             valor={card.valor}
             tituloValor={card.tituloValor}
+            descontos={index === cards.length - 1 ? descontos : undefined}
           />
         </div>
       ))}

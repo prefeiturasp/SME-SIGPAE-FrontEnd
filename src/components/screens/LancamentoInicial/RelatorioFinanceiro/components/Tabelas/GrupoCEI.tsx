@@ -1,6 +1,8 @@
 import { TabelaAlimentacaoCEI } from "./TabelaAlimentacaoCEI";
 import { TabelaDietasCEI } from "./TabelaDietasCEI";
 import { ConsolidadoTotal } from "../ConsolidadoTotal";
+import { TabelaDescontos } from "./TabelaDescontos";
+import { ResumoDescontos } from "../../types";
 import { useEffect, useRef, useState } from "react";
 import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
 import { FaixaEtaria } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
@@ -10,12 +12,14 @@ type Props = {
   relatorioConsolidado: RelatorioFinanceiroConsolidado;
   faixasEtarias: Array<FaixaEtaria>;
   totaisConsumo: any;
+  descontos?: ResumoDescontos;
 };
 
 export default ({
   relatorioConsolidado,
   faixasEtarias,
   totaisConsumo,
+  descontos,
 }: Props) => {
   const [consolidado, setConsolidado] = useState({
     quantidade: 0,
@@ -70,10 +74,12 @@ export default ({
         totaisConsumo={totaisConsumo}
         ordem="C"
       />
+      <TabelaDescontos descontos={descontos} />
       <ConsolidadoTotal
         titulo="CONSOLIDADO TOTAL (A + B + C)"
         quantidade={consolidado.quantidade}
         valor={consolidado.valor}
+        descontos={descontos}
       />
     </div>
   );

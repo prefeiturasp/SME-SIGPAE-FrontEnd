@@ -19,6 +19,7 @@ type FieldsProps = {
   exibirReabrirLancamentos?: boolean;
   showReabrirLancamentos?: (_value: boolean) => void;
   showAplicarDesconto?: () => void;
+  desabilitarBotoes?: boolean;
 };
 
 export function FormFields({
@@ -28,6 +29,7 @@ export function FormFields({
   exibirReabrirLancamentos,
   showReabrirLancamentos,
   showAplicarDesconto,
+  desabilitarBotoes = false,
 }: FieldsProps) {
   const [searchParams] = useSearchParams();
   const uuidRelatorioFinanceiro = searchParams.get("uuid");
@@ -95,7 +97,8 @@ export function FormFields({
               style={BUTTON_STYLE.ORANGE_OUTLINE}
               type={BUTTON_TYPE.BUTTON}
               icon={BUTTON_ICON.REFRESH}
-              onClick={() => showReabrirLancamentos(true)}
+              onClick={() => showReabrirLancamentos?.(true)}
+              disabled={desabilitarBotoes}
             />
             {showAplicarDesconto && (
               <Botao
@@ -104,6 +107,7 @@ export function FormFields({
                 style={BUTTON_STYLE.GREEN_OUTLINE}
                 icon={BUTTON_ICON.PERCENT}
                 onClick={showAplicarDesconto}
+                disabled={desabilitarBotoes}
               />
             )}
           </div>
