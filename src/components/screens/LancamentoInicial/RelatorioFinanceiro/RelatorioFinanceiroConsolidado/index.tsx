@@ -83,6 +83,7 @@ export function RelatorioFinanceiroConsolidado() {
   const modoVisualizacao = state?.visualizar || false;
   const podeFinalizarAnalise =
     !modoVisualizacao && state?.status?.[0] === "EM_ANALISE";
+  const semRelatorioConsolidado = !relatorioConsolidado;
 
   const exportarPDF = async () => {
     setExportando(true);
@@ -323,6 +324,7 @@ export function RelatorioFinanceiroConsolidado() {
                     exibirReabrirLancamentos={!modoVisualizacao}
                     showReabrirLancamentos={() => setReabrirLancamentos(true)}
                     showAplicarDesconto={() => setAplicarDesconto(true)}
+                    desabilitarBotoes={semRelatorioConsolidado}
                   />
                 </form>
               )}
@@ -345,7 +347,7 @@ export function RelatorioFinanceiroConsolidado() {
                 type={BUTTON_TYPE.BUTTON}
                 icon={BUTTON_ICON.FILE_PDF}
                 onClick={async () => await exportarPDF()}
-                disabled={exportando}
+                disabled={exportando || semRelatorioConsolidado}
               />
               {podeFinalizarAnalise && (
                 <Botao
@@ -354,6 +356,7 @@ export function RelatorioFinanceiroConsolidado() {
                   style={BUTTON_STYLE.GREEN}
                   type={BUTTON_TYPE.BUTTON}
                   onClick={() => setGerarMedicaoFinal(true)}
+                  disabled={semRelatorioConsolidado}
                 />
               )}
             </div>
