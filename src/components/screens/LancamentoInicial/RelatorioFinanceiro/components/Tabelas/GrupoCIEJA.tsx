@@ -4,18 +4,22 @@ import { TipoAlimentacao } from "src/services/medicaoInicial/parametrizacao_fina
 import { TabelaDietas } from "./TabelaDietas";
 import { RelatorioFinanceiroConsolidado } from "src/interfaces/relatorio_financeiro.interface";
 import { ConsolidadoTotal } from "../ConsolidadoTotal";
+import { TabelaDescontos } from "./TabelaDescontos";
+import { ResumoDescontos } from "../../types";
 import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
 
 type Props = {
   relatorioConsolidado: RelatorioFinanceiroConsolidado;
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo: any;
+  descontos?: ResumoDescontos;
 };
 
 export default ({
   relatorioConsolidado,
   tiposAlimentacao,
   totaisConsumo,
+  descontos,
 }: Props) => {
   const [consolidado, setConsolidado] = useState({
     quantidade: 0,
@@ -76,10 +80,12 @@ export default ({
         ordem="C"
         unidade="CIEJA"
       />
+      <TabelaDescontos descontos={descontos} />
       <ConsolidadoTotal
         titulo="CONSOLIDADO TOTAL (A + B + C)"
         quantidade={consolidado.quantidade}
         valor={consolidado.valor}
+        descontos={descontos}
       />
     </div>
   );

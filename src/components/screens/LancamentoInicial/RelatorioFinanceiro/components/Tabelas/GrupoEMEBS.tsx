@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ConsolidadoTotal } from "../ConsolidadoTotal";
+import { TabelaDescontos } from "./TabelaDescontos";
+import { ResumoDescontos } from "../../types";
 import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
 import { TabelaAlimentacao } from "./TabelaAlimentacao";
 import { TipoAlimentacao } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
@@ -10,12 +12,14 @@ type Props = {
   relatorioConsolidado: RelatorioFinanceiroConsolidado;
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo: any;
+  descontos?: ResumoDescontos;
 };
 
 export default ({
   relatorioConsolidado,
   tiposAlimentacao,
   totaisConsumo,
+  descontos,
 }: Props) => {
   const [consolidadoInfantil, setConsolidadoInfantil] = useState({
     quantidade: 0,
@@ -178,6 +182,8 @@ export default ({
           totaisConsumo={totaisConsumo["FUNDAMENTAL"]}
           ordem="FUND. C"
         />
+
+        <TabelaDescontos descontos={descontos} />
       </div>
 
       {cards.map((card, index) => (
@@ -188,6 +194,7 @@ export default ({
             tituloQuantidade={card.tituloQuantidade}
             valor={card.valor}
             tituloValor={card.tituloValor}
+            descontos={index === cards.length - 1 ? descontos : undefined}
           />
         </div>
       ))}

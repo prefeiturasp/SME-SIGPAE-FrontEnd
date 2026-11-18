@@ -38,6 +38,7 @@ import ModalCancelar from "../ModalCancelar";
 import { ClausulaInterface } from "src/interfaces/clausulas_para_descontos.interface";
 import {
   formatarPayload,
+  getFlagsGrupo,
   getValoresDescontos,
   getValorUnitario,
 } from "./helpers";
@@ -125,14 +126,9 @@ const ModalAplicarDesconto = ({
   const formValuesRef = useRef<any>({});
   const [formSyncTick, setFormSyncTick] = useState(0);
 
-  const grupoNome =
-    relatorioConsolidado?.grupo_unidade_escolar?.nome?.toUpperCase() ?? "";
-
-  const ehCei = grupoNome?.includes("GRUPO 1");
-  const ehCemei = grupoNome?.includes("GRUPO 2");
-  const ehEmef = grupoNome?.includes("GRUPO 4");
-  const ehEmebs = grupoNome?.includes("GRUPO 5");
-  const ehCieja = grupoNome?.includes("GRUPO 6");
+  const { ehCei, ehCemei, ehEmef, ehEmebs, ehCieja } = getFlagsGrupo(
+    relatorioConsolidado?.grupo_unidade_escolar?.nome,
+  );
 
   const alimentacoesDietaA = tiposAlimentacao.filter((item) =>
     ["REFEICAO", "LANCHE", "LANCHE 4H"].includes(
