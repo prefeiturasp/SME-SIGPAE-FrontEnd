@@ -171,9 +171,7 @@ const buscarCampoPorAlimentacao = ({
       nomeTabela.includes(lancamento.replaceAll("_", " ").toUpperCase()) &&
       ((!ehEmebs && !ehCemei) || nomeTabela.includes(tipo?.toUpperCase()));
 
-    return (
-      corresponde && tabela.periodo_escolar === (ehRefeicaoEja ? "NOITE" : null)
-    );
+    return corresponde && !tabela.periodo_escolar;
   });
 
   if (!tabela) return null;
