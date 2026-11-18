@@ -1,11 +1,15 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import HTTP_STATUS from "http-status-codes";
-import { InputComData } from "src/components/Shareable/DatePicker";
 import Select from "src/components/Shareable/Select";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
-import { FiltrosRelatoriosVisitasInterface } from "src/interfaces/imr.interface";
+import {
+  FiltrosRelatoriosVisitasInterface,
+  MesAnoRelatorioSupervisaoInterface,
+} from "src/interfaces/imr.interface";
 import { ResponseDiretoriasRegionaisSimplissimaInterface } from "src/interfaces/responses.interface";
 import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { obterMesesAnosSupervisao } from "src/services/imr/painelGerencial";
+import { MESES } from "src/constants/shared";
 
 interface Propriedades {
   filtros: FiltrosRelatoriosVisitasInterface;
@@ -20,6 +24,10 @@ export const FiltrosIniciais = ({
     { nome: string; uuid: string }[]
   >([]);
   const [carregandoDiretorias, setCarregandoDiretorias] = useState(true);
+  const [mesesAnos, setMesesAnos] = useState<
+    MesAnoRelatorioSupervisaoInterface[]
+  >([]);
+  const [carregandoMeses, setCarregandoMeses] = useState(false);
 
   useEffect(() => {
     let ativo = true;
@@ -56,15 +64,54 @@ export const FiltrosIniciais = ({
     };
   }, []);
 
+  useEffect(() => {
+    let ativo = true;
+    const diretoriaRegional = filtros.diretoria_regional;
+    setMesesAnos([]);
+
+    if (!diretoriaRegional) {
+      setCarregandoMeses(false);
+      return;
+    }
+
+    const buscarMesesAnos = async () => {
+      setCarregandoMeses(true);
+      try {
+        const resposta = await obterMesesAnosSupervisao(diretoriaRegional);
+        if (!ativo) return;
+
+        if (resposta.status === HTTP_STATUS.OK) {
+          setMesesAnos(resposta.data.results);
+        } else {
+          toastError("Não foi possível carregar os meses de referência.");
+        }
+      } catch {
+        if (ativo) {
+          toastError("Não foi possível carregar os meses de referência.");
+        }
+      } finally {
+        if (ativo) setCarregandoMeses(false);
+      }
+    };
+
+    buscarMesesAnos();
+
+    return () => {
+      ativo = false;
+    };
+  }, [filtros.diretoria_regional]);
+
   const alterarDiretoria = (evento: ChangeEvent<HTMLSelectElement>) => {
     aoAlterarFiltros({
       ...filtros,
       diretoria_regional: evento.target.value,
+      mes: undefined,
+      ano: undefined,
     });
   };
 
-  const alterarMesReferencia = (valor: string | null) => {
-    const [mes, ano] = valor?.split("/") ?? [];
+  const alterarMesReferencia = (evento: ChangeEvent<HTMLSelectElement>) => {
+    const [mes, ano] = evento.target.value.split("/");
 
     aoAlterarFiltros({
       ...filtros,
@@ -98,20 +145,25 @@ export const FiltrosIniciais = ({
         />
       </div>
       <div className="col-12 col-md-4">
-        <InputComData
+        <Select
           name="mes_referencia"
           label="Mês de referência"
           input={{
-            id: "mes_referencia",
             value: mesReferencia,
             onChange: alterarMesReferencia,
           }}
-          placeholder="Selecione o mês e ano"
-          dateFormat="MM/YYYY"
-          dateFormatPicker="MM/yyyy"
-          showMonthYearPicker
-          minDate={null}
-          maxDate={null}
+          options={[
+            {
+              nome: carregandoMeses ? "Carregando meses..." : "Selecione o mês",
+              uuid: "",
+            },
+            ...mesesAnos.map(({ mes, ano }) => ({
+              nome: `${MESES[mes - 1]} - ${ano}`,
+              uuid: `${String(mes).padStart(2, "0")}/${ano}`,
+            })),
+          ]}
+          disabled={!filtros.diretoria_regional || carregandoMeses}
+          naoDesabilitarPrimeiraOpcao
           required
         />
       </div>
