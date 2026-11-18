@@ -46,9 +46,6 @@ export const buscarCampoEMEF = (
   );
 };
 
-export const getUuid = (obj: any) =>
-  typeof obj === "string" ? obj : obj?.uuid;
-
 export const obterValorParametrizado = (
   tabela: TabelaParametrizacao | undefined,
   tipo: TipoAlimentacao,

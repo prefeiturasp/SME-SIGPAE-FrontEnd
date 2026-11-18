@@ -8,13 +8,18 @@ import {
   TipoAlimentacao,
 } from "src/services/medicaoInicial/parametrizacao_financeira.interface";
 import { stringDecimalToNumber } from "src/helpers/parsers";
-import { getUuid } from "../../helpers";
+import { TipoGrupoFlags } from "../../types";
 
-type TipoGrupoFlags = {
-  ehCei?: boolean;
-  ehEmef: boolean;
-  ehCemei: boolean;
-  ehEmebs: boolean;
+export const getFlagsGrupo = (nomeGrupo?: string): Required<TipoGrupoFlags> => {
+  const grupo = nomeGrupo?.toUpperCase() ?? "";
+
+  return {
+    ehCei: grupo.includes("GRUPO 1"),
+    ehCemei: grupo.includes("GRUPO 2"),
+    ehEmef: grupo.includes("GRUPO 4"),
+    ehEmebs: grupo.includes("GRUPO 5"),
+    ehCieja: grupo.includes("GRUPO 6"),
+  };
 };
 
 type GetValorUnitarioParams = {
@@ -24,6 +29,8 @@ type GetValorUnitarioParams = {
   tiposAlimentacao: TipoAlimentacao[];
   tabelas: RelatorioFinanceiroConsolidado["tabelas"];
 };
+
+const getUuid = (obj: any) => (typeof obj === "string" ? obj : obj?.uuid);
 
 export const formatarPayload = (
   descontos: DescontoFinanceiro[],

@@ -21,3 +21,11 @@ export type TabelaDietasHandle = {
     valorTotalGeral: number;
   };
 };
+
+export type TipoGrupoFlags = {
+  ehCei?: boolean;
+  ehEmef: boolean;
+  ehCemei: boolean;
+  ehEmebs: boolean;
+  ehCieja?: boolean;
+};
