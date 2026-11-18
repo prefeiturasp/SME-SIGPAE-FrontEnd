@@ -1,5 +1,24 @@
 .card-registrar-memorando-ocorrencia {
   .lote-memorando {
     padding-top: 8px;
+
+    & + .lote-memorando {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+  }
+
+  .input-com-sufixo .suffix {
+    margin-left: 0.5rem;
+    padding-right: 0.75rem;
+    color: #686868;
+    white-space: nowrap;
+  }
+
+  .erro-lote-duplicado {
+    color: #b40c02;
+    font-size: 13px;
+    font-weight: 500;
   }
 }
