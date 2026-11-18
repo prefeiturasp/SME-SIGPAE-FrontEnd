@@ -1,5 +1,6 @@
 import {
   deveBloquearFinalizacaoDezembro,
+  estaAntesDoFimDoPeriodoLetivo,
   montarSearchPeriodo,
   obterDataFinalizacaoMedicaoDezembro,
   obterDataSimulada,
@@ -155,6 +156,54 @@ describe("montarSearchPeriodo", () => {
     ).toBe(
       "?mes=12&ano=2026&recreio_nas_ferias=recreio-uuid&data_simulada=2026-12-15",
     );
+  });
+});
+
+describe("estaAntesDoFimDoPeriodoLetivo", () => {
+  const diasLetivos = [{ dia: 18 }, { dia: 19 }];
+
+  it("retorna true antes do último dia letivo", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 18, 10, 0),
+        diasLetivos,
+        "12",
+        "2025",
+      ),
+    ).toBe(true);
+  });
+
+  it("retorna true durante o último dia letivo", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 19, 10, 0),
+        diasLetivos,
+        "12",
+        "2025",
+      ),
+    ).toBe(true);
+  });
+
+  it("retorna false depois do último dia letivo", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 20, 10, 0),
+        diasLetivos,
+        "12",
+        "2025",
+      ),
+    ).toBe(false);
+  });
+
+  it("retorna false quando não há dias letivos", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 18, 10, 0),
+        [],
+        "12",
+        "2025",
+      ),
+    ).toBe(false);
   });
 });
 

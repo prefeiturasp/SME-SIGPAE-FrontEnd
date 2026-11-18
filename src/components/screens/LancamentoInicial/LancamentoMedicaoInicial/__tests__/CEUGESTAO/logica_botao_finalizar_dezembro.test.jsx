@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -271,5 +271,36 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
     expect(botaoFinalizar).not.toBeDisabled();
+  });
+
+  it("abre o modal de confirmação ao finalizar antes do término do período letivo", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await renderPage();
+
+    fireEvent.click(screen.getByText("Finalizar"));
+
+    expect(screen.getByText("Finalizar lançamentos")).toBeInTheDocument();
+    expect(
+      screen.getByText(/a frequência e as alimentações serão zeradas/i),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Avaliação do Serviço")).not.toBeInTheDocument();
+  });
+
+  it("segue para a Avaliação do Serviço ao confirmar a finalização antecipada", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await renderPage();
+
+    fireEvent.click(screen.getByText("Finalizar"));
+    fireEvent.click(screen.getByRole("button", { name: "Sim" }));
+    act(() => jest.advanceTimersByTime(1000));
+
+    expect(screen.queryByText("Finalizar lançamentos")).not.toBeInTheDocument();
+    expect(screen.getByText("Avaliação do Serviço")).toBeInTheDocument();
   });
 });

@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { MODULO_GESTAO, PERFIL, TIPO_PERFIL } from "src/constants/shared";
@@ -20,6 +20,29 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
   let respostaEscolaAberta;
+
+  const renderPage = async () => {
+    await act(async () => {
+      render(
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <MeusDadosContext.Provider
+            value={{
+              meusDados: mockMeusDadosEscolaEMEFPericles,
+              setMeusDados: jest.fn(),
+            }}
+          >
+            <LancamentoMedicaoInicialPage />
+            <ToastContainer />
+          </MeusDadosContext.Provider>
+        </MemoryRouter>,
+      );
+    });
+  };
 
   beforeEach(async () => {
     respostaEscolaAberta = { possui_cadastro: false };
@@ -313,4 +336,38 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
       expect(botaoFinalizar).not.toBeDisabled();
     },
   );
+
+  it("abre o modal de confirmação ao finalizar antes do término do período letivo", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await renderPage();
+
+    fireEvent.click(screen.getByText("Finalizar"));
+
+    expect(screen.getByText("Finalizar lançamentos")).toBeInTheDocument();
+    expect(
+      screen.getByText(/a frequência e as alimentações serão zeradas/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Deseja finalizar e enviar essa medição agora?"),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Avaliação do Serviço")).not.toBeInTheDocument();
+  });
+
+  it("fecha o modal de confirmação sem finalizar ao clicar em Não", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await renderPage();
+
+    fireEvent.click(screen.getByText("Finalizar"));
+    fireEvent.click(screen.getByRole("button", { name: "Não" }));
+    act(() => jest.advanceTimersByTime(1000));
+
+    expect(screen.queryByText("Finalizar lançamentos")).not.toBeInTheDocument();
+    expect(screen.queryByText("Avaliação do Serviço")).not.toBeInTheDocument();
+  });
 });
