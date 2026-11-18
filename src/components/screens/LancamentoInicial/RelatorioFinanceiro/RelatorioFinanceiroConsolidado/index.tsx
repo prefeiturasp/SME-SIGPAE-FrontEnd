@@ -67,7 +67,7 @@ export function RelatorioFinanceiroConsolidado() {
   const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
 
   const [searchParams] = useSearchParams();
-  const uuidRelatorioFinanceiro = searchParams.get("uuid");
+  const uuidRelatorioFinanceiro = searchParams.get("uuid") ?? "";
 
   const {
     carregando: carregandoRelatorio,
@@ -160,7 +160,7 @@ export function RelatorioFinanceiroConsolidado() {
       [],
     );
 
-    const tiposAlimentacaoUnicos = {};
+    const tiposAlimentacaoUnicos: Record<string, string> = {};
 
     tiposAlimentacaoUnidades.forEach((tipoAlimentacao) => {
       tiposAlimentacaoUnicos[tipoAlimentacao.uuid] = tipoAlimentacao.nome;
