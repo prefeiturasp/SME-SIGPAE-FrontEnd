@@ -20,6 +20,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
     mockMeusDadosEscolaEMEFPericles.vinculo_atual.instituicao.uuid;
 
   let respostaEscolaAberta;
+  let respostaUltimaSolicitacao;
 
   const renderPage = async () => {
     await act(async () => {
@@ -46,6 +47,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
 
   beforeEach(async () => {
     respostaEscolaAberta = { possui_cadastro: false };
+    respostaUltimaSolicitacao = { ultima_data: null };
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaEMEFPericles);
@@ -105,7 +107,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
       .onGet(
         "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/",
       )
-      .reply(200, { ultima_data: "2025-12-20" });
+      .reply(() => [200, respostaUltimaSolicitacao]);
     mock
       .onGet("/escola-aberta/por-escola/")
       .reply(() => [200, respostaEscolaAberta]);
@@ -336,6 +338,18 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário EMEF - Lógica Botão Fina
       expect(botaoFinalizar).not.toBeDisabled();
     },
   );
+
+  it("mantém Finalizar bloqueado quando a última solicitação é depois da data cadastrada", async () => {
+    respostaUltimaSolicitacao = { ultima_data: "2025-12-20" };
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await renderPage();
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).toBeDisabled();
+  });
 
   it("abre o modal de confirmação ao finalizar antes do término do período letivo", async () => {
     jest.useFakeTimers();

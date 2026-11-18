@@ -1,5 +1,6 @@
 import {
   deveBloquearFinalizacaoDezembro,
+  deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao,
   estaAntesDoFimDoPeriodoLetivo,
   montarSearchPeriodo,
   obterDataFinalizacaoMedicaoDezembro,
@@ -246,6 +247,70 @@ describe("deveBloquearFinalizacaoDezembro", () => {
         dataCadastrada,
         new Date(2025, 11, 20),
         new Date(2025, 11, 21, 10, 0),
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao", () => {
+  const dataCadastrada = new Date(2025, 11, 15);
+
+  it("bloqueia quando a última solicitação é depois da data cadastrada", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-20",
+        new Date(2025, 11, 15, 10, 0),
+      ),
+    ).toBe(true);
+  });
+
+  it("bloqueia durante o dia da última solicitação", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-20",
+        new Date(2025, 11, 20, 10, 0),
+      ),
+    ).toBe(true);
+  });
+
+  it("libera após o dia da última solicitação", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-20",
+        new Date(2025, 11, 21, 10, 0),
+      ),
+    ).toBe(false);
+  });
+
+  it("não bloqueia quando a última solicitação é anterior ou igual à data cadastrada", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-15",
+        new Date(2025, 11, 15, 10, 0),
+      ),
+    ).toBe(false);
+  });
+
+  it("não bloqueia quando não há última solicitação", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        null,
+        new Date(2025, 11, 15, 10, 0),
+      ),
+    ).toBe(false);
+  });
+
+  it("não bloqueia quando a última solicitação é inválida", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "data-invalida",
+        new Date(2025, 11, 15, 10, 0),
       ),
     ).toBe(false);
   });

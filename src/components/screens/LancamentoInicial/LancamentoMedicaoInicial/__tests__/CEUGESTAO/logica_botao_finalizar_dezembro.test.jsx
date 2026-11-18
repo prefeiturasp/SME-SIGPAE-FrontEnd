@@ -67,6 +67,8 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     },
   ];
 
+  let respostaUltimaSolicitacao;
+
   const renderPage = async () => {
     await act(async () => {
       render(
@@ -91,6 +93,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
   };
 
   beforeEach(async () => {
+    respostaUltimaSolicitacao = { ultima_data: "2025-12-20" };
     mock
       .onGet("/usuarios/meus-dados/")
       .reply(200, mockMeusDadosEscolaCEUGESTAO);
@@ -161,7 +164,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
       .onGet(
         "/escola-solicitacoes/ultimo-dia-com-solicitacao-autorizada-no-mes/",
       )
-      .reply(200, { ultima_data: "2025-12-20" });
+      .reply(() => [200, respostaUltimaSolicitacao]);
     mock
       .onGet("/medicao-inicial/data-finaliza-medicao-dezembro/")
       .reply(200, { data: "15/12/2025" });
@@ -202,7 +205,19 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     expect(botaoFinalizar).toBeDisabled();
   });
 
-  it("Finaliza - botao habilitado (na data cadastrada)", async () => {
+  it("Finaliza - botao bloqueado (data cadastrada anterior à última solicitação)", async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
+    jest.clearAllMocks();
+
+    await renderPage();
+
+    const botaoFinalizar = screen.getByText("Finalizar").closest("button");
+    expect(botaoFinalizar).toBeDisabled();
+  });
+
+  it("Finaliza - botao habilitado na data cadastrada quando não há solicitação posterior", async () => {
+    respostaUltimaSolicitacao = { ultima_data: null };
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
     jest.clearAllMocks();
@@ -213,7 +228,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     expect(botaoFinalizar).not.toBeDisabled();
   });
 
-  it("Finaliza - botao habilitado (após a data cadastrada)", async () => {
+  it("Finaliza - botao bloqueado (dia da última solicitação)", async () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-20T10:00:00Z"));
     jest.clearAllMocks();
@@ -221,7 +236,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
     await renderPage();
 
     const botaoFinalizar = screen.getByText("Finalizar").closest("button");
-    expect(botaoFinalizar).not.toBeDisabled();
+    expect(botaoFinalizar).toBeDisabled();
   });
 
   it("Finaliza - botao habilitado (um dia após a última solicitação)", async () => {
@@ -274,6 +289,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
   });
 
   it("abre o modal de confirmação ao finalizar antes do término do período letivo", async () => {
+    respostaUltimaSolicitacao = { ultima_data: null };
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
     jest.clearAllMocks();
@@ -290,6 +306,7 @@ describe("Teste <LancamentoMedicaoInicial> - Usuário CEU GESTAO - Lógica Botã
   });
 
   it("segue para a Avaliação do Serviço ao confirmar a finalização antecipada", async () => {
+    respostaUltimaSolicitacao = { ultima_data: null };
     jest.useFakeTimers();
     jest.setSystemTime(new Date("2025-12-15T10:00:00Z"));
     jest.clearAllMocks();
