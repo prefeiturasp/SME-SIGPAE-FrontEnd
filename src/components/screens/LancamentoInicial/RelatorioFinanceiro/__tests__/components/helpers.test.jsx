@@ -1,5 +1,6 @@
 import {
   formatarPayload,
+  getFlagsGrupo,
   getValorUnitario,
   getValoresDescontos,
 } from "../../components/ModalAplicarDesconto/helpers";
@@ -370,11 +371,15 @@ describe("Helpers de descontos financeiros", () => {
         tiposAlimentacao,
         tabelas: [
           criarTabela({
-            nome: "ALIMENTACOES",
-            periodo_escolar: "NOITE",
+            nome: "Preço das Alimentações",
             valores: [
               {
-                nome_campo: "refeicao eja",
+                nome_campo: "refeição_-_ceu_emef,_ceu_gestão,_emef,_emefm",
+                tipo_valor: "UNITARIO",
+                valor: "15,00",
+              },
+              {
+                nome_campo: "refeição_-_eja",
                 tipo_valor: "UNITARIO",
                 valor: "20,00",
               },
@@ -384,6 +389,44 @@ describe("Helpers de descontos financeiros", () => {
       });
 
       expect(resultado).toBe(20);
+    });
+
+    it("deve buscar refeição EJA da dieta tipo A na tabela sem período", () => {
+      const resultado = getValorUnitario({
+        desconto: {
+          tipo_lancamento: "DIETAS_TIPO_A",
+          faixa_etaria: "",
+          tipo_alimentacao: "NOITE|uuid-refeicao",
+        },
+        grupo: {
+          ehCei: false,
+          ehCemei: false,
+          ehEmef: true,
+          ehEmebs: false,
+        },
+        faixasEtarias,
+        tiposAlimentacao,
+        tabelas: [
+          criarTabela({
+            nome: "Dietas Tipo A e Tipo A Enteral/Restrição de Aminoácidos",
+            valores: [
+              {
+                nome_campo:
+                  "refeição_-_dieta_enteral_-_ceu_emef,_ceu_gestão,_emef,_emefm",
+                tipo_valor: "UNITARIO",
+                valor: "18,00",
+              },
+              {
+                nome_campo: "refeição_-_dieta_enteral_-_eja",
+                tipo_valor: "UNITARIO",
+                valor: "22,00",
+              },
+            ],
+          }),
+        ],
+      });
+
+      expect(resultado).toBe(22);
     });
 
     it("deve buscar o valor específico do tipo de unidade para EMEBS", () => {
@@ -469,6 +512,25 @@ describe("Helpers de descontos financeiros", () => {
       });
 
       expect(resultado).toBe(0);
+    });
+  });
+
+  describe("getFlagsGrupo", () => {
+    it.each([
+      ["Grupo 1", "ehCei"],
+      ["Grupo 2", "ehCemei"],
+      ["Grupo 4", "ehEmef"],
+      ["Grupo 5", "ehEmebs"],
+      ["Grupo 6", "ehCieja"],
+    ])("deve identificar o %s", (nome, flag) => {
+      const flags = getFlagsGrupo(nome);
+
+      expect(flags[flag]).toBe(true);
+      expect(Object.values(flags).filter(Boolean)).toHaveLength(1);
+    });
+
+    it("deve retornar todas as flags falsas sem nome de grupo", () => {
+      expect(Object.values(getFlagsGrupo(undefined)).some(Boolean)).toBe(false);
     });
   });
 });
