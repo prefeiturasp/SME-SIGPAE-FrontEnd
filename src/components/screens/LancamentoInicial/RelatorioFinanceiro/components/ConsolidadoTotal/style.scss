@@ -29,6 +29,12 @@
     align-items: flex-start;
   }
 
+  .consolidado-conteudo.com-descontos {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    align-items: start;
+  }
+
   .bloco {
     display: flex;
     flex-direction: column;
