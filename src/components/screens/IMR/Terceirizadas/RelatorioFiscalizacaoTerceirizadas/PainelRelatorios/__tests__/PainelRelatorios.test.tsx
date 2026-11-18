@@ -63,7 +63,13 @@ jest.mock("../components/CardPorStatus", () => {
             setRelatoriosVisita([]);
             setConsultaRealizada(false);
             setStatusSelecionado(cardStatus.status);
-            setFiltros({ ...filtrosIniciais, status: cardStatus.status });
+            setFiltros({
+              ...filtrosIniciais,
+              status:
+                cardStatus.status === "TODOS_OS_RELATORIOS"
+                  ? ""
+                  : cardStatus.status,
+            });
           },
         },
         cardStatus.label,
@@ -248,6 +254,11 @@ const dashboard = [
     status: "VALIDADO_POR_CODAE",
     total: 3,
   },
+  {
+    label: "Todos os Relatórios",
+    status: "TODOS_OS_RELATORIOS",
+    total: 7,
+  },
 ];
 
 const relatorios = [
@@ -345,7 +356,7 @@ describe("Painel de relatórios de fiscalização", () => {
     },
   );
 
-  it("apresenta os cinco cards retornados e orienta a seleção do status", async () => {
+  it("apresenta os seis cards retornados, incluindo todos os relatórios, e orienta a seleção do status", async () => {
     renderizarPainel();
 
     await screen.findByRole("button", { name: "Validados pela CODAE" });
@@ -358,6 +369,7 @@ describe("Painel de relatórios de fiscalização", () => {
       "card-COM_COMENTARIOS_DE_CODAE",
       "card-CORRIGIDO_PELA_SUPERVISAO",
       "card-VALIDADO_POR_CODAE",
+      "card-TODOS_OS_RELATORIOS",
     ]);
     for (const card of screen.getAllByTestId(/^card-/)) {
       expect(card).toHaveAttribute("data-novo-painel", "true");
@@ -365,6 +377,10 @@ describe("Painel de relatórios de fiscalização", () => {
     expect(screen.getByTestId("card-VALIDADO_POR_CODAE")).toHaveAttribute(
       "data-total",
       "3",
+    );
+    expect(screen.getByTestId("card-TODOS_OS_RELATORIOS")).toHaveAttribute(
+      "data-total",
+      "7",
     );
     expect(
       screen.getByText(
