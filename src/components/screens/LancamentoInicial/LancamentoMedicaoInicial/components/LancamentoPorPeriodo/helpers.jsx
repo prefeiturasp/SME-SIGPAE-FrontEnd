@@ -163,6 +163,32 @@ export const deveBloquearFinalizacaoDezembro = (
   return bloqueadoAntesDaDataCadastrada || bloqueadoPorEscolaAberta;
 };
 
+export const deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao = (
+  dataFinalizacaoDezembro,
+  ultimaDataSolicitacao,
+  dataHoje = new Date(),
+) => {
+  if (!ultimaDataSolicitacao) {
+    return false;
+  }
+
+  const dataUltimaSolicitacao = parse(
+    ultimaDataSolicitacao,
+    "yyyy-MM-dd",
+    new Date(),
+  );
+
+  if (!isValid(dataUltimaSolicitacao)) {
+    return false;
+  }
+
+  if (dataUltimaSolicitacao <= dataFinalizacaoDezembro) {
+    return false;
+  }
+
+  return dataHoje <= endOfDay(dataUltimaSolicitacao);
+};
+
 export const OPCOES_AVALIACAO_A_CONTENTO = {
   SIM_SEM_OCORRENCIAS: 1,
   NAO_COM_OCORRENCIAS: 0,

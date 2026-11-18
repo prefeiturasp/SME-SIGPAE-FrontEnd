@@ -28,6 +28,7 @@ import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAber
 import { getDataFinalizaMedicaoDezembro } from "src/services/medicaoInicial/dataFinalizaMedicaoDezembro.service";
 import {
   deveBloquearFinalizacaoDezembro,
+  deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao,
   estaAntesDoFimDoPeriodoLetivo,
   montarSearchPeriodo,
   obterDataFinalizacaoMedicaoDezembro,
@@ -874,10 +875,19 @@ export default () => {
         ultimoDiaAtendimentoEscolaAberta,
         dataHoje,
       );
+      const naoPodeFinalizarPelaUltimaSolicitacao =
+        deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+          dataFinalizacaoDezembro,
+          ultimoDiaComSolicitacaoAutorizada_,
+          dataHoje,
+        );
+      const naoPodeFinalizarNaMedicaoDezembro =
+        naoPodeFinalizarPelaDataDezembro ||
+        naoPodeFinalizarPelaUltimaSolicitacao;
 
-      setNaoPodeFinalizar(naoPodeFinalizarPelaDataDezembro);
+      setNaoPodeFinalizar(naoPodeFinalizarNaMedicaoDezembro);
       setFinalizacaoAntecipada(
-        !naoPodeFinalizarPelaDataDezembro &&
+        !naoPodeFinalizarNaMedicaoDezembro &&
           estaAntesDoFimDoPeriodoLetivo(
             dataHoje,
             listaDiasLetivos,
