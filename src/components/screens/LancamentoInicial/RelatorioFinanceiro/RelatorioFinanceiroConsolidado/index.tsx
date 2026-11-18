@@ -1,6 +1,6 @@
 import "./styles.scss";
 import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Form } from "react-final-form";
 import { Spin } from "antd";
 import { FormFields } from "../components/FormFields";
@@ -42,6 +42,7 @@ import { getEscolasParaFiltros } from "src/services/escola.service";
 import ModalReabrirLancamentos from "../components/ModalReabrirLancamentos";
 import ModalGerarMedicaoFinal from "../components/ModalGerarMedicaoFinal";
 import { MEDICAO_INICIAL, RELATORIO_FINANCEIRO } from "src/configs/constants";
+import { montarResumoDescontos } from "../helpers";
 
 type TotaisParams = {
   mes: string;
@@ -229,12 +230,24 @@ export function RelatorioFinanceiroConsolidado() {
   const grupo =
     relatorioConsolidado?.grupo_unidade_escolar?.nome?.toLowerCase();
 
+  const resumoDescontos = useMemo(
+    () =>
+      montarResumoDescontos({
+        descontos,
+        relatorioConsolidado,
+        faixasEtarias,
+        tiposAlimentacao,
+      }),
+    [descontos, relatorioConsolidado, faixasEtarias, tiposAlimentacao],
+  );
+
   const GRUPOS_POR_COMPONENTE: Record<string, React.ReactNode> = {
     "grupo 1": (
       <GrupoCEI
         relatorioConsolidado={relatorioConsolidado}
         faixasEtarias={faixasEtarias}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 2": (
@@ -243,6 +256,7 @@ export function RelatorioFinanceiroConsolidado() {
         faixasEtarias={faixasEtarias}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 3": (
@@ -250,6 +264,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 4": (
@@ -257,6 +272,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 5": (
@@ -264,6 +280,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 6": (
@@ -271,6 +288,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
   };

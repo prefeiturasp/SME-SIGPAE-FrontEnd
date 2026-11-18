@@ -6,17 +6,21 @@ import { normalizar } from "src/components/screens/LancamentoInicial/Parametriza
 import { TabelaDietas } from "./TabelaDietas";
 import { TabelaAlimentacaoHandle, TabelaDietasHandle } from "../../types";
 import { ConsolidadoTotal } from "../ConsolidadoTotal";
+import { TabelaDescontos } from "./TabelaDescontos";
+import { ResumoDescontos } from "../../types";
 
 type Props = {
   relatorioConsolidado: RelatorioFinanceiroConsolidado;
   tiposAlimentacao: Array<TipoAlimentacao>;
   totaisConsumo: any;
+  descontos?: ResumoDescontos;
 };
 
 export default ({
   relatorioConsolidado,
   tiposAlimentacao,
   totaisConsumo,
+  descontos,
 }: Props) => {
   const [consolidado, setConsolidado] = useState({
     quantidade: 0,
@@ -118,10 +122,12 @@ export default ({
         totaisConsumo={totaisConsumo}
         ordem="C"
       />
+      <TabelaDescontos descontos={descontos} />
       <ConsolidadoTotal
         titulo="CONSOLIDADO TOTAL (A + B + C)"
         quantidade={consolidado.quantidade}
         valor={consolidado.valor}
+        descontos={descontos}
       />
     </div>
   );
