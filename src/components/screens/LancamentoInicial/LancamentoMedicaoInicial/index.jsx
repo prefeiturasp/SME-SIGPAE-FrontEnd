@@ -28,6 +28,7 @@ import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAber
 import { getDataFinalizaMedicaoDezembro } from "src/services/medicaoInicial/dataFinalizaMedicaoDezembro.service";
 import {
   deveBloquearFinalizacaoDezembro,
+  estaAntesDoFimDoPeriodoLetivo,
   montarSearchPeriodo,
   obterDataFinalizacaoMedicaoDezembro,
   obterDataSimulada,
@@ -104,6 +105,7 @@ export default () => {
 
   const [open, setOpen] = useState(false);
   const [naoPodeFinalizar, setNaoPodeFinalizar] = useState(true);
+  const [finalizacaoAntecipada, setFinalizacaoAntecipada] = useState(false);
   const [finalizandoMedicao, setFinalizandoMedicao] = useState(false);
   const [justificativaSemLancamentos, setJustificativaSemLancamentos] =
     useState("");
@@ -867,15 +869,26 @@ export default () => {
     const dataHoje = obterDataAtual();
 
     if (dataFinalizacaoDezembro) {
-      setNaoPodeFinalizar(
-        deveBloquearFinalizacaoDezembro(
-          dataFinalizacaoDezembro,
-          ultimoDiaAtendimentoEscolaAberta,
-          dataHoje,
-        ),
+      const naoPodeFinalizarPelaDataDezembro = deveBloquearFinalizacaoDezembro(
+        dataFinalizacaoDezembro,
+        ultimoDiaAtendimentoEscolaAberta,
+        dataHoje,
+      );
+
+      setNaoPodeFinalizar(naoPodeFinalizarPelaDataDezembro);
+      setFinalizacaoAntecipada(
+        !naoPodeFinalizarPelaDataDezembro &&
+          estaAntesDoFimDoPeriodoLetivo(
+            dataHoje,
+            listaDiasLetivos,
+            payload["mes"],
+            payload["ano"],
+          ),
       );
       return;
     }
+
+    setFinalizacaoAntecipada(false);
 
     if (!listaDiasLetivos.length && !ultimoDiaAtendimentoEscolaAberta) {
       setNaoPodeFinalizar(false);
@@ -922,6 +935,7 @@ export default () => {
   };
 
   const getDiasCalendarioAsync = async (payload, solicitacao) => {
+    setFinalizacaoAntecipada(false);
     const response = await getDiasCalendario(payload);
 
     if (response.status === HTTP_STATUS.OK) {
@@ -1295,6 +1309,7 @@ export default () => {
                 }
                 setSolicitacaoMedicaoInicial={setSolicitacaoMedicaoInicial}
                 naoPodeFinalizar={naoPodeFinalizar}
+                finalizacaoAntecipada={finalizacaoAntecipada}
                 setFinalizandoMedicao={setFinalizandoMedicao}
                 errosAoSalvar={errosAoSalvar}
                 setErrosAoSalvar={setErrosAoSalvar}

@@ -131,6 +131,24 @@ export const montarSearchPeriodo = (
   return search;
 };
 
+export const estaAntesDoFimDoPeriodoLetivo = (
+  dataHoje,
+  diasLetivos,
+  mes,
+  ano,
+) => {
+  if (!diasLetivos.length) {
+    return false;
+  }
+
+  const ultimoDiaLetivo = diasLetivos[diasLetivos.length - 1];
+  const dataFimPeriodoLetivo = endOfDay(
+    new Date(Number(ano), Number(mes) - 1, Number(ultimoDiaLetivo.dia)),
+  );
+
+  return dataHoje < dataFimPeriodoLetivo;
+};
+
 export const deveBloquearFinalizacaoDezembro = (
   dataFinalizacaoDezembro,
   ultimoDiaAtendimentoEscolaAberta,
