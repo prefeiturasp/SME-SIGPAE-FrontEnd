@@ -81,4 +81,62 @@ describe("Teste de comportamentos componente - ConsolidadoTotal", () => {
       screen.getByText((_, element) => element?.textContent === "R$ 10.150,00"),
     ).toBeInTheDocument();
   });
+
+  const resumoDescontos = (dados) => ({
+    tituloFaixaOuAlimentacao: "ALIMENTAÇÃO",
+    linhas: [{ chave: "uuid-1" }],
+    total: 121.25,
+    ...dados,
+  });
+
+  it("não exibe o bloco de descontos sem descontos aplicados", () => {
+    const props = {
+      titulo: "CONSOLIDADO TOTAL (A + B + C)",
+      quantidade: 1000,
+      valor: 7000,
+    };
+    const { container: semProp } = render(<ConsolidadoTotal {...props} />);
+    const { container: semLinhas } = render(
+      <ConsolidadoTotal
+        {...props}
+        descontos={resumoDescontos({ linhas: [], total: 0 })}
+      />,
+    );
+
+    expect(semLinhas.innerHTML).toBe(semProp.innerHTML);
+    expect(semProp.querySelector(".com-descontos")).toBeNull();
+    expect(screen.queryByText("DESCONTOS TOTAIS (D)")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("CONFORME ITENS NAS TABELAS"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("exibe os descontos totais e o valor do faturamento final", () => {
+    render(
+      <ConsolidadoTotal
+        titulo="CONSOLIDADO TOTAL (A + B + C + INF. A + INF. B + INF. C)"
+        tituloQuantidade="QUANTIDADE SERVIDA:"
+        quantidade={1450}
+        tituloValor="VALOR DO FATURAMENTO TOTAL:"
+        valor={565203.82}
+        descontos={resumoDescontos()}
+      />,
+    );
+
+    expect(screen.getByText("DESCONTOS TOTAIS (D)")).toBeInTheDocument();
+    expect(screen.getByText("R$ 121,25")).toBeInTheDocument();
+    expect(screen.getByText("CONFORME ITENS NAS TABELAS")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "VALOR DO FATURAMENTO FINAL (A + B + C + INF. A + INF. B + INF. C - D):",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("R$ 565.082,57")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "(Quinhentos e sessenta e cinco mil e oitenta e dois reais e cinquenta e sete centavos.)",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText("R$ 565.203,82")).toBeInTheDocument();
+  });
 });
