@@ -111,6 +111,7 @@ export const LancamentoPorPeriodoCEI = ({
   setSolicitacaoMedicaoInicial,
   setFinalizandoMedicao,
   naoPodeFinalizar,
+  finalizacaoAntecipada,
   periodosPermissoesLancamentosEspeciais,
   temLancheEmergencialDiarioAtivo,
   ehIMR,
@@ -136,6 +137,10 @@ export const LancamentoPorPeriodoCEI = ({
   ] = useState(false);
   const [showModalSemOcorrenciasIMR, setShowModalSemOcorrenciasIMR] =
     useState(false);
+  const [
+    showModalConfirmarFinalizacaoAntecipada,
+    setShowModalConfirmarFinalizacaoAntecipada,
+  ] = useState(false);
   const [quantidadeAlimentacoesLancadas, setQuantidadeAlimentacoesLancadas] =
     useState(undefined);
   const [showModalEnviarCorrecao, setShowModalEnviarCorrecao] = useState(false);
@@ -519,6 +524,20 @@ export const LancamentoPorPeriodoCEI = ({
     setShowModalFinalizarMedicaoSemLancamentos(true);
   };
 
+  const onClickBotaoFinalizar = () => {
+    if (finalizacaoAntecipada) {
+      setShowModalConfirmarFinalizacaoAntecipada(true);
+      return;
+    }
+
+    onClickFinalizarMedicao();
+  };
+
+  const confirmarFinalizacaoAntecipada = () => {
+    setShowModalConfirmarFinalizacaoAntecipada(false);
+    onClickFinalizarMedicao();
+  };
+
   const onClickFinalizarMedicao = () => {
     if (!ehIMR) {
       setShowModalFinalizarMedicao(true);
@@ -804,7 +823,7 @@ export const LancamentoPorPeriodoCEI = ({
                       }
                       onClick={() => {
                         setJustificativaSemLancamentos("");
-                        onClickFinalizarMedicao();
+                        onClickBotaoFinalizar();
                       }}
                     />
                   </div>
@@ -858,6 +877,25 @@ export const LancamentoPorPeriodoCEI = ({
               }
               setJustificativaSemLancamentos={setJustificativaSemLancamentos}
               handleFinalizarMedicao={handleFinalizarMedicao}
+            />
+            <ModalPadraoSimNao
+              showModal={showModalConfirmarFinalizacaoAntecipada}
+              closeModal={() =>
+                setShowModalConfirmarFinalizacaoAntecipada(false)
+              }
+              tituloModal="Finalizar lançamentos"
+              descricaoModal={
+                <>
+                  <p>
+                    Ao finalizar a medição antes do término do período letivo, a
+                    frequência e as alimentações serão zeradas. Caso sejam
+                    servidas alimentações até o último dia letivo, a medição não
+                    deverá ser finalizada.
+                  </p>
+                  <p>Deseja finalizar e enviar essa medição agora?</p>
+                </>
+              }
+              funcaoSim={confirmarFinalizacaoAntecipada}
             />
             <ModalSolicitacaoDownload
               show={exibirModalCentralDownloads}

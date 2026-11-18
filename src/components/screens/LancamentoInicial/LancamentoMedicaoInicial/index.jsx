@@ -207,11 +207,6 @@ export default () => {
     return null;
   };
 
-  const ehEscolaElegivelRegraDezembro = (solicitacao) => {
-    const escola = { nome: solicitacao?.escola };
-    return !ehEscolaTipoCEI(escola) && !ehEscolaTipoCEMEI(escola);
-  };
-
   const getCadastrosRecreioNasFerias = async () => {
     const response = await listarRecreioNasFerias();
     if (response.status === HTTP_STATUS.OK) {
@@ -827,8 +822,7 @@ export default () => {
     solicitacao,
     diasCalendario,
   ) => {
-    const deveUsarDataFinalizacaoDezembro =
-      payload["mes"] === DEZEMBRO && ehEscolaElegivelRegraDezembro(solicitacao);
+    const deveUsarDataFinalizacaoDezembro = payload["mes"] === DEZEMBRO;
 
     const [
       ultimoDiaComSolicitacaoAutorizada_,
@@ -1276,6 +1270,7 @@ export default () => {
                 }
                 setSolicitacaoMedicaoInicial={setSolicitacaoMedicaoInicial}
                 naoPodeFinalizar={naoPodeFinalizar}
+                finalizacaoAntecipada={finalizacaoAntecipada}
                 setFinalizandoMedicao={setFinalizandoMedicao}
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
