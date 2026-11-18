@@ -1475,6 +1475,40 @@ export const ehFimDeSemanaUTC = (date) => {
   return dia === 0 || dia === 6;
 };
 
+export const ehDiaDezembroBloqueadoParaLancamento = (
+  mesAnoConsiderado,
+  mesAnoDefault,
+  dia,
+) => {
+  if (mesAnoConsiderado.getMonth() !== 11) {
+    return false;
+  }
+
+  const dataConsiderada = new Date(
+    mesAnoConsiderado.getFullYear(),
+    11,
+    Number(dia),
+  );
+  const hoje = new Date(
+    mesAnoDefault.getFullYear(),
+    mesAnoDefault.getMonth(),
+    mesAnoDefault.getDate(),
+  );
+
+  return dataConsiderada >= hoje;
+};
+
+export const obterMesAnoReferenciaSolicitacao = (
+  solicitacao,
+  mesAnoConsiderado,
+) => {
+  if (solicitacao?.mes && solicitacao?.ano) {
+    return new Date(Number(solicitacao.ano), Number(solicitacao.mes) - 1, 1);
+  }
+
+  return mesAnoConsiderado;
+};
+
 export const usuarioComAcessoAosCalendarios = () => {
   return usuarioEhCODAEGabinete();
 };
