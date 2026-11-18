@@ -42,9 +42,11 @@ import {
   ehFimDeSemanaUTC,
   escolaNaoPossuiAlunosRegulares,
   escolaEhEMEBS,
+  obterDataSimuladaDaUrl,
   tiposAlimentacaoETEC,
   usuarioEhEscolaCIEJA,
 } from "src/helpers/utilities";
+import { obterDataSimulada } from "../LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
 import {
   getTiposDeAlimentacao,
   getVinculosTipoAlimentacaoPorEscola,
@@ -284,7 +286,7 @@ export default () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  let mesAnoDefault = new Date();
+  let mesAnoDefault = obterDataSimulada(obterDataSimuladaDaUrl()) || new Date();
 
   const urlParams = new URLSearchParams(window.location.search);
   const ehGrupoSolicitacoesDeAlimentacaoUrlParam =

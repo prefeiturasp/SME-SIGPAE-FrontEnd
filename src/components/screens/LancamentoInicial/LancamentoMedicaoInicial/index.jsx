@@ -14,13 +14,13 @@ import {
   DETALHAMENTO_DO_LANCAMENTO,
   LANCAMENTO_MEDICAO_INICIAL,
 } from "src/configs/constants";
-import { ENVIRONMENT } from "src/constants/config";
 import { EscolaSimplesContext } from "src/context/EscolaSimplesContext";
 import { MeusDadosContext } from "src/context/MeusDadosContext";
 import {
   ehEscolaTipoCEI,
   ehEscolaTipoCEMEI,
   escolaNaoPossuiAlunosRegulares,
+  obterDataSimuladaDaUrl,
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getEscolaSimples } from "src/services/escola.service";
@@ -60,14 +60,6 @@ import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 import Botao from "src/components/Shareable/Botao";
 import { ModalHistoricoCorrecoesPeriodo } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/components/ModalHistoricoCorrecoesPeriodo/index.jsx";
 import "./styles.scss";
-
-const obterDataSimuladaDaUrl = () => {
-  if (ENVIRONMENT.includes("production")) {
-    return null;
-  }
-
-  return new URLSearchParams(window.location.search).get("data_simulada");
-};
 
 const obterDataAtual = () => {
   return obterDataSimulada(obterDataSimuladaDaUrl()) || new Date();
@@ -1082,6 +1074,12 @@ export default () => {
       data.append("anexos", JSON.stringify(payloadAnexos));
     }
     data.append("finaliza_medicao", true);
+
+    const dataSimulada = obterDataSimuladaDaUrl();
+    if (dataSimulada) {
+      data.append("data_simulada", dataSimulada);
+    }
+
     const response = await updateSolicitacaoMedicaoInicial(
       solicitacaoMedicaoInicial.uuid,
       data,

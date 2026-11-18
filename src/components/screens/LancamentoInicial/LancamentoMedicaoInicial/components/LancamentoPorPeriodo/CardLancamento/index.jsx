@@ -5,7 +5,7 @@ import {
   LANCAMENTO_MEDICAO_INICIAL,
   PERIODO_LANCAMENTO,
 } from "src/configs/constants";
-import { deepCopy } from "src/helpers/utilities";
+import { deepCopy, obterDataSimuladaDaUrl } from "src/helpers/utilities";
 import React from "react";
 import { Form } from "react-final-form";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -128,10 +128,15 @@ export const CardLancamento = ({
   };
 
   const handleClickEditar = () => {
+    const dataSimulada = obterDataSimuladaDaUrl();
+    const searchDataSimulada = dataSimulada
+      ? `&data_simulada=${dataSimulada}`
+      : "";
+
     navigate(
       {
         pathname: `/${LANCAMENTO_INICIAL}/${LANCAMENTO_MEDICAO_INICIAL}/${PERIODO_LANCAMENTO}`,
-        search: `uuid=${solicitacaoMedicaoInicial.uuid}&ehGrupoSolicitacoesDeAlimentacao=${ehGrupoSolicitacoesDeAlimentacao}&ehGrupoETEC=${ehGrupoETEC}&ehPeriodoEspecifico=${ehPeriodoEspecifico}`,
+        search: `uuid=${solicitacaoMedicaoInicial.uuid}&ehGrupoSolicitacoesDeAlimentacao=${ehGrupoSolicitacoesDeAlimentacao}&ehGrupoETEC=${ehGrupoETEC}&ehPeriodoEspecifico=${ehPeriodoEspecifico}${searchDataSimulada}`,
       },
       {
         state: {

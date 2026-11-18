@@ -1475,6 +1475,14 @@ export const ehFimDeSemanaUTC = (date) => {
   return dia === 0 || dia === 6;
 };
 
+export const obterDataSimuladaDaUrl = () => {
+  if (ENVIRONMENT.includes("production")) {
+    return null;
+  }
+
+  return new URLSearchParams(window.location.search).get("data_simulada");
+};
+
 export const ehDiaDezembroBloqueadoParaLancamento = (
   mesAnoConsiderado,
   mesAnoDefault,

@@ -41,7 +41,9 @@ import {
   deepCopy,
   ehFimDeSemanaUTC,
   escolaEhCEMEI,
+  obterDataSimuladaDaUrl,
 } from "src/helpers/utilities";
+import { obterDataSimulada } from "../LancamentoMedicaoInicial/components/LancamentoPorPeriodo/helpers";
 import { getFaixasEtarias } from "src/services/faixaEtaria.service";
 import {
   getCategoriasDeMedicao,
@@ -295,7 +297,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  let mesAnoDefault = new Date();
+  let mesAnoDefault = obterDataSimulada(obterDataSimuladaDaUrl()) || new Date();
 
   const ehEmeiDaCemeiLocation =
     location && location.state && location.state.ehEmeiDaCemei;
