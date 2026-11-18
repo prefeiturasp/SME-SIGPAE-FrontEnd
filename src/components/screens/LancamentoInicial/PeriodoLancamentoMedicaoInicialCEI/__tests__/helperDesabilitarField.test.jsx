@@ -179,6 +179,30 @@ describe("desabilitarField CEI/CEMEI", () => {
       expect(call(a)).toBe(false);
     });
 
+    it("deve bloquear o dia atual ou futuro em dezembro", () => {
+      const a = baseArgs();
+
+      a.mesAnoConsiderado = new Date(2026, 11, 1);
+      a.mesAnoDefault = new Date(2026, 11, 15);
+      a.dia = 15;
+
+      expect(call(a)).toBe(true);
+    });
+
+    it("deve bloquear dezembro usando o mês da solicitação mesmo com mês considerado diferente", () => {
+      const a = baseArgs();
+
+      a.mesAnoConsiderado = new Date(2026, 10, 1);
+      a.mesAnoDefault = new Date(2026, 10, 18);
+      a.location.state.solicitacaoMedicaoInicial = {
+        mes: "12",
+        ano: "2026",
+      };
+      a.dia = 1;
+
+      expect(call(a)).toBe(true);
+    });
+
     it("deve desabilitar quando está em correção e dia não pode corrigir", () => {
       // cenário: correção ativa mas dia inválido
       const a = baseArgs();
