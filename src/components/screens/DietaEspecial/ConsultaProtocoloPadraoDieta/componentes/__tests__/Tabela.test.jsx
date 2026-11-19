@@ -1,5 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import TabelaProtocolos from "src/components/screens/DietaEspecial/ConsultaProtocoloPadraoDieta/componentes/Tabela";
 
@@ -68,13 +74,51 @@ describe("Componente TabelaProtocolos", () => {
     expect(expandIcon).toHaveClass("fa-angle-down");
   });
 
-  it("deve abrir e fechar o modal de histórico", () => {
+  it("deve abrir e fechar o modal de histórico", async () => {
     renderComponent();
 
     fireEvent.click(document.querySelector(".fa-angle-down"));
 
     const btnHistorico = screen.getByText("Histórico");
     fireEvent.click(btnHistorico);
+
+    const modal = await screen.findByRole("dialog");
+    expect(within(modal).getByText("Histórico")).toBeInTheDocument();
+
+    fireEvent.click(within(modal).getByRole("button", { name: "Close" }));
+
+    await waitFor(() =>
+      expect(document.querySelector(".ant-modal-wrap")).not.toBeVisible(),
+    );
+  });
+
+  it.each(["Enter", " "])(
+    "deve alternar a expansão ao pressionar a tecla '%s'",
+    (key) => {
+      renderComponent();
+      const expandIcon = screen.getByRole("button", {
+        name: "Detalhes do protocolo Protocolo Teste",
+      });
+
+      fireEvent.keyDown(expandIcon, { key });
+      expect(expandIcon).toHaveClass("fa-angle-up");
+      expect(expandIcon).toHaveAttribute("aria-expanded", "true");
+
+      fireEvent.keyDown(expandIcon, { key });
+      expect(expandIcon).toHaveClass("fa-angle-down");
+      expect(expandIcon).toHaveAttribute("aria-expanded", "false");
+    },
+  );
+
+  it("não deve alternar a expansão ao pressionar outra tecla", () => {
+    renderComponent();
+    const expandIcon = screen.getByRole("button", {
+      name: "Detalhes do protocolo Protocolo Teste",
+    });
+
+    fireEvent.keyDown(expandIcon, { key: "Tab" });
+
+    expect(expandIcon).toHaveClass("fa-angle-down");
   });
 
   it("deve navegar para as telas de Editar e Criar Cópia", () => {
