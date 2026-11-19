@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Spin, Tooltip } from "antd";
 import arrayMutators from "final-form-arrays";
 import { Field, Form } from "react-final-form";
@@ -19,13 +19,16 @@ import { MEMORANDO_OCORRENCIAS, POS_RECEBIMENTO } from "src/configs/constants";
 import { required } from "src/helpers/fieldValidators";
 import { exibeError } from "src/helpers/utilities";
 import { cadastraMemorandoOcorrencia } from "src/services/posRecebimento.service";
+import { getUnidadesDeMedidaLogistica } from "src/services/cronograma.service";
 
 import {
   criarLote,
+  indicesLotesDuplicados,
   loteEstaCompleto,
   montarPayload,
+  MSG_LOTE_DUPLICADO,
   OPCOES_CATEGORIA,
-  OPCOES_TIPO_OCORRENCIA,
+  padronizarTextoMaiusculoSemAcento,
   quantidadeValida,
 } from "./helpers";
 
@@ -34,11 +37,35 @@ import "./styles.scss";
 const TOOLTIP_ADICIONAR_LOTE =
   "Preencha os dados do lote atual para adicionar um novo lote.";
 
+const PLACEHOLDER_UNIDADE_MEDIDA = {
+  uuid: "",
+  nome: "Selecione uma unidade de medida",
+};
+
 const RegistrarMemorandoOcorrencia = () => {
   const navigate = useNavigate();
   const valoresIniciais = useMemo(() => ({ lotes: [criarLote()] }), []);
   const [carregando, setCarregando] = useState(false);
   const [loteParaExcluir, setLoteParaExcluir] = useState(null);
+  const [opcoesUnidadeMedida, setOpcoesUnidadeMedida] = useState([
+    PLACEHOLDER_UNIDADE_MEDIDA,
+  ]);
+
+  useEffect(() => {
+    const carregarUnidadesDeMedida = async () => {
+      try {
+        const response = await getUnidadesDeMedidaLogistica();
+        const unidades = (response.data?.results || []).map((unidade) => ({
+          uuid: unidade.uuid,
+          nome: unidade.abreviacao,
+        }));
+        setOpcoesUnidadeMedida([PLACEHOLDER_UNIDADE_MEDIDA, ...unidades]);
+      } catch {
+        // O serviço já exibe o toast de erro.
+      }
+    };
+    carregarUnidadesDeMedida();
+  }, []);
 
   const voltarParaListagem = () =>
     navigate(`/${POS_RECEBIMENTO}/${MEMORANDO_OCORRENCIAS}`);
@@ -74,193 +101,223 @@ const RegistrarMemorandoOcorrencia = () => {
             onSubmit={enviar}
             initialValues={valoresIniciais}
             mutators={{ ...arrayMutators }}
-            render={({ handleSubmit, values, errors, form }) => (
-              <form onSubmit={handleSubmit}>
-                <ModalGenerico
-                  show={loteParaExcluir !== null}
-                  titulo="Excluir Lote"
-                  texto="Deseja realmente excluir o Lote?"
-                  handleClose={() => setLoteParaExcluir(null)}
-                  handleSim={() => confirmarExclusao(form)}
-                />
+            render={({ handleSubmit, values, errors, form }) => {
+              const indicesDuplicados = indicesLotesDuplicados(values.lotes);
+              const temDuplicados = indicesDuplicados.size > 0;
+              return (
+                <form onSubmit={handleSubmit}>
+                  <ModalGenerico
+                    show={loteParaExcluir !== null}
+                    titulo="Excluir Lote"
+                    texto="Deseja realmente excluir o Lote?"
+                    handleClose={() => setLoteParaExcluir(null)}
+                    handleSim={() => confirmarExclusao(form)}
+                  />
 
-                <div className="row">
-                  <div className="col-4">
-                    <Field
-                      component={Select}
-                      name="categoria"
-                      label="Categoria"
-                      options={OPCOES_CATEGORIA}
-                      required
-                      validate={required}
-                      dataTestId="categoria"
-                    />
+                  <div className="row">
+                    <p className="head-green">
+                      <b>Dados do Produto</b>
+                    </p>
                   </div>
-                  <div className="col-4">
-                    <Field
-                      component={InputText}
-                      name="produto"
-                      label="Produto"
-                      placeholder="Digite aqui o Nome do Produto"
-                      required
-                      validate={required}
-                      dataTestId="produto"
-                    />
-                  </div>
-                  <div className="col-4">
-                    <Field
-                      component={Select}
-                      name="tipo_ocorrencia"
-                      label="Tipo de Ocorrência"
-                      options={OPCOES_TIPO_OCORRENCIA}
-                      required
-                      validate={required}
-                      dataTestId="tipo-ocorrencia"
-                    />
-                  </div>
-                </div>
 
-                <FieldArray name="lotes">
-                  {({ fields }) => {
-                    const loteAtualCompleto = loteEstaCompleto(
-                      values.lotes?.[values.lotes.length - 1],
-                    );
-
-                    const botaoAdicionarLote = (
-                      <Botao
-                        texto="+ Adicionar Lote"
-                        type={BUTTON_TYPE.BUTTON}
-                        style={BUTTON_STYLE.GREEN_OUTLINE}
-                        dataTestId="adicionar-lote"
-                        disabled={!loteAtualCompleto}
-                        onClick={() => fields.push(criarLote())}
+                  <div className="row">
+                    <div className="col-4">
+                      <Field
+                        component={Select}
+                        name="categoria"
+                        label="Categoria"
+                        options={OPCOES_CATEGORIA}
+                        required
+                        validate={required}
+                        dataTestId="categoria"
                       />
-                    );
+                    </div>
+                    <div className="col-4">
+                      <Field
+                        component={InputText}
+                        name="produto"
+                        label="Produto"
+                        placeholder="Digite aqui o Nome do Produto"
+                        required
+                        validate={required}
+                        parse={padronizarTextoMaiusculoSemAcento}
+                        dataTestId="produto"
+                      />
+                    </div>
+                  </div>
 
-                    return (
-                      <>
-                        {fields.map((name, index) => (
-                          <div key={name} className="lote-memorando">
-                            {index > 0 && (
-                              <div className="d-flex justify-content-end">
-                                <Botao
-                                  texto=""
-                                  type={BUTTON_TYPE.BUTTON}
-                                  style={BUTTON_STYLE.GREEN_OUTLINE}
-                                  icon="fas fa-trash"
-                                  tooltipExterno="Remover Lote"
-                                  dataTestId={`remover-lote-${index}`}
-                                  onClick={() => setLoteParaExcluir(index)}
-                                />
+                  <FieldArray name="lotes">
+                    {({ fields }) => {
+                      const abreviacaoUnidadeMedida =
+                        opcoesUnidadeMedida.find(
+                          (opcao) => opcao.uuid === values.unidade_medida,
+                        )?.nome || "";
+                      const loteAtualCompleto =
+                        loteEstaCompleto(
+                          values.lotes?.[values.lotes.length - 1],
+                        ) && Boolean(values.unidade_medida);
+
+                      const botaoAdicionarLote = (
+                        <Botao
+                          texto="+ Adicionar Novo Lote"
+                          type={BUTTON_TYPE.BUTTON}
+                          style={BUTTON_STYLE.GREEN_OUTLINE}
+                          dataTestId="adicionar-lote"
+                          disabled={!loteAtualCompleto}
+                          onClick={() => fields.push(criarLote())}
+                        />
+                      );
+
+                      return (
+                        <>
+                          {fields.map((name, index) => (
+                            <div key={name} className="lote-memorando">
+                              {index > 0 && (
+                                <div className="d-flex justify-content-end">
+                                  <Botao
+                                    texto=""
+                                    type={BUTTON_TYPE.BUTTON}
+                                    style={BUTTON_STYLE.GREEN_OUTLINE}
+                                    icon="fas fa-trash"
+                                    tooltipExterno="Remover Lote"
+                                    dataTestId={`remover-lote-${index}`}
+                                    onClick={() => setLoteParaExcluir(index)}
+                                  />
+                                </div>
+                              )}
+
+                              <div className="row mt-3">
+                                <div className="col-4">
+                                  <Field
+                                    component={InputText}
+                                    name={`${name}.lote`}
+                                    label="Lote"
+                                    placeholder="Digite aqui o Lote do Produto"
+                                    required
+                                    validate={required}
+                                    dataTestId={`lote-${index}`}
+                                  />
+                                </div>
+                                <div className="col-4">
+                                  <Field
+                                    component={InputText}
+                                    name={`${name}.marca`}
+                                    label="Marca"
+                                    placeholder="Digite aqui a Marca do Produto"
+                                    required
+                                    validate={required}
+                                    parse={padronizarTextoMaiusculoSemAcento}
+                                    dataTestId={`marca-${index}`}
+                                  />
+                                </div>
+                                <div className="col-4">
+                                  <Field
+                                    component={InputComData}
+                                    name={`${name}.data_fabricacao`}
+                                    label="Data de Fabricação"
+                                    placeholder="Selecione a data"
+                                    required
+                                    validate={required}
+                                    minDate={null}
+                                    maxDate={null}
+                                    dataTestId={`data-fabricacao-${index}`}
+                                  />
+                                </div>
                               </div>
+
+                              <div className="row mt-3">
+                                <div className="col-4">
+                                  <Field
+                                    component={InputComData}
+                                    name={`${name}.data_validade`}
+                                    label="Data de Validade"
+                                    placeholder="Selecione a data"
+                                    required
+                                    validate={required}
+                                    minDate={null}
+                                    maxDate={null}
+                                    dataTestId={`data-validade-${index}`}
+                                  />
+                                </div>
+                                <div className="col-4">
+                                  <Field
+                                    component={InputText}
+                                    name={`${name}.quantidade_problema_devolucao`}
+                                    label="Quantidade com Problema / Devolução"
+                                    placeholder="0"
+                                    required
+                                    validate={quantidadeValida}
+                                    agrupadorMilharComDecimal
+                                    suffix={
+                                      index > 0 ? abreviacaoUnidadeMedida : null
+                                    }
+                                    dataTestId={`quantidade-${index}`}
+                                  />
+                                </div>
+                                {index === 0 && (
+                                  <div className="col-4">
+                                    <Field
+                                      component={Select}
+                                      name="unidade_medida"
+                                      label="Unidade de Medida"
+                                      options={opcoesUnidadeMedida}
+                                      required
+                                      validate={required}
+                                      dataTestId="unidade-medida"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                              {indicesDuplicados.has(index) && (
+                                <div
+                                  className="erro-lote-duplicado mt-2"
+                                  data-testid={`erro-lote-duplicado-${index}`}
+                                >
+                                  {MSG_LOTE_DUPLICADO}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+
+                          <div className="text-center mt-3">
+                            {loteAtualCompleto ? (
+                              botaoAdicionarLote
+                            ) : (
+                              <Tooltip title={TOOLTIP_ADICIONAR_LOTE}>
+                                <span className="d-inline-block">
+                                  {botaoAdicionarLote}
+                                </span>
+                              </Tooltip>
                             )}
-
-                            <div className="row mt-3">
-                              <div className="col-4">
-                                <Field
-                                  component={InputText}
-                                  name={`${name}.lote`}
-                                  label="Lote"
-                                  placeholder="Digite aqui o Lote do Produto"
-                                  required
-                                  validate={required}
-                                  dataTestId={`lote-${index}`}
-                                />
-                              </div>
-                              <div className="col-4">
-                                <Field
-                                  component={InputText}
-                                  name={`${name}.marca`}
-                                  label="Marca"
-                                  placeholder="Digite aqui a Marca do Produto"
-                                  required
-                                  validate={required}
-                                  dataTestId={`marca-${index}`}
-                                />
-                              </div>
-                              <div className="col-4">
-                                <Field
-                                  component={InputComData}
-                                  name={`${name}.data_fabricacao`}
-                                  label="Data de Fabricação"
-                                  placeholder="Selecione a data"
-                                  required
-                                  validate={required}
-                                  minDate={null}
-                                  maxDate={null}
-                                  dataTestId={`data-fabricacao-${index}`}
-                                />
-                              </div>
-                            </div>
-
-                            <div className="row mt-3">
-                              <div className="col-4">
-                                <Field
-                                  component={InputComData}
-                                  name={`${name}.data_validade`}
-                                  label="Data de Validade"
-                                  placeholder="Selecione a data"
-                                  required
-                                  validate={required}
-                                  minDate={null}
-                                  maxDate={null}
-                                  dataTestId={`data-validade-${index}`}
-                                />
-                              </div>
-                              <div className="col-4">
-                                <Field
-                                  component={InputText}
-                                  name={`${name}.quantidade_problema_devolucao`}
-                                  label="Quantidade com Problema / Devolução"
-                                  placeholder="0"
-                                  required
-                                  validate={quantidadeValida}
-                                  agrupadorMilharComDecimal
-                                  dataTestId={`quantidade-${index}`}
-                                />
-                              </div>
-                            </div>
                           </div>
-                        ))}
+                        </>
+                      );
+                    }}
+                  </FieldArray>
 
-                        <div className="text-center mt-3">
-                          {loteAtualCompleto ? (
-                            botaoAdicionarLote
-                          ) : (
-                            <Tooltip title={TOOLTIP_ADICIONAR_LOTE}>
-                              <span className="d-inline-block">
-                                {botaoAdicionarLote}
-                              </span>
-                            </Tooltip>
-                          )}
-                        </div>
-                      </>
-                    );
-                  }}
-                </FieldArray>
+                  <hr />
 
-                <hr />
-
-                <div className="mt-4 mb-4">
-                  <Botao
-                    texto="Registrar Ocorrência"
-                    type={BUTTON_TYPE.SUBMIT}
-                    style={BUTTON_STYLE.GREEN}
-                    className="float-end ms-3"
-                    dataTestId="salvar-ocorrencia"
-                    disabled={Object.keys(errors).length > 0}
-                  />
-                  <Botao
-                    texto="Cancelar"
-                    type={BUTTON_TYPE.BUTTON}
-                    style={BUTTON_STYLE.GREEN_OUTLINE}
-                    className="float-end ms-3"
-                    dataTestId="cancelar"
-                    onClick={voltarParaListagem}
-                  />
-                </div>
-              </form>
-            )}
+                  <div className="mt-4 mb-4">
+                    <Botao
+                      texto="Registrar Ocorrência"
+                      type={BUTTON_TYPE.SUBMIT}
+                      style={BUTTON_STYLE.GREEN}
+                      className="float-end ms-3"
+                      dataTestId="salvar-ocorrencia"
+                      disabled={Object.keys(errors).length > 0 || temDuplicados}
+                    />
+                    <Botao
+                      texto="Cancelar"
+                      type={BUTTON_TYPE.BUTTON}
+                      style={BUTTON_STYLE.GREEN_OUTLINE}
+                      className="float-end ms-3"
+                      dataTestId="cancelar"
+                      onClick={voltarParaListagem}
+                    />
+                  </div>
+                </form>
+              );
+            }}
           />
         </div>
       </div>

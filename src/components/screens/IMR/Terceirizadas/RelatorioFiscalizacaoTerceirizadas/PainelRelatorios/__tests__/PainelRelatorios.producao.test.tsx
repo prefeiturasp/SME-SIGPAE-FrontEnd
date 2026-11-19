@@ -1,6 +1,7 @@
 import "@testing-library/jest-dom";
 import { fireEvent, render, screen } from "@testing-library/react";
 import HTTP_STATUS from "http-status-codes";
+import { usuarioEhAdministradorNutriSupervisao } from "src/helpers/utilities";
 import {
   getDashboardPainelGerencialSupervisao,
   getListRelatoriosVisitaSupervisao,
@@ -89,6 +90,7 @@ jest.mock("src/helpers/utilities", () => ({
   gerarParametrosConsulta: jest.fn(
     (parametros) => new URLSearchParams(parametros),
   ),
+  usuarioEhAdministradorNutriSupervisao: jest.fn(),
   usuarioPodeVisualizarRelatorioIMR: jest.fn(() => true),
 }));
 
@@ -101,6 +103,7 @@ describe("Painel de relatórios em produção", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorage.clear();
+    jest.mocked(usuarioEhAdministradorNutriSupervisao).mockReturnValue(false);
   });
 
   it("consulta o painel anterior ao abrir sem apresentar os filtros iniciais novos", async () => {
@@ -144,7 +147,9 @@ describe("Painel de relatórios em produção", () => {
     expect(screen.getByText("Enviados pela Supervisão")).toBeInTheDocument();
     expect(FiltrosIniciais).not.toHaveBeenCalled();
     expect(getDashboardPainelGerencialSupervisao).toHaveBeenCalledTimes(1);
-    expect(getDashboardPainelGerencialSupervisao).toHaveBeenCalledWith({});
+    expect(getDashboardPainelGerencialSupervisao).toHaveBeenCalledWith({
+      novo_painel: false,
+    });
   });
 
   it("passa a feature flag desativada para a listagem em produção", async () => {

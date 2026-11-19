@@ -5,32 +5,18 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import { FiltrosRelatoriosVisitasInterface } from "src/interfaces/imr.interface";
 import { getDiretoriaregionalSimplissima } from "src/services/diretoriaRegional.service";
+import { obterMesesAnosSupervisao } from "src/services/imr/painelGerencial";
 import { FiltrosIniciais } from "../index";
 
-jest.mock("src/components/Shareable/DatePicker", () => {
-  const React = require("react");
-
-  return {
-    InputComData: ({ input, label, name, placeholder }) =>
-      React.createElement(
-        "label",
-        { htmlFor: name },
-        label,
-        React.createElement("input", {
-          id: name,
-          name,
-          placeholder,
-          value: input.value ?? "",
-          onChange: (evento) => input.onChange(evento.target.value || null),
-        }),
-      ),
-  };
-});
+jest.mock("src/services/imr/painelGerencial", () => ({
+  obterMesesAnosSupervisao: jest.fn(),
+}));
 
 jest.mock("src/components/Shareable/Toast/dialogs", () => ({
   toastError: jest.fn(),
@@ -59,6 +45,7 @@ const respostaDiretorias = {
 };
 
 const mockBuscarDiretorias = jest.mocked(getDiretoriaregionalSimplissima);
+const mockBuscarMeses = jest.mocked(obterMesesAnosSupervisao);
 const mockToastErro = jest.mocked(toastError);
 
 const criarPromessaControlada = () => {
@@ -85,7 +72,10 @@ const obterCampoDre = () =>
   screen.getByRole("combobox", { name: "Diretoria Regional de Educação" });
 
 const obterCampoMes = () =>
-  screen.getByRole("textbox", { name: "Mês de referência" });
+  screen.getByRole("combobox", { name: "Mês de referência" });
+
+const aguardarMeses = () =>
+  waitFor(() => expect(obterCampoMes()).toBeEnabled());
 
 const aguardarDiretorias = () =>
   screen.findByRole("option", { name: "DRE Campo Limpo" });
@@ -94,6 +84,16 @@ describe("Filtros iniciais do painel de fiscalização", () => {
   beforeEach(() => {
     jest.resetAllMocks();
     mockBuscarDiretorias.mockResolvedValue(respostaDiretorias);
+    mockBuscarMeses.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: {
+        results: [
+          { mes: 12, ano: 2027 },
+          { mes: 1, ano: 2027 },
+          { mes: 9, ano: 2026 },
+        ],
+      },
+    });
   });
 
   it("desabilita a DRE durante a consulta e apresenta as opções ao concluir", async () => {
@@ -125,7 +125,7 @@ describe("Filtros iniciais do painel de fiscalização", () => {
     expect(mockToastErro).not.toHaveBeenCalled();
   });
 
-  it("informa a DRE selecionada preservando mês e ano", async () => {
+  it("informa a DRE selecionada e limpa mês e ano", async () => {
     const { aoAlterarFiltros } = renderizarFiltros({ mes: 9, ano: 2026 });
     await aguardarDiretorias();
 
@@ -136,12 +136,78 @@ describe("Filtros iniciais do painel de fiscalização", () => {
     expect(aoAlterarFiltros).toHaveBeenCalledTimes(1);
     expect(aoAlterarFiltros).toHaveBeenCalledWith({
       diretoria_regional: UUID_DRE_CAMPO_LIMPO,
-      mes: 9,
-      ano: 2026,
+      mes: undefined,
+      ano: undefined,
     });
   });
 
-  it("permite limpar a DRE mantendo o mês selecionado", async () => {
+  it("não consulta os meses enquanto nenhuma DRE estiver selecionada", async () => {
+    renderizarFiltros();
+    await aguardarDiretorias();
+
+    expect(obterCampoMes()).toBeDisabled();
+    expect(mockBuscarMeses).not.toHaveBeenCalled();
+  });
+
+  it("lista somente os meses retornados para a DRE selecionada", async () => {
+    renderizarFiltros({ diretoria_regional: UUID_DRE_BUTANTA });
+    await aguardarMeses();
+
+    expect(mockBuscarMeses).toHaveBeenCalledWith(UUID_DRE_BUTANTA);
+    expect(
+      within(obterCampoMes())
+        .getAllByRole("option")
+        .map((opcao) => opcao.textContent),
+    ).toEqual([
+      "Selecione o mês",
+      "Dezembro - 2027",
+      "Janeiro - 2027",
+      "Setembro - 2026",
+    ]);
+  });
+
+  it("mantém o seletor habilitado apenas com a opção inicial quando não há meses", async () => {
+    mockBuscarMeses.mockResolvedValue({
+      status: HTTP_STATUS.OK,
+      data: { results: [] },
+    });
+    renderizarFiltros({ diretoria_regional: UUID_DRE_BUTANTA });
+    await aguardarMeses();
+
+    expect(obterCampoMes()).toHaveValue("");
+    expect(within(obterCampoMes()).getAllByRole("option")).toHaveLength(1);
+    expect(within(obterCampoMes()).getByRole("option")).toHaveTextContent(
+      "Selecione o mês",
+    );
+    expect(mockToastErro).not.toHaveBeenCalled();
+  });
+
+  it("informa a falha HTTP ao consultar os meses e encerra o carregamento", async () => {
+    mockBuscarMeses.mockResolvedValue({
+      status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      data: { results: [] },
+    });
+    renderizarFiltros({ diretoria_regional: UUID_DRE_BUTANTA });
+    await aguardarMeses();
+
+    expect(mockToastErro).toHaveBeenCalledWith(
+      "Não foi possível carregar os meses de referência.",
+    );
+    expect(within(obterCampoMes()).getAllByRole("option")).toHaveLength(1);
+  });
+
+  it("informa a falha de conexão ao consultar os meses e encerra o carregamento", async () => {
+    mockBuscarMeses.mockRejectedValue(new Error("Falha de conexão"));
+    renderizarFiltros({ diretoria_regional: UUID_DRE_BUTANTA });
+    await aguardarMeses();
+
+    expect(mockToastErro).toHaveBeenCalledWith(
+      "Não foi possível carregar os meses de referência.",
+    );
+    expect(within(obterCampoMes()).getAllByRole("option")).toHaveLength(1);
+  });
+
+  it("permite limpar a DRE junto com o mês selecionado", async () => {
     const { aoAlterarFiltros } = renderizarFiltros({
       diretoria_regional: UUID_DRE_BUTANTA,
       mes: 9,
@@ -153,8 +219,8 @@ describe("Filtros iniciais do painel de fiscalização", () => {
 
     expect(aoAlterarFiltros).toHaveBeenCalledWith({
       diretoria_regional: "",
-      mes: 9,
-      ano: 2026,
+      mes: undefined,
+      ano: undefined,
     });
   });
 
@@ -168,6 +234,7 @@ describe("Filtros iniciais do painel de fiscalização", () => {
         diretoria_regional: UUID_DRE_BUTANTA,
       });
       await aguardarDiretorias();
+      await aguardarMeses();
 
       fireEvent.change(obterCampoMes(), { target: { value: valor } });
 
@@ -187,6 +254,7 @@ describe("Filtros iniciais do painel de fiscalização", () => {
     });
     await aguardarDiretorias();
 
+    await aguardarMeses();
     expect(obterCampoMes()).toHaveValue("09/2026");
     fireEvent.change(obterCampoMes(), { target: { value: "" } });
 
@@ -205,6 +273,7 @@ describe("Filtros iniciais do painel de fiscalização", () => {
     });
     await aguardarDiretorias();
 
+    await aguardarMeses();
     expect(obterCampoDre()).toHaveValue(UUID_DRE_BUTANTA);
     expect(obterCampoMes()).toHaveValue("09/2026");
 
@@ -219,6 +288,7 @@ describe("Filtros iniciais do painel de fiscalização", () => {
       />,
     );
 
+    await aguardarMeses();
     expect(obterCampoDre()).toHaveValue(UUID_DRE_CAMPO_LIMPO);
     expect(obterCampoMes()).toHaveValue("01/2027");
     expect(mockBuscarDiretorias).toHaveBeenCalledTimes(1);
@@ -234,7 +304,7 @@ describe("Filtros iniciais do painel de fiscalização", () => {
 
     await waitFor(() => expect(obterCampoDre()).toBeEnabled());
 
-    expect(screen.getAllByRole("option")).toHaveLength(1);
+    expect(within(obterCampoDre()).getAllByRole("option")).toHaveLength(1);
     expect(mockToastErro).not.toHaveBeenCalled();
   });
 
@@ -249,7 +319,7 @@ describe("Filtros iniciais do painel de fiscalização", () => {
 
     expect(mockToastErro).toHaveBeenCalledTimes(1);
     expect(mockToastErro).toHaveBeenCalledWith(MENSAGEM_ERRO);
-    expect(screen.getAllByRole("option")).toHaveLength(1);
+    expect(within(obterCampoDre()).getAllByRole("option")).toHaveLength(1);
   });
 
   it("informa a falha de conexão e encerra o carregamento das DREs", async () => {

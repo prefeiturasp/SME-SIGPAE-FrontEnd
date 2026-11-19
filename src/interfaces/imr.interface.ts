@@ -128,6 +128,10 @@ export interface FiltrosRelatoriosVisitasInterface {
   ano?: number;
   novo_painel?: boolean;
 }
+export interface MesAnoRelatorioSupervisaoInterface {
+  mes: number;
+  ano: number;
+}
 
 export interface RelatorioVisitaItemListagem {
   uuid?: string;

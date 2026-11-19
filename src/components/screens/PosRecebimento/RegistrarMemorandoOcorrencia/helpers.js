@@ -1,4 +1,15 @@
-import { converterValorParaDecimal } from "src/helpers/utilities";
+import {
+  converterValorParaDecimal,
+  trocaAcentuadasPorSemAcento,
+} from "src/helpers/utilities";
+
+export const padronizarTextoMaiusculoSemAcento = (valor) => {
+  if (valor === null || valor === undefined) return valor;
+  return trocaAcentuadasPorSemAcento(String(valor))
+    .toUpperCase()
+    .replace(/-/g, " ")
+    .replace(/[^A-Z0-9 ]/g, "");
+};
 
 export const OPCOES_CATEGORIA = [
   { nome: "Selecione a Categoria", uuid: "" },
@@ -23,6 +34,30 @@ export const OPCOES_TIPO_OCORRENCIA = [
     uuid: "DEVOLUCAO_ALIMENTO_PROPRIO",
   },
 ];
+
+export const TIPO_OCORRENCIA_PADRAO = "RECLAMACAO_QUALIDADE";
+
+export const MSG_LOTE_DUPLICADO =
+  "Este lote já foi informado para o produto. Verifique os dados e tente novamente.";
+
+export const indicesLotesDuplicados = (lotes = []) => {
+  const primeirasOcorrencias = new Map();
+  const duplicados = new Set();
+  lotes.forEach((lote, index) => {
+    const numeroLote = lote?.lote?.trim();
+    const marca = lote?.marca?.trim();
+    const dataFabricacao = lote?.data_fabricacao;
+    const dataValidade = lote?.data_validade;
+    if (!numeroLote || !marca || !dataFabricacao || !dataValidade) return;
+    const chave = `${numeroLote}|${marca}|${dataFabricacao}|${dataValidade}`;
+    if (primeirasOcorrencias.has(chave)) {
+      duplicados.add(index);
+    } else {
+      primeirasOcorrencias.set(chave, index);
+    }
+  });
+  return duplicados;
+};
 
 export const criarLote = () => ({
   lote: "",
@@ -71,7 +106,8 @@ export const quantidadeValida = (valor) => {
 export const montarPayload = (values) => ({
   categoria: values.categoria,
   produto: values.produto?.trim(),
-  tipo_ocorrencia: values.tipo_ocorrencia,
+  tipo_ocorrencia: TIPO_OCORRENCIA_PADRAO,
+  unidade_medida: values.unidade_medida,
   lotes: (values.lotes || []).map((lote) => ({
     lote: lote.lote?.trim(),
     marca: lote.marca?.trim(),

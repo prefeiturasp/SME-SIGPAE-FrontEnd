@@ -1,6 +1,6 @@
 import "./styles.scss";
 import HTTP_STATUS from "http-status-codes";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Form } from "react-final-form";
 import { Spin } from "antd";
 import { FormFields } from "../components/FormFields";
@@ -42,6 +42,7 @@ import { getEscolasParaFiltros } from "src/services/escola.service";
 import ModalReabrirLancamentos from "../components/ModalReabrirLancamentos";
 import ModalGerarMedicaoFinal from "../components/ModalGerarMedicaoFinal";
 import { MEDICAO_INICIAL, RELATORIO_FINANCEIRO } from "src/configs/constants";
+import { montarResumoDescontos } from "../helpers";
 
 type TotaisParams = {
   mes: string;
@@ -67,7 +68,7 @@ export function RelatorioFinanceiroConsolidado() {
   const [unidadesEducacionais, setUnidadesEducacionais] = useState([]);
 
   const [searchParams] = useSearchParams();
-  const uuidRelatorioFinanceiro = searchParams.get("uuid");
+  const uuidRelatorioFinanceiro = searchParams.get("uuid") ?? "";
 
   const {
     carregando: carregandoRelatorio,
@@ -82,6 +83,7 @@ export function RelatorioFinanceiroConsolidado() {
   const modoVisualizacao = state?.visualizar || false;
   const podeFinalizarAnalise =
     !modoVisualizacao && state?.status?.[0] === "EM_ANALISE";
+  const semRelatorioConsolidado = !relatorioConsolidado;
 
   const exportarPDF = async () => {
     setExportando(true);
@@ -160,7 +162,7 @@ export function RelatorioFinanceiroConsolidado() {
       [],
     );
 
-    const tiposAlimentacaoUnicos = {};
+    const tiposAlimentacaoUnicos: Record<string, string> = {};
 
     tiposAlimentacaoUnidades.forEach((tipoAlimentacao) => {
       tiposAlimentacaoUnicos[tipoAlimentacao.uuid] = tipoAlimentacao.nome;
@@ -229,12 +231,24 @@ export function RelatorioFinanceiroConsolidado() {
   const grupo =
     relatorioConsolidado?.grupo_unidade_escolar?.nome?.toLowerCase();
 
+  const resumoDescontos = useMemo(
+    () =>
+      montarResumoDescontos({
+        descontos,
+        relatorioConsolidado,
+        faixasEtarias,
+        tiposAlimentacao,
+      }),
+    [descontos, relatorioConsolidado, faixasEtarias, tiposAlimentacao],
+  );
+
   const GRUPOS_POR_COMPONENTE: Record<string, React.ReactNode> = {
     "grupo 1": (
       <GrupoCEI
         relatorioConsolidado={relatorioConsolidado}
         faixasEtarias={faixasEtarias}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 2": (
@@ -243,6 +257,7 @@ export function RelatorioFinanceiroConsolidado() {
         faixasEtarias={faixasEtarias}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 3": (
@@ -250,6 +265,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 4": (
@@ -257,6 +273,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 5": (
@@ -264,6 +281,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
     "grupo 6": (
@@ -271,6 +289,7 @@ export function RelatorioFinanceiroConsolidado() {
         relatorioConsolidado={relatorioConsolidado}
         tiposAlimentacao={tiposAlimentacao}
         totaisConsumo={totaisConsumo}
+        descontos={resumoDescontos}
       />
     ),
   };
@@ -305,6 +324,7 @@ export function RelatorioFinanceiroConsolidado() {
                     exibirReabrirLancamentos={!modoVisualizacao}
                     showReabrirLancamentos={() => setReabrirLancamentos(true)}
                     showAplicarDesconto={() => setAplicarDesconto(true)}
+                    desabilitarBotoes={semRelatorioConsolidado}
                   />
                 </form>
               )}
@@ -327,7 +347,7 @@ export function RelatorioFinanceiroConsolidado() {
                 type={BUTTON_TYPE.BUTTON}
                 icon={BUTTON_ICON.FILE_PDF}
                 onClick={async () => await exportarPDF()}
-                disabled={exportando}
+                disabled={exportando || semRelatorioConsolidado}
               />
               {podeFinalizarAnalise && (
                 <Botao
@@ -336,6 +356,7 @@ export function RelatorioFinanceiroConsolidado() {
                   style={BUTTON_STYLE.GREEN}
                   type={BUTTON_TYPE.BUTTON}
                   onClick={() => setGerarMedicaoFinal(true)}
+                  disabled={semRelatorioConsolidado}
                 />
               )}
             </div>
