@@ -2416,15 +2416,8 @@ export default () => {
     }
   };
 
-  const defaultValue = (column, row) => {
-    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
-
-    let result = null;
-    if (row.name === prefixo) {
-      result = null;
-    }
-    result = verificarMesAnteriorOuPosterior(column, mesAnoConsiderado);
-    return result;
+  const defaultValue = (column) => {
+    return verificarMesAnteriorOuPosterior(column, mesAnoConsiderado);
   };
 
   const validacaoSemana = (dia) => {
@@ -2675,17 +2668,6 @@ export default () => {
       algumErro = true;
     }
 
-    const valuesFrequencia = Object.fromEntries(
-      Object.entries(values).filter(([key]) => key.includes("frequencia")),
-    );
-    let arrayDiasComFrequenciaZero = [];
-    for (const key in valuesFrequencia) {
-      if (Number(valuesFrequencia[key]) === 0) {
-        const keySplitted = key.split("__");
-        const dia = keySplitted[1].match(/\d/g).join("");
-        arrayDiasComFrequenciaZero.push(dia);
-      }
-    }
     desabilitaTooltip(values);
     setCorrecaoPossuiCampoVazio(
       form.getRegisteredFields().some((fieldName) => {
@@ -4024,7 +4006,7 @@ export default () => {
                   `${row.name}__dia_${column.dia}__categoria_${categoria.id}`
                 ]
               }
-              defaultValue={defaultValue(column, row)}
+              defaultValue={defaultValue(column)}
               validate={fieldValidationsTabelaAlimentacao(
                 row.name,
                 column.dia,
@@ -4443,7 +4425,6 @@ export default () => {
                                                         maxFrequenciaAlimentacao
                                                         defaultValue={defaultValue(
                                                           column,
-                                                          row,
                                                         )}
                                                         exibirTooltipPeriodosZeradosNoProgramasProjetos={exibirTooltipPeriodosZeradosNoProgramasProjetos(
                                                           row.name,

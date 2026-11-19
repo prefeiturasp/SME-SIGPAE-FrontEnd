@@ -30,11 +30,11 @@ interface Props {
   exibirNovoPainel?: boolean;
   perfilNutriSupervisao: boolean;
   podeVisualizarRelatorio: boolean;
-  getDashboardPainelGerencialSupervisaoAsync: () => void;
+  getDashboardPainelGerencialSupervisaoAsync: () => Promise<void>;
   buscarResultados: (
     _filtros_: FiltrosRelatoriosVisitasInterface,
     _pageNumber: number,
-  ) => void;
+  ) => Promise<void>;
   filtros: FiltrosRelatoriosVisitasInterface;
   pagina: number;
 }

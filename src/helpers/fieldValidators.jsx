@@ -143,7 +143,7 @@ export const rfOuCpfOuCodOperador = (value) => {
 export const semArroba = (value) =>
   value && value.includes("@") ? "Campo e-mail não deve conter @" : undefined;
 
-// eslint-disable-next-line
+// eslint-disable-next-line no-unused-vars
 const number = (value) =>
   value && isNaN(Number(value)) ? "Deve ser um número" : undefined;
 

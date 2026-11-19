@@ -132,11 +132,13 @@ export const Container = () => {
         periodo.maximo_alunos = null;
         periodosMotivoInclusaoEspecifico.push(periodo);
       });
-      const periodosOrdenados = periodosMotivoInclusaoEspecifico.sort(
-        (obj1, obj2) => (obj1.posicao > obj2.posicao ? 1 : -1),
+      periodosMotivoInclusaoEspecifico.sort((obj1, obj2) =>
+        obj1.posicao > obj2.posicao ? 1 : -1,
       );
       setVinculosMotivoEspecifico(response.data);
-      setPeriodosMotivoEspecifico(formatarPeriodos(periodosOrdenados));
+      setPeriodosMotivoEspecifico(
+        formatarPeriodos(periodosMotivoInclusaoEspecifico),
+      );
     } else {
       setErro(
         "Erro ao carregar vínculos de tipo de alimentação por motivo específico. Tente novamente mais tarde.",

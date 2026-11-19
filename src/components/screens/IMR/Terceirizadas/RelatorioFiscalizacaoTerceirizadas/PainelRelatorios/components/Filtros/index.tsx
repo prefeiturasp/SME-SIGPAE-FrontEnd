@@ -42,7 +42,7 @@ interface Props {
   buscarResultados: (
     _filtros: FiltrosRelatoriosVisitasInterface,
     _page: number,
-  ) => void;
+  ) => Promise<void>;
   form_: FormApi;
   setForm: (_form: FormApi) => void;
 }

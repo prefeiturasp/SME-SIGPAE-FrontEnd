@@ -79,7 +79,7 @@ export const getDetalheKitLancheAvulsa = (uuid, tipoSolicitacao) => {
       return result.json();
     })
     .catch((error) => {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.log(error);
     });
 };

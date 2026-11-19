@@ -129,7 +129,6 @@ export const ehCanceladaSegundoStep = (dieta) => {
     return false;
   }
 };
-// (dietaEspecial && dietaEspecial.logs.length === 2 && status === "ESCOLA_CANCELOU")? true : false;
 
 export const solicitacaoEhDoCardAutorizadas = (status) => {
   return [

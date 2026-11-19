@@ -22,7 +22,7 @@ export default class ModalHistoricoProtocoloPadrao extends Component {
     });
 
     if (!ativo) {
-      history[index].ativo = !ativo;
+      history[index].ativo = true;
       histSelecionado = history[index];
     } else {
       histSelecionado = null;

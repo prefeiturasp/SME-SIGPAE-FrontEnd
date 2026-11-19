@@ -2053,14 +2053,12 @@ export const textoBotaoObservacao = (
         String(valor.categoria_medicao) === String(categoria),
     );
   if (value && !["<p></p>", "<p></p>\n", null, "", undefined].includes(value)) {
-    if (
+    const exibeComoAdicionar =
       escolaEhEMEBS &&
       valorObs &&
       ALUNOS_EMEBS[valorObs.infantil_ou_fundamental].key !==
-        alunosTabSelecionada
-    ) {
-      text = "Adicionar";
-    } else {
+        alunosTabSelecionada;
+    if (!exibeComoAdicionar) {
       text = "Visualizar";
     }
     if (
@@ -2070,13 +2068,11 @@ export const textoBotaoObservacao = (
       text = "Visualizar";
     }
   } else if (valorObs) {
-    if (
+    const exibeComoAdicionar =
       escolaEhEMEBS &&
       ALUNOS_EMEBS[valorObs.infantil_ou_fundamental].key !==
-        alunosTabSelecionada
-    ) {
-      text = "Adicionar";
-    } else {
+        alunosTabSelecionada;
+    if (!exibeComoAdicionar) {
       text = "Visualizar";
     }
   }

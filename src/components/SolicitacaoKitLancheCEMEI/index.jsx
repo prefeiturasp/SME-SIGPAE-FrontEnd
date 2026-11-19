@@ -158,7 +158,6 @@ export const SolicitacaoKitLancheCEMEI = ({ ...props }) => {
   };
 
   const carregarRascunho = async (form, values, solicitacao) => {
-    //form.initialize(solicitacao);
     form.change("data", solicitacao.data);
     form.change("local", solicitacao.local);
     form.change("evento", solicitacao.evento);

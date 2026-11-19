@@ -56,7 +56,7 @@ const ModalHistorico = ({
     });
 
     if (!ativo) {
-      logs_[index].ativo = !ativo;
+      logs_[index].ativo = true;
       setLogSelecionado(logs_[index]);
     } else {
       setLogSelecionado(null);

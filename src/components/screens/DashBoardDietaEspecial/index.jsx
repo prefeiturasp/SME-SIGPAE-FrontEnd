@@ -243,7 +243,7 @@ export const DashboardDietaEspecial = ({ ...props }) => {
   const contadorDietas = (title) => {
     if (!usuarioEhCoordenadorNutriCODAE()) return title;
     const count = title === "Autorizadas" ? countAutorizadas : countRecebidas;
-    return `${title}${` (${count}) `}`;
+    return `${title} (${count}) `;
   };
 
   return (

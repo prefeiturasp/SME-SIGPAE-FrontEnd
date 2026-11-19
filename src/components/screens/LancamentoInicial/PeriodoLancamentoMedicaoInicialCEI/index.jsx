@@ -2012,14 +2012,8 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
     }
   };
 
-  const defaultValue = (column, row) => {
-    let result = null;
-    const prefixo = ehRecreioNasFerias() ? "participantes" : "matriculados";
-    if (row.name === prefixo) {
-      result = null;
-    }
-    result = verificarMesAnteriorOuPosterior(column, mesAnoConsiderado);
-    return result;
+  const defaultValue = (column) => {
+    return verificarMesAnteriorOuPosterior(column, mesAnoConsiderado);
   };
 
   const validacaoSemana = (dia) => {
@@ -2192,19 +2186,6 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
       setExibirTooltip(true);
     }
 
-    const valuesFrequencia = Object.fromEntries(
-      Object.entries(formValuesAtualizados).filter(([key]) =>
-        key.includes("frequencia"),
-      ),
-    );
-    let arrayDiasComFrequenciaZero = [];
-    for (const key in valuesFrequencia) {
-      if (Number(valuesFrequencia[key]) === 0) {
-        const keySplitted = key.split("__");
-        const dia = keySplitted[1].match(/\d/g).join("");
-        arrayDiasComFrequenciaZero.push(dia);
-      }
-    }
     desabilitaTooltip(formValuesAtualizados);
     setCorrecaoPossuiCampoVazio(
       form.getRegisteredFields().some((fieldName) => {
@@ -3550,7 +3531,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                   apenasNumeros
                   name={getInputName(row, column, categoria)}
                   disabled={campoDesabilitado}
-                  defaultValue={defaultValue(column, row)}
+                  defaultValue={defaultValue(column)}
                   numeroDeInclusoesAutorizadas={
                     inclusoesAutorizadas.find(
                       (inclusao) => column.dia === String(inclusao.dia),
@@ -3763,7 +3744,7 @@ export const PeriodoLancamentoMedicaoInicialCEI = () => {
                     categoriasDeMedicao,
                     ehFaixaMenorDeUmAno(row.uuid),
                   )}
-                  defaultValue={defaultValue(column, row)}
+                  defaultValue={defaultValue(column)}
                   exibeTooltipFrequenciaAlimentacaoZero={exibirTooltipFrequenciaAlimentacaoZeroESemObservacaoCEI(
                     formValuesAtualizados,
                     row,
