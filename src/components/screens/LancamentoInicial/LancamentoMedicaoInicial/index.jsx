@@ -182,6 +182,9 @@ export default () => {
       mes,
       ano,
     };
+    if (String(mes) === DEZEMBRO) {
+      params.excluir_inclusoes_continuas = true;
+    }
     const response = await getUltimoDiaComSolicitacaoAutorizadaNoMes(params);
     if (response.status === HTTP_STATUS.OK) {
       return response.data.ultima_data;
