@@ -29,6 +29,7 @@ import { FichaRecebimento, ReposicaoCronograma } from "./recebimento.interface";
 import {
   EquipamentoInterface,
   InsumoInterface,
+  MesAnoRelatorioSupervisaoInterface,
   MobiliarioInterface,
   OcorrenciaDiretorEdicaoInterface,
   OcorrenciaDiretorInterface,
@@ -289,6 +290,10 @@ export interface ResponseRelatoriosVisitas extends ResponseInterface {
 
 export interface ResponseNomesNutricionistas extends ResponseInterface {
   data: ListagemNaoPaginada<string>;
+}
+export interface RespostaMesesAnosSupervisaoInterface
+  extends ResponseInterface {
+  data: ListagemNaoPaginada<MesAnoRelatorioSupervisaoInterface>;
 }
 
 export interface ResponseExportarPDFAssincronoInterface

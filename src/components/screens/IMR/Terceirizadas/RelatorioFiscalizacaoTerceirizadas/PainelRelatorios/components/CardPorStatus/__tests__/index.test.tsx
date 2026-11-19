@@ -243,25 +243,33 @@ describe("Card por status do painel de relatórios", () => {
     },
   );
 
-  it("envia o status vazio ao selecionar todos os relatórios", () => {
-    const cardTodosOsRelatorios = {
-      label: "Todos os relatórios",
-      status: "TODOS_OS_RELATORIOS",
-      total: 12,
-    };
-    const { card, props } = renderizarCard({
-      cardStatus: cardTodosOsRelatorios,
-      statusSelecionado: "TODOS_OS_RELATORIOS",
-    });
+  it.each([true, false])(
+    "envia o status vazio e mantém os filtros iniciais ao selecionar todos os relatórios com a feature flag %p",
+    (exibirNovoPainel) => {
+      const cardTodosOsRelatorios = {
+        label: "Todos os relatórios",
+        status: "TODOS_OS_RELATORIOS",
+        total: 12,
+      };
+      const { card, props } = renderizarCard({
+        cardStatus: cardTodosOsRelatorios,
+        statusSelecionado: "TODOS_OS_RELATORIOS",
+        filtrosIniciais,
+        exibirNovoPainel,
+      });
 
-    fireEvent.click(card);
+      fireEvent.click(card);
 
-    expect(card).toHaveClass("vermelho");
-    expect(props.setStatusSelecionado).toHaveBeenCalledWith(
-      "TODOS_OS_RELATORIOS",
-    );
-    expect(props.setFiltros).toHaveBeenCalledWith({ status: "" });
-  });
+      expect(card).toHaveClass("vermelho");
+      expect(props.setStatusSelecionado).toHaveBeenCalledWith(
+        "TODOS_OS_RELATORIOS",
+      );
+      expect(props.setFiltros).toHaveBeenCalledWith({
+        ...filtrosIniciais,
+        status: "",
+      });
+    },
+  );
 
   it.each(["Enter", " "])(
     "permite selecionar o card utilizando a tecla %p",

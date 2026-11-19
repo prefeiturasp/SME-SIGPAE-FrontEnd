@@ -7,6 +7,7 @@ import { FiltrosRelatoriosVisitasInterface } from "src/interfaces/imr.interface"
 import {
   ResponseNomesNutricionistas,
   ResponseRelatoriosVisitas,
+  RespostaMesesAnosSupervisaoInterface,
 } from "src/interfaces/responses.interface";
 
 export const getDashboardPainelGerencialSupervisao = async (
@@ -46,3 +47,10 @@ export const getListNomesNutricionistas =
       toastError(getMensagemDeErro(error.response.status));
     }
   };
+
+export const obterMesesAnosSupervisao = (
+  diretoriaRegional: string,
+): Promise<RespostaMesesAnosSupervisaoInterface> =>
+  axios.get("/imr/formulario-supervisao/meses-anos/", {
+    params: { diretoria_regional: diretoriaRegional },
+  });
