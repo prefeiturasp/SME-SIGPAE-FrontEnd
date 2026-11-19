@@ -68,7 +68,7 @@ export default ({
       );
       payload["produtos_editais"] = produtos_editais;
     }
-    let resultadoValidacao = await validatePayload(payload);
+    let resultadoValidacao = validatePayload(payload);
     setErros(resultadoValidacao);
     let temErros = Object.keys(resultadoValidacao).find(
       (k) => resultadoValidacao[k] === true,

@@ -36,7 +36,6 @@ export const validateFormKitLanchePasseio = (values) => {
     default:
       break;
   }
-  // window.alert(`You submitted:\n\n${JSON.stringify(values, null, 2)}`);
 };
 
 export const validateFormKitLanchePasseioCei = (values) => {
@@ -48,7 +47,7 @@ export const validateFormKitLanchePasseioCei = (values) => {
   }
   let totalAlunosSelecionados = 0;
   Object.values(values.faixas_etarias).forEach(
-    (v) => (totalAlunosSelecionados += parseInt(v))
+    (v) => (totalAlunosSelecionados += parseInt(v)),
   );
   if (totalAlunosSelecionados < 1) {
     throw new SubmissionError({
@@ -56,5 +55,4 @@ export const validateFormKitLanchePasseioCei = (values) => {
       _error: "Submission failed!",
     });
   }
-  // window.alert(`You submitted:\n\n${JSON.stringify(values, null, 2)}`);
 };

@@ -377,13 +377,7 @@ export const CadastroEmpresa = () => {
       const response = await getTerceirizadaUUID(uuid);
 
       if (response.status !== HTTP_STATUS.NOT_FOUND) {
-        let lotesNomesSelecionados = [];
-        let lotesSelecionados = [];
-
-        response.data.lotes.forEach((lote) => {
-          lotesNomesSelecionados.push(lote.nome);
-          lotesSelecionados.push(lote.uuid);
-        });
+        const lotesSelecionados = response.data.lotes.map((lote) => lote.uuid);
 
         setLotesSelecionados(lotesSelecionados);
         setaValoresForm(response.data);

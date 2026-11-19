@@ -61,12 +61,7 @@ class Step1 extends Component {
 
   abreOuFechaFormDietaEspecial = (value) => {
     let { payloadStep1 } = this.state;
-    let condicao = false;
-    if (value === 1) {
-      condicao = true;
-    } else {
-      condicao = false;
-    }
+    let condicao = value === 1;
     payloadStep1.eh_para_alunos_com_dieta = condicao;
     this.setState({
       payloadStep1,
@@ -76,12 +71,7 @@ class Step1 extends Component {
 
   abreOuFechaFormAlergenico = (value) => {
     let { payloadStep1 } = this.state;
-    let condicao = false;
-    if (value === 1) {
-      condicao = true;
-    } else {
-      condicao = false;
-    }
+    let condicao = value === 1;
     payloadStep1.tem_aditivos_alergenicos = condicao;
     this.props.mostrarFormAlergenico(condicao);
     this.setState({
@@ -92,12 +82,7 @@ class Step1 extends Component {
 
   produtoTemGluten = (value) => {
     let { payloadStep1 } = this.state;
-    let condicao = false;
-    if (value === 1) {
-      condicao = true;
-    } else {
-      condicao = false;
-    }
+    let condicao = value === 1;
     payloadStep1.tem_gluten = condicao;
     this.setState({
       payloadStep1,

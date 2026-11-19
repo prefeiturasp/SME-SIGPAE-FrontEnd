@@ -74,23 +74,6 @@ export const getCODAEPedidosSolicitacoesUnificadas = async (
   return response.data;
 };
 
-export const getTerceirizadaPedidosSolicitacoesUnificadas = (
-  filtroAplicado,
-) => {
-  const url = `${URL_SOLICITACAO_UNIFICADA}/${PEDIDOS.TERCEIRIZADA}/${filtroAplicado}/`;
-  const OBJ_REQUEST = {
-    headers: authToken,
-    method: "GET",
-  };
-  return fetch(url, OBJ_REQUEST)
-    .then((result) => {
-      return result.json();
-    })
-    .catch((error) => {
-      return error;
-    });
-};
-
 export const CODAEAutorizaPedidoKitLancheUnificado = (
   uuid,
   justificativa = {},

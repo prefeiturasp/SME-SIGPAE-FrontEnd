@@ -1721,24 +1721,23 @@ export const formatarLinhasTabelaAlimentacaoCEI = (
         });
       });
   } else {
-    faixas_etarias_objs_alimentacao
-      .sort((a, b) => a.inicio - b.inicio)
-      .forEach((faixa_obj) => {
-        linhasTabelaAlimentacaoCEI.push(
-          {
-            nome: "Matriculados",
-            name: "matriculados",
-            uuid: faixa_obj.uuid,
-            faixa_etaria: faixa_obj.__str__,
-          },
-          {
-            nome: "Frequência",
-            name: "frequencia",
-            uuid: faixa_obj.uuid,
-            faixa_etaria: faixa_obj.__str__,
-          },
-        );
-      });
+    faixas_etarias_objs_alimentacao.sort((a, b) => a.inicio - b.inicio);
+    faixas_etarias_objs_alimentacao.forEach((faixa_obj) => {
+      linhasTabelaAlimentacaoCEI.push(
+        {
+          nome: "Matriculados",
+          name: "matriculados",
+          uuid: faixa_obj.uuid,
+          faixa_etaria: faixa_obj.__str__,
+        },
+        {
+          nome: "Frequência",
+          name: "frequencia",
+          uuid: faixa_obj.uuid,
+          faixa_etaria: faixa_obj.__str__,
+        },
+      );
+    });
   }
 
   linhasTabelaAlimentacaoCEI.push({
@@ -1953,24 +1952,23 @@ export const formatarLinhasTabelasDietasCEI = (
     });
   }
 
-  faixas_etarias_objs_dieta
-    .sort((a, b) => a.inicio - b.inicio)
-    .forEach((faixa_obj) => {
-      linhasTabelasDietasCEI.push(
-        {
-          nome: "Dietas Autorizadas",
-          name: "dietas_autorizadas",
-          uuid: faixa_obj.uuid,
-          faixa_etaria: faixa_obj.__str__,
-        },
-        {
-          nome: "Frequência",
-          name: "frequencia",
-          uuid: faixa_obj.uuid,
-          faixa_etaria: faixa_obj.__str__,
-        },
-      );
-    });
+  faixas_etarias_objs_dieta.sort((a, b) => a.inicio - b.inicio);
+  faixas_etarias_objs_dieta.forEach((faixa_obj) => {
+    linhasTabelasDietasCEI.push(
+      {
+        nome: "Dietas Autorizadas",
+        name: "dietas_autorizadas",
+        uuid: faixa_obj.uuid,
+        faixa_etaria: faixa_obj.__str__,
+      },
+      {
+        nome: "Frequência",
+        name: "frequencia",
+        uuid: faixa_obj.uuid,
+        faixa_etaria: faixa_obj.__str__,
+      },
+    );
+  });
   linhasTabelasDietasCEI.push({
     nome: "Observações",
     name: "observacoes",

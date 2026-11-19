@@ -100,7 +100,7 @@ export default class CorpoRelatorio extends Component {
       log.ativo = false;
     });
     if (!ativo) {
-      logs[index].ativo = !ativo;
+      logs[index].ativo = true;
       logSelecionado = logs[index];
     } else {
       logSelecionado = null;

@@ -5,7 +5,7 @@ import MultiSelect from "src/components/Shareable/FinalForm/MultiSelect";
 
 const MultiSelectDistribuidores = ({ name, label, className }) => {
   const [distribuidoresSelecionados, setDistribuidoresSelecionados] = useState(
-    []
+    [],
   );
   const [distribuidores, setDistribuidores] = useState([]);
 
@@ -21,13 +21,6 @@ const MultiSelectDistribuidores = ({ name, label, className }) => {
   }, []);
 
   const onDistribuidoresSelected = (values) => {
-    let distribuidoresSelecionadosNomes = [];
-    values.forEach((value) => {
-      const indice = distribuidores.findIndex(
-        (distribuidor) => distribuidor.value === value
-      );
-      distribuidoresSelecionadosNomes.push(distribuidores[indice].label);
-    });
     setDistribuidoresSelecionados(values);
   };
 

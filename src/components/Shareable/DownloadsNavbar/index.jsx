@@ -5,8 +5,8 @@ import { CentralDeDownloadContext } from "../../../context/CentralDeDownloads";
 export default () => {
   const centralDownloadContext = useContext(CentralDeDownloadContext);
 
-  const qtdeCentralDeDownloadNaoLidas = async () => {
-    await centralDownloadContext.getQtdeDownloadsNaoLidas();
+  const qtdeCentralDeDownloadNaoLidas = () => {
+    centralDownloadContext.getQtdeDownloadsNaoLidas();
   };
 
   useEffect(() => {

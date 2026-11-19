@@ -207,22 +207,29 @@ export default ({ atualizar }) => {
     );
   };
 
+  const criarHandlersDeArquivos = (
+    arquivosTipoDeLayoutEmbalagem,
+    setArquivosTipoDeLayoutEmbalagem,
+  ) => ({
+    setFiles: (arquivos) =>
+      setFilesGeral(arquivos, setArquivosTipoDeLayoutEmbalagem),
+    removeFile: (index) =>
+      removeFileGeral(
+        index,
+        arquivosTipoDeLayoutEmbalagem,
+        setArquivosTipoDeLayoutEmbalagem,
+      ),
+  });
+
   const renderizarSecaoAtualizacao = (
     tipoDeEmbalagem,
     arquivosTipoDeLayoutEmbalagem,
     setArquivosTipoDeLayoutEmbalagem,
   ) => {
-    const setFiles = (arquivos) => {
-      setFilesGeral(arquivos, setArquivosTipoDeLayoutEmbalagem);
-    };
-
-    const removeFile = (index) => {
-      removeFileGeral(
-        index,
-        arquivosTipoDeLayoutEmbalagem,
-        setArquivosTipoDeLayoutEmbalagem,
-      );
-    };
+    const { setFiles, removeFile } = criarHandlersDeArquivos(
+      arquivosTipoDeLayoutEmbalagem,
+      setArquivosTipoDeLayoutEmbalagem,
+    );
 
     return (
       <>
@@ -248,17 +255,10 @@ export default ({ atualizar }) => {
   ) => {
     const dadosCorrecao = tipoDeEmbalagem.complemento_do_status;
 
-    const setFiles = (arquivos) => {
-      setFilesGeral(arquivos, setArquivosTipoDeLayoutEmbalagem);
-    };
-
-    const removeFile = (index) => {
-      removeFileGeral(
-        index,
-        arquivosTipoDeLayoutEmbalagem,
-        setArquivosTipoDeLayoutEmbalagem,
-      );
-    };
+    const { setFiles, removeFile } = criarHandlersDeArquivos(
+      arquivosTipoDeLayoutEmbalagem,
+      setArquivosTipoDeLayoutEmbalagem,
+    );
 
     return (
       <>

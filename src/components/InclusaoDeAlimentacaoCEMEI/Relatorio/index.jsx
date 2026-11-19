@@ -62,7 +62,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
 
   const getVinculosMotivoEspecificoCEMEIAsync = async (
     escola,
-    periodosNormais
+    periodosNormais,
   ) => {
     const tipo_unidade_escolar_iniciais = escola.tipo_unidade.iniciais;
     const response = await getVinculosTipoAlimentacaoMotivoInclusaoEspecifico({
@@ -74,44 +74,44 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
         let periodo = vinculo.periodo_escolar;
         let tipos_de_alimentacao = vinculo.tipos_alimentacao;
         let periodoNormal = periodosNormais.find(
-          (p) => periodo.nome === p.periodo_escolar.nome
+          (p) => periodo.nome === p.periodo_escolar.nome,
         );
         if (!periodoNormal) {
           periodoNormal = periodosNormais.find(
-            (p) => p.periodo_escolar.nome === "INTEGRAL"
+            (p) => p.periodo_escolar.nome === "INTEGRAL",
           );
           tipos_de_alimentacao = response.data.find(
-            (p) => p.periodo_escolar.nome === "INTEGRAL"
+            (p) => p.periodo_escolar.nome === "INTEGRAL",
           ).tipos_alimentacao;
         }
         periodo.tipos_alimentacao = tipos_de_alimentacao;
         periodo.maximo_alunos = null;
         periodosMotivoInclusaoEspecifico.push(periodo);
       });
-      const periodosOrdenados = periodosMotivoInclusaoEspecifico.sort(
-        (obj1, obj2) => (obj1.posicao > obj2.posicao ? 1 : -1)
+      periodosMotivoInclusaoEspecifico.sort((obj1, obj2) =>
+        obj1.posicao > obj2.posicao ? 1 : -1,
       );
-      setVinculosMotivoEspecifico(periodosOrdenados);
+      setVinculosMotivoEspecifico(periodosMotivoInclusaoEspecifico);
     }
   };
 
   const getVinculosTipoAlimentacaoPorEscolaAsync = async (inclusao) => {
     const response = await getVinculosTipoAlimentacaoPorEscola(
-      inclusao.escola.uuid
+      inclusao.escola.uuid,
     );
     if (response.status === HTTP_STATUS.OK) {
       const diasMotivos = inclusao.dias_motivos_da_inclusao_cemei;
       const temMotivoEspecifico = diasMotivos.some((dm) =>
-        dm.motivo.nome.includes("Específico")
+        dm.motivo.nome.includes("Específico"),
       );
       if (temMotivoEspecifico) {
         setEhMotivoEspecifico(true);
         const periodosEMEI = response.data.results.filter(
-          (r) => r.tipo_unidade_escolar.iniciais === "EMEI"
+          (r) => r.tipo_unidade_escolar.iniciais === "EMEI",
         );
         await getVinculosMotivoEspecificoCEMEIAsync(
           inclusao.escola,
-          periodosEMEI
+          periodosEMEI,
         );
       }
       setVinculos(response.data.results);
@@ -135,7 +135,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
     const response = await endpointAprovaSolicitacao(
       uuid,
       values.justificativa,
-      tipoSolicitacao
+      tipoSolicitacao,
     );
     if (response.status === HTTP_STATUS.OK) {
       toastSuccess(toastAprovaMensagem);
@@ -176,7 +176,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                         <div className="col-12 text-end">
                           {exibeBotaoNaoAprovar(
                             solicitacao,
-                            textoBotaoNaoAprova
+                            textoBotaoNaoAprova,
                           ) && (
                             <Botao
                               texto={textoBotaoNaoAprova}
@@ -191,7 +191,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                           {exibirBotaoQuestionamento(
                             solicitacao,
                             visao,
-                            tipoPerfil
+                            tipoPerfil,
                           ) && (
                             <Botao
                               texto={
@@ -212,7 +212,7 @@ export const RelatorioInclusaoDeAlimentacaoCEMEI = ({ ...props }) => {
                           {exibeBotaoAprovar(
                             solicitacao,
                             visao,
-                            textoBotaoAprova
+                            textoBotaoAprova,
                           ) && (
                             <Botao
                               texto={textoBotaoAprova}

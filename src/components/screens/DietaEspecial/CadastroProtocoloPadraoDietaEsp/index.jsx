@@ -50,7 +50,6 @@ const salvarCopiaDoProtocolo = async (values, navigate) => {
     }
   } catch (e) {
     if (e.response.status === HTTP_STATUS.BAD_REQUEST) {
-      // setValoresIniciais(getInitialValues(values));
       toastError(getError(e.response));
     } else {
       toastError(
