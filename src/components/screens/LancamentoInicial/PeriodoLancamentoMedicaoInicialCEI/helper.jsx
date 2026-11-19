@@ -4,8 +4,10 @@ import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   deepCopy,
+  ehDiaDezembroBloqueadoParaLancamento,
   ehEscolaTipoCEMEI,
   ehFimDeSemanaUTC,
+  obterMesAnoReferenciaSolicitacao,
 } from "src/helpers/utilities";
 import { getListaDiasSobremesaDoce } from "src/services/medicaoInicial/diaSobremesaDoce.service";
 import {
@@ -1247,6 +1249,18 @@ export const desabilitarField = (
   categoriasDeMedicao,
   ehFaixaMenorDeUmAno = false,
 ) => {
+  const mesAnoReferencia = obterMesAnoReferenciaSolicitacao(
+    location?.state?.solicitacaoMedicaoInicial,
+    mesAnoConsiderado,
+  );
+
+  if (
+    !ehRecreioNasFerias &&
+    ehDiaDezembroBloqueadoParaLancamento(mesAnoReferencia, mesAnoDefault, dia)
+  ) {
+    return true;
+  }
+
   const mesConsiderado = format(mesAnoConsiderado, "LLLL", {
     locale: ptBR,
   }).toString();

@@ -4,9 +4,11 @@ import HTTP_STATUS from "http-status-codes";
 import { toastError } from "src/components/Shareable/Toast/dialogs";
 import {
   deepCopy,
+  ehDiaDezembroBloqueadoParaLancamento,
   ehEscolaTipoCEI,
   ehEscolaTipoCEMEI,
   escolaNaoPossuiAlunosRegulares,
+  obterMesAnoReferenciaSolicitacao,
   tiposAlimentacaoETEC,
   usuarioEhEscolaCEMEI,
 } from "src/helpers/utilities";
@@ -1158,6 +1160,18 @@ export const desabilitarField = (
 ) => {
   const grupoRecreio = ehGrupoRecreioNasFerias(grupoLocation);
   const ehProgramasEProjetos = grupoLocation === "Programas e Projetos";
+  const mesAnoReferencia = obterMesAnoReferenciaSolicitacao(
+    location?.state?.solicitacaoMedicaoInicial,
+    mesAnoConsiderado,
+  );
+
+  if (
+    !grupoRecreio &&
+    ehDiaDezembroBloqueadoParaLancamento(mesAnoReferencia, mesAnoDefault, dia)
+  ) {
+    return true;
+  }
+
   const valorAtual = values[`${rowName}__dia_${dia}__categoria_${categoria}`];
 
   if (["Mês anterior", "Mês posterior"].includes(valorAtual)) {

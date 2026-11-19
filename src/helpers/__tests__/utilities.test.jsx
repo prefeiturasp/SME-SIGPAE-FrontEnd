@@ -1,8 +1,10 @@
 import {
+  ehDiaDezembroBloqueadoParaLancamento,
   formataMilhar,
   formataMilharDecimal,
   geradorUUID,
   formatarCPFouCNPJ,
+  obterMesAnoReferenciaSolicitacao,
   usuarioComAcessoAoRelatorioCronogramasSemanais,
 } from "../utilities";
 import { PERFIL } from "../../constants/shared";
@@ -122,5 +124,74 @@ describe("usuarioComAcessoAoRelatorioCronogramasSemanais", () => {
     localStorage.setItem("perfil", PERFIL.DILOG_ABASTECIMENTO);
 
     expect(usuarioComAcessoAoRelatorioCronogramasSemanais()).toBe(true);
+  });
+});
+
+describe("ehDiaDezembroBloqueadoParaLancamento", () => {
+  const dezembro2026 = new Date(2026, 11, 1);
+  const hoje15Dez2026 = new Date(2026, 11, 15);
+
+  test("bloqueia o dia atual e os futuros em dezembro", () => {
+    expect(
+      ehDiaDezembroBloqueadoParaLancamento(dezembro2026, hoje15Dez2026, 15),
+    ).toBe(true);
+    expect(
+      ehDiaDezembroBloqueadoParaLancamento(dezembro2026, hoje15Dez2026, 20),
+    ).toBe(true);
+  });
+
+  test("libera os dias anteriores ao dia atual", () => {
+    expect(
+      ehDiaDezembroBloqueadoParaLancamento(dezembro2026, hoje15Dez2026, 14),
+    ).toBe(false);
+  });
+
+  test("bloqueia todos os dias de dezembro futuro quando hoje é novembro", () => {
+    expect(
+      ehDiaDezembroBloqueadoParaLancamento(
+        dezembro2026,
+        new Date(2026, 10, 18),
+        1,
+      ),
+    ).toBe(true);
+  });
+
+  test("não bloqueia outros meses", () => {
+    expect(
+      ehDiaDezembroBloqueadoParaLancamento(
+        new Date(2026, 10, 1),
+        hoje15Dez2026,
+        15,
+      ),
+    ).toBe(false);
+  });
+
+  test("não bloqueia dezembro de outro ano", () => {
+    expect(
+      ehDiaDezembroBloqueadoParaLancamento(
+        new Date(2025, 11, 1),
+        hoje15Dez2026,
+        15,
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("obterMesAnoReferenciaSolicitacao", () => {
+  test("usa mês e ano da solicitação quando disponíveis", () => {
+    const data = obterMesAnoReferenciaSolicitacao(
+      { mes: "12", ano: "2026" },
+      new Date(2026, 10, 1),
+    );
+
+    expect(data.getMonth()).toBe(11);
+    expect(data.getFullYear()).toBe(2026);
+  });
+
+  test("usa o mês considerado quando não há solicitação", () => {
+    const mesAnoConsiderado = new Date(2026, 10, 1);
+    const data = obterMesAnoReferenciaSolicitacao(null, mesAnoConsiderado);
+
+    expect(data).toBe(mesAnoConsiderado);
   });
 });

@@ -127,6 +127,29 @@ describe("desabilitarField EMEF/EMEI/CMCT/CIEJA/EMEBS", () => {
       expect(callDesabilitarField(args)).toBe(true);
     });
 
+    it("deve retornar true para o dia atual ou futuro em dezembro", () => {
+      const args = baseArgs();
+      args.mesAnoConsiderado = new Date(2026, 11, 1);
+      args.mesAnoDefault = new Date(2026, 11, 15);
+      args.dia = 15;
+      expect(callDesabilitarField(args)).toBe(true);
+    });
+
+    it("deve bloquear dezembro usando o mês da solicitação mesmo com mês considerado diferente", () => {
+      const args = baseArgs();
+      args.mesAnoConsiderado = new Date(2026, 10, 1);
+      args.mesAnoDefault = new Date(2026, 10, 18);
+      args.location = {
+        ...args.location,
+        state: {
+          ...args.location.state,
+          solicitacaoMedicaoInicial: { mes: "12", ano: "2026" },
+        },
+      };
+      args.dia = 1;
+      expect(callDesabilitarField(args)).toBe(true);
+    });
+
     it("deve retornar true para DIETA ESPECIAL quando inclusão autorizada é apenas sobremesa", () => {
       const args = baseArgs();
       args.nomeCategoria = "DIETA ESPECIAL";

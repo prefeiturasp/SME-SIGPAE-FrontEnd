@@ -7,7 +7,11 @@ import {
   LANCAMENTO_MEDICAO_INICIAL,
   PERIODO_LANCAMENTO_CEI,
 } from "src/configs/constants";
-import { deepCopy, ehEscolaTipoCEMEI } from "src/helpers/utilities";
+import {
+  deepCopy,
+  ehEscolaTipoCEMEI,
+  obterDataSimuladaDaUrl,
+} from "src/helpers/utilities";
 import {
   desabilitarBotaoEditar,
   justificativaPeriodo,
@@ -158,10 +162,15 @@ export const CardLancamentoCEI = ({
   };
 
   const handleClickEditar = () => {
+    const dataSimulada = obterDataSimuladaDaUrl();
+    const searchDataSimulada = dataSimulada
+      ? `&data_simulada=${dataSimulada}`
+      : "";
+
     navigate(
       {
         pathname: `/${LANCAMENTO_INICIAL}/${LANCAMENTO_MEDICAO_INICIAL}/${PERIODO_LANCAMENTO_CEI}`,
-        search: `uuid=${solicitacaoMedicaoInicial.uuid}`,
+        search: `uuid=${solicitacaoMedicaoInicial.uuid}${searchDataSimulada}`,
       },
       {
         state: {

@@ -1,4 +1,12 @@
-import { obterUltimoDiaAtendimentoEscolaAberta } from "../helpers";
+import {
+  deveBloquearFinalizacaoDezembro,
+  deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao,
+  estaAntesDoFimDoPeriodoLetivo,
+  montarSearchPeriodo,
+  obterDataFinalizacaoMedicaoDezembro,
+  obterDataSimulada,
+  obterUltimoDiaAtendimentoEscolaAberta,
+} from "../helpers";
 
 const cadastroCompleto = {
   data_inicial: "01/09/2026",
@@ -69,5 +77,241 @@ describe("obterUltimoDiaAtendimentoEscolaAberta", () => {
     expect(
       obterUltimoDiaAtendimentoEscolaAberta(null, "09", "2026"),
     ).toBeNull();
+  });
+});
+
+describe("obterDataFinalizacaoMedicaoDezembro", () => {
+  it("retorna a data quando é do mesmo mês e ano da medição", () => {
+    const data = obterDataFinalizacaoMedicaoDezembro(
+      "15/12/2025",
+      "12",
+      "2025",
+    );
+
+    expect(data.getFullYear()).toBe(2025);
+    expect(data.getMonth()).toBe(11);
+    expect(data.getDate()).toBe(15);
+  });
+
+  it("retorna null quando o mês é diferente do mês da medição", () => {
+    expect(
+      obterDataFinalizacaoMedicaoDezembro("15/11/2025", "12", "2025"),
+    ).toBeNull();
+  });
+
+  it("retorna null quando o ano é diferente do ano da medição", () => {
+    expect(
+      obterDataFinalizacaoMedicaoDezembro("15/12/2026", "12", "2025"),
+    ).toBeNull();
+  });
+
+  it("retorna null quando não há data cadastrada", () => {
+    expect(obterDataFinalizacaoMedicaoDezembro(null, "12", "2025")).toBeNull();
+  });
+
+  it("retorna null para data inválida", () => {
+    expect(
+      obterDataFinalizacaoMedicaoDezembro("data-invalida", "12", "2025"),
+    ).toBeNull();
+  });
+});
+
+describe("obterDataSimulada", () => {
+  it("retorna a data simulada quando ela é válida", () => {
+    const data = obterDataSimulada("2026-12-15", new Date(2026, 10, 17));
+
+    expect(data.getFullYear()).toBe(2026);
+    expect(data.getMonth()).toBe(11);
+    expect(data.getDate()).toBe(15);
+  });
+
+  it("retorna null quando não há data simulada", () => {
+    expect(obterDataSimulada(null)).toBeNull();
+  });
+
+  it("retorna null quando a data simulada é inválida", () => {
+    expect(obterDataSimulada("data-invalida")).toBeNull();
+  });
+});
+
+describe("montarSearchPeriodo", () => {
+  it("monta a query string com mês e ano", () => {
+    expect(montarSearchPeriodo("12", "2026")).toBe("?mes=12&ano=2026");
+  });
+
+  it("inclui o recreio nas férias quando informado", () => {
+    expect(montarSearchPeriodo("12", "2026", "recreio-uuid")).toBe(
+      "?mes=12&ano=2026&recreio_nas_ferias=recreio-uuid",
+    );
+  });
+
+  it("preserva a data simulada quando informada", () => {
+    expect(montarSearchPeriodo("12", "2026", null, "2026-12-15")).toBe(
+      "?mes=12&ano=2026&data_simulada=2026-12-15",
+    );
+  });
+
+  it("preserva recreio e data simulada juntos", () => {
+    expect(
+      montarSearchPeriodo("12", "2026", "recreio-uuid", "2026-12-15"),
+    ).toBe(
+      "?mes=12&ano=2026&recreio_nas_ferias=recreio-uuid&data_simulada=2026-12-15",
+    );
+  });
+});
+
+describe("estaAntesDoFimDoPeriodoLetivo", () => {
+  const diasLetivos = [{ dia: 18 }, { dia: 19 }];
+
+  it("retorna true antes do último dia letivo", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 18, 10, 0),
+        diasLetivos,
+        "12",
+        "2025",
+      ),
+    ).toBe(true);
+  });
+
+  it("retorna true durante o último dia letivo", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 19, 10, 0),
+        diasLetivos,
+        "12",
+        "2025",
+      ),
+    ).toBe(true);
+  });
+
+  it("retorna false depois do último dia letivo", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 20, 10, 0),
+        diasLetivos,
+        "12",
+        "2025",
+      ),
+    ).toBe(false);
+  });
+
+  it("retorna false quando não há dias letivos", () => {
+    expect(
+      estaAntesDoFimDoPeriodoLetivo(
+        new Date(2025, 11, 18, 10, 0),
+        [],
+        "12",
+        "2025",
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("deveBloquearFinalizacaoDezembro", () => {
+  const dataCadastrada = new Date(2025, 11, 15);
+
+  it("bloqueia antes da data cadastrada", () => {
+    expect(
+      deveBloquearFinalizacaoDezembro(
+        dataCadastrada,
+        null,
+        new Date(2025, 11, 14, 23, 59),
+      ),
+    ).toBe(true);
+  });
+
+  it("libera na data cadastrada", () => {
+    expect(
+      deveBloquearFinalizacaoDezembro(
+        dataCadastrada,
+        null,
+        new Date(2025, 11, 15, 0, 0),
+      ),
+    ).toBe(false);
+  });
+
+  it("bloqueia enquanto o último atendimento de Escola Aberta não terminou", () => {
+    expect(
+      deveBloquearFinalizacaoDezembro(
+        dataCadastrada,
+        new Date(2025, 11, 20),
+        new Date(2025, 11, 20, 10, 0),
+      ),
+    ).toBe(true);
+  });
+
+  it("libera após o último atendimento de Escola Aberta", () => {
+    expect(
+      deveBloquearFinalizacaoDezembro(
+        dataCadastrada,
+        new Date(2025, 11, 20),
+        new Date(2025, 11, 21, 10, 0),
+      ),
+    ).toBe(false);
+  });
+});
+
+describe("deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao", () => {
+  const dataCadastrada = new Date(2025, 11, 15);
+
+  it("bloqueia quando a última solicitação é depois da data cadastrada", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-20",
+        new Date(2025, 11, 15, 10, 0),
+      ),
+    ).toBe(true);
+  });
+
+  it("bloqueia durante o dia da última solicitação", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-20",
+        new Date(2025, 11, 20, 10, 0),
+      ),
+    ).toBe(true);
+  });
+
+  it("libera após o dia da última solicitação", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-20",
+        new Date(2025, 11, 21, 10, 0),
+      ),
+    ).toBe(false);
+  });
+
+  it("não bloqueia quando a última solicitação é anterior ou igual à data cadastrada", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "2025-12-15",
+        new Date(2025, 11, 15, 10, 0),
+      ),
+    ).toBe(false);
+  });
+
+  it("não bloqueia quando não há última solicitação", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        null,
+        new Date(2025, 11, 15, 10, 0),
+      ),
+    ).toBe(false);
+  });
+
+  it("não bloqueia quando a última solicitação é inválida", () => {
+    expect(
+      deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+        dataCadastrada,
+        "data-invalida",
+        new Date(2025, 11, 15, 10, 0),
+      ),
+    ).toBe(false);
   });
 });

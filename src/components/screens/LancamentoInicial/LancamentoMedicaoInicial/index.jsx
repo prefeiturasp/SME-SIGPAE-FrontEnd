@@ -20,11 +20,21 @@ import {
   ehEscolaTipoCEI,
   ehEscolaTipoCEMEI,
   escolaNaoPossuiAlunosRegulares,
+  obterDataSimuladaDaUrl,
 } from "src/helpers/utilities";
 import { getVinculosTipoAlimentacaoPorEscola } from "src/services/cadastroTipoAlimentacao.service";
 import { getEscolaSimples } from "src/services/escola.service";
 import { getEscolaAbertaPorMesAno } from "src/services/medicaoInicial/escolaAberta.service";
-import { obterUltimoDiaAtendimentoEscolaAberta } from "./components/LancamentoPorPeriodo/helpers";
+import { getDataFinalizaMedicaoDezembro } from "src/services/medicaoInicial/dataFinalizaMedicaoDezembro.service";
+import {
+  deveBloquearFinalizacaoDezembro,
+  deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao,
+  estaAntesDoFimDoPeriodoLetivo,
+  montarSearchPeriodo,
+  obterDataFinalizacaoMedicaoDezembro,
+  obterDataSimulada,
+  obterUltimoDiaAtendimentoEscolaAberta,
+} from "./components/LancamentoPorPeriodo/helpers";
 import {
   getDiasCalendario,
   getHistoricoEscola,
@@ -50,6 +60,10 @@ import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 import Botao from "src/components/Shareable/Botao";
 import { ModalHistoricoCorrecoesPeriodo } from "src/components/screens/LancamentoInicial/ConferenciaDosLancamentos/components/ModalHistoricoCorrecoesPeriodo/index.jsx";
 import "./styles.scss";
+
+const obterDataAtual = () => {
+  return obterDataSimulada(obterDataSimuladaDaUrl()) || new Date();
+};
 
 export default () => {
   const { meusDados } = useContext(MeusDadosContext);
@@ -84,6 +98,7 @@ export default () => {
 
   const [open, setOpen] = useState(false);
   const [naoPodeFinalizar, setNaoPodeFinalizar] = useState(true);
+  const [finalizacaoAntecipada, setFinalizacaoAntecipada] = useState(false);
   const [finalizandoMedicao, setFinalizandoMedicao] = useState(false);
   const [justificativaSemLancamentos, setJustificativaSemLancamentos] =
     useState("");
@@ -176,6 +191,14 @@ export default () => {
     }
   };
 
+  const getDataFinalizaMedicaoDezembroAsync = async () => {
+    const response = await getDataFinalizaMedicaoDezembro();
+    if (response?.status === HTTP_STATUS.OK) {
+      return response.data?.data;
+    }
+    return null;
+  };
+
   const getCadastrosRecreioNasFerias = async () => {
     const response = await listarRecreioNasFerias();
     if (response.status === HTTP_STATUS.OK) {
@@ -262,8 +285,9 @@ export default () => {
       };
     }
 
-    const mesAtual = Number(format(new Date(), "MM"));
-    const anoAtual = getYear(new Date());
+    const dataAtual = obterDataAtual();
+    const mesAtual = Number(format(dataAtual, "MM"));
+    const anoAtual = getYear(dataAtual);
     let mesNormalizado = Number(mesParam);
     let anoNormalizado = Number(anoParam);
 
@@ -466,7 +490,7 @@ export default () => {
     cadastrosRecreioPreparados,
   ) => {
     for (let mes_ = 0; mes_ <= PROXIMOS_DOZE_MESES; mes_++) {
-      const dataBRT = addMonths(new Date(), -mes_);
+      const dataBRT = addMonths(obterDataAtual(), -mes_);
       const mes = getMonth(dataBRT) + 1;
       const ano = getYear(dataBRT);
       const mesString = format(dataBRT, "LLLL", { locale: ptBR });
@@ -525,7 +549,12 @@ export default () => {
     setMes(dadosPeriodoInicial.mes);
     setAno(dadosPeriodoInicial.ano);
 
-    const searchParams = `?mes=${dadosPeriodoInicial.mes}&ano=${dadosPeriodoInicial.ano}${dadosPeriodoInicial.recreio_nas_ferias ? `&recreio_nas_ferias=${dadosPeriodoInicial.recreio_nas_ferias}` : ""}`;
+    const searchParams = montarSearchPeriodo(
+      dadosPeriodoInicial.mes,
+      dadosPeriodoInicial.ano,
+      dadosPeriodoInicial.recreio_nas_ferias,
+      obterDataSimuladaDaUrl(),
+    );
 
     if (location.search !== searchParams) {
       navigate(
@@ -772,7 +801,7 @@ export default () => {
     dataFimRecreioNasFerias.setHours(23, 59, 59, 999);
 
     const naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias =
-      new Date().getTime() <= dataFimRecreioNasFerias.getTime();
+      obterDataAtual().getTime() <= dataFimRecreioNasFerias.getTime();
 
     setNaoPodeFinalizar(
       naoPodeFinalizarSeAindaNaoPassouDataFimRecreioNasFerias,
@@ -785,19 +814,27 @@ export default () => {
     solicitacao,
     diasCalendario,
   ) => {
-    const [ultimoDiaComSolicitacaoAutorizada_, escolaAberta] =
-      await Promise.all([
-        getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
-          payload["escola_uuid"],
-          payload["mes"],
-          payload["ano"],
-        ),
-        getEscolaAbertaPorMesAno({
-          escola_uuid: payload["escola_uuid"],
-          mes: payload["mes"],
-          ano: payload["ano"],
-        }),
-      ]);
+    const deveUsarDataFinalizacaoDezembro = payload["mes"] === DEZEMBRO;
+
+    const [
+      ultimoDiaComSolicitacaoAutorizada_,
+      escolaAberta,
+      dataFinalizaMedicaoDezembro,
+    ] = await Promise.all([
+      getUltimoDiaComSolicitacaoAutorizadaNoMesAsync(
+        payload["escola_uuid"],
+        payload["mes"],
+        payload["ano"],
+      ),
+      getEscolaAbertaPorMesAno({
+        escola_uuid: payload["escola_uuid"],
+        mes: payload["mes"],
+        ano: payload["ano"],
+      }),
+      deveUsarDataFinalizacaoDezembro
+        ? getDataFinalizaMedicaoDezembroAsync()
+        : Promise.resolve(null),
+    ]);
     const listaDiasLetivos = diasCalendario.filter(
       (dia) => dia.dia_letivo === true,
     );
@@ -810,6 +847,44 @@ export default () => {
             payload["ano"],
           )
         : null;
+
+    const dataFinalizacaoDezembro = obterDataFinalizacaoMedicaoDezembro(
+      dataFinalizaMedicaoDezembro,
+      payload["mes"],
+      payload["ano"],
+    );
+    const dataHoje = obterDataAtual();
+
+    if (dataFinalizacaoDezembro) {
+      const naoPodeFinalizarPelaDataDezembro = deveBloquearFinalizacaoDezembro(
+        dataFinalizacaoDezembro,
+        ultimoDiaAtendimentoEscolaAberta,
+        dataHoje,
+      );
+      const naoPodeFinalizarPelaUltimaSolicitacao =
+        deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao(
+          dataFinalizacaoDezembro,
+          ultimoDiaComSolicitacaoAutorizada_,
+          dataHoje,
+        );
+      const naoPodeFinalizarNaMedicaoDezembro =
+        naoPodeFinalizarPelaDataDezembro ||
+        naoPodeFinalizarPelaUltimaSolicitacao;
+
+      setNaoPodeFinalizar(naoPodeFinalizarNaMedicaoDezembro);
+      setFinalizacaoAntecipada(
+        !naoPodeFinalizarNaMedicaoDezembro &&
+          estaAntesDoFimDoPeriodoLetivo(
+            dataHoje,
+            listaDiasLetivos,
+            payload["mes"],
+            payload["ano"],
+          ),
+      );
+      return;
+    }
+
+    setFinalizacaoAntecipada(false);
 
     if (!listaDiasLetivos.length && !ultimoDiaAtendimentoEscolaAberta) {
       setNaoPodeFinalizar(false);
@@ -849,7 +924,6 @@ export default () => {
       Math.max(...datasConsideradas.map((data) => data.getTime())),
     );
     dataUltimoDia.setHours(23, 59, 59, 999);
-    const dataHoje = new Date();
     const naoPodeFinalizarSeAindaNaoPassouOUltimoDia =
       dataHoje.getTime() <= dataUltimoDia.getTime();
 
@@ -857,6 +931,7 @@ export default () => {
   };
 
   const getDiasCalendarioAsync = async (payload, solicitacao) => {
+    setFinalizacaoAntecipada(false);
     const response = await getDiasCalendario(payload);
 
     if (response.status === HTTP_STATUS.OK) {
@@ -928,9 +1003,12 @@ export default () => {
       navigate(
         {
           pathname: location.pathname,
-          search: `?mes=${format(new Date(value), "MM").toString()}&ano=${getYear(
-            new Date(value),
-          ).toString()}${recreio_nas_ferias ? `&recreio_nas_ferias=${recreio_nas_ferias}` : ""}`,
+          search: montarSearchPeriodo(
+            mes,
+            ano,
+            recreio_nas_ferias,
+            obterDataSimuladaDaUrl(),
+          ),
         },
         { replace: true },
       );
@@ -996,6 +1074,12 @@ export default () => {
       data.append("anexos", JSON.stringify(payloadAnexos));
     }
     data.append("finaliza_medicao", true);
+
+    const dataSimulada = obterDataSimuladaDaUrl();
+    if (dataSimulada) {
+      data.append("data_simulada", dataSimulada);
+    }
+
     const response = await updateSolicitacaoMedicaoInicial(
       solicitacaoMedicaoInicial.uuid,
       data,
@@ -1184,6 +1268,7 @@ export default () => {
                 }
                 setSolicitacaoMedicaoInicial={setSolicitacaoMedicaoInicial}
                 naoPodeFinalizar={naoPodeFinalizar}
+                finalizacaoAntecipada={finalizacaoAntecipada}
                 setFinalizandoMedicao={setFinalizandoMedicao}
                 periodosPermissoesLancamentosEspeciais={
                   periodosPermissoesLancamentosEspeciais
@@ -1227,6 +1312,7 @@ export default () => {
                 }
                 setSolicitacaoMedicaoInicial={setSolicitacaoMedicaoInicial}
                 naoPodeFinalizar={naoPodeFinalizar}
+                finalizacaoAntecipada={finalizacaoAntecipada}
                 setFinalizandoMedicao={setFinalizandoMedicao}
                 errosAoSalvar={errosAoSalvar}
                 setErrosAoSalvar={setErrosAoSalvar}

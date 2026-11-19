@@ -148,6 +148,8 @@ export const ModalAdicionarUnidadeEducacional = ({
       dialogClassName="modal-adicionar-unidades-educacionais"
       show={showModal}
       onHide={closeModal}
+      backdrop="static"
+      keyboard={false}
       data-testid="modal-adicionar-unidade"
     >
       <Modal.Header closeButton>

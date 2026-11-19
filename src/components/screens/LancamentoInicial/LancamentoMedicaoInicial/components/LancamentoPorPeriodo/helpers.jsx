@@ -1,4 +1,14 @@
-import { getDay, lastDayOfMonth, parse, subDays } from "date-fns";
+import {
+  endOfDay,
+  format,
+  getDay,
+  getYear,
+  isValid,
+  lastDayOfMonth,
+  parse,
+  startOfDay,
+  subDays,
+} from "date-fns";
 import { BUTTON_STYLE } from "src/components/Shareable/Botao/constants";
 import {
   capitalize,
@@ -66,6 +76,117 @@ export const obterUltimoDiaAtendimentoEscolaAberta = (cadastro, mes, ano) => {
   }
 
   return null;
+};
+
+export const obterDataFinalizacaoMedicaoDezembro = (
+  dataFinalizacao,
+  mes,
+  ano,
+) => {
+  if (!dataFinalizacao || !mes || !ano) {
+    return null;
+  }
+
+  const data = parse(dataFinalizacao, "dd/MM/yyyy", new Date());
+
+  if (!isValid(data)) {
+    return null;
+  }
+
+  const mesmoMes = format(data, "MM") === String(mes).padStart(2, "0");
+  const mesmoAno = String(getYear(data)) === String(ano);
+
+  return mesmoMes && mesmoAno ? data : null;
+};
+
+export const obterDataSimulada = (
+  dataSimulada,
+  dataReferencia = new Date(),
+) => {
+  if (!dataSimulada) {
+    return null;
+  }
+
+  const data = parse(dataSimulada, "yyyy-MM-dd", dataReferencia);
+
+  return isValid(data) ? data : null;
+};
+
+export const montarSearchPeriodo = (
+  mes,
+  ano,
+  recreioNasFerias,
+  dataSimulada,
+) => {
+  let search = `?mes=${mes}&ano=${ano}`;
+
+  if (recreioNasFerias) {
+    search += `&recreio_nas_ferias=${recreioNasFerias}`;
+  }
+
+  if (dataSimulada) {
+    search += `&data_simulada=${dataSimulada}`;
+  }
+
+  return search;
+};
+
+export const estaAntesDoFimDoPeriodoLetivo = (
+  dataHoje,
+  diasLetivos,
+  mes,
+  ano,
+) => {
+  if (!diasLetivos.length) {
+    return false;
+  }
+
+  const ultimoDiaLetivo = diasLetivos[diasLetivos.length - 1];
+  const dataFimPeriodoLetivo = endOfDay(
+    new Date(Number(ano), Number(mes) - 1, Number(ultimoDiaLetivo.dia)),
+  );
+
+  return dataHoje < dataFimPeriodoLetivo;
+};
+
+export const deveBloquearFinalizacaoDezembro = (
+  dataFinalizacaoDezembro,
+  ultimoDiaAtendimentoEscolaAberta,
+  dataHoje = new Date(),
+) => {
+  const bloqueadoAntesDaDataCadastrada =
+    dataHoje < startOfDay(dataFinalizacaoDezembro);
+  const bloqueadoPorEscolaAberta =
+    !!ultimoDiaAtendimentoEscolaAberta &&
+    dataHoje <= endOfDay(ultimoDiaAtendimentoEscolaAberta);
+
+  return bloqueadoAntesDaDataCadastrada || bloqueadoPorEscolaAberta;
+};
+
+export const deveBloquearFinalizacaoDezembroPelaUltimaSolicitacao = (
+  dataFinalizacaoDezembro,
+  ultimaDataSolicitacao,
+  dataHoje = new Date(),
+) => {
+  if (!ultimaDataSolicitacao) {
+    return false;
+  }
+
+  const dataUltimaSolicitacao = parse(
+    ultimaDataSolicitacao,
+    "yyyy-MM-dd",
+    new Date(),
+  );
+
+  if (!isValid(dataUltimaSolicitacao)) {
+    return false;
+  }
+
+  if (dataUltimaSolicitacao <= dataFinalizacaoDezembro) {
+    return false;
+  }
+
+  return dataHoje <= endOfDay(dataUltimaSolicitacao);
 };
 
 export const OPCOES_AVALIACAO_A_CONTENTO = {
